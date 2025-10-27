@@ -1,0 +1,403 @@
+import Image from "next/image";
+import Link from "next/link";
+import Logo from "@/components/Logo";
+import { DollarSign, Zap, Plug, ChevronDown, ArrowRight, ShoppingCart, CheckCircle2, Search, Plane, Truck, Package } from "lucide-react";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="border-b border-gray-200 bg-white sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex-shrink-0">
+              <Logo />
+            </div>
+            <div className="hidden md:flex space-x-10 items-center">
+              <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">About</Link>
+              <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">How It Works</Link>
+              <Link href="/pricing" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">Pricing</Link>
+              <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">Shop</Link>
+              <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">Contact</Link>
+              <Link href="/login" className="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-50 hover:scale-105 active:scale-95 transition-all duration-300 font-semibold">
+                Log In
+              </Link>
+              <Link href="/register" className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold">
+                Register
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center">
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=2000"
+            alt="Professional floral arrangements"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+        </div>
+        <div className="relative z-10 max-w-4xl text-center px-6">
+          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 tracking-tight drop-shadow-lg">
+            Farm-Direct Wholesale Flowers That Actually Arrive Fresh
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 font-light mb-8 max-w-2xl mx-auto">
+            Premium roses, summer flowers, and gypsophila shipped direct from Ecuador and Colombia in 48-72 hours. No middlemen. No disappointments.
+          </p>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link href="/register" className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:shadow-emerald-500/50 hover:scale-105 transition-all inline-block">
+              Get Your Sample Box
+            </Link>
+            <Link href="/how-it-works" className="border-2 border-white text-white px-10 py-5 text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all inline-block">
+              See How It Works
+            </Link>
+          </div>
+        </div>
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+          <ChevronDown className="w-8 h-8 text-white/80" />
+        </div>
+      </section>
+
+      {/* Trust Bar */}
+      <section className="bg-white border-y border-slate-200 py-8">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">5-7 Days Fresher</div>
+              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">vs. traditional wholesale</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">15-25% Lower Cost</div>
+              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">by eliminating middlemen</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">95% On-Time Delivery</div>
+              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">with FedEx tracking</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">7-Day Guarantee</div>
+              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">full refund if not satisfied</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Product Categories */}
+      <section className="py-24 md:py-32 px-6 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">WHAT WE OFFER</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Three Core Collections from Trusted Partner Farms</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              We focus on what we do best: premium roses, seasonal summer flowers, and gypsophila direct from our partner farms in South America.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            {/* Roses */}
+            <Link href="/register" className="group cursor-pointer">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
+                <Image
+                  src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80&fit=crop"
+                  alt="Premium roses collection"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Roses</h3>
+                  <p className="text-lg text-white/80 mb-4">Ecuador grown, 50cm & 70cm stems</p>
+                  <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
+                    <span className="font-semibold">Shop Now</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Summer Flowers */}
+            <Link href="/register" className="group cursor-pointer">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
+                <Image
+                  src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80&fit=crop"
+                  alt="Summer flowers collection"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Summer Flowers</h3>
+                  <p className="text-lg text-white/80 mb-4">Seasonal assortments & specialty blooms</p>
+                  <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
+                    <span className="font-semibold">Shop Now</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Gypsophila */}
+            <Link href="/register" className="group cursor-pointer">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
+                <Image
+                  src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=800&q=80&fit=crop"
+                  alt="Baby's Breath and fillers collection"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Gypsophila</h3>
+                  <p className="text-lg text-white/80 mb-4">Colombian grown fillers & Baby's Breath</p>
+                  <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
+                    <span className="font-semibold">Shop Now</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Value Propositions */}
+      <section className="py-24 md:py-32 px-6 md:px-8 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">BUILT FOR PROFESSIONAL FLORISTS</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Stop Wasting Time and Money on the Traditional Supply Chain</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+            {/* Farm-Direct Savings */}
+            <div className="bg-white p-8 md:p-10 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer">
+              <div className="relative aspect-[4/3] mb-6 rounded-xl overflow-hidden shadow-2xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80&fit=crop"
+                  alt="Farm direct flowers from Ecuador and Colombia"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <DollarSign className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Farm-Direct Savings</h3>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                Eliminate 2-3 middlemen and save 15-25% on your flower costs.
+              </p>
+            </div>
+
+            {/* Maximum Freshness */}
+            <div className="bg-white p-8 md:p-10 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer">
+              <div className="relative aspect-[4/3] mb-6 rounded-xl overflow-hidden shadow-2xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=800&q=80&fit=crop"
+                  alt="Fresh flowers with extended vase life"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <Zap className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Maximum Freshness</h3>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                5-7 days longer vase life means less waste and happier customers.
+              </p>
+            </div>
+
+            {/* Reliable Delivery */}
+            <div className="bg-white p-8 md:p-10 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer">
+              <div className="relative aspect-[4/3] mb-6 rounded-xl overflow-hidden shadow-2xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80&fit=crop"
+                  alt="Reliable delivery and tracking"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Reliable Delivery</h3>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                95% on-time SLA with FedEx Priority and real-time tracking.
+              </p>
+            </div>
+
+            {/* Built for Your Business */}
+            <div className="bg-white p-8 md:p-10 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer">
+              <div className="relative aspect-[4/3] mb-6 rounded-xl overflow-hidden shadow-2xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80&fit=crop"
+                  alt="B2B wholesale flower service"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <Plug className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Built for Your Business</h3>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                Net-30 terms, standing orders, and dedicated support for B2B buyers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - Visual Process */}
+      <section className="py-24 md:py-32 px-6 md:px-8 bg-gradient-to-b from-slate-50 via-white to-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">THE FLOROPOLIS DIFFERENCE</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Why Professional Florists Are Switching</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">We eliminate 2-3 middlemen between the farm and your shop. That means fresher flowers, better margins, and zero morning market runs.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+            {/* Step 1: Browse Live Inventory */}
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md hover:shadow-xl transition-all relative group">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+                  <Search className="w-10 h-10 text-emerald-600" />
+                </div>
+                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold flex items-center justify-center">1</div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Browse Live Inventory</h3>
+              <p className="text-slate-600 leading-relaxed text-center">Access real-time pricing and availability on 300+ SKUs</p>
+            </div>
+
+            {/* Step 2: Order Online or by Phone */}
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md hover:shadow-xl transition-all relative group">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+                  <ShoppingCart className="w-10 h-10 text-emerald-600" />
+                </div>
+                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold flex items-center justify-center">2</div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Order Online or by Phone</h3>
+              <p className="text-slate-600 leading-relaxed text-center">Secure checkout with Net-30 terms for qualified businesses</p>
+            </div>
+
+            {/* Step 3: Farm-Direct Shipping */}
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md hover:shadow-xl transition-all relative group">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+                  <Plane className="w-10 h-10 text-emerald-600" />
+                </div>
+                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold flex items-center justify-center">3</div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Farm-Direct Shipping</h3>
+              <p className="text-slate-600 leading-relaxed text-center">Flowers are cut, quality-checked, and packed within 24 hours</p>
+            </div>
+
+            {/* Step 4: Arrives in 48-72 Hours */}
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md hover:shadow-xl transition-all relative group">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+                  <Package className="w-10 h-10 text-emerald-600" />
+                </div>
+                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold flex items-center justify-center">4</div>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Arrives in 48-72 Hours</h3>
+              <p className="text-slate-600 leading-relaxed text-center">FedEx Priority delivery with full tracking and freshness guarantee</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Guarantee Section */}
+      <section className="py-24 md:py-32 px-6 md:px-8 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">ZERO RISK</div>
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight leading-tight">
+            Try Floropolis Risk-Free
+          </h2>
+          <p className="text-xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
+            If your first order doesn't arrive fresher than anything you've bought from your current supplier, we'll refund your money and give you a credit for your next order. We carry the risk, not you.
+          </p>
+          <div className="space-y-4">
+            <Link href="/register" className="bg-emerald-600 text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg inline-block">
+              Request Your Sample Box
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-24 md:py-32 px-6 md:px-8 bg-gradient-to-br from-emerald-600 via-emerald-600 to-green-600">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight leading-tight">
+            Ready to Stop Driving to the Market at 4 AM?
+          </h2>
+          <p className="text-xl text-emerald-100 mb-12 leading-relaxed max-w-2xl mx-auto">
+            Join 500+ professional florists who've already switched to farm-direct sourcing.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/register" className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg inline-block">
+              Get Started
+            </Link>
+            <Link href="/contact" className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-white/10 hover:scale-105 transition-all inline-block">
+              Talk to Our Team
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-16 px-4 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div>
+              <div className="mb-4">
+                <Logo variant="dark" />
+              </div>
+              <p className="text-slate-400 leading-relaxed">Floropolis connects professional florists, event designers, and funeral homes directly with premium flower farms in Ecuador and Colombia. By eliminating traditional wholesalers, we deliver fresher flowers at better prices with reliable logistics you can count on.</p>
+              <p className="text-slate-500 text-sm mt-6">&copy; 2025 Floropolis. All rights reserved.</p>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4 text-lg">Company</h4>
+              <ul className="space-y-3 text-slate-400">
+                <li><Link href="/about" className="hover:text-emerald-400 transition-colors">About Us</Link></li>
+                <li><Link href="/how-it-works" className="hover:text-emerald-400 transition-colors">How It Works</Link></li>
+                <li><Link href="/pricing" className="hover:text-emerald-400 transition-colors">Pricing</Link></li>
+                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4 text-lg">Support</h4>
+              <ul className="space-y-3 text-slate-400">
+                <li><Link href="/register" className="hover:text-emerald-400 transition-colors">Register</Link></li>
+                <li><Link href="/login" className="hover:text-emerald-400 transition-colors">Login</Link></li>
+                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Help Center</Link></li>
+                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Privacy Policy</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4 text-lg">Get In Touch</h4>
+              <ul className="space-y-3 text-slate-400">
+                <li><a href="mailto:hello@floropolis.com" className="hover:text-emerald-400 transition-colors">hello@floropolis.com</a></li>
+                <li><a href="tel:5551234567" className="hover:text-emerald-400 transition-colors">(555) 123-4567</a></li>
+                <li className="text-slate-500">Mon-Fri, 8am-6pm EST</li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-slate-400 text-sm">
+            <p>&copy; 2025 Floropolis. All rights reserved.</p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <Link href="/contact" className="hover:text-emerald-400 transition-colors">Terms</Link>
+              <Link href="/contact" className="hover:text-emerald-400 transition-colors">Privacy</Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
