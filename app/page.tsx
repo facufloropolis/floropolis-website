@@ -1,9 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { DollarSign, Zap, Plug, ChevronDown, ArrowRight, ShoppingCart, CheckCircle2, Search, Plane, Truck, Package } from "lucide-react";
+import { Menu, X, DollarSign, Zap, Plug, ChevronDown, ArrowRight, ShoppingCart, CheckCircle2, Search, Plane, Truck, Package } from "lucide-react";
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -13,20 +17,108 @@ export default function Home() {
             <div className="flex-shrink-0">
               <Logo />
             </div>
+            
+            {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-10 items-center">
-              <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">About</Link>
-              <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">How It Works</Link>
-              <Link href="/pricing" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">Pricing</Link>
-              <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">Shop</Link>
-              <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">Contact</Link>
-              <Link href="/login" className="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-50 hover:scale-105 active:scale-95 transition-all duration-300 font-semibold">
+              <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
+                About
+              </Link>
+              <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
+                How It Works
+              </Link>
+              <Link href="/pricing" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
+                Pricing
+              </Link>
+              <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
+                Shop
+              </Link>
+              <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
+                Contact
+              </Link>
+              <Link 
+                href="/login" 
+                className="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-50 hover:scale-105 active:scale-95 transition-all duration-300 font-semibold"
+              >
                 Log In
               </Link>
-              <Link href="/register" className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold">
+              <Link 
+                href="/register" 
+                className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold"
+              >
                 Register
               </Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-slate-700 hover:text-emerald-600 transition-colors p-2"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
+              <Link 
+                href="/about" 
+                className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
+                href="/how-it-works" 
+                className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                How It Works
+              </Link>
+              <Link 
+                href="/pricing" 
+                className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              <Link 
+                href="/shop" 
+                className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Shop
+              </Link>
+              <Link 
+                href="/contact" 
+                className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact
+              </Link>
+              <Link 
+                href="/login" 
+                className="block mx-4 px-4 py-3 text-center border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Log In
+              </Link>
+              <Link 
+                href="/register" 
+                className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -35,10 +127,11 @@ export default function Home() {
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=2000"
-            alt="Professional floral arrangements"
+            alt="Professional florist arranging fresh flowers in a bright studio"
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
         </div>
@@ -89,7 +182,7 @@ export default function Home() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-24 md:py-32 px-6 md:px-8 bg-white">
+      <section className="py-24 px-6 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">WHAT WE OFFER</div>
@@ -100,7 +193,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {/* Roses */}
-            <Link href="/register" className="group cursor-pointer">
+            <Link href="/shop/roses" className="group cursor-pointer">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
                 <Image
                   src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80&fit=crop"
@@ -121,7 +214,7 @@ export default function Home() {
             </Link>
 
             {/* Summer Flowers */}
-            <Link href="/register" className="group cursor-pointer">
+            <Link href="/shop/summer-flowers" className="group cursor-pointer">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
                 <Image
                   src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80&fit=crop"
@@ -142,7 +235,7 @@ export default function Home() {
             </Link>
 
             {/* Gypsophila */}
-            <Link href="/register" className="group cursor-pointer">
+            <Link href="/shop/gypsophila" className="group cursor-pointer">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
                 <Image
                   src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=800&q=80&fit=crop"
@@ -166,7 +259,7 @@ export default function Home() {
       </section>
 
       {/* Value Propositions */}
-      <section className="py-24 md:py-32 px-6 md:px-8 bg-slate-50">
+      <section className="py-24 px-6 md:px-8 bg-slate-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">BUILT FOR PROFESSIONAL FLORISTS</div>
@@ -253,7 +346,7 @@ export default function Home() {
       </section>
 
       {/* How It Works - Visual Process */}
-      <section className="py-24 md:py-32 px-6 md:px-8 bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      <section className="py-24 px-6 md:px-8 bg-gradient-to-b from-slate-50 via-white to-slate-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">THE FLOROPOLIS DIFFERENCE</div>
@@ -312,8 +405,61 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-24 px-6 md:px-8 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">TRUSTED BY PROFESSIONALS</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">What Florists Are Saying</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Testimonial 1 */}
+            <div className="bg-white p-8 rounded-2xl shadow-md">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-slate-600 mb-4 italic">"Switching to Floropolis cut my flower costs by 20% and the quality is noticeably better. My customers keep commenting on how long the arrangements last."</p>
+              <div className="font-semibold text-slate-900">Sarah Martinez</div>
+              <div className="text-sm text-slate-500">Bloom & Co., Miami</div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-white p-8 rounded-2xl shadow-md">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-slate-600 mb-4 italic">"No more 4 AM market runs! The flowers arrive fresher than anything I could get locally, and the FedEx tracking gives me peace of mind."</p>
+              <div className="font-semibold text-slate-900">David Chen</div>
+              <div className="text-sm text-slate-500">Petals & Events, Los Angeles</div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="bg-white p-8 rounded-2xl shadow-md">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                  </svg>
+                ))}
+              </div>
+              <p className="text-slate-600 mb-4 italic">"The sample box sold me immediately. These roses are stunning and my profit margins have improved significantly since I started ordering from Floropolis."</p>
+              <div className="font-semibold text-slate-900">Jennifer Torres</div>
+              <div className="text-sm text-slate-500">Garden Gate Florist, Austin</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Guarantee Section */}
-      <section className="py-24 md:py-32 px-6 md:px-8 bg-white">
+      <section className="py-24 px-6 md:px-8 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">ZERO RISK</div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight leading-tight">
@@ -330,8 +476,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-24 px-6 md:px-8 bg-slate-50">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">COMMON QUESTIONS</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">Frequently Asked Questions</h2>
+          </div>
+          <div className="space-y-6">
+            <div className="bg-white p-8 rounded-xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">What's the minimum order?</h3>
+              <p className="text-slate-600">Our minimum order is just $150, making it easy for small shops to access premium wholesale pricing. Most orders ship for free with FedEx Priority.</p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Do you offer Net-30 payment terms?</h3>
+              <p className="text-slate-600">Yes! Once approved, established businesses can access Net-30 terms. New customers start with credit card or ACH payments, with terms available after 2-3 successful orders.</p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">How does shipping work?</h3>
+              <p className="text-slate-600">We ship via FedEx Priority from Miami (our distribution hub) within 48-72 hours of your order. You'll receive tracking info immediately, and flowers typically arrive within 2-3 business days depending on your location.</p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">What if flowers arrive damaged?</h3>
+              <p className="text-slate-600">Simply send us photos within 24 hours and we'll issue a full refund or replacement shipment immediately. We stand behind our 7-day freshness guarantee 100%.</p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Can I order specific rose colors?</h3>
+              <p className="text-slate-600">Absolutely! We carry 25+ rose varieties in various colors. Our online catalog shows real-time availability so you can see exactly what's in stock at our farms.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA Section */}
-      <section className="py-24 md:py-32 px-6 md:px-8 bg-gradient-to-br from-emerald-600 via-emerald-600 to-green-600">
+      <section className="py-24 px-6 md:px-8 bg-gradient-to-br from-emerald-600 via-emerald-600 to-green-600">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight leading-tight">
             Ready to Stop Driving to the Market at 4 AM?

@@ -9,8 +9,16 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Floropolis - Wholesale Flowers for Professional Florists",
-  description: "Farm-direct wholesale flowers delivered in 72 hours. Live inventory, API integration, and better margins for retail florists, event designers, and small businesses.",
+  title: 'Floropolis | Farm-Direct Wholesale Flowers from Ecuador & Colombia',
+  description: 'Premium wholesale roses, summer flowers, and gypsophila shipped direct from South American farms in 48-72 hours. 15-25% lower cost, 5-7 days fresher than traditional wholesale.',
+  keywords: 'wholesale flowers, farm direct flowers, Ecuador roses, Colombia flowers, wholesale florist, bulk flowers',
+  openGraph: {
+    title: 'Floropolis | Farm-Direct Wholesale Flowers',
+    description: 'Premium wholesale flowers delivered in 48-72 hours from Ecuador and Colombia farms',
+    url: 'https://floropolis.com',
+    siteName: 'Floropolis',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
