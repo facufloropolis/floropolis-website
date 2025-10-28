@@ -530,7 +530,6 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-1">Facundo Lavino</h3>
-                  <p className="text-emerald-600 font-semibold mb-2">Co-Founder & Chief Operating Officer</p>
                   <a href="https://www.linkedin.com/in/faculavino" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-emerald-600 text-sm transition-colors">
                     View LinkedIn →
                   </a>
@@ -552,7 +551,6 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-1">Juan Javier Pallares</h3>
-                  <p className="text-emerald-600 font-semibold mb-2">Co-Founder & Chief Executive Officer</p>
                   <a href="https://www.linkedin.com/in/juan-javier-pallares-a16b62254" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-emerald-600 text-sm transition-colors">
                     View LinkedIn →
                   </a>
