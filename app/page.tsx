@@ -264,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* Order Online Section */}
-      <section className="py-24 px-6 md:px-8 bg-gradient-to-br from-slate-50 to-white">
+      <section id="order-online" className="py-24 px-6 md:px-8 bg-gradient-to-br from-slate-50 to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">COMING SOON</div>
@@ -388,7 +388,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Built for Your Business</h3>
               <p className="text-lg text-slate-600 leading-relaxed">
-                Net-30 terms, standing orders, and dedicated support for B2B buyers.
+Standing orders and dedicated support for B2B buyers.
               </p>
             </div>
           </div>
@@ -425,7 +425,7 @@ export default function Home() {
                 <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold flex items-center justify-center">2</div>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Order Online or by Phone</h3>
-              <p className="text-slate-600 leading-relaxed text-center">Secure checkout with Net-30 terms for qualified businesses</p>
+              <p className="text-slate-600 leading-relaxed text-center">Secure checkout with flexible payment options</p>
             </div>
 
             {/* Step 3: Farm-Direct Shipping */}
@@ -611,8 +611,8 @@ export default function Home() {
               <p className="text-slate-600">Our minimum order is just $150, making it easy for small shops to access premium wholesale pricing. Most orders ship for free with direct farm-to-door delivery.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm">
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Do you offer Net-30 payment terms?</h3>
-              <p className="text-slate-600">Yes! Once approved, established businesses can access Net-30 terms. New customers start with credit card or ACH payments, with terms available after 2-3 successful orders.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">What payment options do you offer?</h3>
+              <p className="text-slate-600">New customers can pay with credit card or ACH payments. Established businesses may qualify for extended payment terms after their first few successful orders.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm">
               <h3 className="text-xl font-bold text-slate-900 mb-3">How does shipping work?</h3>

@@ -45,9 +45,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Premium Roses</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.75 - $2.50/stem</p>
                   <p className="text-slate-600 mb-4">Red, pink, white, yellow, orange varieties</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
 
@@ -64,9 +64,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Garden Roses</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$1.50 - $3.00/stem</p>
                   <p className="text-slate-600 mb-4">Heirloom varieties with exceptional fragrance</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
 
@@ -83,9 +83,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Spray Roses</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$1.00 - $2.00/stem</p>
                   <p className="text-slate-600 mb-4">Multiple blooms per stem</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
             </div>
@@ -108,9 +108,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Calypso Blooms</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Fresh calypso flowers</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
 
@@ -127,9 +127,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Calypso Mix</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Mixed calypso arrangements</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
 
@@ -146,9 +146,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Premium Calypso</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.75 - $2.00/stem</p>
                   <p className="text-slate-600 mb-4">Premium calypso varieties</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
             </div>
@@ -171,9 +171,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Summer Mix</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Gerbera, sunflowers, lisianthus</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
 
@@ -190,9 +190,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Summer Blooms</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Fresh seasonal arrangements</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
 
@@ -209,9 +209,9 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Summer Collection</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Premium summer varieties</p>
-                  <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    Request Quote
-                  </button>
+                  <a href="/#order-online" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                    View Catalog
+                  </a>
                 </div>
               </div>
             </div>

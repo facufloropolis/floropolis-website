@@ -551,7 +551,7 @@ export default function Register() {
                   </li>
                   <li className="flex">
                     <span className="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0">5</span>
-                    <span className="pt-1">Net-30 terms available after first order</span>
+                    <span className="pt-1">Extended payment terms available after first order</span>
                   </li>
                 </ol>
               </div>
@@ -560,7 +560,7 @@ export default function Register() {
               <div className="bg-gradient-to-br from-emerald-50 to-green-50 p-8 rounded-2xl shadow-lg border-2 border-emerald-200">
                 <h3 className="text-2xl font-bold text-slate-900 mb-6">Trade Account Benefits</h3>
                 <ul className="space-y-3">
-                  {['Access to wholesale pricing', 'Net-30 payment terms (after first order)', 'Standing order templates', 'Real-time inventory access', 'Order tracking and history', 'Dedicated account support'].map((benefit) => (
+                  {['Access to wholesale pricing', 'Extended payment terms (after first order)', 'Standing order templates', 'Real-time inventory access', 'Order tracking and history', 'Dedicated account support'].map((benefit) => (
                     <li key={benefit} className="flex items-center text-slate-700">
                       <span className="text-emerald-600 mr-2">✓</span>
                       {benefit}

@@ -52,7 +52,7 @@ export default function HowItWorks() {
                 <h3 className="text-2xl font-bold text-slate-900">Place Your Order</h3>
               </div>
               <p className="text-slate-600 leading-relaxed">
-                Order online 24/7 or call our team. Minimum order $200. Net-30 terms available for qualified businesses after first order.
+                Order online 24/7 or call our team. Minimum order $200. Flexible payment terms available for qualified businesses after first order.
               </p>
             </div>
 
@@ -190,7 +190,7 @@ export default function HowItWorks() {
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
               <h3 className="text-xl font-bold text-slate-900 mb-3">What are your payment terms?</h3>
               <p className="text-slate-600 leading-relaxed">
-                First order is prepaid. After that, Net-30 terms are available for qualified businesses.
+                First order is prepaid. After that, flexible payment terms may be available for qualified businesses.
               </p>
             </div>
 

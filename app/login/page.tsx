@@ -163,7 +163,7 @@ export default function Login() {
                 <ul className="space-y-3">
                   {[
                     'Access to live wholesale pricing',
-                    'Net-30 payment terms (after first order)',
+                    'Flexible payment terms (after first order)',
                     'Standing order templates',
                     'Order history and tracking',
                     'Dedicated account support',

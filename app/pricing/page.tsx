@@ -75,7 +75,7 @@ export default function Pricing() {
               <div>
                 <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Payment Terms</p>
                 <p className="text-lg text-slate-900">First order prepaid, then</p>
-                <p className="text-lg font-bold text-emerald-600">Net-30 available</p>
+                <p className="text-lg font-bold text-emerald-600">Flexible payment terms available</p>
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Guarantee</p>
