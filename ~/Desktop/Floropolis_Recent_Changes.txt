@@ -1,0 +1,59 @@
+FLOROPOLIS WEBSITE - RECENT CHANGES (Last 30 Minutes)
+=======================================================
+
+CHANGES REQUESTED AND COMPLETED:
+--------------------------------
+
+1. REMOVED TITLES FROM MEET THE TEAM SECTION
+   - Removed "Co-Founder & Chief Operating Officer" from Facundo's card
+   - Removed "Co-Founder & Chief Executive Officer" from Juan Javier's card
+   - Now shows only names with LinkedIn links
+
+2. UPDATED FARM PARTNER INFORMATION
+   - Changed Megaflor description to only offer "seasonal summer flowers"
+   - Changed Flodecol from "Colombia" to "Ecuador"
+   - Removed all mentions of "Colombia" from the website
+   - Removed "roses" from product offerings
+   - Updated to reflect: seasonal summer flowers, delphinium, and gypsophila from Ecuador
+   - Changed first product card from "Roses" description to "Seasonal varieties from Megaflor, Ecuador"
+
+3. UPDATED FOOTER EMAIL ADDRESS
+   - Changed from hello@floropolis.com to orders@floropolis.com in:
+     * Homepage footer
+     * Contact page
+
+4. UPDATED SHOP SECTION CALL-TO-ACTION
+   - Changed all buttons from "Request Quote" to "Register for Access"
+   - All product cards now link to /register page
+   - Added id="order-online" to Order Online section for anchor linking
+
+5. REMOVED ALL MENTIONS OF "NET 30" OR "NET-30"
+   - Replaced with "Flexible payment terms" or "Extended payment terms"
+   - Files updated:
+     * app/page.tsx (multiple instances)
+     * app/register/page.tsx
+     * app/register/layout.tsx
+     * app/login/page.tsx
+     * app/pricing/page.tsx
+     * app/how-it-works/page.tsx
+
+
+FILES MODIFIED IN THIS SESSION:
+--------------------------------
+- app/page.tsx
+- app/shop/page.tsx
+- app/contact/page.tsx
+- app/register/page.tsx
+- app/register/layout.tsx
+- app/login/page.tsx
+- app/pricing/page.tsx
+- app/how-it-works/page.tsx
+
+
+CURRENT STATUS:
+---------------
+- Local dev server running on http://localhost:3000
+- No API routes (removed to prevent Vercel deployment issues)
+- All forms are client-side only
+- Ready for deployment to Vercel via GitHub
+

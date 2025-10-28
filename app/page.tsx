@@ -138,10 +138,10 @@ export default function Home() {
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/60"></div>
         </div>
         <div className="relative z-10 max-w-4xl text-center px-6">
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 tracking-tight drop-shadow-lg">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] mb-8 tracking-tight drop-shadow-2xl">
             Farm-Direct Wholesale Flowers That Actually Arrive Fresh
           </h1>
           <p className="text-xl md:text-2xl text-white/90 font-light mb-8 max-w-2xl mx-auto">
@@ -186,6 +186,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Trust Badges */}
+      <section className="py-12 bg-white border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-wrap justify-center items-center gap-12 opacity-60">
+            <div className="text-slate-600 text-sm font-semibold tracking-wider">CERTIFIED GROWERS</div>
+            <div className="text-slate-600 text-sm font-semibold tracking-wider">DIRECT IMPORT</div>
+            <div className="text-slate-600 text-sm font-semibold tracking-wider">QUALITY ASSURED</div>
+            <div className="text-slate-600 text-sm font-semibold tracking-wider">SECURE CHECKOUT</div>
+          </div>
+        </div>
+      </section>
+
       {/* Product Categories */}
       <section className="py-24 px-6 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
@@ -193,15 +205,15 @@ export default function Home() {
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">WHAT WE OFFER</div>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Three Core Collections from Our Partner Farms</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              We work exclusively with Megaflor (Ecuador) and Flodecol (Ecuador) to bring you seasonal summer flowers, delphinium, and gypsophila.
+              We work exclusively with Megaflor and Flodecol—both based in Ecuador—to bring you premium seasonal summer flowers, roses, delphinium, and gypsophila.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {/* Roses */}
-            <Link href="/shop/roses" className="group cursor-pointer">
+            <Link href="#catalog" className="group cursor-pointer">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
                 <Image
-                  src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80&fit=crop"
+                  src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=90&fit=crop"
                   alt="Premium roses collection"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -209,9 +221,9 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Roses</h3>
-                  <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - Seasonal varieties</p>
+                  <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - Premium varieties</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
-                    <span className="font-semibold">Shop Now</span>
+                    <span className="font-semibold">Register for Access</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -219,10 +231,10 @@ export default function Home() {
             </Link>
 
             {/* Summer Flowers */}
-            <Link href="/shop/summer-flowers" className="group cursor-pointer">
+            <Link href="#catalog" className="group cursor-pointer">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
                 <Image
-                  src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80&fit=crop"
+                  src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800&q=90&fit=crop"
                   alt="Summer flowers collection"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -232,7 +244,7 @@ export default function Home() {
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Summer Flowers</h3>
                   <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - Seasonal varieties</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
-                    <span className="font-semibold">Shop Now</span>
+                    <span className="font-semibold">Register for Access</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -240,10 +252,10 @@ export default function Home() {
             </Link>
 
             {/* Gypsophila */}
-            <Link href="/shop/gypsophila" className="group cursor-pointer">
+            <Link href="#catalog" className="group cursor-pointer">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group-hover:-translate-y-[4px] duration-300 border border-slate-200/20">
                 <Image
-                  src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=800&q=80&fit=crop"
+                  src="https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=800&q=90&fit=crop"
                   alt="Baby's Breath and fillers collection"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -253,7 +265,7 @@ export default function Home() {
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Delphinium & Gypsophila</h3>
                   <p className="text-lg text-white/80 mb-4">From Flodecol, Ecuador</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
-                    <span className="font-semibold">Shop Now</span>
+                    <span className="font-semibold">Register for Access</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -264,7 +276,7 @@ export default function Home() {
       </section>
 
       {/* Order Online Section */}
-      <section id="order-online" className="py-24 px-6 md:px-8 bg-gradient-to-br from-slate-50 to-white">
+      <section id="catalog" className="py-24 px-6 md:px-8 bg-gradient-to-br from-slate-50 to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">COMING SOON</div>
