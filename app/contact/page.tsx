@@ -205,7 +205,7 @@ export default function Contact() {
                 <div className="space-y-4 text-slate-600">
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-emerald-600" />
-                    <a href="mailto:hello@floropolis.com" className="text-emerald-600 hover:underline font-semibold">hello@floropolis.com</a>
+                    <a href="mailto:orders@floropolis.com" className="text-emerald-600 hover:underline font-semibold">orders@floropolis.com</a>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="w-5 h-5 text-emerald-600" />

@@ -10,6 +10,11 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <div className="min-h-screen bg-white">
+      {/* Free Shipping Banner */}
+      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold tracking-wide">
+        ✨ FREE SHIPPING on orders over $150 | Farm-Direct Freshness Guaranteed
+      </div>
+
       {/* Navigation */}
       <nav className="border-b border-gray-200 bg-white sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,11 +176,11 @@ export default function Home() {
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">95% On-Time Delivery</div>
-              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">with FedEx tracking</div>
+              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">farm-to-door delivery</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">7-Day Guarantee</div>
-              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">full refund if not satisfied</div>
+              <div className="text-3xl md:text-4xl font-bold text-emerald-600 mb-2">FREE Shipping</div>
+              <div className="text-sm md:text-base text-slate-600 tracking-wide font-semibold">on orders over $150</div>
             </div>
           </div>
         </div>
@@ -186,9 +191,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">WHAT WE OFFER</div>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Three Core Collections from Trusted Partner Farms</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Three Core Collections from Our Partner Farms</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              We focus on what we do best: premium roses, seasonal summer flowers, and gypsophila direct from our partner farms in South America.
+              We work exclusively with Megaflor (Ecuador) and Flodecol (Colombia) to bring you premium roses, seasonal summer flowers, delphinium, and gypsophila.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
@@ -204,7 +209,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Roses</h3>
-                  <p className="text-lg text-white/80 mb-4">Ecuador grown, 50cm & 70cm stems</p>
+                  <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - 50cm & 70cm stems</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
                     <span className="font-semibold">Shop Now</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -225,7 +230,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Summer Flowers</h3>
-                  <p className="text-lg text-white/80 mb-4">Seasonal assortments & specialty blooms</p>
+                  <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - Seasonal varieties</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
                     <span className="font-semibold">Shop Now</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -245,8 +250,8 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Gypsophila</h3>
-                  <p className="text-lg text-white/80 mb-4">Colombian grown fillers & Baby's Breath</p>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Delphinium & Gypsophila</h3>
+                  <p className="text-lg text-white/80 mb-4">From Flodecol, Colombia</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
                     <span className="font-semibold">Shop Now</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -254,6 +259,51 @@ export default function Home() {
                 </div>
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Order Online Section */}
+      <section className="py-24 px-6 md:px-8 bg-gradient-to-br from-slate-50 to-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">COMING SOON</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Order Directly Online</h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              We're building a seamless ordering experience powered by Komet Sales
+            </p>
+          </div>
+          
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-emerald-600">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-transparent z-10"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur px-12 py-8 rounded-2xl shadow-2xl text-center">
+              <div className="text-6xl mb-4">🚧</div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-2">Work In Progress</h3>
+              <p className="text-lg text-slate-600 mb-4">Connecting to Komet Sales Platform</p>
+              <div className="flex items-center justify-center gap-2 text-emerald-600 font-semibold">
+                <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
+                <span>Coming Soon</span>
+              </div>
+            </div>
+            <Image
+              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=80"
+              alt="Modern e-commerce platform preview"
+              width={1200}
+              height={600}
+              className="w-full opacity-40"
+            />
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-slate-600 mb-6">In the meantime, place orders by phone or email</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="tel:5551234567" className="bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all inline-block">
+                📞 Call to Order: (555) 123-4567
+              </a>
+              <a href="mailto:orders@floropolis.com" className="border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all inline-block">
+                ✉️ Email: orders@floropolis.com
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -399,7 +449,7 @@ export default function Home() {
                 <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold flex items-center justify-center">4</div>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Arrives in 48-72 Hours</h3>
-              <p className="text-slate-600 leading-relaxed text-center">FedEx Priority delivery with full tracking and freshness guarantee</p>
+              <p className="text-slate-600 leading-relaxed text-center">Direct delivery with full tracking and freshness guarantee</p>
             </div>
           </div>
         </div>
@@ -436,7 +486,7 @@ export default function Home() {
                   </svg>
                 ))}
               </div>
-              <p className="text-slate-600 mb-4 italic">"No more 4 AM market runs! The flowers arrive fresher than anything I could get locally, and the FedEx tracking gives me peace of mind."</p>
+              <p className="text-slate-600 mb-4 italic">"No more 4 AM market runs! The flowers arrive fresher than anything I could get locally, and the tracking gives me complete peace of mind."</p>
               <div className="font-semibold text-slate-900">David Chen</div>
               <div className="text-sm text-slate-500">Petals & Events, Los Angeles</div>
             </div>
@@ -486,7 +536,7 @@ export default function Home() {
           <div className="space-y-6">
             <div className="bg-white p-8 rounded-xl shadow-sm">
               <h3 className="text-xl font-bold text-slate-900 mb-3">What's the minimum order?</h3>
-              <p className="text-slate-600">Our minimum order is just $150, making it easy for small shops to access premium wholesale pricing. Most orders ship for free with FedEx Priority.</p>
+              <p className="text-slate-600">Our minimum order is just $150, making it easy for small shops to access premium wholesale pricing. Most orders ship for free with direct farm-to-door delivery.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm">
               <h3 className="text-xl font-bold text-slate-900 mb-3">Do you offer Net-30 payment terms?</h3>
@@ -494,7 +544,7 @@ export default function Home() {
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm">
               <h3 className="text-xl font-bold text-slate-900 mb-3">How does shipping work?</h3>
-              <p className="text-slate-600">We ship via FedEx Priority from Miami (our distribution hub) within 48-72 hours of your order. You'll receive tracking info immediately, and flowers typically arrive within 2-3 business days depending on your location.</p>
+              <p className="text-slate-600">We ship directly from our distribution hub within 48-72 hours of your order. You'll receive tracking info immediately, and flowers typically arrive within 2-3 business days depending on your location.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm">
               <h3 className="text-xl font-bold text-slate-900 mb-3">What if flowers arrive damaged?</h3>
@@ -561,7 +611,7 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4 text-lg">Get In Touch</h4>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="mailto:hello@floropolis.com" className="hover:text-emerald-400 transition-colors">hello@floropolis.com</a></li>
+                <li><a href="mailto:orders@floropolis.com" className="hover:text-emerald-400 transition-colors">orders@floropolis.com</a></li>
                 <li><a href="tel:5551234567" className="hover:text-emerald-400 transition-colors">(555) 123-4567</a></li>
                 <li className="text-slate-500">Mon-Fri, 8am-6pm EST</li>
               </ul>
