@@ -508,6 +508,80 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Meet the Team Section */}
+      <section className="py-24 px-6 md:px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">THE TEAM BEHIND FLOROPOLIS</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+              Built by People Who've Lived Your Challenges
+            </h2>
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
+              We're not just another tech platform—we're flower industry veterans and technology experts who've experienced firsthand the frustrations of unreliable suppliers, inconsistent quality, and the 4 AM market runs that eat into your profits and your life.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 mb-16">
+            {/* Facundo */}
+            <div className="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-all">
+              <div className="flex items-start gap-6 mb-6">
+                <div className="w-24 h-24 rounded-full bg-emerald-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+                  FL
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-1">Facundo Lavino</h3>
+                  <p className="text-emerald-600 font-semibold mb-2">Co-Founder & Chief Operating Officer</p>
+                  <a href="https://www.linkedin.com/in/faculavino" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-emerald-600 text-sm transition-colors">
+                    View LinkedIn →
+                  </a>
+                </div>
+              </div>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                With 25+ years scaling high-growth companies at Twitter, Google, and venture-backed startups, Facundo brings world-class operations expertise to the flower industry. As former VP of Strategy & Operations at WM Technology, he drove $216M in revenue growth and led global business transformations.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                His data-driven approach and mastery of building customer-centric organizations now powers Floropolis's mission to bring transparency and efficiency to wholesale flower distribution.
+              </p>
+            </div>
+
+            {/* Juan Javier */}
+            <div className="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-all">
+              <div className="flex items-start gap-6 mb-6">
+                <div className="w-24 h-24 rounded-full bg-emerald-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+                  JP
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-1">Juan Javier Pallares</h3>
+                  <p className="text-emerald-600 font-semibold mb-2">Co-Founder & Chief Executive Officer</p>
+                  <a href="https://www.linkedin.com/in/juan-javier-pallares-a16b62254" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-emerald-600 text-sm transition-colors">
+                    View LinkedIn →
+                  </a>
+                </div>
+              </div>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Juan Javier grew up in Ecuador's flower industry, living and breathing the challenges that florists face every day. As Project Manager at Kubical LLC, he pioneered Snaproses.com's e-commerce system, boosting sales by 25% and negotiating logistics partnerships that cut costs by 10%.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                His firsthand experience managing supply chains from farm to retailer, combined with his MBA from FIU and success at Koronet closing $51K+ in ARR, gives him unique insight into what florists truly need to succeed.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-emerald-600 to-green-600 rounded-2xl p-12 text-white text-center">
+            <h3 className="text-3xl font-bold mb-6">Our Commitment to You</h3>
+            <p className="text-xl text-emerald-50 leading-relaxed max-w-4xl mx-auto mb-8">
+              We've sat across the table from frustrated florists who've been let down by suppliers one too many times. We've seen the toll that unreliable deliveries take on your business and your peace of mind. We've experienced the complexity of South American logistics and watched talented growers struggle to reach quality retailers.
+            </p>
+            <p className="text-xl text-emerald-50 leading-relaxed max-w-4xl mx-auto mb-8">
+              That's why we built Floropolis—not as outsiders looking in, but as insiders committed to fixing what's broken. We're combining decades of tech expertise with deep flower industry knowledge to create the transparent, reliable, farm-direct platform you deserve.
+            </p>
+            <div className="inline-block bg-white text-emerald-600 px-8 py-4 rounded-full font-bold text-lg">
+              Your success is our only metric.
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Guarantee Section */}
       <section className="py-24 px-6 md:px-8 bg-white">
         <div className="max-w-4xl mx-auto text-center">
