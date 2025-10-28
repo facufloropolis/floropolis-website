@@ -145,7 +145,7 @@ export default function Home() {
             Farm-Direct Wholesale Flowers That Actually Arrive Fresh
           </h1>
           <p className="text-xl md:text-2xl text-white/90 font-light mb-8 max-w-2xl mx-auto">
-            Premium roses, summer flowers, and gypsophila shipped direct from Ecuador and Colombia in 48-72 hours. No middlemen. No disappointments.
+            Premium seasonal summer flowers, delphinium, and gypsophila shipped direct from Ecuador in 48-72 hours. No middlemen. No disappointments.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link href="/register" className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:shadow-emerald-500/50 hover:scale-105 transition-all inline-block">
@@ -193,7 +193,7 @@ export default function Home() {
             <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">WHAT WE OFFER</div>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Three Core Collections from Our Partner Farms</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              We work exclusively with Megaflor (Ecuador) and Flodecol (Colombia) to bring you premium roses, seasonal summer flowers, delphinium, and gypsophila.
+              We work exclusively with Megaflor (Ecuador) and Flodecol (Ecuador) to bring you seasonal summer flowers, delphinium, and gypsophila.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
@@ -209,7 +209,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Roses</h3>
-                  <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - 50cm & 70cm stems</p>
+                  <p className="text-lg text-white/80 mb-4">From Megaflor, Ecuador - Seasonal varieties</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
                     <span className="font-semibold">Shop Now</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -251,7 +251,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">Delphinium & Gypsophila</h3>
-                  <p className="text-lg text-white/80 mb-4">From Flodecol, Colombia</p>
+                  <p className="text-lg text-white/80 mb-4">From Flodecol, Ecuador</p>
                   <div className="flex items-center gap-2 text-white/90 group-hover:text-white transition-all">
                     <span className="font-semibold">Shop Now</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -321,7 +321,7 @@ export default function Home() {
               <div className="relative aspect-[4/3] mb-6 rounded-xl overflow-hidden shadow-2xl">
                 <Image
                   src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80&fit=crop"
-                  alt="Farm direct flowers from Ecuador and Colombia"
+                  alt="Farm direct flowers from Ecuador"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -658,7 +658,7 @@ export default function Home() {
               <div className="mb-4">
                 <Logo variant="dark" />
               </div>
-              <p className="text-slate-400 leading-relaxed">Floropolis connects professional florists, event designers, and funeral homes directly with premium flower farms in Ecuador and Colombia. By eliminating traditional wholesalers, we deliver fresher flowers at better prices with reliable logistics you can count on.</p>
+              <p className="text-slate-400 leading-relaxed">Floropolis connects professional florists, event designers, and funeral homes directly with premium flower farms in Ecuador. By eliminating traditional wholesalers, we deliver fresher flowers at better prices with reliable logistics you can count on.</p>
               <p className="text-slate-500 text-sm mt-6">&copy; 2025 Floropolis. All rights reserved.</p>
             </div>
             <div>
