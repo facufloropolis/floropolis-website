@@ -43,7 +43,7 @@ export default function Contact() {
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (error) {
       console.error('Contact error:', error);
-      alert('Failed to send message. Please try again or call us at (555) 123-4567');
+      alert('Failed to send message. Please try again or call us at +1 786-930-8463');
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +141,7 @@ export default function Contact() {
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
-                        placeholder="(555) 123-4567"
+                        placeholder="+1 786-930-8463"
                       />
                     </div>
                   </div>
@@ -205,26 +205,21 @@ export default function Contact() {
                 <div className="space-y-4 text-slate-600">
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-emerald-600" />
-                    <a href="mailto:orders@floropolis.com" className="text-emerald-600 hover:underline font-semibold">orders@floropolis.com</a>
+                    <a href="mailto:hello@floropolis.com" className="text-emerald-600 hover:underline font-semibold">hello@floropolis.com</a>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="w-5 h-5 text-emerald-600" />
-                    <a href="tel:5551234567" className="text-slate-900 font-semibold">(555) 123-4567</a>
+                    <a href="tel:+17869308463" className="text-slate-900 font-semibold">+1 786-930-8463</a>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Clock className="w-5 h-5 text-emerald-600" />
-                    <p className="text-sm">Monday-Friday, 8am-6pm EST</p>
+                    <Phone className="w-5 h-5 text-emerald-600" />
+                    <a href="https://wa.me/17869308463" className="text-emerald-600 hover:underline font-semibold">WhatsApp: +1 786-930-8463</a>
                   </div>
+                  
                 </div>
               </div>
 
-              {/* Card 2: Locations */}
-              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Our Locations</h3>
-                <p className="text-slate-600 leading-relaxed">
-                  We're a digital-first company partnering with farms in Ecuador and Colombia. Our operations team is based in the United States.
-                </p>
-              </div>
+              
 
               {/* Card 3: Common Questions */}
               <div className="bg-gradient-to-br from-emerald-50 to-green-50 p-8 rounded-2xl shadow-lg border-2 border-emerald-200">

@@ -34,9 +34,9 @@ export default function Home() {
               <Link href="/pricing" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
                 Pricing
               </Link>
-              <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
+              <a href="https://shop.floropolis.com" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
                 Shop
-              </Link>
+              </a>
               <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
                 Contact
               </Link>
@@ -94,13 +94,13 @@ export default function Home() {
               >
                 Pricing
               </Link>
-              <Link 
-                href="/shop" 
+              <a 
+                href="https://shop.floropolis.com" 
                 className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
-              </Link>
+              </a>
               <Link 
                 href="/contact" 
                 className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
@@ -148,9 +148,9 @@ export default function Home() {
             Premium seasonal summer flowers, delphinium, and gypsophila shipped direct from Ecuador in 48-72 hours. No middlemen. No disappointments.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link href="/register" className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:shadow-emerald-500/50 hover:scale-105 transition-all inline-block">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:shadow-emerald-500/50 hover:scale-105 transition-all inline-block">
               Get Your Sample Box
-            </Link>
+            </a>
             <Link href="/how-it-works" className="border-2 border-white text-white px-10 py-5 text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all inline-block">
               See How It Works
             </Link>
@@ -279,43 +279,20 @@ export default function Home() {
       <section id="catalog" className="py-24 px-6 md:px-8 bg-gradient-to-br from-slate-50 to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <div className="text-emerald-600 uppercase tracking-widest text-sm font-semibold mb-3">COMING SOON</div>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Order Directly Online</h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              We're building a seamless ordering experience powered by Komet Sales
+              Choose how you want to place your order.
             </p>
           </div>
-          
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-emerald-600">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-transparent z-10"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white/95 backdrop-blur px-12 py-8 rounded-2xl shadow-2xl text-center">
-              <div className="text-6xl mb-4">🚧</div>
-              <h3 className="text-3xl font-bold text-slate-900 mb-2">Work In Progress</h3>
-              <p className="text-lg text-slate-600 mb-4">Connecting to Komet Sales Platform</p>
-              <div className="flex items-center justify-center gap-2 text-emerald-600 font-semibold">
-                <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
-                <span>Coming Soon</span>
-              </div>
-            </div>
-            <Image
-              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=80"
-              alt="Modern e-commerce platform preview"
-              width={1200}
-              height={600}
-              className="w-full opacity-40"
-            />
-          </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-slate-600 mb-6">In the meantime, place orders by phone or email</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="tel:5551234567" className="bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all inline-block">
-                📞 Call to Order: (555) 123-4567
-              </a>
-              <a href="mailto:orders@floropolis.com" className="border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all inline-block">
-                ✉️ Email: orders@floropolis.com
-              </a>
-            </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="text-center bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all">Register</a>
+            <a href="https://shop.floropolis.com" className="text-center border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all">Order Now (for clients)</a>
+            <a href="tel:+17869308463" className="text-center bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all">Call: +1 786-930-8463</a>
+            <a href="https://wa.me/17869308463" aria-label="WhatsApp" className="flex items-center justify-center gap-2 border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5 fill-current"><path d="M19.11 17.26c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.35-1.47-.87-.78-1.46-1.74-1.64-2.04-.17-.3-.02-.47.13-.62.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.57-.48-.5-.67-.5-.17 0-.37-.02-.57-.02s-.52.07-.79.37c-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.06 2.89 1.21 3.09.15.2 2.08 3.18 5.04 4.46.7.3 1.25.48 1.68.62.7.22 1.33.19 1.83.12.56-.08 1.77-.72 2.02-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M26.88 5.13A14.86 14.86 0 0 0 16.02.5C7.5.5.55 7.46.55 16c0 2.72.72 5.27 2.08 7.55L.5 31.5l8.17-2.08A15.34 15.34 0 0 0 16 31.5C24.54 31.5 31.5 24.54 31.5 16S24.54.5 16 .5h.02zm0 24.02A12.88 12.88 0 0 1 16 28.88c-2.22 0-4.36-.57-6.25-1.65l-.45-.26-4.85 1.23 1.29-4.72-.3-.48A12.9 12.9 0 1 1 28.88 16c0 3.45-1.35 6.7-3.77 9.15z"/></svg>
+            </a>
+            <a href="mailto:hello@floropolis.com" className="text-center bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all col-span-full sm:col-span-2">Email: hello@floropolis.com</a>
           </div>
         </div>
       </section>
@@ -603,9 +580,9 @@ Standing orders and dedicated support for B2B buyers.
             If your first order doesn't arrive fresher than anything you've bought from your current supplier, we'll refund your money and give you a credit for your next order. We carry the risk, not you.
           </p>
           <div className="space-y-4">
-            <Link href="/register" className="bg-emerald-600 text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg inline-block">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-emerald-600 text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg inline-block">
               Request Your Sample Box
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -652,9 +629,9 @@ Standing orders and dedicated support for B2B buyers.
             Join 500+ professional florists who've already switched to farm-direct sourcing.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/register" className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg inline-block">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg inline-block">
               Get Started
-            </Link>
+            </a>
             <Link href="/contact" className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-white/10 hover:scale-105 transition-all inline-block">
               Talk to Our Team
             </Link>
@@ -695,8 +672,9 @@ Standing orders and dedicated support for B2B buyers.
             <div>
               <h4 className="font-bold mb-4 text-lg">Get In Touch</h4>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="mailto:orders@floropolis.com" className="hover:text-emerald-400 transition-colors">orders@floropolis.com</a></li>
-                <li><a href="tel:5551234567" className="hover:text-emerald-400 transition-colors">(555) 123-4567</a></li>
+                <li><a href="mailto:hello@floropolis.com" className="hover:text-emerald-400 transition-colors">hello@floropolis.com</a></li>
+                <li><a href="tel:+17869308463" className="hover:text-emerald-400 transition-colors">+1 786-930-8463</a></li>
+                <li><a href="https://wa.me/17869308463" className="hover:text-emerald-400 transition-colors">WhatsApp: +1 786-930-8463</a></li>
                 <li className="text-slate-500">Mon-Fri, 8am-6pm EST</li>
               </ul>
             </div>

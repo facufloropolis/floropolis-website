@@ -45,7 +45,7 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Premium Roses</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.75 - $2.50/stem</p>
                   <p className="text-slate-600 mb-4">Red, pink, white, yellow, orange varieties</p>
-                  <a href="/register" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                  <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
                     Register for Access
                   </a>
                 </div>
@@ -64,7 +64,7 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Garden Roses</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$1.50 - $3.00/stem</p>
                   <p className="text-slate-600 mb-4">Heirloom varieties with exceptional fragrance</p>
-                  <a href="/register" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                  <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
                     Register for Access
                   </a>
                 </div>
@@ -83,7 +83,7 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Spray Roses</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$1.00 - $2.00/stem</p>
                   <p className="text-slate-600 mb-4">Multiple blooms per stem</p>
-                  <a href="/register" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                  <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
                     Register for Access
                   </a>
                 </div>
@@ -108,7 +108,7 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Calypso Blooms</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Fresh calypso flowers</p>
-                  <a href="/register" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                  <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
                     Register for Access
                   </a>
                 </div>
@@ -127,7 +127,7 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Calypso Mix</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.50 - $1.50/stem</p>
                   <p className="text-slate-600 mb-4">Mixed calypso arrangements</p>
-                  <a href="/register" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                  <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
                     Register for Access
                   </a>
                 </div>
@@ -146,7 +146,7 @@ export default function Shop() {
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Premium Calypso</h3>
                   <p className="text-emerald-600 text-xl font-bold mb-2">$0.75 - $2.00/stem</p>
                   <p className="text-slate-600 mb-4">Premium calypso varieties</p>
-                  <a href="/register" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
+                  <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="block w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center">
                     Register for Access
                   </a>
                 </div>
