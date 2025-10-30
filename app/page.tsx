@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import Footer from "@/components/Footer";
 import { Menu, X, DollarSign, Zap, Plug, ChevronDown, ArrowRight, ShoppingCart, CheckCircle2, Search, Plane, Truck, Package } from "lucide-react";
 
 export default function Home() {
@@ -40,18 +41,18 @@ export default function Home() {
               <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium hover:underline">
                 Contact
               </Link>
-              <Link 
-                href="/login" 
+              <a 
+                href="https://shop.floropolis.com/762172" 
                 className="bg-white border border-slate-300 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-50 hover:scale-105 active:scale-95 transition-all duration-300 font-semibold"
               >
                 Log In
-              </Link>
-              <Link 
-                href="/register" 
+              </a>
+              <a 
+                href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" 
                 className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold"
               >
                 Register
-              </Link>
+              </a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -108,20 +109,20 @@ export default function Home() {
               >
                 Contact
               </Link>
-              <Link 
-                href="/login" 
+              <a 
+                href="https://shop.floropolis.com/762172" 
                 className="block mx-4 px-4 py-3 text-center border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Log In
-              </Link>
-              <Link 
-                href="/register" 
+              </a>
+              <a 
+                href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" 
                 className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Register
-              </Link>
+              </a>
             </div>
           )}
         </div>
@@ -285,14 +286,15 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="text-center bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all">Register</a>
-            <a href="https://shop.floropolis.com" className="text-center border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all">Order Now (for clients)</a>
-            <a href="tel:+17869308463" className="text-center bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all">Call: +1 786-930-8463</a>
-            <a href="https://wa.me/17869308463" aria-label="WhatsApp" className="flex items-center justify-center gap-2 border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5 fill-current"><path d="M19.11 17.26c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.35-1.47-.87-.78-1.46-1.74-1.64-2.04-.17-.3-.02-.47.13-.62.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.57-.48-.5-.67-.5-.17 0-.37-.02-.57-.02s-.52.07-.79.37c-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.06 2.89 1.21 3.09.15.2 2.08 3.18 5.04 4.46.7.3 1.25.48 1.68.62.7.22 1.33.19 1.83.12.56-.08 1.77-.72 2.02-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M26.88 5.13A14.86 14.86 0 0 0 16.02.5C7.5.5.55 7.46.55 16c0 2.72.72 5.27 2.08 7.55L.5 31.5l8.17-2.08A15.34 15.34 0 0 0 16 31.5C24.54 31.5 31.5 24.54 31.5 16S24.54.5 16 .5h.02zm0 24.02A12.88 12.88 0 0 1 16 28.88c-2.22 0-4.36-.57-6.25-1.65l-.45-.26-4.85 1.23 1.29-4.72-.3-.48A12.9 12.9 0 1 1 28.88 16c0 3.45-1.35 6.7-3.77 9.15z"/></svg>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto mb-4">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="text-center bg-emerald-600 text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-700 transition-all">Register</a>
+            <a href="https://shop.floropolis.com" className="text-center bg-emerald-600 text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-700 transition-all">Order Now</a>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            <a href="tel:+17869308463" className="text-center bg-white text-emerald-600 border-2 border-emerald-600 px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-50 transition-all">Call: +1 786-930-8463</a>
+            <a href="https://wa.me/17869308463" aria-label="WhatsApp" className="flex items-center justify-center text-emerald-600 hover:text-emerald-700 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-8 h-8 fill-current"><path d="M19.11 17.26c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.35-1.47-.87-.78-1.46-1.74-1.64-2.04-.17-.3-.02-.47.13-.62.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.57-.48-.5-.67-.5-.17 0-.37-.02-.57-.02s-.52.07-.79.37c-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.06 2.89 1.21 3.09.15.2 2.08 3.18 5.04 4.46.7.3 1.25.48 1.68.62.7.22 1.33.19 1.83.12.56-.08 1.77-.72 2.02-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M26.88 5.13A14.86 14.86 0 0 0 16.02.5C7.5.5.55 7.46.55 16c0 2.72.72 5.27 2.08 7.55L.5 31.5l8.17-2.08A15.34 15.34 0 0 0 16 31.5C24.54 31.5 31.5 24.54 31.5 16S24.54.5 16 .5h.02zm0 24.02A12.88 12.88 0 0 1 16 28.88c-2.22 0-4.36-.57-6.25-1.65l-.45-.26-4.85 1.23 1.29-4.72-.3-.48A12.9 12.9 0 1 1 28.88 16c0 3.45-1.35 6.7-3.77 9.15z"/></svg>
             </a>
-            <a href="mailto:hello@floropolis.com" className="text-center bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-all col-span-full sm:col-span-2">Email: hello@floropolis.com</a>
           </div>
         </div>
       </section>
@@ -579,9 +581,12 @@ Standing orders and dedicated support for B2B buyers.
           <p className="text-xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
             If your first order doesn't arrive fresher than anything you've bought from your current supplier, we'll refund your money and give you a credit for your next order. We carry the risk, not you.
           </p>
-          <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-emerald-600 text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg inline-block">
-              Request Your Sample Box
+              Request Sample Box
+            </a>
+            <a href="https://shop.floropolis.com" className="border-2 border-emerald-600 text-emerald-600 px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-50 transition-all inline-block">
+              Shop Now
             </a>
           </div>
         </div>
@@ -630,64 +635,16 @@ Standing orders and dedicated support for B2B buyers.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-semibold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg inline-block">
-              Get Started
+              Request Sample Box
             </a>
-            <Link href="/contact" className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-white/10 hover:scale-105 transition-all inline-block">
-              Talk to Our Team
-            </Link>
+            <a href="https://shop.floropolis.com" className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-white/10 hover:scale-105 transition-all inline-block">
+              Shop Now
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-16 px-4 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div>
-              <div className="mb-4">
-                <Logo variant="dark" />
-              </div>
-              <p className="text-slate-400 leading-relaxed">Floropolis connects professional florists, event designers, and funeral homes directly with premium flower farms in Ecuador. By eliminating traditional wholesalers, we deliver fresher flowers at better prices with reliable logistics you can count on.</p>
-              <p className="text-slate-500 text-sm mt-6">&copy; 2025 Floropolis. All rights reserved.</p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-lg">Company</h4>
-              <ul className="space-y-3 text-slate-400">
-                <li><Link href="/about" className="hover:text-emerald-400 transition-colors">About Us</Link></li>
-                <li><Link href="/how-it-works" className="hover:text-emerald-400 transition-colors">How It Works</Link></li>
-                <li><Link href="/pricing" className="hover:text-emerald-400 transition-colors">Pricing</Link></li>
-                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-lg">Support</h4>
-              <ul className="space-y-3 text-slate-400">
-                <li><Link href="/register" className="hover:text-emerald-400 transition-colors">Register</Link></li>
-                <li><Link href="/login" className="hover:text-emerald-400 transition-colors">Login</Link></li>
-                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Help Center</Link></li>
-                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Terms of Service</Link></li>
-                <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Privacy Policy</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-lg">Get In Touch</h4>
-              <ul className="space-y-3 text-slate-400">
-                <li><a href="mailto:hello@floropolis.com" className="hover:text-emerald-400 transition-colors">hello@floropolis.com</a></li>
-                <li><a href="tel:+17869308463" className="hover:text-emerald-400 transition-colors">+1 786-930-8463</a></li>
-                <li><a href="https://wa.me/17869308463" className="hover:text-emerald-400 transition-colors">WhatsApp: +1 786-930-8463</a></li>
-                <li className="text-slate-500">Mon-Fri, 8am-6pm EST</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-slate-400 text-sm">
-            <p>&copy; 2025 Floropolis. All rights reserved.</p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/contact" className="hover:text-emerald-400 transition-colors">Terms</Link>
-              <Link href="/contact" className="hover:text-emerald-400 transition-colors">Privacy</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

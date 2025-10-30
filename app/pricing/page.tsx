@@ -287,12 +287,12 @@ export default function Pricing() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register" className="bg-emerald-600 text-white px-12 py-6 rounded-lg text-xl font-bold hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl inline-block">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-emerald-600 text-white px-12 py-6 rounded-lg text-xl font-bold hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl inline-block">
               Register Now
-            </Link>
-            <Link href="/contact" className="bg-white border-2 border-slate-300 text-slate-700 px-12 py-6 rounded-lg text-xl font-bold hover:bg-slate-50 transition-all shadow-lg inline-block">
-              Contact Sales
-            </Link>
+            </a>
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-white border-2 border-emerald-600 text-emerald-600 px-12 py-6 rounded-lg text-xl font-bold hover:bg-emerald-50 transition-all shadow-lg inline-block">
+              Request Sample Box
+            </a>
           </div>
         </div>
       </section>

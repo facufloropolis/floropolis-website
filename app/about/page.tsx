@@ -157,9 +157,14 @@ export default function About() {
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
             Ready to Make the Switch?
           </h2>
-          <Link href="/register" className="bg-emerald-600 text-white px-12 py-6 rounded-lg text-xl font-bold hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl inline-block">
-            Request Sample Box
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-emerald-600 text-white px-12 py-6 rounded-lg text-xl font-bold hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl inline-block">
+              Request Sample Box
+            </a>
+            <a href="https://shop.floropolis.com" className="border-2 border-emerald-600 text-emerald-600 px-12 py-6 rounded-lg text-xl font-bold hover:bg-emerald-50 transition-all inline-block">
+              Shop Now
+            </a>
+          </div>
         </div>
       </section>
 

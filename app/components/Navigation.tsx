@@ -34,12 +34,12 @@ export default function Navigation() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
+            <a href="https://shop.floropolis.com/762172" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               Log In
-            </Link>
-            <Link href="/register" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
+            </a>
+            <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
               Register
-            </Link>
+            </a>
           </div>
 
         </div>

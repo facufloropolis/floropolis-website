@@ -222,12 +222,12 @@ export default function Shop() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Order?</h2>
             <p className="text-xl mb-8 text-emerald-100">Request a wholesale quote or register for access</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="bg-white text-emerald-600 px-8 py-4 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all shadow-lg">
-                Register for Access
-              </Link>
-              <Link href="/contact" className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
-                Contact Sales
-              </Link>
+              <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="bg-white text-emerald-600 px-8 py-4 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all shadow-lg">
+                Register Now
+              </a>
+              <a href="https://shop.floropolis.com/spa/sign-up/e-commerce/user.do?code=762172" className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
+                Request Sample Box
+              </a>
             </div>
           </div>
         </div>
