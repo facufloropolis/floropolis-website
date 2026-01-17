@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
 
 export default function SampleBoxPage() {
   const [formData, setFormData] = useState({
@@ -82,6 +84,8 @@ export default function SampleBoxPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navigation />
+      
       {/* Banner */}
       <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
         🌹 Valentine's Day 2026 | Order by Feb 7 for Feb 12 delivery
@@ -245,7 +249,7 @@ export default function SampleBoxPage() {
                 
                 <div className="flex gap-4">
                   <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Heart className="w-6 h-6 text-emerald-600" />
+                    <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 mb-1">No Obligation</h3>
@@ -274,6 +278,8 @@ export default function SampleBoxPage() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Menu, X, ChevronDown, ArrowRight, Flower, Truck, DollarSign, Clock, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ArrowRight } from "lucide-react";
 
 export default function Home() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
   return (
     <div className="min-h-screen bg-white">
       {/* Valentine's Banner */}
@@ -16,72 +14,7 @@ export default function Home() {
         🌹 Valentine's Day 2026 - Premium roses 15-40% off wholesale | <Link href="/valentines" className="underline hover:no-underline">Shop Now →</Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 bg-white sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg flex items-center justify-center shadow-md">
-                <Flower className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-slate-900">Floropolis</span>
-            </Link>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex space-x-8 items-center">
-              <Link href="/valentines" className="text-emerald-600 hover:text-emerald-700 transition-colors duration-200 font-semibold">
-                Valentine's Day 🌹
-              </Link>
-              <Link href="/sample-box" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium">
-                Free Sample Box
-              </Link>
-              <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium">
-                How It Works
-              </Link>
-              <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors duration-200 font-medium">
-                About
-              </Link>
-              <a 
-                href="https://shop.floropolis.com/762172" 
-                className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold"
-              >
-                Shop Now
-              </a>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-700 hover:text-emerald-600 transition-colors p-2"
-              >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
-              <Link href="/valentines" className="block px-4 py-2 text-emerald-600 font-semibold" onClick={() => setMobileMenuOpen(false)}>
-                Valentine's Day 🌹
-              </Link>
-              <Link href="/sample-box" className="block px-4 py-2 text-slate-700" onClick={() => setMobileMenuOpen(false)}>
-                Free Sample Box
-              </Link>
-              <Link href="/how-it-works" className="block px-4 py-2 text-slate-700" onClick={() => setMobileMenuOpen(false)}>
-                How It Works
-              </Link>
-              <Link href="/about" className="block px-4 py-2 text-slate-700" onClick={() => setMobileMenuOpen(false)}>
-                About
-              </Link>
-              <a href="https://shop.floropolis.com/762172" className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg font-semibold">
-                Shop Now
-              </a>
-            </div>
-          )}
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center justify-center">
@@ -97,10 +30,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/60"></div>
         </div>
         <div className="relative z-10 max-w-4xl text-center px-6">
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight drop-shadow-2xl">
+          <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-4 tracking-tight drop-shadow-2xl">
             Farm-Direct Wholesale Flowers
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-light mb-8 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white/90 font-light mb-6 max-w-2xl mx-auto">
             Premium Ecuador roses and summer flowers. 15-40% cheaper than traditional wholesale. Delivered in 48-72 hours.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
@@ -119,7 +52,7 @@ export default function Home() {
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-white border-y border-slate-200 py-8">
+      <section className="bg-white border-y border-slate-200 py-6">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
@@ -143,25 +76,37 @@ export default function Home() {
       </section>
 
       {/* Valentine's Promo Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
+      <section className="py-10 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Valentine's Day 2026</h2>
+          <div className="text-center mb-8">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">Valentine's Day 2026</h2>
             <p className="text-xl text-slate-600">Premium Ecoroses from Ecuador — Order while supplies last</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
-              <div className="text-5xl mb-4">🌹</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Freedom Red</h3>
-              <p className="text-slate-600 mb-4">Classic Valentine's red, 50cm stems</p>
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
+                <img
+                  src="/images/valentines/Freedom.png"
+                  alt="Freedom Red Rose"
+                  className="object-contain w-full h-full"
+                />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-1">Freedom Red</h3>
+              <p className="text-slate-600 mb-2">Classic Valentine's red, 50cm stems</p>
               <div className="text-3xl font-bold text-emerald-600">$1.45/stem</div>
               <div className="text-sm text-slate-500 line-through">Wholesale: $1.60-1.70</div>
             </div>
-            <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
-              <div className="text-5xl mb-4">💗</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Pink Floyd</h3>
-              <p className="text-slate-600 mb-4">Dark pink elegance, 50cm stems</p>
+            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
+                <img
+                  src="/images/valentines/Pink_Floyd.png"
+                  alt="Pink Floyd Rose"
+                  className="object-contain w-full h-full"
+                />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-1">Pink Floyd</h3>
+              <p className="text-slate-600 mb-2">Dark pink elegance, 50cm stems</p>
               <div className="text-3xl font-bold text-emerald-600">$1.12/stem</div>
               <div className="text-sm text-slate-500 line-through">Wholesale: $1.25-1.35</div>
             </div>
@@ -184,51 +129,51 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-8 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">How It Works</h2>
+          <div className="text-center mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2">How It Works</h2>
             <p className="text-xl text-slate-600">From Ecuador farm to your door in 48-72 hours</p>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Browse & Order</h3>
-              <p className="text-slate-600">Shop our catalog with real-time inventory</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Order</h3>
+              <p className="text-slate-600 text-sm">Shop our catalog with real-time inventory</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">2</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Farm Picks Fresh</h3>
-              <p className="text-slate-600">Cut and packed within 24 hours</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Farm Picks Fresh</h3>
+              <p className="text-slate-600 text-sm">Cut and packed within 24 hours</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">3</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Direct Flight</h3>
-              <p className="text-slate-600">Shipped via Miami, climate-controlled</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Direct Flight</h3>
+              <p className="text-slate-600 text-sm">Shipped via Miami, climate-controlled</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">4</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Delivered Fresh</h3>
-              <p className="text-slate-600">To your door in 48-72 hours</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Delivered Fresh</h3>
+              <p className="text-slate-600 text-sm">To your door in 48-72 hours</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-6 bg-slate-50">
+      <section className="py-10 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">What Florists Say</h2>
+          <div className="text-center mb-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">What Florists Say</h2>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -273,12 +218,12 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-6 bg-gradient-to-br from-emerald-600 to-green-600">
+      <section className="py-10 px-6 bg-gradient-to-br from-emerald-600 to-green-600">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Ready to Try Farm-Direct?
           </h2>
-          <p className="text-xl text-emerald-100 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl text-emerald-100 mb-6 max-w-2xl mx-auto">
             Get a free sample box and see the quality difference for yourself. No obligation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

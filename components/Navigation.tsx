@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Flower, Menu, X } from 'lucide-react'
+import Image from 'next/image'
+import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Navigation() {
@@ -13,12 +14,14 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-              <Flower className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900">
-              Floropolis
-            </span>
+            <Image
+              src="/Floropolis-logo-only.png"
+              alt="Floropolis"
+              width={200}
+              height={60}
+              className="h-16 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -30,18 +33,15 @@ export default function Navigation() {
               How It Works
             </Link>
             <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              About
+              About Us
             </Link>
             <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              Contact
+              Contact Us
             </Link>
           </div>
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="https://shop.floropolis.com/762172" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              Log In
-            </a>
             <a href="https://shop.floropolis.com/762172" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
               Shop Now
             </a>
@@ -88,14 +88,14 @@ export default function Navigation() {
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
             >
-              About
+              About Us
             </Link>
             <Link 
               href="/contact" 
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Contact
+              Contact Us
             </Link>
             <a 
               href="https://shop.floropolis.com/762172" 
