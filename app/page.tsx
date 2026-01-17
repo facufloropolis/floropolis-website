@@ -110,12 +110,19 @@ export default function Home() {
               <div className="text-3xl font-bold text-emerald-600">$1.12/stem</div>
               <div className="text-sm text-slate-500 line-through">Wholesale: $1.25-1.35</div>
             </div>
-            <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
-              <div className="text-5xl mb-4">🌿</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Premium Greens</h3>
-              <p className="text-slate-600 mb-4">Ruscus, eucalyptus, leatherleaf</p>
-              <div className="text-3xl font-bold text-emerald-600">$0.21-0.37</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $0.35-0.65</div>
+            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2" style={{ backgroundColor: '#ffffff' }}>
+                <img
+                  src="/images/Summer-Flowers-Valentines.png"
+                  alt="Summer Flowers"
+                  className="object-contain w-full h-full"
+                  style={{ backgroundColor: '#ffffff' }}
+                />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-1">Summer Flowers</h3>
+              <p className="text-slate-600 mb-2">Ranunculus, delphinium, unique varieties</p>
+              <div className="text-3xl font-bold text-emerald-600">40% Cheaper</div>
+              <div className="text-sm text-slate-500 line-through">vs. traditional wholesalers</div>
             </div>
           </div>
           

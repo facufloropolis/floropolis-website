@@ -212,7 +212,7 @@ export default function ValentinesPage() {
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
                 <img
-                  src="/images/valentines/Summer_Flowers.PNG"
+                  src="/images/Summer-Flowers-Valentines.png"
                   alt="Summer Flowers - Ranunculus"
                   className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
                 />
@@ -224,12 +224,16 @@ export default function ValentinesPage() {
                     BESTSELLER
                   </span>
                 </div>
-                <p className="text-slate-600 mb-2">Ranunculus, delphinium, unique varieties</p>
+                <p className="text-slate-600 mb-1">Ranunculus, delphinium, unique varieties</p>
+                <p className="text-xs text-slate-500 mb-2 italic">Premium seasonal varieties</p>
                 
                 <div className="mb-2 bg-slate-50 p-3 rounded-lg">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-slate-500 line-through text-sm">Traditional wholesalers</span>
+                  </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Premium quality</span>
-                    <span className="text-2xl font-bold text-emerald-600">Best Value</span>
+                    <span className="text-2xl font-bold text-emerald-600">40% Cheaper</span>
+                    <span className="text-green-600 font-semibold text-sm">Save 40%</span>
                   </div>
                 </div>
 
