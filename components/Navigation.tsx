@@ -42,7 +42,7 @@ export default function Navigation() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="https://shop.floropolis.com/762172" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
+            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
               Shop Now
             </a>
           </div>
@@ -98,7 +98,7 @@ export default function Navigation() {
               Contact Us
             </Link>
             <a 
-              href="https://shop.floropolis.com/762172" 
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" 
               className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >

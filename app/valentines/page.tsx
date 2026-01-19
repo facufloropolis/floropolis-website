@@ -44,7 +44,7 @@ export default function ValentinesPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
             <a
-              href="https://shop.floropolis.com/762172?tags=Valentines&utm_source=website&utm_campaign=vday2025&utm_content=valentines"
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
               onClick={() => trackShopClick('valentines_all')}
               className="bg-emerald-600 text-white px-8 py-4 text-lg font-bold rounded-lg hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 inline-flex items-center justify-center gap-2"
             >
@@ -121,7 +121,7 @@ export default function ValentinesPage() {
                 </div>
 
                 <a
-                  href="https://shop.floropolis.com/762172?utm_source=website&utm_campaign=vday2025&utm_content=freedom-red&tags=Roses"
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
                   onClick={() => trackShopClick('freedom_red')}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
@@ -160,7 +160,7 @@ export default function ValentinesPage() {
                 </div>
 
                 <a
-                  href="https://shop.floropolis.com/762172?utm_source=website&utm_campaign=vday2025&utm_content=pink-floyd&tags=Roses"
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
                   onClick={() => trackShopClick('pink_floyd')}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
@@ -199,7 +199,7 @@ export default function ValentinesPage() {
                 </div>
 
                 <a
-                  href="https://shop.floropolis.com/762172?tags=Valentines&utm_source=website&utm_campaign=vday2025&utm_content=anemones&categories=Anemone"
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
                   onClick={() => trackShopClick('anemones')}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
@@ -238,7 +238,7 @@ export default function ValentinesPage() {
                 </div>
 
                 <a
-                  href="https://shop.floropolis.com/762172?tags=Summer+Flowers&utm_source=website&utm_campaign=vday2025&utm_content=summer-flowers"
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_medium=Boton&utm_campaign=Summer%20Flowers&tags=Summer%20Flowers"
                   onClick={() => trackShopClick('summer_flowers')}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
@@ -277,7 +277,7 @@ export default function ValentinesPage() {
                 </div>
 
                 <a
-                  href="https://shop.floropolis.com/762172?tags=Valentines&utm_source=website&utm_campaign=vday2025&utm_content=greens&colors=Green"
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
                   onClick={() => trackShopClick('greens')}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
@@ -305,7 +305,7 @@ export default function ValentinesPage() {
                 </p>
 
                 <a
-                  href="https://shop.floropolis.com/762172?tags=Valentines&utm_source=website&utm_campaign=vday2025&utm_content=full-collection"
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
                   onClick={() => trackShopClick('full_collection')}
                   className="block w-full bg-white text-emerald-600 py-2 px-6 rounded-lg font-bold hover:bg-emerald-50 transition-all text-center group-hover:scale-105"
                 >
@@ -408,7 +408,7 @@ export default function ValentinesPage() {
             We source directly from Ecuador farms with limited Valentine's inventory. Once bestsellers are gone, they're gone.
           </p>
           <a
-            href="https://shop.floropolis.com/762172?tags=Valentines&utm_source=website&utm_campaign=vday2025&utm_content=urgency-cta"
+            href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
             onClick={() => trackShopClick('urgency_cta')}
             className="inline-block bg-white text-emerald-600 px-10 py-5 text-lg font-bold rounded-lg hover:bg-emerald-50 transition-all shadow-2xl hover:scale-105"
           >
@@ -478,7 +478,7 @@ export default function ValentinesPage() {
               Get Free Sample Box
             </Link>
             <a
-              href="https://shop.floropolis.com/762172?tags=Valentines&utm_source=website&utm_campaign=vday2025&utm_content=final-cta"
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
               onClick={() => trackShopClick('final_cta')}
               className="border-2 border-emerald-600 text-emerald-600 px-10 py-5 text-lg font-bold rounded-lg hover:bg-emerald-50 transition-all inline-flex items-center justify-center gap-2"
             >

@@ -21,7 +21,7 @@ export default function Footer() {
             <ul className="space-y-3 text-slate-400">
               <li><Link href="/valentines" className="hover:text-emerald-400 transition-colors duration-200">Valentine's Day</Link></li>
               <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200">Free Sample Box</Link></li>
-              <li><a href="https://shop.floropolis.com/762172" className="hover:text-emerald-400 transition-colors duration-200">Shop Now</a></li>
+              <li><a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="hover:text-emerald-400 transition-colors duration-200">Shop Now</a></li>
             </ul>
           </div>
           <div>

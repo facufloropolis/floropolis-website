@@ -64,7 +64,7 @@ export default function SampleBoxPage() {
           </p>
           <div className="flex flex-col gap-4">
             <a
-              href="https://shop.floropolis.com/762172"
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
               className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
             >
               Browse Our Catalog

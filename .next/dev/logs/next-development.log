@@ -17,3 +17,69 @@
 [00:13:17.570] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
 [00:14:15.434] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [00:14:44.803] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[66:29:28.171] Server  LOG     ✓ Compiled in 566ms
+[66:29:30.236] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[66:29:30.846] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <LoadingBoundary name="/" loading={null}>
+      <HTTPAccessFallbackBoundary notFound={<SegmentViewNode>} forbidden={undefined} unauthorized={undefined}>
+        <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<SegmentViewNode>} forbidden={undefined} ...>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} segmentPath={[...]} ...>
+                <SegmentViewNode type="page" pagePath="/floropoli...">
+                  <SegmentTrieNode>
+                  <ClientPageRoot Component={function Home} serverProvidedParams={{...}}>
+                    <Home params={Promise} searchParams={Promise}>
+                      <div className="min-h-scre...">
+                        <div>
+                        <Navigation>
+                        <section>
+                        <section>
+                        <section className="py-10 px-6...">
+                          <div className="max-w-6xl ...">
+                            <div>
+                            <div className="grid md:gr...">
+                              <div>
+                              <div>
+                              <div
++                               className="bg-white p-4 rounded-2xl shadow-lg text-center"
+-                               className="bg-white p-8 rounded-2xl shadow-lg text-center"
+                              >
+                                <div
++                                 className="aspect-square relative overflow-hidden bg-white flex items-center justify..."
+-                                 className="text-5xl mb-4"
++                                 style={{backgroundColor:"#ffffff"}}
+-                                 style={{}}
+                                >
++                                 <img
++                                   src="/images/Summer-Flowers-Valentines.png"
++                                   alt="Summer Flowers"
++                                   className="object-contain w-full h-full"
++                                   style={{backgroundColor:"#ffffff"}}
++                                 >
+-                                 🌿
+                                ...
+                            ...
+                        ...
+                ...
+              ...
+
+[66:29:37.365] Server  LOG     ✓ Compiled in 30ms
+[66:29:38.284] Server  LOG     ✓ Compiled in 15ms
+[66:29:38.852] Server  LOG     ✓ Compiled in 7ms
+[66:29:39.680] Server  LOG     ✓ Compiled in 13ms
+[66:29:51.030] Server  LOG     ✓ Compiled in 25ms
+[66:29:51.548] Server  LOG     ✓ Compiled in 11ms
+[66:29:52.103] Server  LOG     ✓ Compiled in 9ms

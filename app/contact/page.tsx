@@ -17,6 +17,7 @@ export default function Contact() {
       {/* Hero */}
       <section className="py-6 px-4 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto text-center">
+
           <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-2">
             Contact Us
           </h1>
@@ -118,7 +119,7 @@ export default function Contact() {
             <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all">
               Get Free Sample Box
             </Link>
-            <a href="https://shop.floropolis.com/762172" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
+            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
               Shop Now
             </a>
           </div>
