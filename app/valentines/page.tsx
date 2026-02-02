@@ -4,27 +4,18 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Heart, Truck, DollarSign, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 export default function ValentinesPage() {
   const trackShopClick = (product: string) => {
-    if (typeof window !== "undefined") {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "valentine_shop_click",
-        product_type: product,
-        campaign: "vday2026",
-      });
-    }
+    pushEvent(CTA_EVENTS.valentine_shop_click, {
+      cta_location: "valentines_page",
+      product_type: product,
+    });
   };
 
   const trackSampleClick = () => {
-    if (typeof window !== "undefined") {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "valentine_sample_click",
-        campaign: "vday2026",
-      });
-    }
+    pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "valentines_page" });
   };
 
   return (

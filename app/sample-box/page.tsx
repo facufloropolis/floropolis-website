@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 export default function SampleBoxPage() {
   const [formData, setFormData] = useState({
@@ -23,15 +24,11 @@ export default function SampleBoxPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Push to dataLayer – GTM fires GA4 event tag
-    if (typeof window !== "undefined") {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "sample_box_request",
-        box_choice: formData.boxChoice,
-        campaign: "vday2026",
-      });
-    }
+    // Push to dataLayer so GTM Custom Event trigger fires (key conversion)
+    pushEvent(CTA_EVENTS.sample_box_request, {
+      box_choice: formData.boxChoice,
+      cta_location: "sample_box_form",
+    });
 
     try {
       // Submit to Google Sheets webhook
