@@ -40,3 +40,24 @@ export const CTA_EVENTS = {
   contact_whatsapp_click: "contact_whatsapp_click",
   contact_call_click: "contact_call_click",
 } as const;
+
+/** Delay (ms) before following external/mailto/tel links so GTM can send the hit before page unload. */
+const OUTBOUND_DELAY_MS = 250;
+
+/**
+ * Use for links that leave the site (external URL, mailto:, tel:). Pushes the event,
+ * waits briefly so GTM can fire and send to GA4, then navigates. Prevents events being lost on unload.
+ */
+export function handleOutboundClick(
+  e: React.MouseEvent<HTMLAnchorElement>,
+  eventName: string,
+  params?: Record<string, string | number | boolean | undefined>
+): void {
+  const href = e.currentTarget.getAttribute("href");
+  if (!href) return;
+  e.preventDefault();
+  pushEvent(eventName, params);
+  setTimeout(() => {
+    window.location.href = href;
+  }, OUTBOUND_DELAY_MS);
+}

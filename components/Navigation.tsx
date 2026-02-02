@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
-import { pushEvent, CTA_EVENTS } from '@/lib/gtm'
+import { pushEvent, handleOutboundClick, CTA_EVENTS } from '@/lib/gtm'
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,7 +43,7 @@ export default function Navigation() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg" onClick={() => pushEvent(CTA_EVENTS.shop_now_click, { cta_location: "nav" })}>
+            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "nav" })}>
               Shop Now
             </a>
           </div>
@@ -101,7 +101,7 @@ export default function Navigation() {
             <a 
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" 
               className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
-              onClick={() => { pushEvent(CTA_EVENTS.shop_now_click, { cta_location: "nav_mobile" }); setMobileMenuOpen(false); }}
+              onClick={(e) => { setMobileMenuOpen(false); handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "nav_mobile" }); }}
             >
               Shop Now
             </a>

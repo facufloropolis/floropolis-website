@@ -5,7 +5,7 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { ChevronDown, ArrowRight } from "lucide-react";
-import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 
 export default function Home() {
   return (
@@ -264,7 +264,7 @@ export default function Home() {
             <a
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
               className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all"
-              onClick={() => pushEvent(CTA_EVENTS.shop_now_click, { cta_location: "green_banner" })}
+              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "green_banner" })}
             >
               Shop Now
             </a>

@@ -4,11 +4,11 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Heart, Truck, DollarSign, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
-import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 
 export default function ValentinesPage() {
-  const trackShopClick = (product: string) => {
-    pushEvent(CTA_EVENTS.valentine_shop_click, {
+  const trackShopClick = (e: React.MouseEvent<HTMLAnchorElement>, product: string) => {
+    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
       cta_location: "valentines_page",
       product_type: product,
     });
@@ -40,7 +40,7 @@ export default function ValentinesPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
             <a
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
-              onClick={() => trackShopClick('valentines_all')}
+              onClick={(e) => trackShopClick(e, "valentines_all")}
               className="bg-emerald-600 text-white px-8 py-4 text-lg font-bold rounded-lg hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 inline-flex items-center justify-center gap-2"
             >
               Shop Valentine's Collection
@@ -117,7 +117,7 @@ export default function ValentinesPage() {
 
                 <a
                   href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses&categories=Rose"
-                  onClick={() => trackShopClick('freedom_red')}
+                  onClick={(e) => trackShopClick(e, "freedom_red")}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
                   Order Freedom Roses →
@@ -156,7 +156,7 @@ export default function ValentinesPage() {
 
                 <a
                   href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses&categories=Rose"
-                  onClick={() => trackShopClick('pink_floyd')}
+                  onClick={(e) => trackShopClick(e, "pink_floyd")}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
                   Order Pink Roses →
@@ -195,7 +195,7 @@ export default function ValentinesPage() {
 
                 <a
                   href="https://eshops.kometsales.com/762172?utm_source=Website&utm_medium=Boton&utm_campaign=Summer%20Flowers&tags=Summer%20Flowers"
-                  onClick={() => trackShopClick('anemones')}
+                  onClick={(e) => trackShopClick(e, "anemones")}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
                   Order Anemones →
@@ -234,7 +234,7 @@ export default function ValentinesPage() {
 
                 <a
                   href="https://eshops.kometsales.com/762172?utm_source=Website&utm_medium=Boton&utm_campaign=Summer%20Flowers&tags=Summer%20Flowers"
-                  onClick={() => trackShopClick('summer_flowers')}
+                  onClick={(e) => trackShopClick(e, "summer_flowers")}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
                   Shop Summer Flowers →
@@ -273,7 +273,7 @@ export default function ValentinesPage() {
 
                 <a
                   href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-                  onClick={() => trackShopClick('greens')}
+                  onClick={(e) => trackShopClick(e, "greens")}
                   className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
                 >
                   Order Greens →
@@ -301,7 +301,7 @@ export default function ValentinesPage() {
 
                 <a
                   href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-                  onClick={() => trackShopClick('full_collection')}
+                  onClick={(e) => trackShopClick(e, "full_collection")}
                   className="block w-full bg-white text-emerald-600 py-2 px-6 rounded-lg font-bold hover:bg-emerald-50 transition-all text-center group-hover:scale-105"
                 >
                   View All Products →
@@ -404,7 +404,7 @@ export default function ValentinesPage() {
           </p>
           <a
             href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Valentines&tags=Valentines"
-            onClick={() => trackShopClick('urgency_cta')}
+            onClick={(e) => trackShopClick(e, "urgency_cta")}
             className="inline-block bg-white text-emerald-600 px-10 py-5 text-lg font-bold rounded-lg hover:bg-emerald-50 transition-all shadow-2xl hover:scale-105"
           >
             Secure Your Valentine's Inventory →
@@ -474,7 +474,7 @@ export default function ValentinesPage() {
             </Link>
             <a
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-              onClick={() => trackShopClick('final_cta')}
+              onClick={(e) => trackShopClick(e, "final_cta")}
               className="border-2 border-emerald-600 text-emerald-600 px-10 py-5 text-lg font-bold rounded-lg hover:bg-emerald-50 transition-all inline-flex items-center justify-center gap-2"
             >
               Browse Full Catalog
