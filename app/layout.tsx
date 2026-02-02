@@ -3,6 +3,9 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 
+/** GA4 Measurement ID – Floropolis stream (https://www.floropolis.com) */
+const GA_MEASUREMENT_ID = "G-TL18BYQ102";
+
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
@@ -31,7 +34,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-511166381"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -39,7 +42,7 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-511166381');
+            gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: true });
           `}
         </Script>
       </head>
