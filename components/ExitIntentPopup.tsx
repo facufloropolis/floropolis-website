@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Gift, Percent } from 'lucide-react'
 import Link from 'next/link'
+import { pushEvent, CTA_EVENTS } from '@/lib/gtm'
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
@@ -188,6 +189,7 @@ export default function ExitIntentPopup() {
               <Link 
                 href="/sample-box"
                 className="text-emerald-600 hover:text-emerald-700 font-medium"
+                onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "exit_popup" })}
               >
                 Or fill out the full sample request form →
               </Link>

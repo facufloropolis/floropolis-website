@@ -1,13 +1,10 @@
+"use client";
+
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { Search, Package, Plane, Truck } from "lucide-react";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'How It Works - Floropolis Farm-Direct Flowers',
-  description: 'Learn how Floropolis delivers fresh flowers from Ecuador farms to your door in 48-72 hours.',
-};
+import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 
 export default function HowItWorks() {
   return (
@@ -136,10 +133,10 @@ export default function HowItWorks() {
           <h2 className="text-4xl font-bold text-white mb-6">Ready to Try It?</h2>
           <p className="text-xl text-emerald-100 mb-8">Get a free sample box and see the quality difference yourself.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all">
+            <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "how_it_works" })}>
               Get Free Sample Box
             </Link>
-            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
+            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "how_it_works" })}>
               Shop Now
             </a>
           </div>

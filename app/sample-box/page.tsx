@@ -5,7 +5,7 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
-import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 
 export default function SampleBoxPage() {
   const [formData, setFormData] = useState({
@@ -65,6 +65,7 @@ export default function SampleBoxPage() {
             <a
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
               className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
+              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "sample_box_success" })}
             >
               Browse Our Catalog
               <ArrowRight className="w-5 h-5" />
