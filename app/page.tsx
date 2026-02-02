@@ -7,11 +7,24 @@ import Footer from "@/components/Footer";
 import { ChevronDown, ArrowRight } from "lucide-react";
 
 export default function Home() {
+  const pushValentineShopClick = () => {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "valentine_shop_click", product_type: "homepage", campaign: "vday2026" });
+    }
+  };
+  const pushValentineSampleClick = () => {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "valentine_sample_click", campaign: "vday2026" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Valentine's Banner */}
       <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold tracking-wide">
-        🌹 Valentine's Day 2026 - Premium roses 15-40% off wholesale | <Link href="/valentines" className="underline hover:no-underline">Shop Now →</Link>
+        🌹 Valentine's Day 2026 - Premium roses 15-40% off wholesale | <Link href="/valentines" onClick={pushValentineShopClick} className="underline hover:no-underline">Shop Now →</Link>
       </div>
 
       <Navigation />
@@ -37,11 +50,11 @@ export default function Home() {
             Premium Ecuador roses and summer flowers. 15-40% cheaper than traditional wholesale. Delivered in 48-72 hours.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link href="/valentines" className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2">
+            <Link href="/valentines" onClick={pushValentineShopClick} className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2">
               Shop Valentine's
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/sample-box" className="border-2 border-white text-white px-10 py-5 text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all">
+            <Link href="/sample-box" onClick={pushValentineSampleClick} className="border-2 border-white text-white px-10 py-5 text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all">
               Get Free Sample Box
             </Link>
           </div>
@@ -127,7 +140,7 @@ export default function Home() {
           </div>
           
           <div className="text-center">
-            <Link href="/valentines" className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-bold rounded-lg shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2">
+            <Link href="/valentines" onClick={pushValentineShopClick} className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-bold rounded-lg shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2">
               Shop Valentine's Collection
               <ArrowRight className="w-5 h-5" />
             </Link>
@@ -234,7 +247,7 @@ export default function Home() {
             Get a free sample box and see the quality difference for yourself. No obligation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg">
+            <Link href="/sample-box" onClick={pushValentineSampleClick} className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg">
               Get Free Sample Box
             </Link>
             <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all">
