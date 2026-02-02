@@ -23,11 +23,13 @@ export default function SampleBoxPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Track GA4 event
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'sample_box_request', {
+    // Push to dataLayer – GTM fires GA4 event tag
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "sample_box_request",
         box_choice: formData.boxChoice,
-        campaign: 'vday2025',
+        campaign: "vday2026",
       });
     }
 

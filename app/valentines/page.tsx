@@ -7,18 +7,22 @@ import { Heart, Truck, DollarSign, Clock, ArrowRight, CheckCircle2 } from "lucid
 
 export default function ValentinesPage() {
   const trackShopClick = (product: string) => {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'valentine_shop_click', {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "valentine_shop_click",
         product_type: product,
-        campaign: 'vday2025',
+        campaign: "vday2026",
       });
     }
   };
 
   const trackSampleClick = () => {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'valentine_sample_click', {
-        campaign: 'vday2025',
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "valentine_sample_click",
+        campaign: "vday2026",
       });
     }
   };

@@ -3,11 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 
-/** GA4 Measurement ID – Floropolis stream (https://www.floropolis.com) */
-const GA_MEASUREMENT_ID = "G-TL18BYQ102";
-/** Set NEXT_PUBLIC_GA_DEBUG=true in .env.local to enable GA4 Debug View */
-const GA_DEBUG = process.env.NEXT_PUBLIC_GA_DEBUG === "true";
-/** GTM container ID – Floropolis (override with NEXT_PUBLIC_GTM_ID if needed) */
+/** GTM container ID – Floropolis; GA4 (G-TL18BYQ102) is configured inside GTM */
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-5WRG7GNX";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -37,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Tag Manager – loads when NEXT_PUBLIC_GTM_ID is set */}
+        {/* Google Tag Manager – GA4 and all tags are configured inside GTM */}
         {GTM_ID && (
           <Script id="gtm-head" strategy="beforeInteractive">
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -47,19 +43,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','${GTM_ID}');`}
           </Script>
         )}
-        {/* Google tag (gtag.js) – GA4; can later be moved into GTM and this block removed */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="beforeInteractive"
-        />
-        <Script id="google-analytics" strategy="beforeInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            ${GA_DEBUG ? `gtag('config', '${GA_MEASUREMENT_ID}', { debug_mode: true });` : `gtag('config', '${GA_MEASUREMENT_ID}');`}
-          `}
-        </Script>
       </head>
       <body className={`${plusJakarta.variable} font-sans antialiased`}>
         {/* Google Tag Manager (noscript) – fallback when JS is disabled */}
