@@ -9,6 +9,10 @@ import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 export default function Contact() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Announcement Banner */}
+      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
+        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
+      </div>
       <Navigation />
       
       {/* Hero */}
@@ -102,7 +106,7 @@ export default function Contact() {
             
             <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
               <h3 className="text-xl font-bold text-slate-900 mb-3">Can I pre-book for holidays?</h3>
-              <p className="text-slate-600 leading-relaxed">Yes! Pre-booking for Valentine's Day, Mother's Day, and other peak seasons opens 3-6 months in advance with locked-in pricing.</p>
+              <p className="text-slate-600 leading-relaxed">Yes! Pre-booking for peak seasons such as Mother's Day and other holidays opens 3-6 months in advance with locked-in pricing.</p>
             </div>
           </div>
         </div>

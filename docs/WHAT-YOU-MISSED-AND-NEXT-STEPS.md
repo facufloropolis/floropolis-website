@@ -72,7 +72,7 @@ Use **docs/GA4-TRACKING-CHECKLIST.md** for the full list of event names and para
 ### Step 4: Verify
 
 1. On the **live site**, open Tag Assistant (or GTM Preview).
-2. Click a few CTAs (e.g. “Shop Valentine’s”, “Get Free Sample Box”, “Shop Now”, footer email).
+2. Click a few CTAs (e.g. “Shop Flowers”, “Get Free Sample Box”, “Shop Now”, footer email).
 3. Confirm the corresponding **Custom Event** and **GA4 Event** tag fire.
 4. In **GA4 → Reports → Realtime**, confirm those event names and counts increase when you click.
 

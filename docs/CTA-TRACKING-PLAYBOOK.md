@@ -1,6 +1,6 @@
 # Floropolis CTA tracking – full playbook
 
-Use this whenever you update the website (new campaigns, new CTAs, or renaming e.g. Valentines → Shop / Top Varieties). It explains how tracking works, what the code must do, and what you must set up in GTM and GA4 so all key actions are tracked.
+Use this whenever you update the website (new campaigns, new CTAs, or renaming e.g. Shop / Top Varieties). It explains how tracking works, what the code must do, and what you must set up in GTM and GA4 so all key actions are tracked.
 
 ---
 
@@ -27,7 +27,7 @@ The site uses **fixed event names**. GTM and GA4 are set up for these names. Whe
 | `contact_click` | “Contact Us” / “Contact” links (to contact page or contact intent). |
 | `footer_email_click` | Footer “orders@floropolis.com” (mailto). |
 | `footer_whatsapp_click` | Footer WhatsApp link. |
-| `footer_instagram_click` | Footer Instagram link (and same event for Instagram elsewhere, e.g. valentines page). |
+| `footer_instagram_click` | Footer Instagram link (and same event for Instagram elsewhere, e.g. shop page). |
 | `footer_tiktok_click` | Footer TikTok link (and same for TikTok elsewhere). |
 | `contact_email_click` | Contact page – Email (mailto). |
 | `contact_whatsapp_click` | Contact page – WhatsApp. |
@@ -35,8 +35,8 @@ The site uses **fixed event names**. GTM and GA4 are set up for these names. Whe
 
 **Parameters we send (optional but useful):**
 
-- `cta_location` – Where on the page (e.g. `"hero"`, `"nav"`, `"footer"`, `"green_banner"`, `"valentines_page"`, `"contact_page"`, `"sample_box_success"`). Lets you compare performance by placement.
-- `product_type` – For shop/valentine-style CTAs (e.g. `"valentines_all"`, `"freedom_red"`). Only when it makes sense.
+- `cta_location` – Where on the page (e.g. `"hero"`, `"nav"`, `"footer"`, `"green_banner"`, `"shop_page"`, `"contact_page"`, `"sample_box_success"`). Lets you compare performance by placement.
+- `product_type` – For shop-style CTAs (e.g. `"browse_order"`, `"freedom_red"`). Only when it makes sense.
 - `box_choice` – For `sample_box_request` only (e.g. `"roses"`, `"summer"`, `"gypsophilia"`).
 
 When you **rename a campaign** (e.g. Valentines → Shop / Top Varieties):
@@ -64,7 +64,7 @@ When you **rename a campaign** (e.g. Valentines → Shop / Top Varieties):
 | Footer | `components/Footer.tsx` |
 | Contact page | `app/contact/page.tsx` |
 | Sample-box page (form + success “Browse catalog”) | `app/sample-box/page.tsx` |
-| Valentines / shop / top varieties page | `app/valentines/page.tsx` (or future equivalent) |
+| Shop / top varieties page | `app/shop/page.tsx` |
 | How It Works CTA | `app/how-it-works/page.tsx` |
 | About CTA | `app/about/page.tsx` |
 | Exit-intent popup (sample link) | `components/ExitIntentPopup.tsx` |

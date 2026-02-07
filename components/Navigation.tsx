@@ -27,8 +27,8 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/valentines" className="text-emerald-600 hover:text-emerald-700 transition-colors font-semibold" onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "nav" })}>
-              Valentine's Day 🌹
+            <Link href="/shop" className="text-emerald-600 hover:text-emerald-700 transition-colors font-semibold" onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "nav" })}>
+              Shop Flowers
             </Link>
             <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               How It Works
@@ -64,11 +64,11 @@ export default function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
             <Link 
-              href="/valentines" 
+              href="/shop" 
               className="block px-4 py-2 text-emerald-600 hover:bg-emerald-50 transition-colors rounded-lg font-semibold"
               onClick={() => { pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "nav_mobile" }); setMobileMenuOpen(false); }}
             >
-              Valentine's Day 🌹
+              Shop Flowers
             </Link>
             <Link 
               href="/sample-box" 

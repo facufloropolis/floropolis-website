@@ -9,6 +9,10 @@ import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 export default function About() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Announcement Banner */}
+      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
+        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
+      </div>
       <Navigation />
       
       {/* Hero Section */}

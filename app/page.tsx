@@ -10,11 +10,11 @@ import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Valentine's Banner */}
+      {/* Announcement Banner */}
       <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold tracking-wide">
-        🌹 Valentine's Day 2026 - Premium roses 15-40% off wholesale |{" "}
+        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia |{" "}
         <Link
-          href="/valentines"
+          href="/shop"
           className="underline hover:no-underline"
           onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "top_banner" })}
         >
@@ -46,11 +46,11 @@ export default function Home() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
-              href="/valentines"
+              href="/shop"
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
             >
-              Shop Valentine's
+              Shop Flowers
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
@@ -91,32 +91,32 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Valentine's Promo Section */}
+      {/* Shop Promo Section */}
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">Valentine's Day 2026</h2>
-            <p className="text-xl text-slate-600">Premium Ecoroses from Ecuador — Order while supplies last</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">Premium Roses & Summer Flowers</h2>
+            <p className="text-xl text-slate-600">Ecoroses from Ecuador — Order while supplies last</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
                 <img
-                  src="/images/valentines/Freedom.png"
+                  src="/images/shop/Freedom.png"
                   alt="Freedom Red Rose"
                   className="object-contain w-full h-full"
                 />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Freedom Red</h3>
-              <p className="text-slate-600 mb-2">Classic Valentine's red, 50cm stems</p>
+              <p className="text-slate-600 mb-2">Classic red, 50cm stems</p>
               <div className="text-3xl font-bold text-emerald-600">$1.45/stem</div>
               <div className="text-sm text-slate-500 line-through">Wholesale: $1.60-1.70</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
                 <img
-                  src="/images/valentines/Pink_Floyd.png"
+                  src="/images/shop/Pink_Floyd.png"
                   alt="Pink Floyd Rose"
                   className="object-contain w-full h-full"
                 />
@@ -129,7 +129,7 @@ export default function Home() {
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2" style={{ backgroundColor: '#ffffff' }}>
                 <img
-                  src="/images/Summer-Flowers-Valentines.png"
+                  src="/images/shop/Summer-Flowers-Valentines.png"
                   alt="Summer Flowers"
                   className="object-contain w-full h-full"
                   style={{ backgroundColor: '#ffffff' }}
@@ -144,11 +144,11 @@ export default function Home() {
           
           <div className="text-center">
             <Link
-              href="/valentines"
+              href="/shop"
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-bold rounded-lg shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "promo_section" })}
             >
-              Shop Valentine's Collection
+              Shop Flowers Collection
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>

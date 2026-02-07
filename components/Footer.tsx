@@ -22,7 +22,7 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4 text-lg">Shop</h4>
             <ul className="space-y-3 text-slate-400">
-              <li><Link href="/valentines" className="hover:text-emerald-400 transition-colors duration-200" onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "footer" })}>Valentine's Day</Link></li>
+              <li><Link href="/shop" className="hover:text-emerald-400 transition-colors duration-200" onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "footer" })}>Shop All Flowers</Link></li>
               <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "footer" })}>Free Sample Box</Link></li>
               <li><a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="hover:text-emerald-400 transition-colors duration-200" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "footer" })}>Shop Now</a></li>
             </ul>

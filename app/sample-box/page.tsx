@@ -142,12 +142,11 @@ export default function SampleBoxPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
-      
-      {/* Banner */}
+      {/* Announcement Banner */}
       <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
-        🌹 Valentine's Day 2026 | Order by Feb 7 for Feb 12 delivery
+        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
       </div>
+      <Navigation />
 
       {/* Hero + Form Section */}
       <section className="py-12 px-4 bg-gradient-to-br from-emerald-50 to-green-50">

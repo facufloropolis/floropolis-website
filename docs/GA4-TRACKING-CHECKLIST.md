@@ -17,7 +17,7 @@ For each event name, GTM needs a **Custom Event** trigger and a **GA4 Event** ta
 
 | Event name (exact) | Use | Params to send to GA4 |
 |--------------------|-----|------------------------|
-| `valentine_shop_click` | Valentine’s / Shop Valentine’s | `cta_location`, `product_type` (when present) |
+| `valentine_shop_click` | Shop Flowers | `cta_location`, `product_type` (when present) |
 | `sample_box_click` | Get Free Sample Box / Free Sample Box links | `cta_location` |
 | `sample_box_request` | Sample box form submit (key conversion) | `cta_location`, `box_choice` |
 | `shop_now_click` | Shop Now (external) | `cta_location` |

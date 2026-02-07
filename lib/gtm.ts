@@ -20,7 +20,7 @@ export function pushEvent(
 
 // CTA event names – use these in GTM Custom Event triggers and GA4 Event tags
 export const CTA_EVENTS = {
-  // Valentine's / Shop Valentine's
+  // Shop Flowers
   valentine_shop_click: "valentine_shop_click",
   // Get Free Sample Box / Free Sample Box (links)
   sample_box_click: "sample_box_click",
