@@ -114,8 +114,12 @@ export default function ShopPage() {
 
             {/* Card 2: White Tibet */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center p-2">
-                <span className="text-slate-500 font-semibold text-lg">White Tibet</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/white-tibet-ai.png"
+                  alt="White Tibet Rose - Premium Ecoroses"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -138,8 +142,12 @@ export default function ShopPage() {
 
             {/* Card 3: Orange Crush */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-orange-200 to-orange-300 flex items-center justify-center p-2">
-                <span className="text-orange-800 font-semibold text-lg">Orange Crush</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/orange-crush-ai.png"
+                  alt="Orange Crush Rose - Premium Ecoroses"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -162,8 +170,12 @@ export default function ShopPage() {
 
             {/* Card 4: Lavender Deep Purple */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-violet-200 to-purple-300 flex items-center justify-center p-2">
-                <span className="text-purple-800 font-semibold text-lg">Lavender Deep Purple</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/lavender-deep-purple-ai.png"
+                  alt="Lavender Deep Purple Rose - Premium Ecoroses"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -213,18 +225,21 @@ export default function ShopPage() {
             </div>
 
             {/* Card 6: Browse All Roses */}
-            <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">30+ rose varieties in stock</h3>
-              <p className="text-slate-600 mb-4">
-                Reds, pinks, whites, lavenders, oranges, bi-colors. 40-70cm. From $1.30/stem delivered.
-              </p>
-              <a
-                href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                onClick={(e) => trackShopClick(e, "shop_all_roses")}
-                className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
-              >
-                Shop All Roses →
-              </a>
+            <div className="relative rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
+              <img src="/images/shop/shop-all-roses.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">30+ rose varieties in stock</h3>
+                <p className="text-slate-600 mb-4">
+                  Reds, pinks, whites, lavenders, oranges, bi-colors. 40-70cm. From $1.30/stem delivered.
+                </p>
+                <a
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
+                  onClick={(e) => trackShopClick(e, "shop_all_roses")}
+                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
+                >
+                  Shop All Roses →
+                </a>
+              </div>
             </div>
           </div>
 
@@ -252,8 +267,12 @@ export default function ShopPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Card 1: Heliconia Fire Opal */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-teal-600 to-emerald-900 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-xl text-center drop-shadow">Heliconia Fire Opal</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/heliconia-fire-opal.png"
+                  alt="Heliconia Fire Opal - Exotic Tropical"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -276,8 +295,12 @@ export default function ShopPage() {
 
             {/* Card 2: Heliconia Rostrata */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-red-500 to-orange-700 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-xl text-center drop-shadow">Heliconia Rostrata</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/heliconia-rostrata.png"
+                  alt="Heliconia Rostrata - Exotic Tropical"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -300,8 +323,12 @@ export default function ShopPage() {
 
             {/* Card 3: Ginger Nicole */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-pink-200 to-pink-400 flex items-center justify-center p-4">
-                <span className="text-pink-900 font-bold text-xl text-center drop-shadow">Ginger Nicole</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/ginger-nicole-pink.PNG"
+                  alt="Ginger Nicole (Pink) - Exotic Tropical"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -324,8 +351,12 @@ export default function ShopPage() {
 
             {/* Card 4: Anthurium Assorted */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-xl text-center drop-shadow">Anthurium</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/anthurium-red.jpg"
+                  alt="Anthurium Assorted - Exotic Tropical"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -348,8 +379,12 @@ export default function ShopPage() {
 
             {/* Card 5: Novelties & Musas */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-violet-600 to-fuchsia-800 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-xl text-center drop-shadow">Novelties</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/french-kiss.png"
+                  alt="Novelties & Musas - Exotic Tropical"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -371,18 +406,21 @@ export default function ShopPage() {
             </div>
 
             {/* Card 6: Browse All Tropicals */}
-            <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">16+ tropical varieties in stock</h3>
-              <p className="text-slate-600 mb-4">
-                Gingers, heliconias, musas, anthuriums, novelties. From $0.63/stem. All ship free.
-              </p>
-              <a
-                href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                onClick={(e) => trackShopClick(e, "shop_all_tropicals")}
-                className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
-              >
-                Shop All Tropicals →
-              </a>
+            <div className="relative rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
+              <img src="/images/shop/shop-all-tropicals.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">16+ tropical varieties in stock</h3>
+                <p className="text-slate-600 mb-4">
+                  Gingers, heliconias, musas, anthuriums, novelties. From $0.63/stem. All ship free.
+                </p>
+                <a
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
+                  onClick={(e) => trackShopClick(e, "shop_all_tropicals")}
+                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
+                >
+                  Shop All Tropicals →
+                </a>
+              </div>
             </div>
           </div>
 
@@ -648,8 +686,12 @@ export default function ShopPage() {
 
             {/* Card 2: Pandanus Green & Variegated */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-800 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-lg text-center drop-shadow">Pandanus Green & Variegated</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/pandanus-variegated.jpg"
+                  alt="Pandanus Green & Variegated - Foliage"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -672,8 +714,12 @@ export default function ShopPage() {
 
             {/* Card 3: Foliage Mix Boxes */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-300 flex items-center justify-center p-4">
-                <span className="text-slate-600 font-bold text-lg text-center">Foliage Mix Boxes</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/foliage-mix-box.png"
+                  alt="Foliage Mix Boxes - Jungle, Amazon, Greenery"
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -696,8 +742,12 @@ export default function ShopPage() {
 
             {/* Card 4: Palm Areca */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-green-200 to-emerald-700 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-lg text-center drop-shadow">Palm Areca</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/palm-areca.jpg"
+                  alt="Palm Areca - Foliage"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -717,8 +767,12 @@ export default function ShopPage() {
 
             {/* Card 5: Monstera */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-emerald-300 to-green-800 flex items-center justify-center p-4">
-                <span className="text-white font-bold text-lg text-center drop-shadow">Monstera</span>
+              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
+                <img
+                  src="/images/shop/monstera.jpg"
+                  alt="Monstera - Iconic Leaf Foliage"
+                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-1">
@@ -740,18 +794,21 @@ export default function ShopPage() {
             </div>
 
             {/* Card 6: Browse All Greens */}
-            <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">60+ green varieties in stock</h3>
-              <p className="text-slate-600 mb-4">
-                Ferns, palms, philodendrons, foliage boxes. From $0.13/stem. All ship free.
-              </p>
-              <a
-                href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                onClick={(e) => trackShopClick(e, "shop_all_greens")}
-                className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
-              >
-                Shop All Greens →
-              </a>
+            <div className="relative rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
+              <img src="/images/shop/shop-all-greens.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">60+ green varieties in stock</h3>
+                <p className="text-slate-600 mb-4">
+                  Ferns, palms, philodendrons, foliage boxes. From $0.13/stem. All ship free.
+                </p>
+                <a
+                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
+                  onClick={(e) => trackShopClick(e, "shop_all_greens")}
+                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
+                >
+                  Shop All Greens →
+                </a>
+              </div>
             </div>
           </div>
 

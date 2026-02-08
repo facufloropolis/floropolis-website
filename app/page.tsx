@@ -127,12 +127,11 @@ export default function Home() {
               <div className="text-sm text-slate-500 line-through">Wholesale: $1.25-1.35</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2" style={{ backgroundColor: '#ffffff' }}>
+              <div className="aspect-square relative overflow-hidden rounded-xl mb-2">
                 <img
-                  src="/images/shop/Summer-Flowers-Valentines.png"
-                  alt="Summer Flowers"
-                  className="object-contain w-full h-full"
-                  style={{ backgroundColor: '#ffffff' }}
+                  src="/images/shop/summer-flowers-new.jpg"
+                  alt="Summer Flowers - Professional mixed arrangement"
+                  className="object-cover w-full h-full"
                 />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Summer Flowers</h3>
