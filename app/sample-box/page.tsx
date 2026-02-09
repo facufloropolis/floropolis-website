@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import TopBanner from "@/components/TopBanner";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { getSampleBoxesAvailable } from "@/lib/sample-boxes";
 
 // US states only (50 states + DC) – value = abbreviation for sheet
 const US_STATES = [
@@ -64,6 +66,7 @@ const US_STATES = [
 ];
 
 export default function SampleBoxPage() {
+  const spotsLeft = getSampleBoxesAvailable();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -142,10 +145,7 @@ export default function SampleBoxPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Announcement Banner */}
-      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
-        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
-      </div>
+      <TopBanner />
       <Navigation />
 
       {/* Hero + Form Section */}
@@ -160,6 +160,26 @@ export default function SampleBoxPage() {
               <p className="text-slate-600 mb-6">
                 Try our premium flowers risk-free. No obligation, no credit card required.
               </p>
+
+              {spotsLeft > 0 ? (
+                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg">
+                  <p className="text-amber-900 font-semibold flex items-center gap-2">
+                    <span className="text-xl">⏰</span>
+                    {spotsLeft === 2
+                      ? `Only ${spotsLeft} sample boxes left this week!`
+                      : `${spotsLeft} sample boxes available this week`}
+                  </p>
+                  <p className="text-sm text-amber-700 mt-1">Resets every Monday at 9am EST • First come, first serve</p>
+                </div>
+              ) : (
+                <div className="bg-slate-100 border-l-4 border-slate-400 p-4 mb-6 rounded-r-lg">
+                  <p className="text-slate-700 font-semibold flex items-center gap-2">
+                    <span className="text-xl">✉️</span>
+                    New sample boxes available Monday
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">Submit your request now and we&apos;ll process it Monday morning</p>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -339,6 +359,106 @@ export default function SampleBoxPage() {
                     <p className="text-slate-600">We cover shipping. Just enjoy the flowers.</p>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-12 lg:pt-4">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">
+                  Real Flowers, Real Results
+                </h2>
+
+                <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202025-12-12%20at%2010.04.44%20(2).jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202026-01-30%20at%2010.28.32.jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202025-12-12%20at%2010.04.44.jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202025-12-12%20at%2010.04.45.jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56%20(1).jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-none w-64 snap-center">
+                    <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
+                      <img
+                        src="/images/TESTIMONIALS/WhatsApp%20Image%202025-11-07%20at%2017.08.07.jpeg"
+                        alt="Customer photo"
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-center text-sm text-slate-500 mt-4 italic">
+                  Real photos from florists who ordered from us
+                </p>
               </div>
 
               <div className="mt-10 p-6 bg-slate-50 rounded-xl">

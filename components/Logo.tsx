@@ -10,7 +10,7 @@ export default function Logo({ variant = "light" }: LogoProps) {
     <Link href="/" className="flex items-center group">
       <div className="relative transition-transform group-hover:scale-105 duration-300">
         <Image
-          src="/floropolis-logo-cropped.png"
+          src="/Floropolis-logo-only.png"
           alt="Floropolis"
           width={180}
           height={50}

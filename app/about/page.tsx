@@ -2,6 +2,7 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import TopBanner from "@/components/TopBanner";
 import Link from "next/link";
 import { Sprout, Briefcase, Laptop, Shield } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
@@ -9,10 +10,7 @@ import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 export default function About() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Announcement Banner */}
-      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
-        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
-      </div>
+      <TopBanner />
       <Navigation />
       
       {/* Hero Section */}
@@ -97,9 +95,9 @@ export default function About() {
 
       {/* Farm Partners */}
       <section className="py-8 px-4 bg-white">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl font-bold text-slate-900 mb-4 text-center">Our Farm Partners</h2>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-slate-50 p-4 rounded-xl text-center">
               <h3 className="text-xl font-bold text-slate-900 mb-1">Ecoroses</h3>
               <p className="text-slate-600 text-sm">Premium roses, Ecuador</p>
@@ -110,7 +108,11 @@ export default function About() {
             </div>
             <div className="bg-slate-50 p-4 rounded-xl text-center">
               <h3 className="text-xl font-bold text-slate-900 mb-1">Flodecol</h3>
-              <p className="text-slate-600 text-sm">Gypsophila, Colombia</p>
+              <p className="text-slate-600 text-sm">Gypsophila, Ecuador</p>
+            </div>
+            <div className="bg-slate-50 p-4 rounded-xl text-center">
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Magic Flowers</h3>
+              <p className="text-slate-600 text-sm">Tropicals & greens, Ecuador</p>
             </div>
           </div>
         </div>

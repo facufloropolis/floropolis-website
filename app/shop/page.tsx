@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import TopBanner from "@/components/TopBanner";
 import { Heart, Truck, DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 
@@ -20,12 +21,8 @@ export default function ShopPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <TopBanner />
       <Navigation />
-      
-      {/* Announcement Banner */}
-      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
-        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
-      </div>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 py-6 px-4">
@@ -66,24 +63,24 @@ export default function ShopPage() {
             <span className="text-slate-400 hidden md:inline">·</span>
             <span>💰 No Middlemen</span>
             <span className="text-slate-400 hidden md:inline">·</span>
-            <span>✈️ Free Shipping on Many Items</span>
+            <span>✈️ Free Shipping</span>
           </div>
         </div>
       </section>
 
       {/* Premium Roses */}
-      <section className="py-8 px-4 bg-white">
+      <section className="py-6 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
               Premium Roses — 30+ Varieties in Stock
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               Ecoroses direct from Ecuador. Same farms that supply the biggest wholesalers — without the middlemen.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Card 1: Freedom Red Rose */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
@@ -252,11 +249,213 @@ export default function ShopPage() {
         </div>
       </section>
 
+      {/* Ranunculus Section */}
+      <section className="bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 py-10 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
+              Premium Ranunculus
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Up to 57% cheaper than traditional wholesalers • Fresh from Ecuador • Stunning layered blooms
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6 mb-6">
+            {/* Card 1 - Rainbow Mix */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
+                  alt="Rainbow ranunculus mix with multiple vibrant colors"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-4 text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-1">Rainbow Mix</h3>
+                <p className="text-sm text-slate-600 mb-2">Assorted colors</p>
+                <div className="text-2xl font-bold text-emerald-600 mb-1">From $1.21</div>
+                <div className="text-xs text-slate-500 line-through mb-1">Was $1.73+</div>
+                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
+                  Up to 30% off
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2 - Red */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/shop/Ranunculus_Red_FINAL.png"
+                  alt="Deep red ranunculus with rich crimson petals"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-4 text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-1">Red</h3>
+                <p className="text-sm text-slate-600 mb-2">Mistral Rosso</p>
+                <div className="text-2xl font-bold text-emerald-600 mb-1">$1.21</div>
+                <div className="text-xs text-slate-500 line-through mb-1">Was $1.51</div>
+                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
+                  20% off
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3 - Hot Pink */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/shop/Ranunculus_Hot_Pink_FINAL.PNG"
+                  alt="Vibrant hot pink ranunculus blooms"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-4 text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-1">Hot Pink</h3>
+                <p className="text-sm text-slate-600 mb-2">Bright fuchsia</p>
+                <div className="text-2xl font-bold text-emerald-600 mb-1">$1.35</div>
+                <div className="text-xs text-slate-500 line-through mb-1">Was $1.58</div>
+                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
+                  15% off
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4 - Yellow */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/TESTIMONIALS/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg"
+                  alt="Stunning yellow ranunculus arrangement"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-4 text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-1">Yellow</h3>
+                <p className="text-sm text-slate-600 mb-2">Bright & cheerful</p>
+                <div className="text-2xl font-bold text-emerald-600 mb-1">$1.28</div>
+                <div className="text-xs text-slate-500 line-through mb-1">Was $1.48</div>
+                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
+                  14% off
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <a
+              href="https://eshops.kometsales.com/762172?search=ranunculus&utm_source=Website&utm_campaign=Shop-Ranunculus"
+              onClick={(e) => trackShopClick(e, "ranunculus")}
+              className="bg-emerald-600 text-white px-10 py-5 text-lg font-bold rounded-full hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center justify-center gap-2"
+            >
+              Shop All Ranunculus
+              <ArrowRight className="w-5 h-5" />
+            </a>
+            <p className="text-sm text-slate-500 mt-4">
+              Net terms available for established accounts
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Summer Flowers Section */}
+      <section className="bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 py-10 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
+              Summer Flowers Collection
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Ranunculus, anemones, delphinium & more • Perfect for spring and summer weddings
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            {/* Card 1 - Ranunculus Mix */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
+                  alt="Colorful ranunculus mix"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-6 text-center">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Ranunculus Mix</h3>
+                <p className="text-slate-600 mb-3">White, yellow, orange, pink, red</p>
+                <div className="text-3xl font-bold text-emerald-600 mb-1">From $1.21/stem</div>
+                <div className="text-sm text-slate-500 line-through mb-2">Traditional: $1.51-1.73</div>
+                <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full font-semibold inline-block">
+                  Up to 30% cheaper
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2 - Anemones */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/shop/Anemone_3.png"
+                  alt="Anemones — white, purple, pink varieties"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-6 text-center">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Anemones</h3>
+                <p className="text-slate-600 mb-3">White, purple, pink varieties</p>
+                <div className="text-3xl font-bold text-emerald-600 mb-1">From $1.35/stem</div>
+                <div className="text-sm text-slate-500 line-through mb-2">Traditional: $1.52</div>
+                <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full font-semibold inline-block">
+                  12% cheaper
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3 - Delphinium */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+              <div className="aspect-square relative">
+                <img
+                  src="/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png"
+                  alt="Delphinium — blue, white, lavender"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-6 text-center">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Delphinium</h3>
+                <p className="text-slate-600 mb-3">Blue, white, lavender</p>
+                <div className="text-3xl font-bold text-emerald-600 mb-1">From $2.85/stem</div>
+                <div className="text-sm text-slate-500 line-through mb-2">Traditional: $3.20</div>
+                <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full font-semibold inline-block">
+                  11% cheaper
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <a
+              href="https://eshops.kometsales.com/762172?search=anemone+ranunculus+delphinium&utm_source=Website&utm_campaign=Shop-Summer"
+              onClick={(e) => trackShopClick(e, "summer_flowers")}
+              className="bg-emerald-600 text-white px-10 py-5 text-lg font-bold rounded-full hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center gap-2"
+            >
+              Shop Summer Flowers
+              <ArrowRight className="w-5 h-5" />
+            </a>
+            <p className="text-sm text-slate-500 mt-4">
+              Most varieties available January-June
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Exotic Tropicals */}
-      <section className="py-8 px-4 bg-slate-50">
+      <section className="py-6 px-4 bg-slate-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
               Exotic Tropicals — Direct from Ecuador's Jungle
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
@@ -644,18 +843,18 @@ export default function ShopPage() {
       </section>
 
       {/* Greens & Foliage */}
-      <section className="py-8 px-4 bg-white">
+      <section className="py-6 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
               Greens & Foliage — From $0.13/stem
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               Palms, monstera, ferns, philodendrons, pandanus, eucalyptus. Bulk boxes available. All ship free.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Card 1: Willow Greens */}
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">

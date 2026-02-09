@@ -2,6 +2,7 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import TopBanner from "@/components/TopBanner";
 import Link from "next/link";
 import { Mail, Phone, MessageCircle } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
@@ -9,10 +10,7 @@ import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 export default function Contact() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Announcement Banner */}
-      <div className="bg-emerald-600 text-white py-3 text-center text-sm font-semibold">
-        🌸 Order by Monday, flowers at your shop by Thursday · Farm direct from Ecuador & Colombia
-      </div>
+      <TopBanner />
       <Navigation />
       
       {/* Hero */}
