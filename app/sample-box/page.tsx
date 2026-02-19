@@ -114,6 +114,14 @@ export default function SampleBoxPage() {
           notes: formData.notes,
         }),
       });
+
+      // Also trigger n8n directly
+      fetch('https://n8n.floropolis.com/webhook/sample-box-new', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      }).catch(() => {});
+
       setIsSuccess(true);
     } catch (error) {
       console.error('Error submitting form:', error);
