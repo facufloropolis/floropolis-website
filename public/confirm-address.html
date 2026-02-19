@@ -258,25 +258,35 @@
     btn.textContent = 'Confirming...';
 
     try {
-      await fetch(WEBHOOK_URL, {
+      const confirmData = {
+        type: 'address_confirmation',
+        email: email,
+        name: name,
+        address: address,
+        city: city,
+        state: state,
+        zip: zip,
+        boxChoice: boxChoice,
+        preferences: prefs,
+        shipDate: shipDate,
+        confirmed: true,
+        timestamp: new Date().toISOString()
+      };
+
+      // Send to Apps Script (Google Sheet)
+      fetch(WEBHOOK_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'address_confirmation',
-          email: email,
-          name: name,
-          address: address,
-          city: city,
-          state: state,
-          zip: zip,
-          boxChoice: boxChoice,
-          preferences: prefs,
-          shipDate: shipDate,
-          confirmed: true,
-          timestamp: new Date().toISOString()
-        })
-      });
+        body: JSON.stringify(confirmData)
+      }).catch(() => {});
+
+      // Send to n8n directly (Zoho + Brevo update)
+      await fetch('https://n8n.floropolis.com/webhook/address-confirmed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(confirmData)
+      }).catch(() => {});
 
       document.getElementById('formView').style.display = 'none';
       document.getElementById('successView').style.display = 'block';

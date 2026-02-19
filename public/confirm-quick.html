@@ -134,11 +134,7 @@
     // Auto-submit
     (async function() {
       try {
-        await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const confirmData = {
             type: 'address_confirmation',
             email: email,
             name: name,
@@ -151,8 +147,22 @@
             shipDate: '',
             confirmed: true,
             timestamp: new Date().toISOString()
-          })
-        });
+        };
+
+        // Send to Apps Script (Google Sheet)
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(confirmData)
+        }).catch(() => {});
+
+        // Send to n8n directly (Zoho + Brevo update)
+        await fetch('https://n8n.floropolis.com/webhook/address-confirmed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(confirmData)
+        }).catch(() => {});
 
         document.getElementById('spinner').style.display = 'none';
         document.getElementById('successIcon').style.display = 'block';
