@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm Shipping Address · Floropolis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f4f1ec;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    max-width: 520px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .card-header {
+    background: #1a3a2a;
+    padding: 24px 32px;
+    text-align: center;
+  }
+  .card-header h1 {
+    font-family: 'DM Serif Display', serif;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0;
+  }
+  .card-header p { color: #8db89e; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin: 6px 0 0; }
+  .card-body { padding: 28px 32px 20px; }
+  .intro { font-size: 15px; color: #444; line-height: 1.6; margin-bottom: 20px; }
+  .intro strong { color: #1a3a2a; }
+  .box-badge {
+    display: inline-block;
+    background: #eaf5ee;
+    color: #1a3a2a;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #c8e0d0;
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: #222;
+    background: #fafaf8;
+    transition: border-color 0.2s;
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { outline: none; border-color: #1a3a2a; background: #fff; }
+  .row { display: flex; gap: 12px; }
+  .row .form-group { flex: 1; }
+  .row .form-group.state-field { flex: 0 0 100px; }
+  .row .form-group.zip-field { flex: 0 0 120px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+  }
+  .btn-confirm {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #1a3a2a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    margin-top: 16px;
+    transition: background 0.2s;
+  }
+  .btn-confirm:hover { background: #244d38; }
+  .btn-confirm:disabled { background: #999; cursor: not-allowed; }
+  .success-msg { display: none; text-align: center; padding: 48px 32px; }
+  .success-msg .check { font-size: 48px; margin-bottom: 16px; }
+  .success-msg h2 { font-family: 'DM Serif Display', serif; color: #1a3a2a; font-size: 22px; margin-bottom: 8px; }
+  .success-msg p { color: #666; font-size: 14px; line-height: 1.5; }
+  .card-footer { padding: 12px 32px 20px; text-align: center; color: #aaa; font-size: 12px; }
+  @media (max-width: 480px) {
+    .row { flex-direction: column; gap: 0; }
+    .row .form-group.state-field, .row .form-group.zip-field { flex: 1; }
+    .card-body { padding: 24px 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <h1>FLOROPOLIS</h1>
+    <p>Farm Direct Flowers</p>
+  </div>
+
+  <div id="formView">
+    <div class="card-body">
+      <p class="intro" id="introText">
+        We have the address below on file. If it looks correct, just hit <strong>Confirm</strong>. If anything needs updating, edit it first.
+      </p>
+
+      <div id="boxBadge" class="box-badge" style="display:none;"></div>
+
+      <div class="form-group">
+        <label for="name">Full Name *</label>
+        <input type="text" id="name" name="name" required placeholder="Jane Smith">
+      </div>
+      <div class="form-group">
+        <label for="address">Street Address *</label>
+        <input type="text" id="address" name="address" required placeholder="123 Main St, Suite 4">
+      </div>
+      <div class="form-group">
+        <label for="city">City *</label>
+        <input type="text" id="city" name="city" required placeholder="Los Angeles">
+      </div>
+      <div class="row">
+        <div class="form-group state-field">
+          <label for="state">State *</label>
+          <select id="state" name="state" required>
+            <option value="">--</option>
+            <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option>
+            <option value="AR">AR</option><option value="CA">CA</option><option value="CO">CO</option>
+            <option value="CT">CT</option><option value="DE">DE</option><option value="FL">FL</option>
+            <option value="GA">GA</option><option value="HI">HI</option><option value="ID">ID</option>
+            <option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option>
+            <option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option>
+            <option value="ME">ME</option><option value="MD">MD</option><option value="MA">MA</option>
+            <option value="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option>
+            <option value="MO">MO</option><option value="MT">MT</option><option value="NE">NE</option>
+            <option value="NV">NV</option><option value="NH">NH</option><option value="NJ">NJ</option>
+            <option value="NM">NM</option><option value="NY">NY</option><option value="NC">NC</option>
+            <option value="ND">ND</option><option value="OH">OH</option><option value="OK">OK</option>
+            <option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option>
+            <option value="SC">SC</option><option value="SD">SD</option><option value="TN">TN</option>
+            <option value="TX">TX</option><option value="UT">UT</option><option value="VT">VT</option>
+            <option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option>
+            <option value="WI">WI</option><option value="WY">WY</option><option value="DC">DC</option>
+          </select>
+        </div>
+        <div class="form-group zip-field">
+          <label for="zip">Zip Code *</label>
+          <input type="text" id="zip" name="zip" required placeholder="90001" maxlength="10" pattern="[0-9\-]+">
+        </div>
+      </div>
+
+      <p class="section-label">Optional — Preferences</p>
+
+      <div class="form-group">
+        <label for="preferences">Color / variety preferences?</label>
+        <textarea id="preferences" name="preferences" placeholder="e.g. red and white roses, no lilies, love eucalyptus..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ship_date">Preferred delivery window</label>
+        <input type="text" id="ship_date" name="ship_date" placeholder="e.g. anytime next week, avoid Mondays, need by March 1...">
+      </div>
+
+      <button type="button" class="btn-confirm" id="submitBtn" onclick="submitForm()">
+        Confirm Address and Ship It
+      </button>
+    </div>
+    <div class="card-footer">
+      Questions? Text Juan Javier at 789-930-8463
+    </div>
+  </div>
+
+  <div class="success-msg" id="successView">
+    <div class="check">✅</div>
+    <h2>Address Confirmed!</h2>
+    <p>We've got your shipping details locked in.<br>Your sample box is on the way — expect delivery within 4-5 business days.</p>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get('email') || '';
+  const boxChoice = params.get('box') ? decodeURIComponent(params.get('box')) : '';
+
+  if (params.get('name'))    document.getElementById('name').value    = decodeURIComponent(params.get('name'));
+  if (params.get('address')) document.getElementById('address').value = decodeURIComponent(params.get('address'));
+  if (params.get('city'))    document.getElementById('city').value    = decodeURIComponent(params.get('city'));
+  if (params.get('zip'))     document.getElementById('zip').value     = decodeURIComponent(params.get('zip'));
+
+  if (params.get('state')) {
+    const stateVal = decodeURIComponent(params.get('state')).toUpperCase();
+    const sel = document.getElementById('state');
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === stateVal) { sel.selectedIndex = i; break; }
+    }
+  }
+
+  if (boxChoice) {
+    const badge = document.getElementById('boxBadge');
+    badge.textContent = boxChoice;
+    badge.style.display = 'inline-block';
+  }
+
+  if (params.get('edit') === 'true' || !params.get('name') || !params.get('address')) {
+    document.getElementById('introText').innerHTML =
+      'Please <strong>fill in or update</strong> your shipping address so we can get your sample box on the way.';
+  }
+
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbydKGArw3wL4NNI0-lx0ZbSwmtAHHRTD3RzdZo0PYKJfn_EisMALt9qKcpjXKwg8OA/exec';
+
+  async function submitForm() {
+    const btn = document.getElementById('submitBtn');
+    const name    = document.getElementById('name').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const city    = document.getElementById('city').value.trim();
+    const state   = document.getElementById('state').value;
+    const zip     = document.getElementById('zip').value.trim();
+    const prefs   = document.getElementById('preferences').value.trim();
+    const shipDate = document.getElementById('ship_date').value.trim();
+
+    if (!name || !address || !city || !state || !zip) {
+      alert('Please fill in all required address fields.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Confirming...';
+
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'address_confirmation',
+          email: email,
+          name: name,
+          address: address,
+          city: city,
+          state: state,
+          zip: zip,
+          boxChoice: boxChoice,
+          preferences: prefs,
+          shipDate: shipDate,
+          confirmed: true,
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong. Please try again or text Juan Javier at 789-930-8463.');
+      btn.disabled = false;
+      btn.textContent = 'Confirm Address and Ship It';
+    }
+  }
+</script>
+</body>
+</html>

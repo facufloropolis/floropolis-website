@@ -71,6 +71,8 @@ export default function SampleBoxPage() {
     name: "",
     email: "",
     address: "",
+    city: "",
+    zip: "",
     phone: "",
     company: "",
     state: "",
@@ -93,13 +95,23 @@ export default function SampleBoxPage() {
 
     try {
       // Submit to Google Sheets webhook
+      // Column order: Timestamp, Name, Email, Address, City, Zip code, State, Phone, Company, Box Choice, Notes
       await fetch('https://script.google.com/macros/s/AKfycbydKGArw3wL4NNI0-lx0ZbSwmtAHHRTD3RzdZo0PYKJfn_EisMALt9qKcpjXKwg8OA/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           timestamp: new Date().toISOString(),
-          ...formData
+          name: formData.name,
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          zip: formData.zip,
+          state: formData.state,
+          phone: formData.phone,
+          company: formData.company,
+          boxChoice: formData.boxChoice,
+          notes: formData.notes,
         }),
       });
       setIsSuccess(true);
@@ -226,8 +238,35 @@ export default function SampleBoxPage() {
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="Street address, city, ZIP"
+                    placeholder="Street address"
                   />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">City *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.city}
+                      onChange={(e) => setFormData({...formData, city: e.target.value})}
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="City"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Zip Code *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.zip}
+                      onChange={(e) => setFormData({...formData, zip: e.target.value})}
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="ZIP code"
+                      maxLength={10}
+                      pattern="[0-9\-]+"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -298,6 +337,19 @@ export default function SampleBoxPage() {
                       <div>
                         <div className="font-semibold text-slate-900">Box 3: Gypsophilia (250g)</div>
                         <div className="text-sm text-slate-600">Flodecol - Premium baby's breath</div>
+                      </div>
+                    </label>
+                    <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors">
+                      <input
+                        type="radio"
+                        name="boxChoice"
+                        value="tropical"
+                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
+                        className="mt-1"
+                      />
+                      <div>
+                        <div className="font-semibold text-slate-900">Box 4: Tropical Flower</div>
+                        <div className="text-sm text-slate-600">Magic Flower - Best of assorted combo box</div>
                       </div>
                     </label>
                   </div>
@@ -460,6 +512,16 @@ export default function SampleBoxPage() {
                   Real photos from florists who ordered from us
                 </p>
               </div>
+
+              <style jsx>{`
+                .scrollbar-hide::-webkit-scrollbar {
+                  display: none;
+                }
+                .scrollbar-hide {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
+                }
+              `}</style>
 
               <div className="mt-10 p-6 bg-slate-50 rounded-xl">
                 <p className="text-slate-600 italic">
