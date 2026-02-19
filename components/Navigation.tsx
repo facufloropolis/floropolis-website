@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
-import { pushEvent, handleOutboundClick, CTA_EVENTS } from '@/lib/gtm'
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,8 +26,8 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/shop" className="text-emerald-600 hover:text-emerald-700 transition-colors font-semibold" onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "nav" })}>
-              Shop Flowers
+            <Link href="/valentines" className="text-emerald-600 hover:text-emerald-700 transition-colors font-semibold">
+              Valentine's Day 🌹
             </Link>
             <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               How It Works
@@ -36,14 +35,14 @@ export default function Navigation() {
             <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               About Us
             </Link>
-            <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium" onClick={() => pushEvent(CTA_EVENTS.contact_click, { cta_location: "nav" })}>
+            <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               Contact Us
             </Link>
           </div>
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "nav" })}>
+            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
               Shop Now
             </a>
           </div>
@@ -64,16 +63,16 @@ export default function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
             <Link 
-              href="/shop" 
+              href="/valentines" 
               className="block px-4 py-2 text-emerald-600 hover:bg-emerald-50 transition-colors rounded-lg font-semibold"
-              onClick={() => { pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "nav_mobile" }); setMobileMenuOpen(false); }}
+              onClick={() => setMobileMenuOpen(false)}
             >
-              Shop Flowers
+              Valentine's Day 🌹
             </Link>
             <Link 
               href="/sample-box" 
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
-              onClick={() => { pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "nav_mobile" }); setMobileMenuOpen(false); }}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Free Sample Box
             </Link>
@@ -94,14 +93,14 @@ export default function Navigation() {
             <Link 
               href="/contact" 
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
-              onClick={() => { pushEvent(CTA_EVENTS.contact_click, { cta_location: "nav_mobile" }); setMobileMenuOpen(false); }}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us
             </Link>
             <a 
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" 
               className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
-              onClick={(e) => { setMobileMenuOpen(false); handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "nav_mobile" }); }}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Shop Now
             </a>
