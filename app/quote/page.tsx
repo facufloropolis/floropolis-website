@@ -18,7 +18,8 @@ import {
   type QuoteItem,
 } from "@/lib/quote-cart";
 import { addItem } from "@/lib/quote-cart";
-import { validatePromoCode, getGroupedProducts } from "@/lib/data/product-helpers";
+import { getGroupedProducts } from "@/lib/data/product-helpers";
+import { validatePromoCode, type PromoResult } from "@/lib/promo-engine";
 import { type Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
 import {
@@ -83,6 +84,8 @@ export default function QuotePage() {
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [promoError, setPromoError] = useState("");
+  const [promoDescription, setPromoDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isExistingClient, setIsExistingClient] = useState(false);
@@ -119,18 +122,29 @@ export default function QuotePage() {
   const handleApplyPromo = () => {
     if (!promoCode) {
       setDiscount(0);
+      setPromoError("");
+      setPromoDescription("");
       return;
     }
-    const result = validatePromoCode(
-      promoCode,
-      items.map((i) => ({ vendor: i.vendor, category: i.category })),
-    );
+    const cartForPromo = items.map((i) => ({
+      slug: i.slug,
+      vendor: i.vendor,
+      category: i.category,
+      price: i.price,
+      deal_price: i.deal_price,
+      quantity: i.quantity,
+      units_per_box: i.units_per_box,
+    }));
+    const result: PromoResult = validatePromoCode(promoCode, cartForPromo, subtotal);
     if (!result.valid) {
       setDiscount(0);
+      setPromoError(result.error || "Invalid code");
+      setPromoDescription("");
       return;
     }
-    const d = subtotal * ((result.discount_value ?? 0) / 100);
-    setDiscount(d);
+    setDiscount(result.discount_amount ?? 0);
+    setPromoError("");
+    setPromoDescription(result.description || "");
   };
 
   const handleQuickAdd = (product: Product) => {
@@ -408,6 +422,12 @@ export default function QuotePage() {
                     Apply
                   </button>
                 </div>
+                {promoError && (
+                  <p className="text-xs text-red-600">{promoError}</p>
+                )}
+                {promoDescription && discount > 0 && (
+                  <p className="text-xs text-emerald-600">{promoDescription}</p>
+                )}
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between text-slate-600">
                     <span>Subtotal</span>

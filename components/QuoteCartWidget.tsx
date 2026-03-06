@@ -13,11 +13,13 @@ import {
   hasMultipleDeliveryDates,
   type QuoteItem,
 } from "@/lib/quote-cart";
-import { validatePromoCode } from "@/lib/data/product-helpers";
+import { validatePromoCode, type PromoResult } from "@/lib/promo-engine";
 
 type PromoState = {
   code: string;
   discount: number;
+  error?: string;
+  description?: string;
 };
 
 export default function QuoteCartWidget() {
@@ -50,19 +52,29 @@ export default function QuoteCartWidget() {
 
   const handleApplyPromo = () => {
     if (!promo.code) {
-      setPromo({ code: "", discount: 0 });
+      setPromo({ code: "", discount: 0, error: undefined, description: undefined });
       return;
     }
-    const result = validatePromoCode(
-      promo.code,
-      items.map((i) => ({ vendor: i.vendor, category: i.category })),
-    );
+    const cartForPromo = items.map((i) => ({
+      slug: i.slug,
+      vendor: i.vendor,
+      category: i.category,
+      price: i.price,
+      deal_price: i.deal_price,
+      quantity: i.quantity,
+      units_per_box: i.units_per_box,
+    }));
+    const result: PromoResult = validatePromoCode(promo.code, cartForPromo, subtotal);
     if (!result.valid) {
-      setPromo({ code: promo.code, discount: 0 });
+      setPromo({ code: promo.code, discount: 0, error: result.error, description: undefined });
       return;
     }
-    const discount = subtotal * ((result.discount_value ?? 0) / 100);
-    setPromo({ code: promo.code, discount });
+    setPromo({
+      code: promo.code,
+      discount: result.discount_amount ?? 0,
+      error: undefined,
+      description: result.description,
+    });
   };
 
   if (itemCount === 0 && !open) return null;
@@ -249,6 +261,13 @@ export default function QuoteCartWidget() {
                   Apply
                 </button>
               </div>
+
+              {promo.error && (
+                <p className="text-xs text-red-600">{promo.error}</p>
+              )}
+              {promo.description && promo.discount > 0 && (
+                <p className="text-xs text-emerald-600">{promo.description}</p>
+              )}
 
               <div className="flex items-center justify-between text-xs text-slate-600">
                 <span>Subtotal</span>
