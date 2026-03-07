@@ -1,12 +1,11 @@
-// Thin adapter around the generated desktop catalog file.
-// This keeps the rest of the app importing from "@/lib/data/products",
-// while the master dataset lives in /Users/facu/Desktop/floropolis_products.ts.
+// Product catalog adapter.
+// Master dataset generated from Supabase via scripts/generate-products.mjs
 
-import type { Product as RawProduct } from "../../../floropolis_products";
+import type { Product as RawProduct } from "./floropolis_products";
 import {
   products as rawProducts,
   PROMO_CODES as RAW_PROMO_CODES,
-} from "../../../floropolis_products";
+} from "./floropolis_products";
 
 export type Product = RawProduct;
 

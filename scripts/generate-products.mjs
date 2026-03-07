@@ -180,8 +180,8 @@ export const PROMO_CODES = {
 } as const;
 `;
 
-  // Write to Desktop (where the app expects it via ../../../floropolis_products)
-  const outPath = resolve(__dirname, "../../../floropolis_products.ts");
+  // Write into the repo so Vercel can build
+  const outPath = resolve(__dirname, "../lib/data/floropolis_products.ts");
   writeFileSync(outPath, ts, "utf-8");
   console.log(`\nWritten to: ${outPath}`);
   console.log(`Products: ${products.length}`);
