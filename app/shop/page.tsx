@@ -7,15 +7,17 @@ import { useSearchParams } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import { SlidersHorizontal, X, ChevronDown, Package } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, Package, Flame, Star } from "lucide-react";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
+import { getProductImage } from "@/lib/product-images";
 import {
   getSliderDeliveryDates,
   getEarliestDeliveryDate,
   formatDeliveryDate,
   isAvailableByDate,
+  isAvailableInRange,
   toISODate,
 } from "@/lib/delivery-dates";
 
@@ -50,23 +52,49 @@ function getColorGroup(rawColor: string): string {
   return "Other";
 }
 
-function resolveImage(pathList: string[]): string {
+function resolveImage(pathList: string[], variety?: string, color?: string, category?: string): string {
   const path = pathList[0];
-  if (!path) return "/Floropolis-logo-only.png";
-  if (path.startsWith("http") || path.startsWith("/")) return path;
-  const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
-  return `${base}/${path}`;
+  if (path) {
+    if (path.startsWith("http") || path.startsWith("/")) return path;
+    const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
+    return `${base}/${path}`;
+  }
+  // Fall back to our image mapper
+  if (variety && category) {
+    return getProductImage(variety, color || "", category);
+  }
+  return "/Floropolis-logo-only.png";
 }
 
-// Get all known categories from catalog
+// Categories ordered by TAM / market importance
+const CATEGORY_TAM_ORDER = [
+  "Rose",
+  "Tropicals",
+  "Bouquets",
+  "Mixed Boxes",
+  "Greens & Foliage",
+  "Delphinium",
+  "Anemone",
+  "Ranunculus",
+  "Gypsophila",
+  "Scabiosa",
+  "Thistle",
+  "Bells of Ireland",
+  "Craspedia",
+  "Larkspur",
+];
+
 const ALL_CATEGORIES = (() => {
-  const cats = new Map<string, number>();
+  const cats = new Set<string>();
   for (const p of catalogProducts) {
-    cats.set(p.category, (cats.get(p.category) || 0) + 1);
+    cats.add(p.category);
   }
-  return Array.from(cats.entries())
-    .sort((a, b) => b[1] - a[1])
-    .map(([name]) => name);
+  // Return in TAM order, then any unlisted categories at the end
+  const ordered = CATEGORY_TAM_ORDER.filter((c) => cats.has(c));
+  for (const c of cats) {
+    if (!ordered.includes(c)) ordered.push(c);
+  }
+  return ordered;
 })();
 
 // Group products by variety+color for one-card-per-variety display
@@ -130,7 +158,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       category: rep.category,
       minPrice: Math.min(...prices),
       maxPrice: Math.max(...prices),
-      image: resolveImage(rep.images || []),
+      image: resolveImage(rep.images || [], rep.variety, rep.color, rep.category),
       has_photo: rep.has_photo,
       tier: bestTier,
       bestseller: variants.some((v) => v.is_best_seller),
@@ -145,6 +173,46 @@ function buildVarietyGroups(): VarietyGroup[] {
   return result;
 }
 
+/** Sample box CTA with scarcity countdown — resets weekly on Monday */
+function SampleBoxCTA() {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
+
+  // Sunday: show "gone" message
+  if (dayOfWeek === 0) {
+    return (
+      <div className="mb-5 flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-200 px-5 py-3">
+        <Package className="w-5 h-5 text-slate-400 flex-shrink-0" />
+        <p className="text-sm text-slate-600">
+          <span className="font-semibold">This week&apos;s free sample boxes are gone!</span>{" "}
+          New batch drops <span className="font-semibold text-emerald-600">tomorrow (Monday)</span>. Be ready.
+        </p>
+      </div>
+    );
+  }
+
+  // Mon–Sat: show remaining count (decreases through the week, never hits 0)
+  // Mon=10, Tue=7, Wed=5, Thu=4, Fri=3, Sat=2
+  const remaining = [0, 10, 7, 5, 4, 3, 2][dayOfWeek] || 3;
+
+  return (
+    <div className="mb-5 flex items-center gap-3 rounded-xl bg-emerald-50/80 border border-emerald-100 px-5 py-3">
+      <Package className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+      <p className="text-sm text-slate-700">
+        <span className="font-semibold">New to Floropolis?</span>{" "}
+        Try our{" "}
+        <Link href="/sample-box" className="text-emerald-600 font-semibold hover:underline">
+          free sample box
+        </Link>{" "}
+        — no obligation, no credit card.{" "}
+        <span className="inline-flex items-center gap-1 text-amber-600 font-semibold">
+          Only {remaining} left this week!
+        </span>
+      </p>
+    </div>
+  );
+}
+
 function ShopPageContent() {
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [colorGroupFilter, setColorGroupFilter] = useState<string[]>([]);
@@ -153,12 +221,16 @@ function ShopPageContent() {
   const [sortBy, setSortBy] = useState<SortOption>("recommended");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [showAllColors, setShowAllColors] = useState(false);
+  const [showDealsOnly, setShowDealsOnly] = useState(false);
+  const [showBestsellersOnly, setShowBestsellersOnly] = useState(false);
   const searchParams = useSearchParams();
 
-  // Delivery date slider
+  // Delivery date range slider — from/to window
   const sliderDates = useMemo(() => getSliderDeliveryDates(), []);
-  const [sliderIndex, setSliderIndex] = useState(0);
-  const selectedDate = sliderDates[sliderIndex] || sliderDates[0];
+  const [sliderFrom, setSliderFrom] = useState(0);
+  const [sliderTo, setSliderTo] = useState(sliderDates.length - 1);
+  const dateFrom = sliderDates[sliderFrom] || sliderDates[0];
+  const dateTo = sliderDates[sliderTo] || sliderDates[sliderDates.length - 1];
 
   const varietyGroups = useMemo(() => buildVarietyGroups(), []);
 
@@ -190,11 +262,17 @@ function ShopPageContent() {
   const filteredGroups = useMemo(() => {
     let list = [...varietyGroups];
 
-    // Delivery date filter — show products available by selected date
-    if (selectedDate) {
-      list = list.filter((g) => isAvailableByDate(g.tier, selectedDate));
+    // Delivery date range filter — show products deliverable within window
+    if (dateFrom && dateTo) {
+      list = list.filter((g) => isAvailableInRange(g.tier, dateFrom, dateTo));
     }
 
+    if (showDealsOnly) {
+      list = list.filter((g) => g.is_on_deal);
+    }
+    if (showBestsellersOnly) {
+      list = list.filter((g) => g.bestseller);
+    }
     if (categoryFilter.length) {
       list = list.filter((g) => categoryFilter.includes(g.category));
     }
@@ -208,7 +286,7 @@ function ShopPageContent() {
       list = list.filter((g) => g.maxPrice <= (priceMax as number));
     }
     return list;
-  }, [categoryFilter, colorGroupFilter, priceMin, priceMax, selectedDate, varietyGroups]);
+  }, [categoryFilter, colorGroupFilter, priceMin, priceMax, dateFrom, dateTo, showDealsOnly, showBestsellersOnly, varietyGroups]);
 
   const sortedGroups = useMemo(() => {
     const list = [...filteredGroups];
@@ -242,7 +320,10 @@ function ShopPageContent() {
     setColorGroupFilter([]);
     setPriceMin("");
     setPriceMax("");
-    setSliderIndex(0);
+    setSliderFrom(0);
+    setSliderTo(sliderDates.length - 1);
+    setShowDealsOnly(false);
+    setShowBestsellersOnly(false);
   };
 
   const hasActiveFilters =
@@ -250,7 +331,10 @@ function ShopPageContent() {
     colorGroupFilter.length > 0 ||
     priceMin !== "" ||
     priceMax !== "" ||
-    sliderIndex !== 0;
+    sliderFrom !== 0 ||
+    sliderTo !== sliderDates.length - 1 ||
+    showDealsOnly ||
+    showBestsellersOnly;
 
   // Color groups to show (collapsed by default)
   const TOP_COLORS = 6;
@@ -275,22 +359,43 @@ function ShopPageContent() {
         )}
       </div>
 
-      {/* Delivery date slider */}
+      {/* Delivery date range */}
       <div>
         <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-          Delivery by
+          Delivery window
         </h4>
-        <div className="px-1">
-          <input
-            type="range"
-            min={0}
-            max={sliderDates.length - 1}
-            step={1}
-            value={sliderIndex}
-            onChange={(e) => setSliderIndex(Number(e.target.value))}
-            className="w-full accent-emerald-600 cursor-pointer"
-          />
-          <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+        <div className="px-1 space-y-2">
+          <div>
+            <label className="text-[10px] text-slate-500 font-medium">From</label>
+            <input
+              type="range"
+              min={0}
+              max={sliderDates.length - 1}
+              step={1}
+              value={sliderFrom}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                setSliderFrom(Math.min(v, sliderTo));
+              }}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-slate-500 font-medium">To</label>
+            <input
+              type="range"
+              min={0}
+              max={sliderDates.length - 1}
+              step={1}
+              value={sliderTo}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                setSliderTo(Math.max(v, sliderFrom));
+              }}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+          </div>
+          <div className="flex justify-between text-[10px] text-slate-400">
             <span>{sliderDates[0] ? formatDeliveryDate(sliderDates[0]) : ""}</span>
             <span>
               {sliderDates[sliderDates.length - 1]
@@ -300,8 +405,38 @@ function ShopPageContent() {
           </div>
         </div>
         <p className="mt-1 text-xs font-medium text-emerald-700">
-          {selectedDate ? `Showing items available by ${formatDeliveryDate(selectedDate)}` : ""}
+          {dateFrom && dateTo
+            ? `${formatDeliveryDate(dateFrom)} → ${formatDeliveryDate(dateTo)}`
+            : ""}
         </p>
+      </div>
+
+      {/* Quick filters: Deals & Bestsellers */}
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => setShowDealsOnly(!showDealsOnly)}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+            showDealsOnly
+              ? "bg-amber-50 border-amber-300 text-amber-700"
+              : "bg-white border-slate-200 text-slate-600 hover:border-amber-200 hover:bg-amber-50/50"
+          }`}
+        >
+          <Flame className="w-3.5 h-3.5" />
+          Deals
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowBestsellersOnly(!showBestsellersOnly)}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+            showBestsellersOnly
+              ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+              : "bg-white border-slate-200 text-slate-600 hover:border-emerald-200 hover:bg-emerald-50/50"
+          }`}
+        >
+          <Star className="w-3.5 h-3.5" />
+          Bestsellers
+        </button>
       </div>
 
       {/* Category */}
@@ -404,18 +539,8 @@ function ShopPageContent() {
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Sample box CTA for new visitors */}
-        <div className="mb-5 flex items-center gap-3 rounded-xl bg-emerald-50/80 border border-emerald-100 px-5 py-3">
-          <Package className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-          <p className="text-sm text-slate-700">
-            <span className="font-semibold">New to Floropolis?</span>{" "}
-            Try our{" "}
-            <Link href="/sample-box" className="text-emerald-600 font-semibold hover:underline">
-              free sample box
-            </Link>{" "}
-            — no obligation, no credit card.
-          </p>
-        </div>
+        {/* Sample box CTA with scarcity countdown */}
+        <SampleBoxCTA />
 
         <div className="flex gap-8">
           {/* Sidebar: desktop */}

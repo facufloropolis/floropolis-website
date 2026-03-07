@@ -3,6 +3,12 @@
  * Use these exact event names in GTM: create GA4 Event tags with Custom Event triggers matching these names.
  */
 
+declare global {
+  interface Window {
+    dataLayer?: unknown[];
+  }
+}
+
 export function pushEvent(
   eventName: string,
   params?: Record<string, string | number | boolean | undefined>

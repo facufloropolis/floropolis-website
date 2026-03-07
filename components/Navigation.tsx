@@ -2,18 +2,31 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { Menu, X, ShoppingBag } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import HeaderSearch from '@/components/HeaderSearch'
+import { getItemCount } from '@/lib/quote-cart'
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+  const [cartCount, setCartCount] = useState(0);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const updateCount = () => setCartCount(getItemCount());
+    updateCount();
+    window.addEventListener('quote-cart-updated', updateCount);
+    return () => window.removeEventListener('quote-cart-updated', updateCount);
+  }, []);
+
   return (
+    <>
     <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
             <Image
               src="/Floropolis-logo-only.png"
               alt="Floropolis"
@@ -24,13 +37,18 @@ export default function Navigation() {
             />
           </Link>
 
+          {/* Search — desktop: between logo and links; mobile: in bar, expands full-width when focused */}
+          <div className="hidden md:flex flex-1 min-w-0 justify-center max-w-xl">
+            <HeaderSearch />
+          </div>
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/valentines" className="text-emerald-600 hover:text-emerald-700 transition-colors font-semibold">
-              Valentine's Day 🌹
-            </Link>
+          <div className="hidden md:flex items-center gap-6">
             <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               How It Works
+            </Link>
+            <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
+              Shop
             </Link>
             <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               About Us
@@ -42,13 +60,32 @@ export default function Navigation() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
-              Shop Now
-            </a>
+            <Link href="/quote" className="relative text-slate-700 hover:text-emerald-600 transition-colors p-2" aria-label="Quote cart">
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <Link href="/shop" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
+              Shop
+            </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          {/* Mobile: search + cart + menu button */}
+          <div className="md:hidden flex items-center gap-1 flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
+              <HeaderSearch />
+            </div>
+            <Link href="/quote" className="relative text-slate-700 hover:text-emerald-600 transition-colors p-2" aria-label="Quote cart">
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-slate-700 hover:text-emerald-600 transition-colors p-2"
@@ -62,13 +99,6 @@ export default function Navigation() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
-            <Link 
-              href="/valentines" 
-              className="block px-4 py-2 text-emerald-600 hover:bg-emerald-50 transition-colors rounded-lg font-semibold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Valentine's Day 🌹
-            </Link>
             <Link 
               href="/sample-box" 
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
@@ -97,16 +127,17 @@ export default function Navigation() {
             >
               Contact Us
             </Link>
-            <a 
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" 
+            <Link
+              href="/shop"
               className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Shop Now
-            </a>
+              Shop
+            </Link>
           </div>
         )}
       </div>
     </nav>
+    </>
   )
 }

@@ -28,13 +28,12 @@ export default function TopBanner() {
         )}
         <span className="hidden sm:inline text-white/80">|</span>
         <span className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-          <a
-            href="https://eshops.kometsales.com/762172?search=tropical&utm_source=Website&utm_campaign=Magic-Flowers-Launch"
+          <Link
+            href="/shop?category=Tropicals"
             className="underline hover:no-underline font-bold"
-            onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "top_banner_magic" })}
           >
             Shop Magic Flowers →
-          </a>
+          </Link>
           <Link
             href="/sample-box"
             className="underline hover:no-underline font-bold"

@@ -6,7 +6,7 @@ import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import { ChevronLeft, ChevronRight, Plus, Trash2, Package } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Trash2, Package, CalendarDays } from "lucide-react";
 import {
   clearCart,
   getCartItems,
@@ -22,6 +22,7 @@ import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-engine";
 import { type Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
+import { getProductImage } from "@/lib/product-images";
 import {
   getDeliveryDates,
   getEarliestDeliveryDate,
@@ -29,39 +30,7 @@ import {
   toISODate,
 } from "@/lib/delivery-dates";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-// US States for form
-const US_STATES = [
-  { value: "", label: "Select state" },
-  { value: "AL", label: "Alabama" }, { value: "AK", label: "Alaska" },
-  { value: "AZ", label: "Arizona" }, { value: "AR", label: "Arkansas" },
-  { value: "CA", label: "California" }, { value: "CO", label: "Colorado" },
-  { value: "CT", label: "Connecticut" }, { value: "DE", label: "Delaware" },
-  { value: "DC", label: "District of Columbia" }, { value: "FL", label: "Florida" },
-  { value: "GA", label: "Georgia" }, { value: "HI", label: "Hawaii" },
-  { value: "ID", label: "Idaho" }, { value: "IL", label: "Illinois" },
-  { value: "IN", label: "Indiana" }, { value: "IA", label: "Iowa" },
-  { value: "KS", label: "Kansas" }, { value: "KY", label: "Kentucky" },
-  { value: "LA", label: "Louisiana" }, { value: "ME", label: "Maine" },
-  { value: "MD", label: "Maryland" }, { value: "MA", label: "Massachusetts" },
-  { value: "MI", label: "Michigan" }, { value: "MN", label: "Minnesota" },
-  { value: "MS", label: "Mississippi" }, { value: "MO", label: "Missouri" },
-  { value: "MT", label: "Montana" }, { value: "NE", label: "Nebraska" },
-  { value: "NV", label: "Nevada" }, { value: "NH", label: "New Hampshire" },
-  { value: "NJ", label: "New Jersey" }, { value: "NM", label: "New Mexico" },
-  { value: "NY", label: "New York" }, { value: "NC", label: "North Carolina" },
-  { value: "ND", label: "North Dakota" }, { value: "OH", label: "Ohio" },
-  { value: "OK", label: "Oklahoma" }, { value: "OR", label: "Oregon" },
-  { value: "PA", label: "Pennsylvania" }, { value: "RI", label: "Rhode Island" },
-  { value: "SC", label: "South Carolina" }, { value: "SD", label: "South Dakota" },
-  { value: "TN", label: "Tennessee" }, { value: "TX", label: "Texas" },
-  { value: "UT", label: "Utah" }, { value: "VT", label: "Vermont" },
-  { value: "VA", label: "Virginia" }, { value: "WA", label: "Washington" },
-  { value: "WV", label: "West Virginia" }, { value: "WI", label: "Wisconsin" },
-  { value: "WY", label: "Wyoming" },
-];
+import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 
 function resolveImage(path: string): string {
   if (!path) return "/Floropolis-logo-only.png";
@@ -104,11 +73,22 @@ export default function QuotePage() {
   const total = Math.max(0, subtotal - discount);
   const deliveryDates = getCartDeliveryDates();
 
-  // Suggested products for carousel (products not in cart, with photos)
+  // Group items by delivery date for display
+  const groupedByDate = useMemo(() => {
+    const groups = new Map<string, QuoteItem[]>();
+    for (const item of items) {
+      const key = item.delivery_date || "unscheduled";
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(item);
+    }
+    return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [items]);
+
+  // Suggested products for carousel
   const suggestedProducts = useMemo(() => {
     const cartSlugs = new Set(items.map((i) => i.slug));
     return getGroupedProducts()
-      .filter((p) => !cartSlugs.has(p.slug) && p.has_photo && p.images?.length)
+      .filter((p) => !cartSlugs.has(p.slug))
       .sort(() => Math.random() - 0.5)
       .slice(0, 12);
   }, [items]);
@@ -185,52 +165,28 @@ export default function QuotePage() {
       contact_name: formData.get("contact_name") as string,
       email: formData.get("email") as string,
       phone: (formData.get("phone") as string) || null,
-      address: (formData.get("address") as string) || null,
-      city: (formData.get("city") as string) || null,
-      state: (formData.get("state") as string) || null,
-      zip: (formData.get("zip") as string) || null,
       is_existing_client: isExistingClient,
       preferred_delivery_date: deliveryDates[0] || null,
       notes: (formData.get("notes") as string) || null,
       wants_call: formData.get("wants_call") === "on",
-      call_time: (formData.get("call_time") as string) || null,
       items,
       promo_code: promoCode || null,
       subtotal,
       discount,
       total,
-      status: "pending",
     };
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/quote_requests`, {
+      const res = await fetch("/api/notify-quote", {
         method: "POST",
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-          Prefer: "return=minimal",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        throw new Error(`Supabase error ${res.status}`);
-      }
+      const data = await res.json();
 
-      // Fire notification
-      try {
-        const notifyRes = await fetch("/api/notify-quote", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const notifyData = await notifyRes.json();
-        if (notifyData.whatsapp_url) {
-          window.open(notifyData.whatsapp_url, "_blank");
-        }
-      } catch {
-        console.warn("Quote notification failed, but quote was saved.");
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Submission failed");
       }
 
       clearCart();
@@ -238,7 +194,7 @@ export default function QuotePage() {
     } catch (err) {
       console.error(err);
       setError(
-        "There was a problem submitting your quote. Please try again or contact us on WhatsApp.",
+        `There was a problem submitting your quote. Please try again or contact us on WhatsApp at +${WHATSAPP_NUMBER}.`,
       );
     } finally {
       setSubmitting(false);
@@ -287,116 +243,132 @@ export default function QuotePage() {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-3">
-                {items.map((item, idx) => (
-                  <div
-                    key={`${item.slug}-${item.box_type}-${item.units_per_box}-${item.delivery_date}-${idx}`}
-                    className="border border-slate-200 rounded-xl p-4 flex flex-col gap-2"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-slate-900 text-sm">
-                          {item.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {item.category} · {item.box_type} box ·{" "}
-                          {item.units_per_box.toLocaleString()} stems
-                          {item.stem_length && ` · ${item.stem_length}`}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        className="text-slate-400 hover:text-red-500 p-1"
-                        onClick={() => {
-                          removeItem(
-                            item.slug,
-                            item.box_type,
-                            item.units_per_box,
-                            item.delivery_date,
-                          );
-                          sync();
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+              <div className="space-y-5">
+                {groupedByDate.map(([date, dateItems]) => (
+                  <div key={date}>
+                    {/* Date group header */}
+                    <div className="flex items-center gap-2 mb-2 px-1">
+                      <CalendarDays className="w-4 h-4 text-emerald-600" />
+                      <h3 className="text-sm font-bold text-slate-800">
+                        {date === "unscheduled" ? "No date set" : formatDate(date)}
+                      </h3>
+                      <span className="text-xs text-slate-400">
+                        {dateItems.length} item{dateItems.length > 1 ? "s" : ""}
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {/* Quantity */}
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            type="button"
-                            className="w-7 h-7 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
-                            onClick={() => {
-                              updateQuantity(
-                                item.slug,
-                                item.box_type,
-                                item.units_per_box,
-                                item.quantity - 1,
-                                item.delivery_date,
-                              );
-                              sync();
-                            }}
-                          >
-                            -
-                          </button>
-                          <span className="w-6 text-center text-sm font-medium text-slate-800">
-                            {item.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            className="w-7 h-7 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
-                            onClick={() => {
-                              updateQuantity(
-                                item.slug,
-                                item.box_type,
-                                item.units_per_box,
-                                item.quantity + 1,
-                                item.delivery_date,
-                              );
-                              sync();
-                            }}
-                          >
-                            +
-                          </button>
-                        </div>
-
-                        {/* Delivery date selector */}
-                        <select
-                          value={item.delivery_date || ""}
-                          onChange={(e) => {
-                            updateItemDeliveryDate(
-                              item.slug,
-                              item.box_type,
-                              item.units_per_box,
-                              item.delivery_date,
-                              e.target.value,
-                            );
-                            sync();
-                          }}
-                          className="rounded-lg border border-slate-300 px-2 py-1 text-xs text-slate-700"
+                    <div className="space-y-2">
+                      {dateItems.map((item, idx) => (
+                        <div
+                          key={`${item.slug}-${item.box_type}-${item.units_per_box}-${idx}`}
+                          className="border border-slate-200 rounded-xl p-4 flex flex-col gap-2"
                         >
-                          {editableDates.map((d) => (
-                            <option key={toISODate(d)} value={toISODate(d)}>
-                              {formatDeliveryDate(d)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-sm font-bold text-slate-900">
-                          $
-                          {(
-                            (item.deal_price ?? item.price) *
-                            item.quantity *
-                            item.units_per_box
-                          ).toFixed(2)}
-                        </span>
-                        <p className="text-[10px] text-slate-400">
-                          ${(item.deal_price ?? item.price).toFixed(2)}/
-                          {item.unit === "Bunch" ? "bunch" : "stem"}
-                        </p>
-                      </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-slate-900 text-sm">
+                                {item.name}
+                              </h3>
+                              <p className="text-xs text-slate-500 mt-0.5">
+                                {item.category} · {item.box_type} box ·{" "}
+                                {item.units_per_box.toLocaleString()} stems
+                                {item.stem_length && ` · ${item.stem_length}`}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              className="text-slate-400 hover:text-red-500 p-1"
+                              onClick={() => {
+                                removeItem(
+                                  item.slug,
+                                  item.box_type,
+                                  item.units_per_box,
+                                  item.delivery_date,
+                                );
+                                sync();
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {/* Quantity */}
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  className="w-7 h-7 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
+                                  onClick={() => {
+                                    updateQuantity(
+                                      item.slug,
+                                      item.box_type,
+                                      item.units_per_box,
+                                      item.quantity - 1,
+                                      item.delivery_date,
+                                    );
+                                    sync();
+                                  }}
+                                >
+                                  -
+                                </button>
+                                <span className="w-6 text-center text-sm font-medium text-slate-800">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="w-7 h-7 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
+                                  onClick={() => {
+                                    updateQuantity(
+                                      item.slug,
+                                      item.box_type,
+                                      item.units_per_box,
+                                      item.quantity + 1,
+                                      item.delivery_date,
+                                    );
+                                    sync();
+                                  }}
+                                >
+                                  +
+                                </button>
+                              </div>
+
+                              {/* Delivery date selector */}
+                              <select
+                                value={item.delivery_date || ""}
+                                onChange={(e) => {
+                                  updateItemDeliveryDate(
+                                    item.slug,
+                                    item.box_type,
+                                    item.units_per_box,
+                                    item.delivery_date,
+                                    e.target.value,
+                                  );
+                                  sync();
+                                }}
+                                className="rounded-lg border border-slate-300 px-2 py-1 text-xs text-slate-700"
+                              >
+                                {editableDates.map((d) => (
+                                  <option key={toISODate(d)} value={toISODate(d)}>
+                                    {formatDeliveryDate(d)}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-sm font-bold text-slate-900">
+                                $
+                                {(
+                                  (item.deal_price ?? item.price) *
+                                  item.quantity *
+                                  item.units_per_box
+                                ).toFixed(2)}
+                              </span>
+                              <p className="text-[10px] text-slate-400">
+                                ${(item.deal_price ?? item.price).toFixed(2)}/
+                                {item.unit === "Bunch" ? "bunch" : "stem"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -452,7 +424,7 @@ export default function QuotePage() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-bold text-slate-900">
-                    Add to your order
+                    You might also want
                   </h3>
                   <div className="flex gap-1">
                     <button
@@ -476,7 +448,8 @@ export default function QuotePage() {
                   className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
                 >
                   {suggestedProducts.map((p) => {
-                    const img = resolveImage(p.images?.[0] || "");
+                    const dbImg = p.images?.[0];
+                    const img = dbImg ? resolveImage(dbImg) : getProductImage(p.variety, p.color, p.category);
                     const price = p.deal_price ?? p.price;
                     return (
                       <div
@@ -590,71 +563,22 @@ export default function QuotePage() {
                   </div>
                   <div>
                     <label className="block text-slate-700 mb-1 text-xs font-medium">
-                      Phone *
+                      Phone {!isExistingClient && "*"}
                     </label>
                     <input
                       name="phone"
-                      required
+                      required={!isExistingClient}
                       className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                       placeholder="For delivery updates"
                     />
                   </div>
                 </div>
 
-                {/* Shipping fields — hide if existing client */}
-                {!isExistingClient && (
-                  <>
-                    <div>
-                      <label className="block text-slate-700 mb-1 text-xs font-medium">
-                        Shipping Address *
-                      </label>
-                      <input
-                        name="address"
-                        required={!isExistingClient}
-                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                        placeholder="Street address"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-slate-700 mb-1 text-xs font-medium">
-                          City *
-                        </label>
-                        <input
-                          name="city"
-                          required={!isExistingClient}
-                          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-700 mb-1 text-xs font-medium">
-                          State *
-                        </label>
-                        <select
-                          name="state"
-                          required={!isExistingClient}
-                          className="w-full rounded-lg border border-slate-300 px-2 py-2 text-sm bg-white"
-                        >
-                          {US_STATES.map((s) => (
-                            <option key={s.value || "empty"} value={s.value}>
-                              {s.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-slate-700 mb-1 text-xs font-medium">
-                          ZIP *
-                        </label>
-                        <input
-                          name="zip"
-                          required={!isExistingClient}
-                          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                          maxLength={10}
-                        />
-                      </div>
-                    </div>
-                  </>
+                {/* Phone not required for existing clients */}
+                {isExistingClient && (
+                  <p className="text-xs text-emerald-600 -mt-1">
+                    We have your details on file — just confirm your name and email above.
+                  </p>
                 )}
 
                 <div>

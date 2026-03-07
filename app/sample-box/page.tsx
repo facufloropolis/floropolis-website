@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -66,6 +67,15 @@ const US_STATES = [
 ];
 
 export default function SampleBoxPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center text-slate-500">Loading…</div>}>
+      <SampleBoxContent />
+    </Suspense>
+  );
+}
+
+function SampleBoxContent() {
+  const searchParams = useSearchParams();
   const spotsLeft = getSampleBoxesAvailable();
   const [formData, setFormData] = useState({
     name: "",
@@ -81,6 +91,23 @@ export default function SampleBoxPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Pre-populate from product page navigation
+  useEffect(() => {
+    const product = searchParams.get("product");
+    const category = searchParams.get("category");
+    if (product) {
+      const preNote = `Interested in: ${product}${category ? ` (${category})` : ""}`;
+      setFormData((prev) => ({
+        ...prev,
+        notes: prev.notes ? prev.notes : preNote,
+        boxChoice: category?.toLowerCase().includes("rose") ? "roses"
+          : category?.toLowerCase().includes("tropical") ? "tropical"
+          : category?.toLowerCase().includes("gyps") ? "gypsophilia"
+          : prev.boxChoice,
+      }));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,14 +170,13 @@ export default function SampleBoxPage() {
             We'll be in touch within 24 hours to confirm your sample box details.
           </p>
           <div className="flex flex-col gap-4">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+            <Link
+              href="/shop"
               className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
-              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "sample_box_success" })}
             >
               Browse Our Catalog
               <ArrowRight className="w-5 h-5" />
-            </a>
+            </Link>
             <Link
               href="/"
               className="text-emerald-600 hover:text-emerald-700 font-medium"
@@ -194,10 +220,10 @@ export default function SampleBoxPage() {
               ) : (
                 <div className="bg-slate-100 border-l-4 border-slate-400 p-4 mb-6 rounded-r-lg">
                   <p className="text-slate-700 font-semibold flex items-center gap-2">
-                    <span className="text-xl">✉️</span>
-                    New sample boxes available Monday
+                    <span className="text-xl">&#128235;</span>
+                    This week's sample boxes are gone!
                   </p>
-                  <p className="text-sm text-slate-600 mt-1">Submit your request now and we&apos;ll process it Monday morning</p>
+                  <p className="text-sm text-slate-600 mt-1">New batch drops Monday at 9am EST. Submit your request now to be first in line.</p>
                 </div>
               )}
 

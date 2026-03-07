@@ -44,7 +44,7 @@ export default function Home() {
             Farm-Direct Wholesale Flowers
           </h1>
           <p className="text-xl md:text-2xl text-white/90 font-light mb-6 max-w-2xl mx-auto">
-            Premium Ecuador roses and summer flowers. 10-40% cheaper than traditional wholesale. Delivered in 48-72 hours.
+            Premium Ecuador roses and summer flowers. Delivered in 48-72 hours.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
@@ -75,10 +75,10 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">5-7 Days Fresher</div>
-              <div className="text-sm text-slate-600">vs. traditional wholesale</div>
+              <div className="text-sm text-slate-600">direct from farm</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">10-40% Cheaper</div>
+              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">Best Value</div>
               <div className="text-sm text-slate-600">by eliminating middlemen</div>
             </div>
             <div className="text-center">
@@ -113,7 +113,6 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Freedom Red</h3>
               <p className="text-slate-600 mb-2">Classic red, 50cm stems</p>
               <div className="text-3xl font-bold text-emerald-600">$1.45/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $1.60-1.70</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
@@ -126,7 +125,6 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Pink Floyd</h3>
               <p className="text-slate-600 mb-2">Dark pink elegance, 50cm stems</p>
               <div className="text-3xl font-bold text-emerald-600">$1.12/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $1.25-1.35</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
@@ -139,8 +137,6 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Premium Ranunculus</h3>
               <p className="text-slate-600 mb-2">Ecuador ranunculus, multiple colors</p>
               <div className="text-3xl font-bold text-emerald-600">From $1.21/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $1.51+</div>
-              <div className="text-emerald-600 font-semibold text-lg mt-1">Up to 40% cheaper</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
@@ -153,8 +149,6 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Eucalyptus Silver Dollar</h3>
               <p className="text-slate-600 mb-2">Premium greenery, 8-10 stems/bunch</p>
               <div className="text-3xl font-bold text-emerald-600">$0.37/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $0.61</div>
-              <div className="text-emerald-600 font-semibold text-lg mt-1">39% cheaper</div>
             </div>
           </div>
           
@@ -374,7 +368,7 @@ export default function Home() {
                   </svg>
                 ))}
               </div>
-              <p className="text-slate-600 mb-4 italic">"Switching to Floropolis cut my flower costs by 20% and the quality is noticeably better."</p>
+              <p className="text-slate-600 mb-4 italic">"The quality is noticeably better and delivery is fast. I won't go back."</p>
               <div className="font-semibold text-slate-900">Sarah M.</div>
               <div className="text-sm text-slate-500">Bloom & Co., Miami</div>
             </div>
@@ -456,13 +450,12 @@ export default function Home() {
             >
               Get Free Sample Box
             </Link>
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+            <Link
+              href="/shop"
               className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all"
-              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "green_banner" })}
             >
               Shop Now
-            </a>
+            </Link>
           </div>
         </div>
       </section>

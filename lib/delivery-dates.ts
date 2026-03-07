@@ -74,6 +74,13 @@ export function isAvailableByDate(tier: string, targetDate: Date): boolean {
   return targetDate >= earliest;
 }
 
+/** Check if a product can be delivered within a date range */
+export function isAvailableInRange(tier: string, fromDate: Date, toDate: Date): boolean {
+  const earliest = getEarliestDeliveryDate(tier);
+  // Product can deliver if its earliest available date falls before the window closes
+  return earliest <= toDate;
+}
+
 /** Get the minimum slider date (earliest possible delivery = T1/T2 date) */
 export function getMinSliderDate(): Date {
   return getEarliestDeliveryDate("T1");

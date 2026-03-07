@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import QuoteCartWidget from "@/components/QuoteCartWidget";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -11,7 +12,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: 'Floropolis | Farm-Direct Wholesale Flowers from Ecuador & Colombia',
-  description: 'Premium wholesale roses, summer flowers, and gypsophila shipped direct from South American farms in 48-72 hours. 15-40% lower cost, 5-7 days fresher than traditional wholesale.',
+  description: 'Premium wholesale roses, summer flowers, and gypsophila shipped direct from South American farms in 48-72 hours. Farm-direct quality, 5-7 days fresher.',
   keywords: 'wholesale flowers, farm direct flowers, Ecuador roses, Colombia flowers, wholesale florist, bulk flowers, premium roses',
   openGraph: {
     title: 'Floropolis | Farm-Direct Wholesale Flowers',
@@ -40,6 +41,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </Script>
       </head>
       <body className={`${plusJakarta.variable} font-sans antialiased`}>
+        {/* Adri version label – visible when running locally so you can confirm you're on the right build */}
+        {process.env.NODE_ENV === "development" && (
+          <div
+            className="bg-emerald-600 text-white text-center text-sm font-medium py-1.5 px-4"
+            aria-hidden
+          >
+            Floropolis — Adri version (local dev)
+          </div>
+        )}
         {/* GTM noscript fallback */}
         <noscript>
           <iframe
@@ -51,6 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {children}
+        <QuoteCartWidget />
       </body>
     </html>
   );

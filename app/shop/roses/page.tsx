@@ -1,0 +1,186 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import TopBanner from "@/components/TopBanner";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import {
+  getRosesByTier,
+  type RoseVariety,
+  type RoseTier,
+} from "@/lib/shop-roses";
+import { getProductBySlug } from "@/lib/data/product-helpers";
+
+const TIER_LABELS: Record<RoseTier, { title: string; subtitle: string }> = {
+  value: {
+    title: "Best value",
+    subtitle: "Under $1.30/stem · Same farm-direct quality",
+  },
+  popular: {
+    title: "Popular",
+    subtitle: "Tibet, Orange Crush, Free Spirit, Cool Water & favorites",
+  },
+  premium: {
+    title: "Premium",
+    subtitle: "Quicksand, Moonstone, Barista, Playa Blanca & designer varieties",
+  },
+  assorted: {
+    title: "Assorted bundles",
+    subtitle: "Mixed varieties · Great for events and sampling",
+  },
+};
+
+export default function ShopRosesPage() {
+  const { value, popular, premium, assorted } = getRosesByTier();
+  const varietyCount = value.length + popular.length + premium.length + assorted.length;
+
+  const trackOrderClick = (e: React.MouseEvent<HTMLAnchorElement>, name: string) => {
+    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
+      cta_location: "shop_roses_page",
+      product_type: name,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <TopBanner />
+      <Navigation />
+
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <nav className="mb-6 text-sm text-slate-500">
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-1 hover:text-emerald-600"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Browse Catalog
+          </Link>
+        </nav>
+
+        {/* Hero */}
+        <section className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+            Premium Roses — {varietyCount}+ Varieties in Stock
+          </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            Ecoroses direct from Ecuador. All prices include delivery. 25 stems per bunch.
+          </p>
+        </section>
+
+        {/* Value message */}
+        <section className="mb-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 px-6 py-8 md:px-10 md:py-10 text-white shadow-xl text-center">
+          <p className="text-xl md:text-2xl font-bold mb-2">
+            Farm-direct roses from Ecuador. Delivery included.
+          </p>
+          <p className="mt-4 text-emerald-100 text-sm max-w-2xl mx-auto">
+            Same farms that supply the biggest wholesalers — without the middlemen. 4-day to your shop.
+          </p>
+        </section>
+
+        {/* CTA strip */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <Link
+            href="/shop?category=Rose"
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg"
+          >
+            Browse all roses in catalog
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/sample-box"
+            className="inline-flex items-center gap-2 border-2 border-emerald-600 text-emerald-600 px-6 py-3 rounded-lg font-bold hover:bg-emerald-50 transition-all"
+          >
+            Get a free sample box
+          </Link>
+        </div>
+
+        {/* Tiers */}
+        <TierSection roses={value} tier="value" onOrderClick={trackOrderClick} />
+        <TierSection roses={popular} tier="popular" onOrderClick={trackOrderClick} />
+        <TierSection roses={premium} tier="premium" onOrderClick={trackOrderClick} />
+        <TierSection roses={assorted} tier="assorted" onOrderClick={trackOrderClick} />
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+function TierSection({
+  roses,
+  tier,
+  onOrderClick,
+}: {
+  roses: RoseVariety[];
+  tier: RoseTier;
+  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
+}) {
+  if (roses.length === 0) return null;
+
+  const { title, subtitle } = TIER_LABELS[tier];
+
+  return (
+    <section className="mb-14">
+      <div className="mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-900">{title}</h2>
+        <p className="text-slate-600">{subtitle}</p>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {roses.map((rose) => (
+          <RoseCard key={rose.id} rose={rose} onOrderClick={onOrderClick} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function RoseCard({
+  rose,
+  onOrderClick,
+}: {
+  rose: RoseVariety;
+  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
+}) {
+  const detailProduct = getProductBySlug(rose.id);
+  const orderUrl = detailProduct ? `/shop/${rose.id}` : `/shop?category=Rose`;
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all flex flex-col">
+      <Link href={orderUrl} className="block aspect-square relative bg-slate-100">
+        <Image
+          src={rose.image}
+          alt={rose.name}
+          fill
+          className="object-contain hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+        />
+        {rose.badge && (
+          <span className="absolute top-2 left-2 bg-emerald-600 text-white text-xs font-semibold px-2 py-0.5 rounded">
+            {rose.badge}
+          </span>
+        )}
+      </Link>
+      <div className="p-3 flex flex-col flex-1">
+        <Link
+          href={orderUrl}
+          className="font-bold text-slate-900 hover:text-emerald-600 transition-colors text-sm leading-tight"
+        >
+          {rose.name}
+        </Link>
+        <p className="text-xs text-slate-500 mt-0.5">Color: {rose.color}</p>
+        <p className="text-xs text-slate-600 mt-1">Lengths: {rose.availableLengths}</p>
+        <p className="text-sm font-bold text-emerald-600 mt-1">{rose.priceRange}/stem</p>
+        <p className="text-xs text-slate-500">{rose.stemsPerBunch} stems per bunch</p>
+        <Link
+          href={orderUrl}
+          className="mt-3 block w-full text-center bg-emerald-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
+        >
+          View & Add to Quote
+        </Link>
+      </div>
+    </div>
+  );
+}
