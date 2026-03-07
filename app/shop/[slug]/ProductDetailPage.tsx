@@ -23,6 +23,7 @@ type Props = {
   product: Product;
   variants: Product[];
   related: Product[];
+  bundles: Product[];
   categorySlug: string;
 };
 
@@ -37,6 +38,7 @@ export default function ProductDetailPage({
   product,
   variants,
   related,
+  bundles,
   categorySlug,
 }: Props) {
   // Collect all images from all variants, with fallback to image mapper
@@ -182,6 +184,7 @@ export default function ProductDetailPage({
   const dealPrice = currentVariant.deal_price ?? null;
   const hasDeal = !!currentVariant.is_on_deal && dealPrice != null;
   const effectivePrice = hasDeal && dealPrice != null ? dealPrice : basePrice;
+  const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
 
   const totalStems =
     currentVariant.stems_per_bunch && currentVariant.units_per_box
@@ -588,27 +591,33 @@ export default function ProductDetailPage({
                   </Link>
                 </div>
               )}
-              <button
-                type="button"
-                onClick={handleAddToQuote}
-                className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all ${
-                  justAdded
-                    ? "bg-emerald-700 text-white ring-2 ring-emerald-300"
-                    : "bg-emerald-600 text-white hover:bg-emerald-700"
-                }`}
-              >
-                {justAdded ? (
-                  <>
-                    <Check className="w-5 h-5" />
-                    Added! Add Another?
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="w-5 h-5" />
-                    Add to Quote
-                  </>
-                )}
-              </button>
+              {isPriceAvailable ? (
+                <button
+                  type="button"
+                  onClick={handleAddToQuote}
+                  className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all ${
+                    justAdded
+                      ? "bg-emerald-700 text-white ring-2 ring-emerald-300"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700"
+                  }`}
+                >
+                  {justAdded ? (
+                    <>
+                      <Check className="w-5 h-5" />
+                      Added! Add Another?
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5" />
+                      Add to Quote
+                    </>
+                  )}
+                </button>
+              ) : (
+                <div className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg bg-slate-100 text-slate-500 border border-slate-200">
+                  Contact for Pricing
+                </div>
+              )}
               <div className="flex gap-3">
                 <a
                   href={whatsappHref}
@@ -629,6 +638,57 @@ export default function ProductDetailPage({
             </div>
           </div>
         </div>
+
+        {/* Bundle suggestions — complementary products from other categories */}
+        {bundles.length > 0 && (
+          <section className="mt-12 pt-10 border-t border-slate-200">
+            <h2 className="text-xl font-bold text-slate-900 mb-2">
+              Complete your order
+            </h2>
+            <p className="text-sm text-slate-500 mb-5">
+              These pair well with {product.variety} {product.color}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {bundles.map((b) => {
+                const bImg = (Array.isArray(b.images) && b.images.length > 0)
+                  ? resolveImage(b.images[0])
+                  : getProductImage(b.variety, b.color, b.category);
+                const bPrice = b.deal_price ?? b.price;
+                const bUnit = b.unit === "Bunch" ? "bunch" : "stem";
+                return (
+                  <Link
+                    key={b.slug}
+                    href={`/shop/${encodeURIComponent(b.slug)}`}
+                    className="group flex items-center gap-4 bg-emerald-50/50 rounded-xl border border-emerald-100 p-3 hover:shadow-md transition-all"
+                  >
+                    <div className="relative w-16 h-16 rounded-lg bg-white overflow-hidden flex-shrink-0">
+                      <Image
+                        src={bImg}
+                        alt={b.name}
+                        fill
+                        className="object-contain"
+                        sizes="64px"
+                        unoptimized={bImg.startsWith("http")}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors truncate">
+                        {b.variety} {b.color}
+                      </p>
+                      <p className="text-xs text-slate-400">{b.category}</p>
+                      {bPrice > 0 && (
+                        <p className="text-sm font-bold text-emerald-600 mt-0.5">
+                          ${bPrice.toFixed(2)}/{bUnit}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-emerald-600 text-xs font-semibold flex-shrink-0">Add →</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Related products */}
         {relatedSorted.length > 0 && (

@@ -4,6 +4,7 @@ import {
   getProductBySlug,
   getVariants,
   getRelated,
+  getBundleSuggestions,
   getAllSlugs,
   categoryToSlug,
 } from "@/lib/data/product-helpers";
@@ -51,12 +52,14 @@ export default async function ProductPage({ params }: Props) {
 
   const variants = getVariants(product.variety, product.color);
   const related = getRelated(product.category, product.slug, 8);
+  const bundles = getBundleSuggestions(product.category, product.slug, 3);
   const categorySlug = categoryToSlug(product.category);
 
   return (
     <ProductDetailPage
       product={product}
       related={related}
+      bundles={bundles}
       variants={variants}
       categorySlug={categorySlug}
     />

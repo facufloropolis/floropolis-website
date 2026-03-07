@@ -78,6 +78,53 @@ export function getGroupedProducts(): Product[] {
   return result;
 }
 
+// Bundle suggestions: complementary categories that pair well together
+const BUNDLE_PAIRS: Record<string, string[]> = {
+  Rose: ["Greens & Foliage", "Gypsophila", "Delphinium"],
+  Tropicals: ["Greens & Foliage", "Bouquets"],
+  Delphinium: ["Rose", "Ranunculus", "Greens & Foliage"],
+  Ranunculus: ["Anemone", "Delphinium", "Greens & Foliage"],
+  Anemone: ["Ranunculus", "Greens & Foliage", "Rose"],
+  "Greens & Foliage": ["Rose", "Tropicals", "Delphinium"],
+  Bouquets: ["Greens & Foliage", "Tropicals"],
+  "Mixed Boxes": ["Greens & Foliage", "Rose"],
+  Gypsophila: ["Rose", "Ranunculus"],
+  Scabiosa: ["Rose", "Ranunculus", "Greens & Foliage"],
+  Thistle: ["Rose", "Delphinium"],
+  "Bells of Ireland": ["Rose", "Delphinium"],
+  Craspedia: ["Rose", "Tropicals"],
+  Larkspur: ["Rose", "Ranunculus"],
+};
+
+// Get bundle suggestions: 1 best product from each complementary category
+export function getBundleSuggestions(
+  category: string,
+  excludeSlug: string,
+  limit = 3,
+): Product[] {
+  const pairCategories = BUNDLE_PAIRS[category] || ["Greens & Foliage", "Rose"];
+  const suggestions: Product[] = [];
+
+  for (const cat of pairCategories) {
+    if (suggestions.length >= limit) break;
+    // Pick best product from this category (has photo, bestseller, best tier)
+    const candidates = products
+      .filter((p) => p.category === cat && p.slug !== excludeSlug && p.price > 0)
+      .sort((a, b) => {
+        if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
+        if (a.is_best_seller !== b.is_best_seller) return a.is_best_seller ? -1 : 1;
+        const tierOrder: Record<string, number> = { T1: 0, T2: 1, T3: 2, T4: 3 };
+        return (tierOrder[a.tier] ?? 3) - (tierOrder[b.tier] ?? 3);
+      });
+    // Pick a unique variety (don't show duplicates)
+    const seen = new Set(suggestions.map((s) => s.variety));
+    const pick = candidates.find((c) => !seen.has(c.variety));
+    if (pick) suggestions.push(pick);
+  }
+
+  return suggestions;
+}
+
 // Category slug helper
 export function categoryToSlug(category: string): string {
   return category

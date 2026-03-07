@@ -56,6 +56,9 @@ export default function Navigation() {
             <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               Contact Us
             </Link>
+            <Link href="/blog" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
+              Blog
+            </Link>
           </div>
 
           {/* Desktop CTAs */}
@@ -120,12 +123,19 @@ export default function Navigation() {
             >
               About Us
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us
+            </Link>
+            <Link
+              href="/blog"
+              className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Blog
             </Link>
             <Link
               href="/shop"

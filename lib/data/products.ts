@@ -23,14 +23,47 @@ function isAssortedOrCombo(p: RawProduct): boolean {
   );
 }
 
+/**
+ * Runtime bestseller flag based on market demand + competitive advantage.
+ * Source: Alvar's inventory status (Mar 6) + Facu's direction.
+ * Tropicals = exclusive (only us), Delphiniums/Ranunculus = high value, key rose varieties.
+ */
+const BESTSELLER_VARIETIES = new Set([
+  // Tropicals — EXCLUSIVE to Floropolis via Magic Flowers
+  "anthurium", "bird of paradise", "heliconia", "ginger",
+  // Delphiniums — competitive, beautiful, 4 sizes
+  "bella andes", "serene", "sky waltz", "pacific",
+  // Ranunculus — high perceived value
+  "amandine", "elegance",
+  // Anemone — unique varieties
+  "fullstar",
+  // Key roses — volume drivers
+  "freedom", "explorer", "quicksand", "playa blanca",
+]);
+
+function isBestseller(p: RawProduct): boolean {
+  if (p.is_best_seller) return true;
+  const v = p.variety?.toLowerCase() || "";
+  return BESTSELLER_VARIETIES.has(v);
+}
+
 export const products: Product[] = rawProducts.map((p) => {
+  let result = p;
+
+  // Apply assorted/combo discount
   if (isAssortedOrCombo(p) && !p.is_on_deal && p.price != null) {
-    return {
-      ...p,
+    result = {
+      ...result,
       is_on_deal: true,
       deal_price: Math.round(p.price * 0.9 * 100) / 100,
       deal_label: "10% Off",
     };
   }
-  return p;
+
+  // Apply bestseller flag
+  if (isBestseller(p) && !p.is_best_seller) {
+    result = { ...result, is_best_seller: true };
+  }
+
+  return result;
 });
