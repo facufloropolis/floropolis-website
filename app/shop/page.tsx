@@ -115,6 +115,7 @@ interface VarietyGroup {
   is_on_deal: boolean;
   deal_label: string | null;
   dealPrice: number | null;
+  hasPriceIssue: boolean; // true if any variant has price <= 0
   variantCount: number;
   slug: string; // slug of the representative product
   colorGroup: string;
@@ -123,8 +124,9 @@ interface VarietyGroup {
 function buildVarietyGroups(): VarietyGroup[] {
   const groups = new Map<string, Product[]>();
   for (const p of catalogProducts) {
-    // Skip products with invalid prices (price <= 0)
-    if (p.price <= 0) continue;
+    if (p.price <= 0) {
+      console.warn(`[PRICE ISSUE] Product "${p.name}" (ID: ${p.id}, slug: ${p.slug}) has price=${p.price}. Needs data fix.`);
+    }
     const key = `${p.variety}---${p.color}`.toLowerCase();
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(p);
@@ -152,8 +154,13 @@ function buildVarietyGroups(): VarietyGroup[] {
 
     const anyDeal = variants.some((v) => v.is_on_deal && v.deal_price != null);
     const dealVariant = variants.find((v) => v.is_on_deal && v.deal_price != null);
+    const hasPriceIssue = variants.some((v) => v.price <= 0);
 
     const displayName = [rep.variety, rep.color].filter(Boolean).join(" ");
+
+    // For price display, use only valid prices (> 0), fallback to 0 if all broken
+    const validPrices = prices.filter((p) => p > 0);
+    const validOriginalPrices = originalPrices.filter((p) => p > 0);
 
     result.push({
       key,
@@ -161,9 +168,9 @@ function buildVarietyGroups(): VarietyGroup[] {
       variety: rep.variety,
       color: rep.color,
       category: rep.category,
-      minPrice: Math.min(...prices),
-      maxPrice: Math.max(...prices),
-      originalMinPrice: Math.min(...originalPrices),
+      minPrice: validPrices.length > 0 ? Math.min(...validPrices) : 0,
+      maxPrice: validPrices.length > 0 ? Math.max(...validPrices) : 0,
+      originalMinPrice: validOriginalPrices.length > 0 ? Math.min(...validOriginalPrices) : 0,
       image: resolveImage(rep.images || [], rep.variety, rep.color, rep.category),
       has_photo: rep.has_photo,
       tier: bestTier,
@@ -171,6 +178,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       is_on_deal: anyDeal,
       deal_label: dealVariant?.deal_label ?? null,
       dealPrice: dealVariant?.deal_price ?? null,
+      hasPriceIssue,
       variantCount: variants.length,
       slug: rep.slug,
       colorGroup: getColorGroup(rep.color),
@@ -720,17 +728,25 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
         </Link>
         <p className="text-xs text-slate-400 mt-0.5">{group.category}</p>
         <div className="mt-2 flex items-baseline gap-1.5">
-          {group.is_on_deal && group.dealPrice != null && group.dealPrice < group.originalMinPrice && (
-            <span className="text-xs text-slate-400 line-through">
-              ${group.originalMinPrice.toFixed(2)}
+          {group.hasPriceIssue && group.minPrice === 0 ? (
+            <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
+              Price pending
             </span>
+          ) : (
+            <>
+              {group.is_on_deal && group.dealPrice != null && group.dealPrice < group.originalMinPrice && (
+                <span className="text-xs text-slate-400 line-through">
+                  ${group.originalMinPrice.toFixed(2)}
+                </span>
+              )}
+              <span className="text-base font-bold text-emerald-600">
+                {hasPriceRange && !group.is_on_deal
+                  ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
+                  : `$${displayPrice.toFixed(2)}`}
+                <span className="text-xs font-normal text-slate-500">/stem</span>
+              </span>
+            </>
           )}
-          <span className="text-base font-bold text-emerald-600">
-            {hasPriceRange && !group.is_on_deal
-              ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
-              : `$${displayPrice.toFixed(2)}`}
-            <span className="text-xs font-normal text-slate-500">/stem</span>
-          </span>
         </div>
         <p className="text-[11px] text-slate-400 mt-1">
           {formatDeliveryDate(earliestDate)}

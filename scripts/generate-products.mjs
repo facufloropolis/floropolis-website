@@ -113,6 +113,35 @@ async function main() {
   }
   console.log("By tier:", tierCounts);
 
+  // === DATA QUALITY SCAN ===
+  const issues = {
+    zeroPrice: [],
+    missingUnitsPerBox: [],
+    missingStemsPerBunch: [],
+    missingSlug: [],
+    missingVendor: [],
+  };
+  for (const p of products) {
+    if (p.price <= 0) issues.zeroPrice.push({ id: p.id, name: p.name, slug: p.slug, tier: p.tier });
+    if (p.units_per_box <= 0) issues.missingUnitsPerBox.push({ id: p.id, name: p.name, tier: p.tier });
+    if (p.stems_per_bunch <= 0) issues.missingStemsPerBunch.push({ id: p.id, name: p.name, tier: p.tier });
+    if (!p.slug) issues.missingSlug.push({ id: p.id, name: p.name });
+    if (!p.vendor) issues.missingVendor.push({ id: p.id, name: p.name });
+  }
+
+  console.log("\n=== DATA QUALITY REPORT ===");
+  console.log(`Products with $0 price: ${issues.zeroPrice.length}`);
+  for (const p of issues.zeroPrice) console.log(`  ⚠️  [${p.tier}] "${p.name}" (ID: ${p.id}, slug: ${p.slug})`);
+  console.log(`Products missing units_per_box: ${issues.missingUnitsPerBox.length}`);
+  console.log(`Products missing stems_per_bunch: ${issues.missingStemsPerBunch.length}`);
+  console.log(`Products missing slug: ${issues.missingSlug.length}`);
+  console.log(`Products missing vendor: ${issues.missingVendor.length}`);
+  console.log("=== END REPORT ===\n");
+
+  if (issues.zeroPrice.length > 0) {
+    console.warn(`⚠️  ${issues.zeroPrice.length} product(s) have $0 price — these will show "Price pending" on the site.`);
+  }
+
   const ts = `/**
  * Auto-generated product catalog from Supabase floropolis_inventory.
  * Generated: ${new Date().toISOString()}

@@ -348,7 +348,7 @@ export default function ProductDetailPage({
 
             {/* Price */}
             <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
-              {effectivePrice != null ? (
+              {effectivePrice != null && effectivePrice > 0 ? (
                 <div className="flex items-baseline gap-3">
                   {hasDeal && basePrice != null && dealPrice != null && dealPrice < basePrice && (
                     <span className="text-sm text-slate-400 line-through">
@@ -366,7 +366,12 @@ export default function ProductDetailPage({
                     )}
                 </div>
               ) : (
-                <p className="text-slate-500 text-sm">Pricing on request.</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+                    Price pending
+                  </span>
+                  <span className="text-xs text-slate-400">Contact us for pricing</span>
+                </div>
               )}
               {totalStems != null && (
                 <p className="mt-1 text-sm text-slate-600">

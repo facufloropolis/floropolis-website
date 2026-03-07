@@ -195,12 +195,12 @@ function SampleBoxContent() {
       <Navigation />
 
       {/* Hero + Form Section */}
-      <section className="py-12 px-4 bg-gradient-to-br from-emerald-50 to-green-50">
+      <section className="py-6 sm:py-12 px-4 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Left: Form */}
-            <div className="bg-white p-8 rounded-2xl shadow-xl">
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-xl">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
                 Request Your Free Sample Box
               </h1>
               <p className="text-slate-600 mb-6">
