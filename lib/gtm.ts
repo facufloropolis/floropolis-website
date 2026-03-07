@@ -5,7 +5,7 @@
 
 declare global {
   interface Window {
-    dataLayer?: unknown[];
+    dataLayer?: Record<string, unknown>[];
   }
 }
 
