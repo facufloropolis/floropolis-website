@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
@@ -187,28 +187,8 @@ function buildVarietyGroups(): VarietyGroup[] {
   return result;
 }
 
-/** Sample box CTA with scarcity countdown — resets weekly on Monday */
+/** Sample box CTA — honest, no fake scarcity */
 function SampleBoxCTA() {
-  const now = new Date();
-  const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
-
-  // Sunday: show "gone" message
-  if (dayOfWeek === 0) {
-    return (
-      <div className="mb-5 flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-200 px-5 py-3">
-        <Package className="w-5 h-5 text-slate-400 flex-shrink-0" />
-        <p className="text-sm text-slate-600">
-          <span className="font-semibold">This week&apos;s free sample boxes are gone!</span>{" "}
-          New batch drops <span className="font-semibold text-emerald-600">tomorrow (Monday)</span>. Be ready.
-        </p>
-      </div>
-    );
-  }
-
-  // Mon–Sat: show remaining count (decreases through the week, never hits 0)
-  // Mon=10, Tue=7, Wed=5, Thu=4, Fri=3, Sat=2
-  const remaining = [0, 10, 7, 5, 4, 3, 2][dayOfWeek] || 3;
-
   return (
     <div className="mb-5 flex items-center gap-3 rounded-xl bg-emerald-50/80 border border-emerald-100 px-5 py-3">
       <Package className="w-5 h-5 text-emerald-600 flex-shrink-0" />
@@ -218,10 +198,7 @@ function SampleBoxCTA() {
         <Link href="/sample-box" className="text-emerald-600 font-semibold hover:underline">
           free sample box
         </Link>{" "}
-        — no obligation, no credit card.{" "}
-        <span className="inline-flex items-center gap-1 text-amber-600 font-semibold">
-          Only {remaining} left this week!
-        </span>
+        — no obligation, no credit card.
       </p>
     </div>
   );
@@ -257,16 +234,44 @@ function ShopPageContent() {
     return Object.keys(COLOR_GROUPS).filter((cg) => groups.has(cg));
   }, [varietyGroups]);
 
-  // Sync category filter from URL
+  const router = useRouter();
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
+
+  // Sync filters from URL on mount
   useEffect(() => {
     const category = searchParams.get("category");
     if (category) {
-      const match = ALL_CATEGORIES.find(
-        (c) => c.toLowerCase() === category.toLowerCase(),
-      );
-      if (match) setCategoryFilter([match]);
+      const cats = category.split(",");
+      const matches = cats
+        .map((c) => ALL_CATEGORIES.find((ac) => ac.toLowerCase() === c.toLowerCase()))
+        .filter(Boolean) as string[];
+      if (matches.length) setCategoryFilter(matches);
     }
+    const color = searchParams.get("color");
+    if (color) {
+      const colors = color.split(",").filter((c) => c in COLOR_GROUPS);
+      if (colors.length) setColorGroupFilter(colors);
+    }
+    if (searchParams.get("deals") === "1") setShowDealsOnly(true);
+    if (searchParams.get("bestsellers") === "1") setShowBestsellersOnly(true);
+    const sort = searchParams.get("sort") as SortOption | null;
+    if (sort && SORT_OPTIONS.some((o) => o.value === sort)) setSortBy(sort);
+    setFiltersInitialized(true);
   }, [searchParams]);
+
+  // Sync filters to URL
+  useEffect(() => {
+    if (!filtersInitialized) return;
+    const params = new URLSearchParams();
+    if (categoryFilter.length) params.set("category", categoryFilter.join(","));
+    if (colorGroupFilter.length) params.set("color", colorGroupFilter.join(","));
+    if (showDealsOnly) params.set("deals", "1");
+    if (showBestsellersOnly) params.set("bestsellers", "1");
+    if (sortBy !== "recommended") params.set("sort", sortBy);
+    const qs = params.toString();
+    const newUrl = qs ? `/shop?${qs}` : "/shop";
+    router.replace(newUrl, { scroll: false });
+  }, [categoryFilter, colorGroupFilter, showDealsOnly, showBestsellersOnly, sortBy, router, filtersInitialized]);
 
   const toggleArray = <T,>(arr: T[], item: T, setter: (arr: T[]) => void, filterType?: string) => {
     const adding = !arr.includes(item);
