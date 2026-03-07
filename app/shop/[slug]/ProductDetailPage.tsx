@@ -64,18 +64,25 @@ export default function ProductDetailPage({
 
   // --- TOGGLES ---
 
-  // Unique lengths
+  // Normalize length for sorting: extract numeric cm value
+  const parseLengthCm = (l: string): number => {
+    const m = l.match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 999;
+  };
+
+  // Unique lengths — use actual values from variants, sorted by cm
   const uniqueLengths = useMemo(() => {
     const set = new Set(variants.map((v) => v.length).filter((l): l is string => !!l));
-    const order = ["35cm", "40cm", "50cm", "60cm", "70cm", "80cm"];
-    return order.filter((l) => set.has(l));
+    return Array.from(set).sort((a, b) => parseLengthCm(a) - parseLengthCm(b));
   }, [variants]);
 
-  // Unique box types
+  // Unique box types — use actual values, sorted by standard order
   const uniqueBoxTypes = useMemo(() => {
     const set = new Set(variants.map((v) => v.box_type).filter(Boolean));
-    const order = ["HB", "QB", "EB", "FB"];
-    return order.filter((bt) => set.has(bt));
+    const order = ["EB", "QB", "HB", "FB"];
+    return order.filter((bt) => set.has(bt)).concat(
+      Array.from(set).filter((bt) => !order.includes(bt))
+    );
   }, [variants]);
 
   const BOX_TYPE_LABELS: Record<string, string> = {
@@ -126,6 +133,22 @@ export default function ProductDetailPage({
   );
   const [selectingTo, setSelectingTo] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+
+  // Which box types are available for the currently selected length
+  const availableBoxTypesForLength = useMemo(() => {
+    if (!selectedLength) return new Set(uniqueBoxTypes);
+    return new Set(
+      variants.filter((v) => v.length === selectedLength).map((v) => v.box_type).filter(Boolean)
+    );
+  }, [variants, selectedLength, uniqueBoxTypes]);
+
+  // Which lengths are available for the currently selected box type
+  const availableLengthsForBoxType = useMemo(() => {
+    if (!selectedBoxType) return new Set(uniqueLengths);
+    return new Set(
+      variants.filter((v) => v.box_type === selectedBoxType).map((v) => v.length).filter(Boolean)
+    );
+  }, [variants, selectedBoxType, uniqueLengths]);
 
   // Find the matching variant for current selection
   const currentVariant = useMemo(() => {
@@ -343,51 +366,87 @@ export default function ProductDetailPage({
             </div>
 
             {/* Length toggle */}
-            {uniqueLengths.length > 1 && (
+            {uniqueLengths.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold text-slate-700 mb-2">
                   Stem Length
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {uniqueLengths.map((len) => (
-                    <button
-                      key={len}
-                      type="button"
-                      onClick={() => setSelectedLength(len)}
-                      className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                        selectedLength === len
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                          : "border-slate-300 text-slate-700 hover:border-emerald-400"
-                      }`}
-                    >
-                      {len}
-                    </button>
-                  ))}
+                  {uniqueLengths.map((len) => {
+                    const available = availableLengthsForBoxType.has(len);
+                    const isSelected = selectedLength === len;
+                    // Find price for this length
+                    const variantForLen = variants.find(
+                      (v) => v.length === len && (!selectedBoxType || v.box_type === selectedBoxType),
+                    ) || variants.find((v) => v.length === len);
+                    const lenPrice = variantForLen ? (variantForLen.deal_price ?? variantForLen.price) : null;
+                    return (
+                      <button
+                        key={len}
+                        type="button"
+                        onClick={() => available && setSelectedLength(len)}
+                        disabled={!available}
+                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                          isSelected
+                            ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+                            : available
+                            ? "border-slate-300 text-slate-700 hover:border-emerald-400"
+                            : "border-slate-200 text-slate-300 cursor-not-allowed bg-slate-50"
+                        }`}
+                      >
+                        {len}
+                        {lenPrice != null && uniqueLengths.length > 1 && (
+                          <span className={`ml-1 text-xs ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
+                            ${lenPrice.toFixed(2)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
             {/* Box type toggle */}
-            {uniqueBoxTypes.length > 1 && (
+            {uniqueBoxTypes.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold text-slate-700 mb-2">
                   Box Size
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {uniqueBoxTypes.map((bt) => (
-                    <button
-                      key={bt}
-                      type="button"
-                      onClick={() => setSelectedBoxType(bt)}
-                      className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                        selectedBoxType === bt
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                          : "border-slate-300 text-slate-700 hover:border-emerald-400"
-                      }`}
-                    >
-                      {BOX_TYPE_LABELS[bt] || bt}
-                    </button>
-                  ))}
+                  {uniqueBoxTypes.map((bt) => {
+                    const available = availableBoxTypesForLength.has(bt);
+                    const isSelected = selectedBoxType === bt;
+                    // Find variant for this box type to show stem count
+                    const variantForBt = variants.find(
+                      (v) => v.box_type === bt && (!selectedLength || v.length === selectedLength),
+                    ) || variants.find((v) => v.box_type === bt);
+                    const stemCount = variantForBt
+                      ? Math.round((variantForBt.stems_per_bunch || 1) * (variantForBt.units_per_box || 0))
+                      : null;
+                    return (
+                      <button
+                        key={bt}
+                        type="button"
+                        onClick={() => available && setSelectedBoxType(bt)}
+                        disabled={!available}
+                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                          isSelected
+                            ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+                            : available
+                            ? "border-slate-300 text-slate-700 hover:border-emerald-400"
+                            : "border-slate-200 text-slate-300 cursor-not-allowed bg-slate-50"
+                        }`}
+                      >
+                        {BOX_TYPE_LABELS[bt] || bt}
+                        {stemCount != null && stemCount > 0 && (
+                          <span className={`ml-1 text-xs ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
+                            ({stemCount})
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
