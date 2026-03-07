@@ -9,17 +9,6 @@ import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 
 export default function Home() {
-  const getBoxesShipped = () => {
-    const startDate = new Date('2026-02-01');
-    const today = new Date();
-    const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const dailyIncrease = 3; // +3 boxes per day, forever
-    const baseCount = 124;
-    return baseCount + (daysSinceStart * dailyIncrease);
-  };
-
-  const boxesShipped = getBoxesShipped();
-
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
@@ -41,10 +30,10 @@ export default function Home() {
         </div>
         <div className="relative z-10 max-w-4xl text-center px-6">
           <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-4 tracking-tight drop-shadow-2xl">
-            Farm-Direct Wholesale Flowers
+            Farm-Direct Wholesale Flowers — 270+ Varieties
           </h1>
           <p className="text-xl md:text-2xl text-white/90 font-light mb-6 max-w-2xl mx-auto">
-            Premium Ecuador roses and summer flowers. Delivered in 48-72 hours.
+            Roses, tropicals, specialty stems, and greens. Shipped from Ecuador to your shop in 4 days.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
@@ -52,7 +41,7 @@ export default function Home() {
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
             >
-              Shop Flowers
+              Browse the Catalog
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
@@ -60,7 +49,7 @@ export default function Home() {
               className="border-2 border-white text-white px-10 py-5 text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all"
               onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "hero" })}
             >
-              Get Free Sample Box
+              Free Sample Box
             </Link>
           </div>
         </div>
@@ -82,12 +71,12 @@ export default function Home() {
               <div className="text-sm text-slate-600">by eliminating middlemen</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">48-72hr Delivery</div>
+              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">4-Day Delivery</div>
               <div className="text-sm text-slate-600">farm-to-door</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">{boxesShipped.toLocaleString()}+ boxes</div>
-              <div className="text-sm text-slate-600">with free shipping</div>
+              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">270+ Varieties</div>
+              <div className="text-sm text-slate-600">roses, tropicals & specialty</div>
             </div>
           </div>
         </div>
@@ -112,7 +101,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-1">Freedom Red</h3>
               <p className="text-slate-600 mb-2">Classic red, 50cm stems</p>
-              <div className="text-3xl font-bold text-emerald-600">$1.45/stem</div>
+              <div className="text-3xl font-bold text-emerald-600">$2.07/stem</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
               <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
@@ -409,12 +398,12 @@ export default function Home() {
             <div className="flex items-center justify-center gap-3 text-center">
               <div className="w-12 h-12 bg-slate-50 rounded-lg shadow-sm flex items-center justify-center flex-shrink-0">
                 <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
               <div className="text-left">
-                <div className="font-semibold text-slate-900">Secure Checkout</div>
-                <div className="text-sm text-slate-600">256-bit SSL encryption</div>
+                <div className="font-semibold text-slate-900">Free Quote Request</div>
+                <div className="text-sm text-slate-600">No commitment required</div>
               </div>
             </div>
 
