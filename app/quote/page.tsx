@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ChevronLeft, ChevronRight, Plus, Trash2, Package, CalendarDays } from "lucide-react";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
   clearCart,
   getCartItems,
@@ -189,6 +190,11 @@ export default function QuotePage() {
         throw new Error(data.error || "Submission failed");
       }
 
+      pushEvent(CTA_EVENTS.submit_quote, {
+        item_count: items.length,
+        quote_total: total,
+        has_promo: !!promoCode,
+      });
       clearCart();
       window.location.href = "/quote/confirmation";
     } catch (err) {

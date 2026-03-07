@@ -10,6 +10,7 @@ import TopBanner from "@/components/TopBanner";
 import { SlidersHorizontal, X, ChevronDown, Package, Flame, Star } from "lucide-react";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
 import {
@@ -106,6 +107,7 @@ interface VarietyGroup {
   category: string;
   minPrice: number;
   maxPrice: number;
+  originalMinPrice: number; // price before any deal
   image: string;
   has_photo: boolean;
   tier: string; // best (lowest = most available) tier in group
@@ -121,6 +123,8 @@ interface VarietyGroup {
 function buildVarietyGroups(): VarietyGroup[] {
   const groups = new Map<string, Product[]>();
   for (const p of catalogProducts) {
+    // Skip products with invalid prices (price <= 0)
+    if (p.price <= 0) continue;
     const key = `${p.variety}---${p.color}`.toLowerCase();
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(p);
@@ -140,6 +144,7 @@ function buildVarietyGroups(): VarietyGroup[] {
     const rep = sorted[0];
 
     const prices = variants.map((v) => v.deal_price ?? v.price);
+    const originalPrices = variants.map((v) => v.price);
     const bestTier = sorted.reduce((best, v) => {
       const order: Record<string, number> = { T1: 0, T2: 1, T3: 2, T4: 3 };
       return (order[v.tier] ?? 3) < (order[best] ?? 3) ? v.tier : best;
@@ -158,6 +163,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       category: rep.category,
       minPrice: Math.min(...prices),
       maxPrice: Math.max(...prices),
+      originalMinPrice: Math.min(...originalPrices),
       image: resolveImage(rep.images || [], rep.variety, rep.color, rep.category),
       has_photo: rep.has_photo,
       tier: bestTier,
@@ -254,9 +260,20 @@ function ShopPageContent() {
     }
   }, [searchParams]);
 
-  const toggleArray = <T,>(arr: T[], item: T, setter: (arr: T[]) => void) => {
-    if (arr.includes(item)) setter(arr.filter((x) => x !== item));
-    else setter([...arr, item]);
+  const toggleArray = <T,>(arr: T[], item: T, setter: (arr: T[]) => void, filterType?: string) => {
+    const adding = !arr.includes(item);
+    if (adding) {
+      setter([...arr, item]);
+    } else {
+      setter(arr.filter((x) => x !== item));
+    }
+    if (filterType) {
+      pushEvent(CTA_EVENTS.filter_change, {
+        filter_type: filterType,
+        filter_value: String(item),
+        filter_action: adding ? "add" : "remove",
+      });
+    }
   };
 
   const filteredGroups = useMemo(() => {
@@ -415,7 +432,10 @@ function ShopPageContent() {
       <div className="flex flex-col gap-2">
         <button
           type="button"
-          onClick={() => setShowDealsOnly(!showDealsOnly)}
+          onClick={() => {
+            setShowDealsOnly(!showDealsOnly);
+            pushEvent(CTA_EVENTS.filter_change, { filter_type: "deals_only", filter_action: showDealsOnly ? "remove" : "add" });
+          }}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
             showDealsOnly
               ? "bg-amber-50 border-amber-300 text-amber-700"
@@ -427,7 +447,10 @@ function ShopPageContent() {
         </button>
         <button
           type="button"
-          onClick={() => setShowBestsellersOnly(!showBestsellersOnly)}
+          onClick={() => {
+            setShowBestsellersOnly(!showBestsellersOnly);
+            pushEvent(CTA_EVENTS.filter_change, { filter_type: "bestsellers_only", filter_action: showBestsellersOnly ? "remove" : "add" });
+          }}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
             showBestsellersOnly
               ? "bg-emerald-50 border-emerald-300 text-emerald-700"
@@ -451,7 +474,7 @@ function ShopPageContent() {
                 <input
                   type="checkbox"
                   checked={categoryFilter.includes(cat)}
-                  onChange={() => toggleArray(categoryFilter, cat, setCategoryFilter)}
+                  onChange={() => toggleArray(categoryFilter, cat, setCategoryFilter, "category")}
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
                 />
                 <span className="text-sm text-slate-700">{cat}</span>
@@ -506,7 +529,7 @@ function ShopPageContent() {
                   type="checkbox"
                   checked={colorGroupFilter.includes(cg)}
                   onChange={() =>
-                    toggleArray(colorGroupFilter, cg, setColorGroupFilter)
+                    toggleArray(colorGroupFilter, cg, setColorGroupFilter, "color")
                   }
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
                 />
@@ -664,6 +687,11 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
       <Link
         href={`/shop/${group.slug}`}
         className="block aspect-square relative bg-slate-50 overflow-hidden"
+        onClick={() => pushEvent(CTA_EVENTS.product_click, {
+          product_name: group.name,
+          product_category: group.category,
+          product_price: displayPrice,
+        })}
       >
         <Image
           src={imgSrc}
@@ -692,9 +720,9 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
         </Link>
         <p className="text-xs text-slate-400 mt-0.5">{group.category}</p>
         <div className="mt-2 flex items-baseline gap-1.5">
-          {group.is_on_deal && group.dealPrice != null && (
+          {group.is_on_deal && group.dealPrice != null && group.dealPrice < group.originalMinPrice && (
             <span className="text-xs text-slate-400 line-through">
-              ${group.minPrice.toFixed(2)}
+              ${group.originalMinPrice.toFixed(2)}
             </span>
           )}
           <span className="text-base font-bold text-emerald-600">

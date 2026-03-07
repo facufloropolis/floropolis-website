@@ -11,6 +11,7 @@ import type { Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
   getEarliestDeliveryDate,
   getDeliveryDates,
@@ -134,6 +135,17 @@ export default function ProductDetailPage({
   const [selectingTo, setSelectingTo] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
+  // Track product view on mount
+  useEffect(() => {
+    pushEvent(CTA_EVENTS.view_product, {
+      product_name: [product.variety, product.color].filter(Boolean).join(" "),
+      product_category: product.category,
+      product_tier: product.tier,
+      product_price: product.price,
+      product_vendor: product.vendor || "",
+    });
+  }, [product]);
+
   // Which box types are available for the currently selected length
   const availableBoxTypesForLength = useMemo(() => {
     if (!selectedLength) return new Set(uniqueBoxTypes);
@@ -208,6 +220,13 @@ export default function ProductDetailPage({
       stem_length: selectedLength || undefined,
     };
     addItem(quoteItem);
+    pushEvent(CTA_EVENTS.add_to_quote, {
+      product_name: displayName,
+      product_category: currentVariant.category,
+      product_price: currentVariant.price ?? 0,
+      stem_length: selectedLength || "default",
+      box_type: currentVariant.box_type || "Standard",
+    });
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 2000);
   };
@@ -331,7 +350,7 @@ export default function ProductDetailPage({
             <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
               {effectivePrice != null ? (
                 <div className="flex items-baseline gap-3">
-                  {hasDeal && basePrice != null && (
+                  {hasDeal && basePrice != null && dealPrice != null && dealPrice < basePrice && (
                     <span className="text-sm text-slate-400 line-through">
                       ${basePrice.toFixed(2)}/{unitLabel}
                     </span>
@@ -650,7 +669,7 @@ export default function ProductDetailPage({
                           (p.color ? ` ${p.color}` : "")}
                       </h3>
                       <div className="mt-auto flex items-baseline gap-1">
-                        {hasDealRel && baseRel != null && (
+                        {hasDealRel && baseRel != null && p.deal_price != null && p.deal_price < baseRel && (
                           <span className="text-xs text-slate-400 line-through">
                             ${baseRel.toFixed(2)}/{unitRel}
                           </span>
