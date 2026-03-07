@@ -102,6 +102,30 @@ export default function ShopRosesPage() {
         <TierSection roses={popular} tier="popular" onOrderClick={trackOrderClick} />
         <TierSection roses={premium} tier="premium" onOrderClick={trackOrderClick} />
         <TierSection roses={assorted} tier="assorted" onOrderClick={trackOrderClick} />
+
+        {/* FAQ — SEO content */}
+        <section className="mt-16 mb-10 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-5">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for wholesale roses?</h3>
+              <p className="text-slate-600 text-sm">Our minimum order is 25 stems per variety. You can combine multiple varieties in a single order to meet volume requirements.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Do you carry garden roses?</h3>
+              <p className="text-slate-600 text-sm">Yes. We carry Quicksand, Free Spirit, Antonia Garden, and several other garden-style roses with open, lush blooms. Check current availability in the shop — selection varies by season.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How do I get the best vase life from Ecuador roses?</h3>
+              <p className="text-slate-600 text-sm">Re-cut stems at a 45° angle immediately on arrival, remove foliage below the waterline, and use clean buckets with floral preservative. You should expect 14-16 days consistently with proper conditioning.</p>
+            </div>
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/blog/wholesale-roses-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
+              Read our complete wholesale roses guide &rarr;
+            </Link>
+          </div>
+        </section>
       </main>
 
       <Footer />

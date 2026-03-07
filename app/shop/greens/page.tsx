@@ -95,6 +95,25 @@ export default function ShopGreensPage() {
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
+
+        {/* FAQ — SEO content */}
+        <section className="mt-16 mb-10 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-5">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What greens do you carry year-round?</h3>
+              <p className="text-slate-600 text-sm">We carry eucalyptus (multiple varieties), Italian ruscus, leatherleaf fern, and mixed tropical foliage year-round. Seasonal accent greens vary — check current availability.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for greens?</h3>
+              <p className="text-slate-600 text-sm">Minimums vary by variety — typically 10-15 stems for foliage bunches. Contact us for custom bunching or volume pricing.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How long does your greenery last?</h3>
+              <p className="text-slate-600 text-sm">Farm-direct greens typically last 14-21 days in water. Eucalyptus can also be dried. Ruscus is one of our longest-lasting varieties at 3 weeks with proper care.</p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

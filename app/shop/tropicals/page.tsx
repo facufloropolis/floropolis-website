@@ -101,6 +101,30 @@ export default function ShopTropicalsPage() {
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
+
+        {/* FAQ — SEO content */}
+        <section className="mt-16 mb-10 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-5">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Do you have bird of paradise year-round?</h3>
+              <p className="text-slate-600 text-sm">Yes. Bird of paradise is one of our most reliable year-round varieties, supplied from our Ecuador farm partners. Check current availability for specific stem counts.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for heliconias?</h3>
+              <p className="text-slate-600 text-sm">Minimum is typically 5 stems for tropicals, depending on variety. Heliconias are sold by the stem due to their size and value. Contact us for volume pricing for event work.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How do I condition tropical flowers?</h3>
+              <p className="text-slate-600 text-sm">Most tropicals prefer warm water (room temperature, not cold). Re-cut stems at an angle, keep in a cool spot (not refrigerator), and avoid direct drafts. Do NOT refrigerate heliconias — they&apos;ll blacken overnight.</p>
+            </div>
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/blog/tropical-flower-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
+              Read our complete tropical flower guide &rarr;
+            </Link>
+          </div>
+        </section>
       </main>
 
       <Footer />
