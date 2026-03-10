@@ -368,6 +368,7 @@ export async function POST(req: NextRequest) {
       quote_id: quoteId,
       email_sent: emailSent,
       whatsapp_url: whatsappUrl,
+      _debug: { supabase: !!SUPABASE_URL, brevo: !!BREVO_API_KEY },
     });
   } catch (err) {
     console.error("Quote notification error:", err);
