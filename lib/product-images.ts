@@ -463,8 +463,10 @@ function getCandidateKeys(variety: string, color: string): string[] {
   if (v.includes("foliage-greenery")) keys.push("green-greenery-foliage");
   if (v.includes("foliage-jungle")) keys.push("green-jungle-foliage");
 
-  // 20. Ranunculus with just color name — ONLY for ranunculus products
-  if (v.includes("ranunculus") || v === "bon-bon" || v === "focal-scoop" || v === "scoop") {
+  // 20. Ranunculus with just color name — maps variety+color → ranunculus-{color}
+  // Covers all known Ranunculus varieties: Amandine, Elegance, Bon Bon, Focal Scoop
+  const RANUNCULUS_VARIETIES = ["ranunculus", "amandine", "elegance", "bon-bon", "focal-scoop", "scoop"];
+  if (RANUNCULUS_VARIETIES.some((rv) => v.includes(rv) || v === rv)) {
     keys.push(`ranunculus-${c}`);
   }
 

@@ -9,4 +9,4 @@ const envBase =
 
 export const PRODUCT_IMAGES_BASE_URL = envBase ?? "/product-photos";
 
-export const WHATSAPP_NUMBER = "14153352771";
+export const WHATSAPP_NUMBER = "17864603229";

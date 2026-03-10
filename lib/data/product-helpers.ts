@@ -52,10 +52,20 @@ export function getRelated(
   excludeSlug: string,
   limit = 4,
 ): Product[] {
-  return products
+  const candidates = products
     .filter((p) => p.category === category && p.slug !== excludeSlug)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, limit);
+    .sort(() => Math.random() - 0.5);
+  // Deduplicate by variety+color to avoid showing same product twice
+  const seen = new Set<string>();
+  const result: Product[] = [];
+  for (const p of candidates) {
+    const key = `${p.variety}---${p.color}`.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(p);
+    if (result.length >= limit) break;
+  }
+  return result;
 }
 
 // Grouped products for catalog/shop grid: one card per variety+color
@@ -74,6 +84,42 @@ export function getGroupedProducts(): Product[] {
       return a.display_order - b.display_order;
     })[0];
     result.push(best);
+  }
+  return result;
+}
+
+// Featured products for homepage — picks 4 diverse bestsellers
+export function getFeaturedProducts(limit = 4): Product[] {
+  const grouped = getGroupedProducts();
+  // Prioritize: bestseller + has photo + lowest tier + highest price variety
+  const scored = grouped
+    .filter((p) => p.price > 0)
+    .map((p) => ({
+      product: p,
+      score:
+        (p.is_best_seller ? 100 : 0) +
+        (p.has_photo ? 50 : 0) +
+        (p.is_on_deal ? 20 : 0) +
+        (p.tier === "T1" ? 15 : p.tier === "T2" ? 10 : 0),
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  // Pick from different categories for variety
+  const result: Product[] = [];
+  const usedCategories = new Set<string>();
+  for (const { product } of scored) {
+    if (result.length >= limit) break;
+    if (usedCategories.has(product.category)) continue;
+    usedCategories.add(product.category);
+    result.push(product);
+  }
+  // Fill remaining if not enough categories
+  if (result.length < limit) {
+    for (const { product } of scored) {
+      if (result.length >= limit) break;
+      if (result.some((r) => r.slug === product.slug)) continue;
+      result.push(product);
+    }
   }
   return result;
 }

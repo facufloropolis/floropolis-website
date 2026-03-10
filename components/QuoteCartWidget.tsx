@@ -97,7 +97,7 @@ export default function QuoteCartWidget() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-emerald-600 text-white px-5 py-3.5 shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all animate-bounce-once"
+          className="fixed bottom-36 right-6 z-40 flex items-center gap-2 rounded-full bg-emerald-600 text-white px-5 py-3.5 shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all animate-bounce-once"
         >
           <ShoppingCart className="w-5 h-5" />
           <span className="text-sm font-bold">

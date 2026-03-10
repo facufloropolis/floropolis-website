@@ -110,7 +110,8 @@ export function getItemCount(): number {
 export function getSubtotal(): number {
   return readCart().reduce((sum, item) => {
     const unitPrice = item.deal_price ?? item.price;
-    return sum + unitPrice * item.quantity * item.units_per_box;
+    const units = item.units_per_box || 1;
+    return sum + unitPrice * item.quantity * units;
   }, 0);
 }
 

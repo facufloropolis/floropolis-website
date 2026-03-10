@@ -24,6 +24,7 @@ import { validatePromoCode, type PromoResult } from "@/lib/promo-engine";
 import { type Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import {
   getDeliveryDates,
   getEarliestDeliveryDate,
@@ -167,6 +168,10 @@ export default function QuotePage() {
       email: formData.get("email") as string,
       phone: (formData.get("phone") as string) || null,
       is_existing_client: isExistingClient,
+      shipping_address: (formData.get("shipping_address") as string) || null,
+      shipping_city: (formData.get("shipping_city") as string) || null,
+      shipping_state: (formData.get("shipping_state") as string) || null,
+      shipping_zip: (formData.get("shipping_zip") as string) || null,
       preferred_delivery_date: deliveryDates[0] || null,
       notes: (formData.get("notes") as string) || null,
       wants_call: formData.get("wants_call") === "on",
@@ -196,7 +201,8 @@ export default function QuotePage() {
         has_promo: !!promoCode,
       });
       clearCart();
-      window.location.href = "/quote/confirmation";
+      const quoteId = data.quote_id ? `?id=${data.quote_id}` : "";
+      window.location.href = `/quote/confirmation${quoteId}`;
     } catch (err) {
       console.error(err);
       setError(
@@ -274,8 +280,8 @@ export default function QuotePage() {
                                 {item.name}
                               </h3>
                               <p className="text-xs text-slate-500 mt-0.5">
-                                {item.category} · {item.box_type} box ·{" "}
-                                {item.units_per_box.toLocaleString()} stems
+                                {item.category} · {item.box_type} box
+                                {item.units_per_box > 0 && ` · ${item.units_per_box.toLocaleString()} stems`}
                                 {item.stem_length && ` · ${item.stem_length}`}
                               </p>
                             </div>
@@ -301,7 +307,7 @@ export default function QuotePage() {
                               <div className="flex items-center gap-1.5">
                                 <button
                                   type="button"
-                                  className="w-7 h-7 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
+                                  className="w-9 h-9 rounded-lg border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
                                   onClick={() => {
                                     updateQuantity(
                                       item.slug,
@@ -320,7 +326,7 @@ export default function QuotePage() {
                                 </span>
                                 <button
                                   type="button"
-                                  className="w-7 h-7 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
+                                  className="w-9 h-9 rounded-lg border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-50 text-sm"
                                   onClick={() => {
                                     updateQuantity(
                                       item.slug,
@@ -364,12 +370,13 @@ export default function QuotePage() {
                                 {(
                                   (item.deal_price ?? item.price) *
                                   item.quantity *
-                                  item.units_per_box
+                                  (item.units_per_box || 1)
                                 ).toFixed(2)}
                               </span>
                               <p className="text-[10px] text-slate-400">
                                 ${(item.deal_price ?? item.price).toFixed(2)}/
                                 {item.unit === "Bunch" ? "bunch" : "stem"}
+                                {item.units_per_box > 0 ? ` × ${item.units_per_box}` : ""}
                               </p>
                             </div>
                           </div>
@@ -507,7 +514,7 @@ export default function QuotePage() {
                 Your Details
               </h2>
               <p className="text-xs text-slate-500 mb-4">
-                We'll confirm your order within 2 business hours.
+                We'll confirm your order within 1 hour (Mon–Fri, 8 AM – 6 PM ET).
               </p>
 
               {/* Existing client toggle */}
@@ -528,8 +535,8 @@ export default function QuotePage() {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-3 text-sm">
-                <div className="grid grid-cols-2 gap-3">
+              <form id="quote-form" onSubmit={handleSubmit} className="space-y-3 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-slate-700 mb-1 text-xs font-medium">
                       Contact Name *
@@ -537,7 +544,7 @@ export default function QuotePage() {
                     <input
                       name="contact_name"
                       required
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your name"
                     />
                   </div>
@@ -548,13 +555,13 @@ export default function QuotePage() {
                     <input
                       name="business_name"
                       required
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your shop"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-slate-700 mb-1 text-xs font-medium">
                       Email *
@@ -563,7 +570,7 @@ export default function QuotePage() {
                       type="email"
                       name="email"
                       required
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="you@company.com"
                     />
                   </div>
@@ -573,14 +580,111 @@ export default function QuotePage() {
                     </label>
                     <input
                       name="phone"
+                      type="tel"
                       required={!isExistingClient}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="For delivery updates"
                     />
                   </div>
                 </div>
 
-                {/* Phone not required for existing clients */}
+                {/* Shipping address — required for new clients */}
+                {!isExistingClient && (
+                  <div className="space-y-3 pt-2 border-t border-slate-200">
+                    <p className="text-xs font-semibold text-slate-700">Shipping Address *</p>
+                    <div>
+                      <input
+                        name="shipping_address"
+                        required
+                        className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                        placeholder="Street address"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <input
+                          name="shipping_city"
+                          required
+                          className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                          placeholder="City"
+                        />
+                      </div>
+                      <div>
+                        <select
+                          name="shipping_state"
+                          required
+                          className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-700"
+                          defaultValue=""
+                        >
+                          <option value="" disabled>State</option>
+                          <option value="AL">Alabama</option>
+                          <option value="AK">Alaska</option>
+                          <option value="AZ">Arizona</option>
+                          <option value="AR">Arkansas</option>
+                          <option value="CA">California</option>
+                          <option value="CO">Colorado</option>
+                          <option value="CT">Connecticut</option>
+                          <option value="DE">Delaware</option>
+                          <option value="DC">District of Columbia</option>
+                          <option value="FL">Florida</option>
+                          <option value="GA">Georgia</option>
+                          <option value="HI">Hawaii</option>
+                          <option value="ID">Idaho</option>
+                          <option value="IL">Illinois</option>
+                          <option value="IN">Indiana</option>
+                          <option value="IA">Iowa</option>
+                          <option value="KS">Kansas</option>
+                          <option value="KY">Kentucky</option>
+                          <option value="LA">Louisiana</option>
+                          <option value="ME">Maine</option>
+                          <option value="MD">Maryland</option>
+                          <option value="MA">Massachusetts</option>
+                          <option value="MI">Michigan</option>
+                          <option value="MN">Minnesota</option>
+                          <option value="MS">Mississippi</option>
+                          <option value="MO">Missouri</option>
+                          <option value="MT">Montana</option>
+                          <option value="NE">Nebraska</option>
+                          <option value="NV">Nevada</option>
+                          <option value="NH">New Hampshire</option>
+                          <option value="NJ">New Jersey</option>
+                          <option value="NM">New Mexico</option>
+                          <option value="NY">New York</option>
+                          <option value="NC">North Carolina</option>
+                          <option value="ND">North Dakota</option>
+                          <option value="OH">Ohio</option>
+                          <option value="OK">Oklahoma</option>
+                          <option value="OR">Oregon</option>
+                          <option value="PA">Pennsylvania</option>
+                          <option value="RI">Rhode Island</option>
+                          <option value="SC">South Carolina</option>
+                          <option value="SD">South Dakota</option>
+                          <option value="TN">Tennessee</option>
+                          <option value="TX">Texas</option>
+                          <option value="UT">Utah</option>
+                          <option value="VT">Vermont</option>
+                          <option value="VA">Virginia</option>
+                          <option value="WA">Washington</option>
+                          <option value="WV">West Virginia</option>
+                          <option value="WI">Wisconsin</option>
+                          <option value="WY">Wyoming</option>
+                        </select>
+                      </div>
+                      <div>
+                        <input
+                          name="shipping_zip"
+                          required
+                          className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                          placeholder="ZIP"
+                          pattern="[0-9]{5}"
+                          maxLength={5}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Existing client note */}
                 {isExistingClient && (
                   <p className="text-xs text-emerald-600 -mt-1">
                     We have your details on file — just confirm your name and email above.
@@ -656,6 +760,33 @@ export default function QuotePage() {
         </div>
       </main>
 
+      {/* Sticky Continue Shopping bar */}
+      <div className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-sm border-t border-slate-200 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom)]">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Continue Shopping
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-slate-600">
+              {items.length} {items.length === 1 ? "item" : "items"}
+            </span>
+            {items.length > 0 && (
+              <Link
+                href="#quote-form"
+                className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
+              >
+                Submit Quote
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <WhatsAppWidget message="Hi! I have a question about my quote on Floropolis." />
       <Footer />
     </div>
   );

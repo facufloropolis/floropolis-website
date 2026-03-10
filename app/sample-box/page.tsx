@@ -8,7 +8,6 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
-import { getSampleBoxesAvailable } from "@/lib/sample-boxes";
 
 // US states only (50 states + DC) – value = abbreviation for sheet
 const US_STATES = [
@@ -76,7 +75,6 @@ export default function SampleBoxPage() {
 
 function SampleBoxContent() {
   const searchParams = useSearchParams();
-  const spotsLeft = getSampleBoxesAvailable();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -91,6 +89,7 @@ function SampleBoxContent() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   // Pre-populate from product page navigation
   useEffect(() => {
@@ -142,21 +141,69 @@ function SampleBoxContent() {
         }),
       });
 
-      // Also trigger n8n directly
+      // Also trigger n8n directly (keep existing)
       fetch('https://n8n.floropolis.com/webhook/sample-box-new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       }).catch(() => {});
 
+      // NEW: Save to Supabase + send internal email + append to Google Sheet
+      fetch('/api/notify-sample-box', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          boxChoice: formData.boxChoice,
+          notes: formData.notes,
+        }),
+      }).catch(() => {});
+
       setIsSuccess(true);
     } catch (error) {
       console.error('Error submitting form:', error);
-      setIsSuccess(true); // Still show success since no-cors doesn't return response
+      setIsError(true);
     }
 
     setIsSubmitting(false);
   };
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">⚠️</span>
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-4">Something Went Wrong</h1>
+          <p className="text-lg text-slate-600 mb-8">
+            We couldn&apos;t submit your request. Please try again or contact us directly.
+          </p>
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => setIsError(false)}
+              className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all"
+            >
+              Try Again
+            </button>
+            <a
+              href="mailto:facu@floropolis.com"
+              className="text-emerald-600 hover:text-emerald-700 font-medium"
+            >
+              Email us directly →
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -207,25 +254,13 @@ function SampleBoxContent() {
                 Try our premium flowers risk-free. No obligation, no credit card required.
               </p>
 
-              {spotsLeft > 0 ? (
-                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg">
-                  <p className="text-amber-900 font-semibold flex items-center gap-2">
-                    <span className="text-xl">⏰</span>
-                    {spotsLeft === 2
-                      ? `Only ${spotsLeft} sample boxes left this week!`
-                      : `${spotsLeft} sample boxes available this week`}
-                  </p>
-                  <p className="text-sm text-amber-700 mt-1">Resets every Monday at 9am EST • First come, first serve</p>
-                </div>
-              ) : (
-                <div className="bg-slate-100 border-l-4 border-slate-400 p-4 mb-6 rounded-r-lg">
-                  <p className="text-slate-700 font-semibold flex items-center gap-2">
-                    <span className="text-xl">&#128235;</span>
-                    This week's sample boxes are gone!
-                  </p>
-                  <p className="text-sm text-slate-600 mt-1">New batch drops Monday at 9am EST. Submit your request now to be first in line.</p>
-                </div>
-              )}
+              <div className="bg-emerald-50 border-l-4 border-emerald-400 p-4 mb-6 rounded-r-lg">
+                <p className="text-emerald-900 font-semibold flex items-center gap-2">
+                  <span className="text-xl">📦</span>
+                  Ships within 48 hours of confirmation
+                </p>
+                <p className="text-sm text-emerald-700 mt-1">We review every request and confirm by email within 24 hours.</p>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">

@@ -92,7 +92,7 @@ function toProduct(row) {
     is_best_seller: row.is_best_seller || false,
     is_featured: row.is_featured || false,
     display_order: row.display_order ?? 999,
-    slug: row.slug || "",
+    slug: (row.slug || "").replace(/&/g, "and").replace(/[^a-z0-9-]/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, ""),
     images: Array.isArray(row.images) ? row.images : [],
     tier: row.tier || "T3",
     has_photo: Array.isArray(row.images) && row.images.length > 0,

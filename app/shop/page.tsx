@@ -7,20 +7,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import { SlidersHorizontal, X, ChevronDown, Package, Flame, Star } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, Package, Flame, Star, Search } from "lucide-react";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
-import {
-  getSliderDeliveryDates,
-  getEarliestDeliveryDate,
-  formatDeliveryDate,
-  isAvailableByDate,
-  isAvailableInRange,
-  toISODate,
-} from "@/lib/delivery-dates";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
+import { getEarliestDeliveryDate, formatDeliveryDate } from "@/lib/delivery-dates";
 
 type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
 
@@ -78,24 +72,35 @@ const CATEGORY_TAM_ORDER = [
   "Anemone",
   "Ranunculus",
   "Gypsophila",
-  "Scabiosa",
-  "Thistle",
-  "Bells of Ireland",
-  "Craspedia",
-  "Larkspur",
 ];
 
-const ALL_CATEGORIES = (() => {
-  const cats = new Set<string>();
+// Categories with <10 products get grouped under "Specialty"
+const SPECIALTY_THRESHOLD = 10;
+
+const { ALL_CATEGORIES, SPECIALTY_CATEGORIES } = (() => {
+  const catCounts = new Map<string, number>();
   for (const p of catalogProducts) {
-    cats.add(p.category);
+    catCounts.set(p.category, (catCounts.get(p.category) || 0) + 1);
   }
-  // Return in TAM order, then any unlisted categories at the end
-  const ordered = CATEGORY_TAM_ORDER.filter((c) => cats.has(c));
-  for (const c of cats) {
-    if (!ordered.includes(c)) ordered.push(c);
+  const specialty: string[] = [];
+  const main: string[] = [];
+  for (const [cat, count] of catCounts) {
+    if (count < SPECIALTY_THRESHOLD && !CATEGORY_TAM_ORDER.includes(cat)) {
+      specialty.push(cat);
+    }
   }
-  return ordered;
+  // Build ordered list: TAM order first, then Specialty at end
+  const ordered = CATEGORY_TAM_ORDER.filter((c) => catCounts.has(c));
+  // Add any unlisted categories with >= threshold
+  for (const [cat] of catCounts) {
+    if (!ordered.includes(cat) && !specialty.includes(cat)) {
+      ordered.push(cat);
+    }
+  }
+  if (specialty.length > 0) {
+    ordered.push("Specialty");
+  }
+  return { ALL_CATEGORIES: ordered, SPECIALTY_CATEGORIES: specialty };
 })();
 
 // Group products by variety+color for one-card-per-variety display
@@ -119,6 +124,7 @@ interface VarietyGroup {
   variantCount: number;
   slug: string; // slug of the representative product
   colorGroup: string;
+  compareAtPrice: number | null; // market rate for strikethrough display
 }
 
 function buildVarietyGroups(): VarietyGroup[] {
@@ -182,6 +188,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       variantCount: variants.length,
       slug: rep.slug,
       colorGroup: getColorGroup(rep.color),
+      compareAtPrice: rep.compare_at_price ?? null,
     });
   }
   return result;
@@ -214,25 +221,57 @@ function ShopPageContent() {
   const [showAllColors, setShowAllColors] = useState(false);
   const [showDealsOnly, setShowDealsOnly] = useState(false);
   const [showBestsellersOnly, setShowBestsellersOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const searchParams = useSearchParams();
 
-  // Delivery date range slider — from/to window
-  const sliderDates = useMemo(() => getSliderDeliveryDates(), []);
-  const [sliderFrom, setSliderFrom] = useState(0);
-  const [sliderTo, setSliderTo] = useState(sliderDates.length - 1);
-  const dateFrom = sliderDates[sliderFrom] || sliderDates[0];
-  const dateTo = sliderDates[sliderTo] || sliderDates[sliderDates.length - 1];
+  // Delivery tier filter chips — "fast" = T1/T2 (~4 days), "preorder" = T3 (~14 days)
+  const [showFast, setShowFast] = useState(true);
+  const [showPreorder, setShowPreorder] = useState(true);
 
   const varietyGroups = useMemo(() => buildVarietyGroups(), []);
 
-  // Available color groups from current products
-  const availableColorGroups = useMemo(() => {
-    const groups = new Set<string>();
-    for (const g of varietyGroups) {
-      groups.add(g.colorGroup);
-    }
-    return Object.keys(COLOR_GROUPS).filter((cg) => groups.has(cg));
+  // Popular products — top bestsellers for hero section
+  const popularProducts = useMemo(() => {
+    return varietyGroups
+      .filter((g) => g.bestseller && g.minPrice > 0)
+      .sort((a, b) => {
+        if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
+        if (a.tier !== b.tier) {
+          const order: Record<string, number> = { T1: 0, T2: 1, T3: 2 };
+          return (order[a.tier] ?? 3) - (order[b.tier] ?? 3);
+        }
+        return 0;
+      })
+      .slice(0, 8);
   }, [varietyGroups]);
+
+  // Category counts for filter labels (with Specialty aggregation)
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const g of varietyGroups) {
+      if (SPECIALTY_CATEGORIES.includes(g.category)) {
+        counts.set("Specialty", (counts.get("Specialty") || 0) + 1);
+      } else {
+        counts.set(g.category, (counts.get(g.category) || 0) + 1);
+      }
+    }
+    return counts;
+  }, [varietyGroups]);
+
+  // Available color groups with counts, ordered by volume
+  const colorGroupCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const g of varietyGroups) {
+      counts.set(g.colorGroup, (counts.get(g.colorGroup) || 0) + 1);
+    }
+    return counts;
+  }, [varietyGroups]);
+
+  const availableColorGroups = useMemo(() => {
+    return Object.keys(COLOR_GROUPS)
+      .filter((cg) => colorGroupCounts.has(cg))
+      .sort((a, b) => (colorGroupCounts.get(b) || 0) - (colorGroupCounts.get(a) || 0));
+  }, [colorGroupCounts]);
 
   const router = useRouter();
   const [filtersInitialized, setFiltersInitialized] = useState(false);
@@ -292,9 +331,24 @@ function ShopPageContent() {
   const filteredGroups = useMemo(() => {
     let list = [...varietyGroups];
 
-    // Delivery date range filter — show products deliverable within window
-    if (dateFrom && dateTo) {
-      list = list.filter((g) => isAvailableInRange(g.tier, dateFrom, dateTo));
+    // Text search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter((g) =>
+        g.name.toLowerCase().includes(q) ||
+        g.variety.toLowerCase().includes(q) ||
+        g.color.toLowerCase().includes(q) ||
+        g.category.toLowerCase().includes(q)
+      );
+    }
+
+    // Delivery tier filter — show only selected tiers
+    if (!showFast || !showPreorder) {
+      list = list.filter((g) => {
+        const isFast = g.tier === "T1" || g.tier === "T2";
+        if (isFast) return showFast;
+        return showPreorder;
+      });
     }
 
     if (showDealsOnly) {
@@ -304,7 +358,11 @@ function ShopPageContent() {
       list = list.filter((g) => g.bestseller);
     }
     if (categoryFilter.length) {
-      list = list.filter((g) => categoryFilter.includes(g.category));
+      list = list.filter((g) => {
+        if (categoryFilter.includes(g.category)) return true;
+        if (categoryFilter.includes("Specialty") && SPECIALTY_CATEGORIES.includes(g.category)) return true;
+        return false;
+      });
     }
     if (colorGroupFilter.length) {
       list = list.filter((g) => colorGroupFilter.includes(g.colorGroup));
@@ -316,15 +374,15 @@ function ShopPageContent() {
       list = list.filter((g) => g.maxPrice <= (priceMax as number));
     }
     return list;
-  }, [categoryFilter, colorGroupFilter, priceMin, priceMax, dateFrom, dateTo, showDealsOnly, showBestsellersOnly, varietyGroups]);
+  }, [categoryFilter, colorGroupFilter, priceMin, priceMax, showFast, showPreorder, showDealsOnly, showBestsellersOnly, searchQuery, varietyGroups]);
 
   const sortedGroups = useMemo(() => {
     const list = [...filteredGroups];
     switch (sortBy) {
       case "recommended":
         return list.sort((a, b) => {
-          // Products with photos first
-          if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
+          // Bestsellers first
+          if (a.bestseller !== b.bestseller) return a.bestseller ? -1 : 1;
           // Deals second
           if (a.is_on_deal !== b.is_on_deal) return a.is_on_deal ? -1 : 1;
           // Better tier (more available) third
@@ -350,10 +408,11 @@ function ShopPageContent() {
     setColorGroupFilter([]);
     setPriceMin("");
     setPriceMax("");
-    setSliderFrom(0);
-    setSliderTo(sliderDates.length - 1);
+    setShowFast(true);
+    setShowPreorder(true);
     setShowDealsOnly(false);
     setShowBestsellersOnly(false);
+    setSearchQuery("");
   };
 
   const hasActiveFilters =
@@ -361,10 +420,11 @@ function ShopPageContent() {
     colorGroupFilter.length > 0 ||
     priceMin !== "" ||
     priceMax !== "" ||
-    sliderFrom !== 0 ||
-    sliderTo !== sliderDates.length - 1 ||
+    !showFast ||
+    !showPreorder ||
     showDealsOnly ||
-    showBestsellersOnly;
+    showBestsellersOnly ||
+    searchQuery.trim() !== "";
 
   // Color groups to show (collapsed by default)
   const TOP_COLORS = 6;
@@ -389,56 +449,53 @@ function ShopPageContent() {
         )}
       </div>
 
-      {/* Delivery date range */}
+      {/* Delivery tier filter chips */}
       <div>
         <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-          Delivery window
+          Availability
         </h4>
-        <div className="px-1 space-y-2">
-          <div>
-            <label className="text-[10px] text-slate-500 font-medium">From</label>
-            <input
-              type="range"
-              min={0}
-              max={sliderDates.length - 1}
-              step={1}
-              value={sliderFrom}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                setSliderFrom(Math.min(v, sliderTo));
-              }}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-          </div>
-          <div>
-            <label className="text-[10px] text-slate-500 font-medium">To</label>
-            <input
-              type="range"
-              min={0}
-              max={sliderDates.length - 1}
-              step={1}
-              value={sliderTo}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                setSliderTo(Math.max(v, sliderFrom));
-              }}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-slate-400">
-            <span>{sliderDates[0] ? formatDeliveryDate(sliderDates[0]) : ""}</span>
-            <span>
-              {sliderDates[sliderDates.length - 1]
-                ? formatDeliveryDate(sliderDates[sliderDates.length - 1])
-                : ""}
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setShowFast(!showFast);
+              pushEvent(CTA_EVENTS.filter_change, { filter_type: "delivery_fast", filter_action: showFast ? "remove" : "add" });
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors text-left ${
+              showFast
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                : "bg-white border-slate-200 text-slate-400"
+            }`}
+          >
+            <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${showFast ? "bg-emerald-600 border-emerald-600" : "border-slate-300"}`}>
+              {showFast && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
             </span>
-          </div>
+            <span>
+              <span className="block font-semibold">In stock · ships in ~4 days</span>
+              <span className="text-slate-400 font-normal">Layer 1 &amp; 2 — ready inventory</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowPreorder(!showPreorder);
+              pushEvent(CTA_EVENTS.filter_change, { filter_type: "delivery_preorder", filter_action: showPreorder ? "remove" : "add" });
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors text-left ${
+              showPreorder
+                ? "bg-amber-50 border-amber-300 text-amber-800"
+                : "bg-white border-slate-200 text-slate-400"
+            }`}
+          >
+            <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${showPreorder ? "bg-amber-500 border-amber-500" : "border-slate-300"}`}>
+              {showPreorder && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            </span>
+            <span>
+              <span className="block font-semibold">Pre-order · ships in ~14 days</span>
+              <span className="text-slate-400 font-normal">Layer 3 — full catalog</span>
+            </span>
+          </button>
         </div>
-        <p className="mt-1 text-xs font-medium text-emerald-700">
-          {dateFrom && dateTo
-            ? `${formatDeliveryDate(dateFrom)} → ${formatDeliveryDate(dateTo)}`
-            : ""}
-        </p>
       </div>
 
       {/* Quick filters: Deals & Bestsellers */}
@@ -491,6 +548,7 @@ function ShopPageContent() {
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
                 />
                 <span className="text-sm text-slate-700">{cat}</span>
+                <span className="text-xs text-slate-400 ml-auto">{categoryCounts.get(cat) || 0}</span>
               </label>
             </li>
           ))}
@@ -547,6 +605,7 @@ function ShopPageContent() {
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
                 />
                 <span className="text-sm text-slate-700">{cg}</span>
+                <span className="text-xs text-slate-400 ml-auto">{colorGroupCounts.get(cg) || 0}</span>
               </label>
             </li>
           ))}
@@ -578,6 +637,68 @@ function ShopPageContent() {
         {/* Sample box CTA with scarcity countdown */}
         <SampleBoxCTA />
 
+        {/* Popular Right Now — curated bestsellers to reduce choice paralysis */}
+        {popularProducts.length > 0 && !searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-900">Popular Right Now</h2>
+              <button
+                type="button"
+                onClick={() => setShowBestsellersOnly(true)}
+                className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+              >
+                See all bestsellers →
+              </button>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
+              {popularProducts.map((group) => {
+                const imgSrc = group.image || "/Floropolis-logo-only.png";
+                const displayPrice = group.is_on_deal && group.dealPrice != null
+                  ? group.dealPrice
+                  : group.minPrice;
+                return (
+                  <Link
+                    key={group.key}
+                    href={`/shop/${group.slug}`}
+                    className="flex-none w-40 sm:w-48 snap-start bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group/pop"
+                    onClick={() => pushEvent(CTA_EVENTS.product_click, {
+                      product_name: group.name,
+                      product_category: group.category,
+                      product_price: displayPrice,
+                      cta_location: "popular_section",
+                    })}
+                  >
+                    <div className="aspect-square relative bg-slate-50 overflow-hidden">
+                      <Image
+                        src={imgSrc}
+                        alt={group.name}
+                        fill
+                        className="object-contain group-hover/pop:scale-105 transition-transform"
+                        sizes="192px"
+                        unoptimized={imgSrc.startsWith("http")}
+                      />
+                      {group.bestseller && (
+                        <span className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <h3 className="font-semibold text-slate-900 text-xs leading-tight line-clamp-1 group-hover/pop:text-emerald-600 transition-colors">
+                        {group.name}
+                      </h3>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{group.category}</p>
+                      <p className="text-sm font-bold text-emerald-600 mt-1">
+                        ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/stem</span>
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-8">
           {/* Sidebar: desktop */}
           <aside className="hidden lg:block w-52 flex-shrink-0">
@@ -587,6 +708,40 @@ function ShopPageContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
+            {/* Mobile quick-filter chips — visible below lg (where sidebar is hidden) */}
+            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide -mx-1 px-1">
+              {["Rose", "Tropicals", "Greens & Foliage", "Delphinium", "Ranunculus", "Anemone", "Hydrangea"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => toggleArray(categoryFilter, cat, setCategoryFilter, "category")}
+                  className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    categoryFilter.includes(cat)
+                      ? "bg-emerald-600 text-white border-emerald-600"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-emerald-300"
+                  }`}
+                >
+                  {cat === "Greens & Foliage" ? "Greens" : cat}
+                </button>
+              ))}
+            </div>
+            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide -mx-1 px-1">
+              {availableColorGroups.slice(0, 8).map((cg) => (
+                <button
+                  key={cg}
+                  type="button"
+                  onClick={() => toggleArray(colorGroupFilter, cg, setColorGroupFilter, "color")}
+                  className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    colorGroupFilter.includes(cg)
+                      ? "bg-emerald-600 text-white border-emerald-600"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-emerald-300"
+                  }`}
+                >
+                  {cg}
+                </button>
+              ))}
+            </div>
+
             {/* Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
               <p className="text-sm text-slate-600 font-medium">
@@ -666,6 +821,21 @@ function ShopPageContent() {
         </>
       )}
 
+      <WhatsAppWidget />
+
+      {/* Client Login — fixed bottom-right, above WhatsApp */}
+      <a
+        href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-20 right-6 z-40 flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 px-4 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all text-sm font-medium"
+      >
+        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+        </svg>
+        Existing client? Login
+      </a>
+
       <Footer />
     </div>
   );
@@ -731,7 +901,7 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             {group.name}
           </h3>
         </Link>
-        <p className="text-xs text-slate-400 mt-0.5">{group.category}</p>
+        <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
         <div className="mt-2 flex items-baseline gap-1.5">
           {group.hasPriceIssue && group.minPrice === 0 ? (
             <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
@@ -739,9 +909,9 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             </span>
           ) : (
             <>
-              {group.is_on_deal && group.dealPrice != null && group.dealPrice < group.originalMinPrice && (
+              {group.compareAtPrice != null && group.compareAtPrice > displayPrice && (
                 <span className="text-xs text-slate-400 line-through">
-                  ${group.originalMinPrice.toFixed(2)}
+                  ${group.compareAtPrice.toFixed(2)}
                 </span>
               )}
               <span className="text-base font-bold text-emerald-600">
@@ -753,10 +923,18 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             </>
           )}
         </div>
-        <p className="text-[11px] text-slate-400 mt-1">
-          {formatDeliveryDate(earliestDate)}
+        <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          {group.tier === "T1" || group.tier === "T2" ? (
+            <span className="inline-flex items-center gap-0.5 text-emerald-600 font-medium">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+              In Stock
+            </span>
+          ) : (
+            <span className="text-amber-600 font-medium">Pre-Order</span>
+          )}
+          <span>· {formatDeliveryDate(earliestDate)}</span>
           {group.variantCount > 1 && (
-            <span> · {group.variantCount} options</span>
+            <span>· {group.variantCount} options</span>
           )}
         </p>
         <Link

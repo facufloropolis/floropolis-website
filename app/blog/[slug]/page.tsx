@@ -7,6 +7,9 @@ import {
   getAllBlogSlugs,
   blogPosts,
 } from "@/lib/data/blog-posts";
+import { getProductsByCategory } from "@/lib/data/product-helpers";
+import { getProductImage } from "@/lib/product-images";
+import Image from "next/image";
 import BlogContent from "./BlogContent";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -33,8 +36,39 @@ export default async function BlogPostPage({ params }: Props) {
   const content = getBlogContent(slug);
   const otherPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
+  // Extract category from shopLink for featured products
+  const categoryMatch = post.shopLink.match(/category=([^&]+)/);
+  const categoryName = categoryMatch ? decodeURIComponent(categoryMatch[1]) : null;
+  const featuredProducts = categoryName
+    ? getProductsByCategory(categoryName)
+        .filter((p) => p.price > 0 && p.has_photo)
+        .sort((a, b) => Number(b.is_best_seller) - Number(a.is_best_seller))
+        .slice(0, 3)
+    : [];
+
+  // Article JSON-LD structured data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.metaDescription,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: { "@type": "Organization", name: "Floropolis" },
+    publisher: {
+      "@type": "Organization",
+      name: "Floropolis",
+      url: "https://www.floropolis.com",
+    },
+    mainEntityOfPage: `https://www.floropolis.com/blog/${slug}`,
+  };
+
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumb */}
       <div className="max-w-3xl mx-auto px-4 pt-6 sm:pt-8">
         <nav className="flex items-center gap-2 text-sm text-slate-500">
@@ -77,13 +111,53 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* Shop CTA */}
       <section className="max-w-3xl mx-auto px-4 pb-10">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 sm:p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900 mb-2">
-            Ready to order?
-          </h2>
-          <p className="text-sm text-slate-600 mb-4">
-            Farm-direct wholesale flowers from Ecuador. 4-day delivery.
-          </p>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 sm:p-8">
+          <div className="text-center mb-4">
+            <h2 className="text-lg font-bold text-slate-900 mb-2">
+              Ready to order?
+            </h2>
+            <p className="text-sm text-slate-600">
+              Farm-direct wholesale flowers from Ecuador. 4-day delivery.
+            </p>
+          </div>
+
+          {/* Featured products from this category */}
+          {featuredProducts.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mb-5">
+              {featuredProducts.map((p) => {
+                const img = getProductImage(p.variety, p.color, p.category);
+                const price = p.deal_price ?? p.price;
+                const unit = p.unit === "Bunch" ? "bunch" : "stem";
+                return (
+                  <Link
+                    key={p.slug}
+                    href={`/shop/${encodeURIComponent(p.slug)}`}
+                    className="group bg-white rounded-lg border border-emerald-100 overflow-hidden hover:shadow-md transition-all"
+                  >
+                    <div className="aspect-square relative bg-slate-50">
+                      <Image
+                        src={img}
+                        alt={`${p.variety} ${p.color}`}
+                        fill
+                        className="object-contain group-hover:scale-105 transition-transform"
+                        sizes="(max-width: 768px) 30vw, 200px"
+                        unoptimized={img.startsWith("http")}
+                      />
+                    </div>
+                    <div className="p-2">
+                      <p className="text-xs font-semibold text-slate-900 truncate group-hover:text-emerald-600 transition-colors">
+                        {p.variety} {p.color}
+                      </p>
+                      <p className="text-xs font-bold text-emerald-600">
+                        ${price.toFixed(2)}/{unit}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href={post.shopLink}

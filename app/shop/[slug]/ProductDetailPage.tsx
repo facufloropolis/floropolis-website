@@ -6,11 +6,12 @@ import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import { ShoppingCart, Check, Package, ChevronDown } from "lucide-react";
+import { ShoppingCart, Check, Package } from "lucide-react";
 import type { Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
   getEarliestDeliveryDate,
@@ -32,6 +33,154 @@ function resolveImage(path: string): string {
   if (path.startsWith("http") || path.startsWith("/")) return path;
   const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
   return `${base}/${path}`;
+}
+
+function DeliveryDateChips({
+  dates,
+  selected,
+  onSelect,
+  tier,
+}: {
+  dates: Date[];
+  selected: string;
+  onSelect: (iso: string) => void;
+  tier: string;
+}) {
+  // Group dates by week (Mon-Sun)
+  const weeks: { weekLabel: string; dates: Date[] }[] = [];
+  for (const d of dates) {
+    // Week label = "Week of Mon DD"
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // roll back to Monday
+    const label = monday.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const last = weeks[weeks.length - 1];
+    if (last && last.weekLabel === label) {
+      last.dates.push(d);
+    } else {
+      weeks.push({ weekLabel: label, dates: [d] });
+    }
+  }
+  // Only show first 4 weeks
+  const visibleWeeks = weeks.slice(0, 4);
+  const isFast = tier === "T1" || tier === "T2";
+
+  return (
+    <div className="space-y-3">
+      {visibleWeeks.map((week) => (
+        <div key={week.weekLabel}>
+          <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wide mb-1.5">
+            Week of {week.weekLabel}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {week.dates.map((d) => {
+              const iso = toISODate(d);
+              const isSelected = selected === iso;
+              const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
+              const dayNum = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+              return (
+                <button
+                  key={iso}
+                  type="button"
+                  onClick={() => onSelect(iso)}
+                  className={`flex flex-col items-center px-3 py-2 rounded-xl border text-xs font-medium transition-colors min-w-[60px] ${
+                    isSelected
+                      ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+                      : "border-slate-200 text-slate-600 hover:border-emerald-400 bg-white"
+                  }`}
+                >
+                  <span className="text-[10px] font-semibold uppercase tracking-wide">{dayName}</span>
+                  <span>{dayNum}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <p className="text-xs text-slate-400">
+        {isFast ? "In stock · ships in ~4 days" : "Pre-order · ships in ~14 days"}
+      </p>
+    </div>
+  );
+}
+
+function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDate: string }) {
+  const [addedSlug, setAddedSlug] = useState<string | null>(null);
+
+  function handleAdd(b: Product) {
+    const price = b.deal_price ?? b.price;
+    if (price <= 0) return;
+    addItem({
+      slug: b.slug,
+      name: b.name,
+      category: b.category,
+      vendor: b.vendor || "",
+      price: b.price,
+      deal_price: b.deal_price,
+      quantity: 1,
+      units_per_box: b.units_per_box || 1,
+      box_type: b.box_type || "HB",
+      unit: b.unit || "Stem",
+      delivery_date: deliveryDate,
+      stem_length: b.length || undefined,
+    });
+    pushEvent(CTA_EVENTS.add_to_quote, {
+      product_name: b.name,
+      product_category: b.category,
+      product_price: price,
+    });
+    setAddedSlug(b.slug);
+    setTimeout(() => setAddedSlug(null), 1500);
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {bundles.map((b) => {
+        const bImg = (Array.isArray(b.images) && b.images.length > 0)
+          ? resolveImage(b.images[0])
+          : getProductImage(b.variety, b.color, b.category);
+        const bPrice = b.deal_price ?? b.price;
+        const bUnit = b.unit === "Bunch" ? "bunch" : "stem";
+        const isAdded = addedSlug === b.slug;
+        return (
+          <button
+            key={b.slug}
+            type="button"
+            onClick={() => handleAdd(b)}
+            className="group flex items-center gap-4 bg-emerald-50/50 rounded-xl border border-emerald-100 p-3 hover:shadow-md transition-all text-left"
+          >
+            <div className="relative w-16 h-16 rounded-lg bg-white overflow-hidden flex-shrink-0">
+              <Image
+                src={bImg}
+                alt={b.name}
+                fill
+                className="object-contain"
+                sizes="64px"
+                unoptimized={bImg.startsWith("http")}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors truncate">
+                {b.variety} {b.color}
+              </p>
+              <p className="text-xs text-slate-400">{b.category}</p>
+              {bPrice > 0 && (
+                <p className="text-sm font-bold text-emerald-600 mt-0.5">
+                  ${bPrice.toFixed(2)}/{bUnit}
+                </p>
+              )}
+            </div>
+            <span className={`text-xs font-semibold flex-shrink-0 transition-colors ${isAdded ? "text-emerald-500" : "text-emerald-600"}`}>
+              {isAdded ? (
+                <span className="flex items-center gap-1"><Check className="w-3 h-3" /> Added</span>
+              ) : (
+                "Add +"
+              )}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function ProductDetailPage({
@@ -109,8 +258,6 @@ export default function ProductDetailPage({
     () => getDeliveryDates(earliestDelivery, 12),
     [earliestDelivery],
   );
-  const [showAllDates, setShowAllDates] = useState(false);
-
   // State — pre-populate with cheapest + earliest
   const cheapestVariant = useMemo(
     () =>
@@ -134,7 +281,6 @@ export default function ProductDetailPage({
   const [deliveryTo, setDeliveryTo] = useState<string>(
     deliveryDates[0] ? toISODate(deliveryDates[0]) : "",
   );
-  const [selectingTo, setSelectingTo] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
   // Track product view on mount
@@ -184,6 +330,7 @@ export default function ProductDetailPage({
   const dealPrice = currentVariant.deal_price ?? null;
   const hasDeal = !!currentVariant.is_on_deal && dealPrice != null;
   const effectivePrice = hasDeal && dealPrice != null ? dealPrice : basePrice;
+  const compareAtPrice = currentVariant.compare_at_price ?? null;
   const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
 
   const totalStems =
@@ -202,10 +349,6 @@ export default function ProductDetailPage({
         .slice(0, 4),
     [related],
   );
-
-  const deliveryLabel = deliveryFrom === deliveryTo
-    ? deliveryFrom
-    : `${deliveryFrom} to ${deliveryTo}`;
 
   const handleAddToQuote = () => {
     const quoteItem: QuoteItem = {
@@ -342,26 +485,44 @@ export default function ProductDetailPage({
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-1">
               {displayName}
             </h1>
-            <p className="text-sm text-slate-600 mb-4">
-              Farm:{" "}
-              <span className="font-semibold text-slate-800">
-                {product.vendor}
-              </span>
-            </p>
+            <div className="flex items-center gap-3 mb-4">
+              <p className="text-sm text-slate-600">
+                Farm:{" "}
+                <span className="font-semibold text-slate-800">
+                  {product.vendor}
+                </span>
+              </p>
+              {bestTier === "T1" || bestTier === "T2" ? (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  In Stock
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  Pre-Order · 14 days
+                </span>
+              )}
+            </div>
 
             {/* Price */}
             <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
               {effectivePrice != null && effectivePrice > 0 ? (
-                <div className="flex items-baseline gap-3">
-                  {hasDeal && basePrice != null && dealPrice != null && dealPrice < basePrice && (
+                <div className="flex items-baseline flex-wrap gap-x-3 gap-y-1">
+                  {compareAtPrice != null && compareAtPrice > effectivePrice && (
                     <span className="text-sm text-slate-400 line-through">
-                      ${basePrice.toFixed(2)}/{unitLabel}
+                      ${compareAtPrice.toFixed(2)}/{unitLabel}
                     </span>
                   )}
                   <span className="text-2xl font-bold text-emerald-600">
                     ${effectivePrice.toFixed(2)}/{unitLabel}
                   </span>
-                  {hasDeal &&
+                  {compareAtPrice != null && compareAtPrice > effectivePrice && (
+                    <span className="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-0.5 text-xs font-semibold border border-emerald-100">
+                      Save {Math.round((1 - effectivePrice / compareAtPrice) * 100)}%
+                    </span>
+                  )}
+                  {hasDeal && !compareAtPrice &&
                     (product.deal_label || currentVariant.deal_label) && (
                       <span className="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-0.5 text-xs font-semibold border border-emerald-100">
                         {currentVariant.deal_label ?? product.deal_label}
@@ -478,95 +639,17 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {/* Delivery date range — from / to */}
+            {/* Delivery date — smart chips grouped by week */}
             <div className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-sm font-semibold text-slate-700">
-                  Delivery Window
-                </p>
-                {deliveryFrom && deliveryTo && deliveryFrom !== deliveryTo && (
-                  <span className="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
-                    {formatDeliveryDate(new Date(deliveryFrom + "T12:00:00"))} — {formatDeliveryDate(new Date(deliveryTo + "T12:00:00"))}
-                  </span>
-                )}
-              </div>
-
-              {/* From / To labels */}
-              <div className="flex gap-2 mb-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectingTo(false)}
-                  className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
-                    !selectingTo
-                      ? "bg-emerald-600 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  From: {deliveryFrom ? formatDeliveryDate(new Date(deliveryFrom + "T12:00:00")) : "Select"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectingTo(true)}
-                  className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
-                    selectingTo
-                      ? "bg-emerald-600 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  To: {deliveryTo ? formatDeliveryDate(new Date(deliveryTo + "T12:00:00")) : "Select"}
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {(showAllDates ? deliveryDates : deliveryDates.slice(0, 8)).map((date) => {
-                  const iso = toISODate(date);
-                  const isFrom = deliveryFrom === iso;
-                  const isTo = deliveryTo === iso;
-                  const isInRange = deliveryFrom && deliveryTo && iso >= deliveryFrom && iso <= deliveryTo;
-                  return (
-                    <button
-                      key={iso}
-                      type="button"
-                      onClick={() => {
-                        if (!selectingTo) {
-                          setDeliveryFrom(iso);
-                          if (iso > deliveryTo) setDeliveryTo(iso);
-                          setSelectingTo(true);
-                        } else {
-                          if (iso < deliveryFrom) {
-                            setDeliveryFrom(iso);
-                          } else {
-                            setDeliveryTo(iso);
-                          }
-                          setSelectingTo(false);
-                        }
-                      }}
-                      className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                        isFrom || isTo
-                          ? "border-emerald-600 bg-emerald-600 text-white"
-                          : isInRange
-                          ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-                          : "border-slate-300 text-slate-700 hover:border-emerald-400"
-                      }`}
-                    >
-                      {formatDeliveryDate(date)}
-                    </button>
-                  );
-                })}
-              </div>
-              {deliveryDates.length > 8 && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllDates(!showAllDates)}
-                  className="mt-2 text-xs text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
-                >
-                  {showAllDates ? "Show fewer dates" : `Show all ${deliveryDates.length} dates (up to 12 weeks)`}
-                  <ChevronDown className={`w-3 h-3 transition-transform ${showAllDates ? "rotate-180" : ""}`} />
-                </button>
-              )}
-              <p className="mt-1 text-xs text-slate-400">
-                {selectingTo ? "Now select your latest acceptable delivery date" : "Select your earliest delivery date"} · Mon, Tue, Thu, Fri
+              <p className="text-sm font-semibold text-slate-700 mb-3">
+                Delivery Date
               </p>
+              <DeliveryDateChips
+                dates={deliveryDates}
+                selected={deliveryFrom}
+                onSelect={(iso) => { setDeliveryFrom(iso); setDeliveryTo(iso); }}
+                tier={bestTier}
+              />
             </div>
 
             {/* Add to Quote — PROMINENT */}
@@ -580,7 +663,7 @@ export default function ProductDetailPage({
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-emerald-800">Added to your quote!</p>
                     <p className="text-xs text-emerald-600">
-                      {displayName} · {selectedLength || "Standard"} · {deliveryFrom === deliveryTo ? formatDeliveryDate(new Date(deliveryFrom + "T12:00:00")) : `${formatDeliveryDate(new Date(deliveryFrom + "T12:00:00"))} — ${formatDeliveryDate(new Date(deliveryTo + "T12:00:00"))}`}
+                      {displayName} · {selectedLength || "Standard"} · {deliveryFrom ? formatDeliveryDate(new Date(deliveryFrom + "T12:00:00")) : ""}
                     </p>
                   </div>
                   <Link
@@ -614,140 +697,116 @@ export default function ProductDetailPage({
                   )}
                 </button>
               ) : (
-                <div className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg bg-slate-100 text-slate-500 border border-slate-200">
-                  Contact for Pricing
-                </div>
-              )}
-              <div className="flex gap-3">
                 <a
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition-all text-sm"
+                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-all"
                 >
-                  Ask About This
+                  Request Pricing on WhatsApp
                 </a>
-                <Link
-                  href={`/sample-box?product=${encodeURIComponent(`${product.variety} ${product.color}`)}&category=${encodeURIComponent(product.category)}`}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all text-sm"
-                >
-                  <Package className="w-4 h-4" />
-                  Try Sample Box
-                </Link>
+              )}
+              <Link
+                href={`/sample-box?product=${encodeURIComponent(`${product.variety} ${product.color}`)}&category=${encodeURIComponent(product.category)}`}
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all text-sm"
+              >
+                <Package className="w-4 h-4" />
+                Try a Free Sample Box
+              </Link>
+
+              {/* Social proof trust bar */}
+              <div className="mt-4 flex items-center gap-4 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                <div className="flex items-center gap-1">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-3.5 h-3.5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="font-semibold text-slate-700">5.0</span>
+                </div>
+                <span className="text-slate-300">|</span>
+                <span>Trusted by 60+ florists</span>
+                <span className="text-slate-300">|</span>
+                <span>Farm-direct freshness</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bundle suggestions — complementary products from other categories */}
-        {bundles.length > 0 && (
+        {/* Combined cross-sell section: bundles + related */}
+        {(bundles.length > 0 || relatedSorted.length > 0) && (
           <section className="mt-12 pt-10 border-t border-slate-200">
             <h2 className="text-xl font-bold text-slate-900 mb-2">
               Complete your order
             </h2>
-            <p className="text-sm text-slate-500 mb-5">
+            <p className="text-sm text-slate-500 mb-6">
               These pair well with {product.variety} {product.color}
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {bundles.map((b) => {
-                const bImg = (Array.isArray(b.images) && b.images.length > 0)
-                  ? resolveImage(b.images[0])
-                  : getProductImage(b.variety, b.color, b.category);
-                const bPrice = b.deal_price ?? b.price;
-                const bUnit = b.unit === "Bunch" ? "bunch" : "stem";
-                return (
-                  <Link
-                    key={b.slug}
-                    href={`/shop/${encodeURIComponent(b.slug)}`}
-                    className="group flex items-center gap-4 bg-emerald-50/50 rounded-xl border border-emerald-100 p-3 hover:shadow-md transition-all"
-                  >
-                    <div className="relative w-16 h-16 rounded-lg bg-white overflow-hidden flex-shrink-0">
-                      <Image
-                        src={bImg}
-                        alt={b.name}
-                        fill
-                        className="object-contain"
-                        sizes="64px"
-                        unoptimized={bImg.startsWith("http")}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors truncate">
-                        {b.variety} {b.color}
-                      </p>
-                      <p className="text-xs text-slate-400">{b.category}</p>
-                      {bPrice > 0 && (
-                        <p className="text-sm font-bold text-emerald-600 mt-0.5">
-                          ${bPrice.toFixed(2)}/{bUnit}
-                        </p>
-                      )}
-                    </div>
-                    <span className="text-emerald-600 text-xs font-semibold flex-shrink-0">Add →</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
 
-        {/* Related products */}
-        {relatedSorted.length > 0 && (
-          <section className="mt-16 pt-12 border-t border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">
-              You may also like
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {relatedSorted.map((p) => {
-                const dbImg = Array.isArray(p.images) && p.images.length > 0
-                  ? resolveImage(p.images[0])
-                  : null;
-                const img = dbImg || getProductImage(p.variety, p.color, p.category);
-                const hasDealRel = !!p.is_on_deal && p.deal_price != null;
-                const unitRel = p.unit === "Bunch" ? "bunch" : "stem";
-                const baseRel = p.price;
-                const dealRel = p.deal_price ?? p.price;
+            {/* Quick-add bundles from complementary categories */}
+            {bundles.length > 0 && (
+              <div className="mb-8">
+                <BundleGrid bundles={bundles} deliveryDate={deliveryFrom || ""} />
+              </div>
+            )}
 
-                return (
-                  <Link
-                    key={p.slug}
-                    href={`/shop/${encodeURIComponent(p.slug)}`}
-                    className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all flex flex-col"
-                  >
-                    <div className="aspect-square relative bg-slate-50">
-                      <Image
-                        src={img}
-                        alt={p.name}
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-                        unoptimized={img.startsWith("http")}
-                      />
-                      {hasDealRel && p.deal_label && (
-                        <span className="absolute top-2 left-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 shadow">
-                          {p.deal_label}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-3 flex-1 flex flex-col">
-                      <h3 className="font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors text-sm mb-1 line-clamp-2">
-                        {(p.variety || p.name) +
-                          (p.color ? ` ${p.color}` : "")}
-                      </h3>
-                      <div className="mt-auto flex items-baseline gap-1">
-                        {hasDealRel && baseRel != null && p.deal_price != null && p.deal_price < baseRel && (
-                          <span className="text-xs text-slate-400 line-through">
-                            ${baseRel.toFixed(2)}/{unitRel}
+            {/* Related products from same category */}
+            {relatedSorted.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {relatedSorted.map((p) => {
+                  const dbImg = Array.isArray(p.images) && p.images.length > 0
+                    ? resolveImage(p.images[0])
+                    : null;
+                  const img = dbImg || getProductImage(p.variety, p.color, p.category);
+                  const hasDealRel = !!p.is_on_deal && p.deal_price != null;
+                  const unitRel = p.unit === "Bunch" ? "bunch" : "stem";
+                  const baseRel = p.price;
+                  const dealRel = p.deal_price ?? p.price;
+
+                  return (
+                    <Link
+                      key={p.slug}
+                      href={`/shop/${encodeURIComponent(p.slug)}`}
+                      className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all flex flex-col"
+                    >
+                      <div className="aspect-square relative bg-slate-50">
+                        <Image
+                          src={img}
+                          alt={p.name}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                          unoptimized={img.startsWith("http")}
+                        />
+                        {hasDealRel && p.deal_label && (
+                          <span className="absolute top-2 left-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 shadow">
+                            {p.deal_label}
                           </span>
                         )}
-                        <span className="text-sm font-bold text-emerald-700">
-                          ${dealRel.toFixed(2)}/{unitRel}
-                        </span>
                       </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+                      <div className="p-3 flex-1 flex flex-col">
+                        <h3 className="font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors text-sm mb-1 line-clamp-2">
+                          {(p.variety || p.name) +
+                            (p.color ? ` ${p.color}` : "")}
+                        </h3>
+                        <div className="mt-auto flex items-baseline gap-1">
+                          {hasDealRel && baseRel != null && p.deal_price != null && p.deal_price < baseRel && (
+                            <span className="text-xs text-slate-400 line-through">
+                              ${baseRel.toFixed(2)}/{unitRel}
+                            </span>
+                          )}
+                          <span className="text-sm font-bold text-emerald-700">
+                            ${dealRel.toFixed(2)}/{unitRel}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </section>
         )}
 
@@ -785,7 +844,7 @@ export default function ProductDetailPage({
                   <>{product.variety} {product.color} is a premium {product.category.toLowerCase()} variety, sourced directly from top farms for guaranteed freshness and quality.</>
                 )}
               </p>
-              {currentVariant.stems_per_bunch && (
+              {currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
                 <p className="text-sm text-slate-500 mt-3">
                   Packed {currentVariant.stems_per_bunch} stems per bunch · {currentVariant.units_per_box} {currentVariant.unit === "Bunch" ? "bunches" : "units"} per {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type || "box"}
                 </p>
@@ -852,6 +911,7 @@ export default function ProductDetailPage({
         </section>
       </main>
 
+      <WhatsAppWidget message={`Hi! I'm interested in ${displayName} from Floropolis.`} />
       <Footer />
     </div>
   );

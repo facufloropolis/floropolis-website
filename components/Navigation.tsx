@@ -56,9 +56,6 @@ export default function Navigation() {
             <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               Contact Us
             </Link>
-            <Link href="/blog" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              Blog
-            </Link>
           </div>
 
           {/* Desktop CTAs */}
@@ -74,6 +71,14 @@ export default function Navigation() {
             <Link href="/shop" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
               Shop
             </Link>
+            <a
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
+            >
+              Client Login
+            </a>
           </div>
 
           {/* Mobile: search + cart + menu button */}
@@ -81,17 +86,17 @@ export default function Navigation() {
             <div className="flex-1 min-w-0">
               <HeaderSearch />
             </div>
-            <Link href="/quote" className="relative text-slate-700 hover:text-emerald-600 transition-colors p-2" aria-label="Quote cart">
+            <Link href="/quote" className="relative text-slate-700 hover:text-emerald-600 transition-colors p-2.5" aria-label="Quote cart">
               <ShoppingBag className="h-5 w-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-slate-700 hover:text-emerald-600 transition-colors p-2"
+              className="text-slate-700 hover:text-emerald-600 transition-colors p-2.5"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -102,7 +107,16 @@ export default function Navigation() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
-            <Link 
+            <a
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-4 py-2 text-slate-500 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Client Login →
+            </a>
+            <Link
               href="/sample-box" 
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
@@ -129,13 +143,6 @@ export default function Navigation() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us
-            </Link>
-            <Link
-              href="/blog"
-              className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Blog
             </Link>
             <Link
               href="/shop"

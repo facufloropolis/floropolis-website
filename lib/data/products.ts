@@ -7,7 +7,7 @@ import {
   PROMO_CODES as RAW_PROMO_CODES,
 } from "./floropolis_products";
 
-export type Product = RawProduct;
+export type Product = RawProduct & { compare_at_price?: number };
 
 export const PROMO_CODES = RAW_PROMO_CODES;
 
@@ -47,8 +47,30 @@ function isBestseller(p: RawProduct): boolean {
   return BESTSELLER_VARIETIES.has(v);
 }
 
+/** Sanitize slugs that contain URL-unsafe characters (e.g. "&") */
+function sanitizeSlug(slug: string): string {
+  return slug
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
+ * Compare-at price: market rate (25% above our price).
+ * Shows as strikethrough to highlight Floropolis value.
+ * Rounded up to nearest $0.05 for clean display.
+ */
+function computeCompareAt(price: number): number {
+  return Math.ceil(price * 1.25 * 20) / 20;
+}
+
 export const products: Product[] = rawProducts.map((p) => {
-  let result = p;
+  let result: Product = {
+    ...p,
+    slug: sanitizeSlug(p.slug),
+    compare_at_price: p.price > 0 ? computeCompareAt(p.price) : undefined,
+  };
 
   // Apply assorted/combo discount
   if (isAssortedOrCombo(p) && !p.is_on_deal && p.price != null) {
