@@ -118,9 +118,9 @@ export default function Contact() {
             <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "contact_page" })}>
               Get Free Sample Box
             </Link>
-            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "contact_page" })}>
+            <Link href="/shop" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
               Shop Now
-            </a>
+            </Link>
           </div>
         </div>
       </section>

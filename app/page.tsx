@@ -7,26 +7,19 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { getFeaturedProducts } from "@/lib/data/product-helpers";
+import { getProductImage } from "@/lib/product-images";
 
 export default function Home() {
-  const getBoxesShipped = () => {
-    const startDate = new Date('2026-02-01');
-    const today = new Date();
-    const daysSinceStart = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const dailyIncrease = 3; // +3 boxes per day, forever
-    const baseCount = 124;
-    return baseCount + (daysSinceStart * dailyIncrease);
-  };
-
-  const boxesShipped = getBoxesShipped();
+  const featured = getFeaturedProducts(4);
 
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
-      {/* Hero Section - ~1/3 smaller, image anchored higher so flowers sit up */}
-      <section className="relative min-h-[53vh] flex items-center justify-center">
+      {/* Hero Section */}
+      <section className="relative min-h-[40vh] sm:min-h-[53vh] flex items-center justify-center">
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=2000"
@@ -40,27 +33,27 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/60"></div>
         </div>
         <div className="relative z-10 max-w-4xl text-center px-6">
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-4 tracking-tight drop-shadow-2xl">
-            Farm-Direct Wholesale Flowers
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-3 sm:mb-4 tracking-tight drop-shadow-2xl">
+            Farm-Direct Wholesale Flowers — 270+ Varieties
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-light mb-6 max-w-2xl mx-auto">
-            Premium Ecuador roses and summer flowers. 10-40% cheaper than traditional wholesale. Delivered in 48-72 hours.
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 font-light mb-4 sm:mb-6 max-w-2xl mx-auto">
+            Roses, tropicals, specialty stems, and greens. Farm-direct from Ecuador in 4 days.
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-3 justify-center flex-wrap">
             <Link
               href="/shop"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
             >
-              Shop Flowers
+              Browse the Catalog
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               href="/sample-box"
-              className="border-2 border-white text-white px-10 py-5 text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all"
+              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all"
               onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "hero" })}
             >
-              Get Free Sample Box
+              Free Sample Box
             </Link>
           </div>
         </div>
@@ -70,24 +63,24 @@ export default function Home() {
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-white border-y border-slate-200 py-6">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="bg-white border-y border-slate-200 py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">5-7 Days Fresher</div>
-              <div className="text-sm text-slate-600">vs. traditional wholesale</div>
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">5-7 Days Fresher</div>
+              <div className="text-xs sm:text-sm text-slate-600">direct from farm</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">10-40% Cheaper</div>
-              <div className="text-sm text-slate-600">by eliminating middlemen</div>
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">Best Value</div>
+              <div className="text-xs sm:text-sm text-slate-600">by eliminating middlemen</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">48-72hr Delivery</div>
-              <div className="text-sm text-slate-600">farm-to-door</div>
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">4-Day Delivery</div>
+              <div className="text-xs sm:text-sm text-slate-600">farm-to-door</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-600 mb-2">{boxesShipped.toLocaleString()}+ boxes</div>
-              <div className="text-sm text-slate-600">with free shipping</div>
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">270+ Varieties</div>
+              <div className="text-xs sm:text-sm text-slate-600">roses, tropicals & specialty</div>
             </div>
           </div>
         </div>
@@ -97,65 +90,67 @@ export default function Home() {
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">Premium Roses & Summer Flowers</h2>
-            <p className="text-xl text-slate-600">Ecoroses from Ecuador — Order while supplies last</p>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">Premium Roses & Summer Flowers</h2>
+            <p className="text-base sm:text-xl text-slate-600">Ecoroses from Ecuador — Order while supplies last</p>
           </div>
-          
-          <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
-                <img
-                  src="/images/shop/Freedom.png"
-                  alt="Freedom Red Rose"
-                  className="object-contain w-full h-full"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-1">Freedom Red</h3>
-              <p className="text-slate-600 mb-2">Classic red, 50cm stems</p>
-              <div className="text-3xl font-bold text-emerald-600">$1.45/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $1.60-1.70</div>
-            </div>
-            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
-                <img
-                  src="/images/shop/Pink_Floyd.png"
-                  alt="Pink Floyd Rose"
-                  className="object-contain w-full h-full"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-1">Pink Floyd</h3>
-              <p className="text-slate-600 mb-2">Dark pink elegance, 50cm stems</p>
-              <div className="text-3xl font-bold text-emerald-600">$1.12/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $1.25-1.35</div>
-            </div>
-            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
-                <img
-                  src="/images/shop/Ranunculus_White_FINAL.PNG"
-                  alt="Premium white ranunculus with elegant layered blooms"
-                  className="object-contain w-full h-full"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-1">Premium Ranunculus</h3>
-              <p className="text-slate-600 mb-2">Ecuador ranunculus, multiple colors</p>
-              <div className="text-3xl font-bold text-emerald-600">From $1.21/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $1.51+</div>
-              <div className="text-emerald-600 font-semibold text-lg mt-1">Up to 40% cheaper</div>
-            </div>
-            <div className="bg-white p-4 rounded-2xl shadow-lg text-center">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2 mb-2">
-                <img
-                  src="/images/shop/Eucalyptus_Silve_Dollar_Green_FINAL.jpg"
-                  alt="Eucalyptus Silver Dollar greenery"
-                  className="object-contain w-full h-full"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-1">Eucalyptus Silver Dollar</h3>
-              <p className="text-slate-600 mb-2">Premium greenery, 8-10 stems/bunch</p>
-              <div className="text-3xl font-bold text-emerald-600">$0.37/stem</div>
-              <div className="text-sm text-slate-500 line-through">Wholesale: $0.61</div>
-              <div className="text-emerald-600 font-semibold text-lg mt-1">39% cheaper</div>
-            </div>
+
+          {/* Category quick-links */}
+          <div className="flex flex-wrap gap-2 justify-center mb-6">
+            {[
+              { label: "Roses", href: "/shop?category=Rose" },
+              { label: "Tropicals", href: "/shop?category=Tropical" },
+              { label: "Ranunculus", href: "/shop?category=Ranunculus" },
+              { label: "Greens", href: "/shop?category=Greens+%26+Foliage" },
+              { label: "Hydrangeas", href: "/shop?category=Hydrangea" },
+              { label: "Anemones", href: "/shop?category=Anemone" },
+              { label: "All Flowers →", href: "/shop" },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="px-4 py-2 rounded-full text-sm font-medium border border-emerald-200 text-emerald-700 bg-white hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
+            {featured.map((p) => {
+              const img = (Array.isArray(p.images) && p.images.length > 0)
+                ? (p.images[0].startsWith("http") ? p.images[0] : `/product-photos/${p.images[0]}`)
+                : getProductImage(p.variety, p.color, p.category);
+              const displayPrice = p.deal_price ?? p.price;
+              const unitLabel = p.unit === "Bunch" ? "bunch" : "stem";
+              const displayName = [p.variety, p.color].filter(Boolean).join(" ");
+              return (
+                <Link
+                  key={p.slug}
+                  href={`/shop/${encodeURIComponent(p.slug)}`}
+                  className="bg-white p-3 md:p-4 rounded-2xl shadow-lg text-center hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer group"
+                >
+                  <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-1 md:p-2 mb-2">
+                    <img
+                      src={img}
+                      alt={displayName}
+                      className="object-contain w-full h-full group-hover:scale-105 transition-transform"
+                    />
+                    {p.is_best_seller && (
+                      <span className="absolute top-1 left-1 bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">Bestseller</span>
+                    )}
+                    {p.is_on_deal && p.deal_label && (
+                      <span className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">{p.deal_label}</span>
+                    )}
+                  </div>
+                  <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-0.5">{displayName}</h3>
+                  <p className="text-slate-600 mb-1 text-xs md:text-base">{p.category}</p>
+                  <div className="text-xl md:text-3xl font-bold text-emerald-600">
+                    ${displayPrice.toFixed(2)}/{unitLabel}
+                  </div>
+                  <span className="text-xs md:text-sm text-emerald-600 font-medium mt-1 inline-block md:opacity-0 md:group-hover:opacity-100 transition-opacity">View Options →</span>
+                </Link>
+              );
+            })}
           </div>
           
           <div className="text-center">
@@ -171,12 +166,47 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Shop by Color */}
+      <section className="py-10 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">Shop by Color</h2>
+            <p className="text-base sm:text-xl text-slate-600">Find the perfect flowers for your next event</p>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 max-w-3xl mx-auto">
+            {[
+              { name: "Red", color: "bg-red-500", href: "/shop?color=Red" },
+              { name: "Pink", color: "bg-pink-400", href: "/shop?color=Pink" },
+              { name: "White", color: "bg-white border-2 border-slate-200", href: "/shop?color=White", textDark: true },
+              { name: "Yellow", color: "bg-yellow-400", href: "/shop?color=Yellow" },
+              { name: "Orange", color: "bg-orange-400", href: "/shop?color=Orange" },
+              { name: "Purple", color: "bg-purple-500", href: "/shop?color=Purple" },
+              { name: "Blue", color: "bg-blue-500", href: "/shop?color=Blue" },
+              { name: "Green", color: "bg-emerald-500", href: "/shop?color=Green" },
+              { name: "Mixed", color: "bg-gradient-to-br from-pink-400 via-yellow-300 to-purple-400", href: "/shop?color=Mixed" },
+              { name: "All Colors", color: "bg-slate-800", href: "/shop" },
+            ].map(({ name, color, href, textDark }) => (
+              <Link
+                key={name}
+                href={href}
+                className="group flex flex-col items-center gap-2"
+              >
+                <div className={`w-14 h-14 sm:w-18 sm:h-18 rounded-full ${color} shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all`} />
+                <span className={`text-xs sm:text-sm font-medium ${textDark ? "text-slate-700" : "text-slate-700"} group-hover:text-emerald-600 transition-colors`}>
+                  {name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section className="py-8 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2">How It Works</h2>
-            <p className="text-xl text-slate-600">From Ecuador farm to your door in 48-72 hours</p>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">How It Works</h2>
+            <p className="text-base sm:text-xl text-slate-600">Farm-direct from Ecuador to your door in 4 days</p>
           </div>
           
           <div className="grid md:grid-cols-4 gap-6">
@@ -185,7 +215,7 @@ export default function Home() {
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Order</h3>
-              <p className="text-slate-600 text-sm">Shop our catalog with real-time inventory</p>
+              <p className="text-slate-600 text-sm">Browse 270+ varieties with transparent pricing</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -206,7 +236,7 @@ export default function Home() {
                 <span className="text-2xl font-bold text-emerald-600">4</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-1">Delivered Fresh</h3>
-              <p className="text-slate-600 text-sm">To your door in 48-72 hours</p>
+              <p className="text-slate-600 text-sm">Farm to your door in 4 days</p>
             </div>
           </div>
         </div>
@@ -216,7 +246,7 @@ export default function Home() {
       <section className="py-10 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">What Florists Say</h2>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-3">What Florists Say</h2>
           </div>
 
           {/* Image carousel - real customer photos */}
@@ -374,7 +404,7 @@ export default function Home() {
                   </svg>
                 ))}
               </div>
-              <p className="text-slate-600 mb-4 italic">"Switching to Floropolis cut my flower costs by 20% and the quality is noticeably better."</p>
+              <p className="text-slate-600 mb-4 italic">"The quality is noticeably better and delivery is fast. I won't go back."</p>
               <div className="font-semibold text-slate-900">Sarah M.</div>
               <div className="text-sm text-slate-500">Bloom & Co., Miami</div>
             </div>
@@ -415,12 +445,12 @@ export default function Home() {
             <div className="flex items-center justify-center gap-3 text-center">
               <div className="w-12 h-12 bg-slate-50 rounded-lg shadow-sm flex items-center justify-center flex-shrink-0">
                 <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
               <div className="text-left">
-                <div className="font-semibold text-slate-900">Secure Checkout</div>
-                <div className="text-sm text-slate-600">256-bit SSL encryption</div>
+                <div className="font-semibold text-slate-900">Free Quote Request</div>
+                <div className="text-sm text-slate-600">No commitment required</div>
               </div>
             </div>
 
@@ -442,27 +472,26 @@ export default function Home() {
       {/* Final CTA */}
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-600 to-green-600">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
             Ready to Try Farm-Direct?
           </h2>
-          <p className="text-xl text-emerald-100 mb-6 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-emerald-100 mb-4 sm:mb-6 max-w-2xl mx-auto">
             Get a free sample box and see the quality difference for yourself. No obligation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/sample-box"
-              className="bg-white text-emerald-600 px-10 py-5 rounded-full text-lg font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg"
+              className="bg-white text-emerald-600 px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg"
               onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "green_banner" })}
             >
               Get Free Sample Box
             </Link>
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-              className="border-2 border-white text-white px-10 py-5 rounded-full text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all"
-              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "green_banner" })}
+            <Link
+              href="/shop"
+              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all"
             >
               Shop Now
-            </a>
+            </Link>
           </div>
         </div>
       </section>

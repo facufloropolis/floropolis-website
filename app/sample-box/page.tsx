@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
-import { getSampleBoxesAvailable } from "@/lib/sample-boxes";
 
 // US states only (50 states + DC) – value = abbreviation for sheet
 const US_STATES = [
@@ -66,7 +66,15 @@ const US_STATES = [
 ];
 
 export default function SampleBoxPage() {
-  const spotsLeft = getSampleBoxesAvailable();
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center text-slate-500">Loading…</div>}>
+      <SampleBoxContent />
+    </Suspense>
+  );
+}
+
+function SampleBoxContent() {
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -81,6 +89,24 @@ export default function SampleBoxPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  // Pre-populate from product page navigation
+  useEffect(() => {
+    const product = searchParams.get("product");
+    const category = searchParams.get("category");
+    if (product) {
+      const preNote = `Interested in: ${product}${category ? ` (${category})` : ""}`;
+      setFormData((prev) => ({
+        ...prev,
+        notes: prev.notes ? prev.notes : preNote,
+        boxChoice: category?.toLowerCase().includes("rose") ? "roses"
+          : category?.toLowerCase().includes("tropical") ? "tropical"
+          : category?.toLowerCase().includes("gyps") ? "gypsophilia"
+          : prev.boxChoice,
+      }));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,21 +141,69 @@ export default function SampleBoxPage() {
         }),
       });
 
-      // Also trigger n8n directly
+      // Also trigger n8n directly (keep existing)
       fetch('https://n8n.floropolis.com/webhook/sample-box-new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       }).catch(() => {});
 
+      // NEW: Save to Supabase + send internal email + append to Google Sheet
+      fetch('/api/notify-sample-box', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          boxChoice: formData.boxChoice,
+          notes: formData.notes,
+        }),
+      }).catch(() => {});
+
       setIsSuccess(true);
     } catch (error) {
       console.error('Error submitting form:', error);
-      setIsSuccess(true); // Still show success since no-cors doesn't return response
+      setIsError(true);
     }
 
     setIsSubmitting(false);
   };
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">⚠️</span>
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-4">Something Went Wrong</h1>
+          <p className="text-lg text-slate-600 mb-8">
+            We couldn&apos;t submit your request. Please try again or contact us directly.
+          </p>
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => setIsError(false)}
+              className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all"
+            >
+              Try Again
+            </button>
+            <a
+              href="mailto:facu@floropolis.com"
+              className="text-emerald-600 hover:text-emerald-700 font-medium"
+            >
+              Email us directly →
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -143,14 +217,13 @@ export default function SampleBoxPage() {
             We'll be in touch within 24 hours to confirm your sample box details.
           </p>
           <div className="flex flex-col gap-4">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+            <Link
+              href="/shop"
               className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
-              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "sample_box_success" })}
             >
               Browse Our Catalog
               <ArrowRight className="w-5 h-5" />
-            </a>
+            </Link>
             <Link
               href="/"
               className="text-emerald-600 hover:text-emerald-700 font-medium"
@@ -169,37 +242,25 @@ export default function SampleBoxPage() {
       <Navigation />
 
       {/* Hero + Form Section */}
-      <section className="py-12 px-4 bg-gradient-to-br from-emerald-50 to-green-50">
+      <section className="py-6 sm:py-12 px-4 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Left: Form */}
-            <div className="bg-white p-8 rounded-2xl shadow-xl">
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-xl">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
                 Request Your Free Sample Box
               </h1>
               <p className="text-slate-600 mb-6">
                 Try our premium flowers risk-free. No obligation, no credit card required.
               </p>
 
-              {spotsLeft > 0 ? (
-                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg">
-                  <p className="text-amber-900 font-semibold flex items-center gap-2">
-                    <span className="text-xl">⏰</span>
-                    {spotsLeft === 2
-                      ? `Only ${spotsLeft} sample boxes left this week!`
-                      : `${spotsLeft} sample boxes available this week`}
-                  </p>
-                  <p className="text-sm text-amber-700 mt-1">Resets every Monday at 9am EST • First come, first serve</p>
-                </div>
-              ) : (
-                <div className="bg-slate-100 border-l-4 border-slate-400 p-4 mb-6 rounded-r-lg">
-                  <p className="text-slate-700 font-semibold flex items-center gap-2">
-                    <span className="text-xl">✉️</span>
-                    New sample boxes available Monday
-                  </p>
-                  <p className="text-sm text-slate-600 mt-1">Submit your request now and we&apos;ll process it Monday morning</p>
-                </div>
-              )}
+              <div className="bg-emerald-50 border-l-4 border-emerald-400 p-4 mb-6 rounded-r-lg">
+                <p className="text-emerald-900 font-semibold flex items-center gap-2">
+                  <span className="text-xl">📦</span>
+                  Ships within 48 hours of confirmation
+                </p>
+                <p className="text-sm text-emerald-700 mt-1">We review every request and confirm by email within 24 hours.</p>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">

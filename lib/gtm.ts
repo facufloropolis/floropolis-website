@@ -3,6 +3,12 @@
  * Use these exact event names in GTM: create GA4 Event tags with Custom Event triggers matching these names.
  */
 
+declare global {
+  interface Window {
+    dataLayer?: Record<string, unknown>[];
+  }
+}
+
 export function pushEvent(
   eventName: string,
   params?: Record<string, string | number | boolean | undefined>
@@ -39,6 +45,12 @@ export const CTA_EVENTS = {
   contact_email_click: "contact_email_click",
   contact_whatsapp_click: "contact_whatsapp_click",
   contact_call_click: "contact_call_click",
+  // E-commerce funnel events
+  view_product: "view_product",
+  add_to_quote: "add_to_quote",
+  submit_quote: "submit_quote",
+  filter_change: "filter_change",
+  product_click: "product_click",
 } as const;
 
 /** Delay (ms) before following external/mailto/tel links so GTM can send the hit before page unload. */

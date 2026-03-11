@@ -1,46 +1,72 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getSampleBoxesAvailable } from "@/lib/sample-boxes";
-import { handleOutboundClick, pushEvent, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 /**
- * Main site-wide banner: Magic Flowers + LIMITED sample boxes (same number as sample-box page).
- * Two CTAs: Shop Now (Magic Flowers) and FREE Samples. No one-off free shipping messaging.
+ * Site-wide banner: Free Sample Box CTA with countdown.
  */
 export default function TopBanner() {
-  const spotsLeft = getSampleBoxesAvailable();
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    function update() {
+      const now = new Date();
+      // Countdown resets every Monday 8 AM ET (weekly batch)
+      const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const day = et.getDay(); // 0=Sun
+      // Days until next Monday
+      const daysUntilMon = day === 0 ? 1 : day === 1 ? 7 : 8 - day;
+      const nextMon = new Date(et);
+      nextMon.setDate(nextMon.getDate() + daysUntilMon);
+      nextMon.setHours(8, 0, 0, 0);
+      const diff = nextMon.getTime() - et.getTime();
+      if (diff <= 0) {
+        setTimeLeft("");
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      setTimeLeft(d > 0 ? `${d}d ${h}h left` : `${h}h ${m}m left`);
+    }
+    update();
+    const id = setInterval(update, 60000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
-    <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 text-white py-3 text-center text-sm font-semibold tracking-wide relative overflow-hidden">
-      <div className="absolute inset-0 bg-white/10 animate-pulse" aria-hidden />
-      <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-2">
-        <span>🎉 NEW: Magic Flowers Farm — Tropicals & Exotic Greens from Ecuador</span>
-        <span className="hidden sm:inline text-white/80">|</span>
-        {spotsLeft > 0 ? (
-          <span className="bg-white/20 px-2 py-1 rounded">
-            LIMITED: {spotsLeft} sample box{spotsLeft !== 1 ? "es" : ""} left this week
-          </span>
-        ) : (
-          <span className="bg-white/20 px-2 py-1 rounded">
-            New sample boxes available Monday
-          </span>
-        )}
-        <span className="hidden sm:inline text-white/80">|</span>
-        <span className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-          <a
-            href="https://eshops.kometsales.com/762172?search=tropical&utm_source=Website&utm_campaign=Magic-Flowers-Launch"
-            className="underline hover:no-underline font-bold"
-            onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "top_banner_magic" })}
+    <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 text-white py-1.5 sm:py-2.5 text-center text-xs sm:text-sm font-semibold tracking-wide relative overflow-hidden">
+      <div className="relative z-10 flex items-center justify-center gap-x-2 px-3">
+        {/* Mobile */}
+        <span className="sm:hidden truncate">
+          🌸 Free Sample Box — Try Farm-Direct Flowers{" "}
+          <Link
+            href="/sample-box"
+            className="underline font-bold"
+            onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "top_banner" })}
           >
-            Shop Magic Flowers →
-          </a>
+            Get Yours →
+          </Link>
+          {timeLeft && <span className="text-white/80 ml-1">· {timeLeft}</span>}
+        </span>
+        {/* Desktop */}
+        <span className="hidden sm:flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+          <span>🌸 Free Sample Box — Try our farm-direct flowers, no obligation</span>
+          {timeLeft && (
+            <>
+              <span className="text-white/80">|</span>
+              <span className="text-yellow-200 font-bold">{timeLeft}</span>
+            </>
+          )}
+          <span className="text-white/80">|</span>
           <Link
             href="/sample-box"
             className="underline hover:no-underline font-bold"
             onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "top_banner" })}
           >
-            FREE Samples
+            Request Your Free Box →
           </Link>
         </span>
       </div>

@@ -68,14 +68,14 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* Comparison */}
+      {/* Why Floropolis */}
       <section className="py-20 px-4 bg-slate-50">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">Traditional vs. Floropolis</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">The Floropolis difference</h2>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold text-red-600 mb-6">Traditional Wholesale</h3>
+              <h3 className="text-2xl font-bold text-red-600 mb-6">The old supply chain</h3>
               <ul className="space-y-4 text-slate-600">
                 <li className="flex items-start gap-3">
                   <span className="text-red-500">✗</span>
@@ -138,9 +138,9 @@ export default function HowItWorks() {
             <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "how_it_works" })}>
               Get Free Sample Box
             </Link>
-            <a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "how_it_works" })}>
+            <Link href="/shop" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
               Shop Now
-            </a>
+            </Link>
           </div>
         </div>
       </section>

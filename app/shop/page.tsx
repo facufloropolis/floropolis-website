@@ -1,1262 +1,949 @@
 "use client";
 
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import { Heart, Truck, DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
-import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { SlidersHorizontal, X, ChevronDown, Package, Flame, Star, Search } from "lucide-react";
+import { products as catalogProducts, type Product } from "@/lib/data/products";
+import { getGroupedProducts } from "@/lib/data/product-helpers";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
+import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
+import { getProductImage } from "@/lib/product-images";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
+import { getEarliestDeliveryDate, formatDeliveryDate } from "@/lib/delivery-dates";
 
-export default function ShopPage() {
-  const trackShopClick = (e: React.MouseEvent<HTMLAnchorElement>, product: string) => {
-    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
-      cta_location: "shop_page",
-      product_type: product,
+type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: "recommended", label: "Recommended" },
+  { value: "price-asc", label: "Price: low to high" },
+  { value: "price-desc", label: "Price: high to low" },
+  { value: "name", label: "Name A–Z" },
+];
+
+// Simplified color groups for filter (maps granular colors → display groups)
+const COLOR_GROUPS: Record<string, string[]> = {
+  Red: ["Red", "Dark Red", "Burgundy"],
+  Pink: ["Pink", "Hot Pink", "Dark Pink", "Soft Pink", "Light Pink", "Fuchsia", "Salmon"],
+  White: ["White", "Cream"],
+  Yellow: ["Yellow"],
+  Orange: ["Orange", "Coral", "Peach", "Light Peach"],
+  Purple: ["Purple", "Lavender", "Pink Lavender"],
+  Blue: ["Blue", "Dark Blue", "Light Blue"],
+  Green: ["Green", "Light Green"],
+  Mixed: ["Assorted", "Rainbow", "Bicolor"],
+  Other: ["Beige", "Brown", "Champagne", "Peach Pink"],
+};
+
+// Reverse map: raw color → group name
+function getColorGroup(rawColor: string): string {
+  for (const [group, colors] of Object.entries(COLOR_GROUPS)) {
+    if (colors.includes(rawColor)) return group;
+  }
+  return "Other";
+}
+
+function resolveImage(pathList: string[], variety?: string, color?: string, category?: string): string {
+  const path = pathList[0];
+  if (path) {
+    if (path.startsWith("http") || path.startsWith("/")) return path;
+    const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
+    return `${base}/${path}`;
+  }
+  // Fall back to our image mapper
+  if (variety && category) {
+    return getProductImage(variety, color || "", category);
+  }
+  return "/Floropolis-logo-only.png";
+}
+
+// Categories ordered by TAM / market importance
+const CATEGORY_TAM_ORDER = [
+  "Rose",
+  "Tropicals",
+  "Bouquets",
+  "Mixed Boxes",
+  "Greens & Foliage",
+  "Delphinium",
+  "Anemone",
+  "Ranunculus",
+  "Gypsophila",
+];
+
+// Categories with <10 products get grouped under "Specialty"
+const SPECIALTY_THRESHOLD = 10;
+
+const { ALL_CATEGORIES, SPECIALTY_CATEGORIES } = (() => {
+  const catCounts = new Map<string, number>();
+  for (const p of catalogProducts) {
+    catCounts.set(p.category, (catCounts.get(p.category) || 0) + 1);
+  }
+  const specialty: string[] = [];
+  const main: string[] = [];
+  for (const [cat, count] of catCounts) {
+    if (count < SPECIALTY_THRESHOLD && !CATEGORY_TAM_ORDER.includes(cat)) {
+      specialty.push(cat);
+    }
+  }
+  // Build ordered list: TAM order first, then Specialty at end
+  const ordered = CATEGORY_TAM_ORDER.filter((c) => catCounts.has(c));
+  // Add any unlisted categories with >= threshold
+  for (const [cat] of catCounts) {
+    if (!ordered.includes(cat) && !specialty.includes(cat)) {
+      ordered.push(cat);
+    }
+  }
+  if (specialty.length > 0) {
+    ordered.push("Specialty");
+  }
+  return { ALL_CATEGORIES: ordered, SPECIALTY_CATEGORIES: specialty };
+})();
+
+// Group products by variety+color for one-card-per-variety display
+interface VarietyGroup {
+  key: string;
+  name: string;
+  variety: string;
+  color: string;
+  category: string;
+  minPrice: number;
+  maxPrice: number;
+  originalMinPrice: number; // price before any deal
+  image: string;
+  has_photo: boolean;
+  tier: string; // best (lowest = most available) tier in group
+  bestseller: boolean;
+  is_on_deal: boolean;
+  deal_label: string | null;
+  dealPrice: number | null;
+  hasPriceIssue: boolean; // true if any variant has price <= 0
+  variantCount: number;
+  slug: string; // slug of the representative product
+  colorGroup: string;
+  compareAtPrice: number | null; // market rate for strikethrough display
+}
+
+function buildVarietyGroups(): VarietyGroup[] {
+  const groups = new Map<string, Product[]>();
+  for (const p of catalogProducts) {
+    if (p.price <= 0) {
+      console.warn(`[PRICE ISSUE] Product "${p.name}" (ID: ${p.id}, slug: ${p.slug}) has price=${p.price}. Needs data fix.`);
+    }
+    const key = `${p.variety}---${p.color}`.toLowerCase();
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(p);
+  }
+
+  const result: VarietyGroup[] = [];
+  for (const [key, variants] of groups) {
+    // Pick the best representative (has photo, best tier, best price)
+    const sorted = [...variants].sort((a, b) => {
+      if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
+      const tierOrder: Record<string, number> = { T1: 0, T2: 1, T3: 2, T4: 3 };
+      const ta = tierOrder[a.tier] ?? 3;
+      const tb = tierOrder[b.tier] ?? 3;
+      if (ta !== tb) return ta - tb;
+      return a.price - b.price;
     });
+    const rep = sorted[0];
+
+    const prices = variants.map((v) => v.deal_price ?? v.price);
+    const originalPrices = variants.map((v) => v.price);
+    const bestTier = sorted.reduce((best, v) => {
+      const order: Record<string, number> = { T1: 0, T2: 1, T3: 2, T4: 3 };
+      return (order[v.tier] ?? 3) < (order[best] ?? 3) ? v.tier : best;
+    }, rep.tier);
+
+    const anyDeal = variants.some((v) => v.is_on_deal && v.deal_price != null);
+    const dealVariant = variants.find((v) => v.is_on_deal && v.deal_price != null);
+    const hasPriceIssue = variants.some((v) => v.price <= 0);
+
+    const displayName = [rep.variety, rep.color].filter(Boolean).join(" ");
+
+    // For price display, use only valid prices (> 0), fallback to 0 if all broken
+    const validPrices = prices.filter((p) => p > 0);
+    const validOriginalPrices = originalPrices.filter((p) => p > 0);
+
+    result.push({
+      key,
+      name: displayName || rep.name,
+      variety: rep.variety,
+      color: rep.color,
+      category: rep.category,
+      minPrice: validPrices.length > 0 ? Math.min(...validPrices) : 0,
+      maxPrice: validPrices.length > 0 ? Math.max(...validPrices) : 0,
+      originalMinPrice: validOriginalPrices.length > 0 ? Math.min(...validOriginalPrices) : 0,
+      image: resolveImage(rep.images || [], rep.variety, rep.color, rep.category),
+      has_photo: rep.has_photo,
+      tier: bestTier,
+      bestseller: variants.some((v) => v.is_best_seller),
+      is_on_deal: anyDeal,
+      deal_label: dealVariant?.deal_label ?? null,
+      dealPrice: dealVariant?.deal_price ?? null,
+      hasPriceIssue,
+      variantCount: variants.length,
+      slug: rep.slug,
+      colorGroup: getColorGroup(rep.color),
+      compareAtPrice: rep.compare_at_price ?? null,
+    });
+  }
+  return result;
+}
+
+/** Sample box CTA — honest, no fake scarcity */
+function SampleBoxCTA() {
+  return (
+    <div className="mb-5 flex items-center gap-3 rounded-xl bg-emerald-50/80 border border-emerald-100 px-5 py-3">
+      <Package className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+      <p className="text-sm text-slate-700">
+        <span className="font-semibold">New to Floropolis?</span>{" "}
+        Try our{" "}
+        <Link href="/sample-box" className="text-emerald-600 font-semibold hover:underline">
+          free sample box
+        </Link>{" "}
+        — no obligation, no credit card.
+      </p>
+    </div>
+  );
+}
+
+function ShopPageContent() {
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [colorGroupFilter, setColorGroupFilter] = useState<string[]>([]);
+  const [priceMin, setPriceMin] = useState<number | "">("");
+  const [priceMax, setPriceMax] = useState<number | "">("");
+  const [sortBy, setSortBy] = useState<SortOption>("recommended");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [showAllColors, setShowAllColors] = useState(false);
+  const [showDealsOnly, setShowDealsOnly] = useState(false);
+  const [showBestsellersOnly, setShowBestsellersOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = useSearchParams();
+
+  // Delivery tier filter chips — "fast" = T1/T2 (~4 days), "preorder" = T3 (~14 days)
+  const [showFast, setShowFast] = useState(true);
+  const [showPreorder, setShowPreorder] = useState(true);
+
+  const varietyGroups = useMemo(() => buildVarietyGroups(), []);
+
+  // Popular products — top bestsellers for hero section
+  const popularProducts = useMemo(() => {
+    return varietyGroups
+      .filter((g) => g.bestseller && g.minPrice > 0)
+      .sort((a, b) => {
+        if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
+        if (a.tier !== b.tier) {
+          const order: Record<string, number> = { T1: 0, T2: 1, T3: 2 };
+          return (order[a.tier] ?? 3) - (order[b.tier] ?? 3);
+        }
+        return 0;
+      })
+      .slice(0, 8);
+  }, [varietyGroups]);
+
+  // Category counts for filter labels (with Specialty aggregation)
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const g of varietyGroups) {
+      if (SPECIALTY_CATEGORIES.includes(g.category)) {
+        counts.set("Specialty", (counts.get("Specialty") || 0) + 1);
+      } else {
+        counts.set(g.category, (counts.get(g.category) || 0) + 1);
+      }
+    }
+    return counts;
+  }, [varietyGroups]);
+
+  // Available color groups with counts, ordered by volume
+  const colorGroupCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const g of varietyGroups) {
+      counts.set(g.colorGroup, (counts.get(g.colorGroup) || 0) + 1);
+    }
+    return counts;
+  }, [varietyGroups]);
+
+  const availableColorGroups = useMemo(() => {
+    return Object.keys(COLOR_GROUPS)
+      .filter((cg) => colorGroupCounts.has(cg))
+      .sort((a, b) => (colorGroupCounts.get(b) || 0) - (colorGroupCounts.get(a) || 0));
+  }, [colorGroupCounts]);
+
+  const router = useRouter();
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
+
+  // Sync filters from URL on mount
+  useEffect(() => {
+    const category = searchParams.get("category");
+    if (category) {
+      const cats = category.split(",");
+      const matches = cats
+        .map((c) => ALL_CATEGORIES.find((ac) => ac.toLowerCase() === c.toLowerCase()))
+        .filter(Boolean) as string[];
+      if (matches.length) setCategoryFilter(matches);
+    }
+    const color = searchParams.get("color");
+    if (color) {
+      const colors = color.split(",").filter((c) => c in COLOR_GROUPS);
+      if (colors.length) setColorGroupFilter(colors);
+    }
+    if (searchParams.get("deals") === "1") setShowDealsOnly(true);
+    if (searchParams.get("bestsellers") === "1") setShowBestsellersOnly(true);
+    const sort = searchParams.get("sort") as SortOption | null;
+    if (sort && SORT_OPTIONS.some((o) => o.value === sort)) setSortBy(sort);
+    setFiltersInitialized(true);
+  }, [searchParams]);
+
+  // Sync filters to URL
+  useEffect(() => {
+    if (!filtersInitialized) return;
+    const params = new URLSearchParams();
+    if (categoryFilter.length) params.set("category", categoryFilter.join(","));
+    if (colorGroupFilter.length) params.set("color", colorGroupFilter.join(","));
+    if (showDealsOnly) params.set("deals", "1");
+    if (showBestsellersOnly) params.set("bestsellers", "1");
+    if (sortBy !== "recommended") params.set("sort", sortBy);
+    const qs = params.toString();
+    const newUrl = qs ? `/shop?${qs}` : "/shop";
+    router.replace(newUrl, { scroll: false });
+  }, [categoryFilter, colorGroupFilter, showDealsOnly, showBestsellersOnly, sortBy, router, filtersInitialized]);
+
+  const toggleArray = <T,>(arr: T[], item: T, setter: (arr: T[]) => void, filterType?: string) => {
+    const adding = !arr.includes(item);
+    if (adding) {
+      setter([...arr, item]);
+    } else {
+      setter(arr.filter((x) => x !== item));
+    }
+    if (filterType) {
+      pushEvent(CTA_EVENTS.filter_change, {
+        filter_type: filterType,
+        filter_value: String(item),
+        filter_action: adding ? "add" : "remove",
+      });
+    }
   };
 
-  const trackSampleClick = () => {
-    pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "shop_page" });
+  const filteredGroups = useMemo(() => {
+    let list = [...varietyGroups];
+
+    // Text search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter((g) =>
+        g.name.toLowerCase().includes(q) ||
+        g.variety.toLowerCase().includes(q) ||
+        g.color.toLowerCase().includes(q) ||
+        g.category.toLowerCase().includes(q)
+      );
+    }
+
+    // Delivery tier filter — show only selected tiers
+    if (!showFast || !showPreorder) {
+      list = list.filter((g) => {
+        const isFast = g.tier === "T1" || g.tier === "T2";
+        if (isFast) return showFast;
+        return showPreorder;
+      });
+    }
+
+    if (showDealsOnly) {
+      list = list.filter((g) => g.is_on_deal);
+    }
+    if (showBestsellersOnly) {
+      list = list.filter((g) => g.bestseller);
+    }
+    if (categoryFilter.length) {
+      list = list.filter((g) => {
+        if (categoryFilter.includes(g.category)) return true;
+        if (categoryFilter.includes("Specialty") && SPECIALTY_CATEGORIES.includes(g.category)) return true;
+        return false;
+      });
+    }
+    if (colorGroupFilter.length) {
+      list = list.filter((g) => colorGroupFilter.includes(g.colorGroup));
+    }
+    if (priceMin !== "") {
+      list = list.filter((g) => g.minPrice >= (priceMin as number));
+    }
+    if (priceMax !== "") {
+      list = list.filter((g) => g.maxPrice <= (priceMax as number));
+    }
+    return list;
+  }, [categoryFilter, colorGroupFilter, priceMin, priceMax, showFast, showPreorder, showDealsOnly, showBestsellersOnly, searchQuery, varietyGroups]);
+
+  const sortedGroups = useMemo(() => {
+    const list = [...filteredGroups];
+    switch (sortBy) {
+      case "recommended":
+        return list.sort((a, b) => {
+          // Bestsellers first
+          if (a.bestseller !== b.bestseller) return a.bestseller ? -1 : 1;
+          // Deals second
+          if (a.is_on_deal !== b.is_on_deal) return a.is_on_deal ? -1 : 1;
+          // Better tier (more available) third
+          const tierOrder: Record<string, number> = { T1: 0, T2: 1, T3: 2, T4: 3 };
+          const ta = tierOrder[a.tier] ?? 3;
+          const tb = tierOrder[b.tier] ?? 3;
+          if (ta !== tb) return ta - tb;
+          return a.name.localeCompare(b.name);
+        });
+      case "price-asc":
+        return list.sort((a, b) => a.minPrice - b.minPrice);
+      case "price-desc":
+        return list.sort((a, b) => b.maxPrice - a.maxPrice);
+      case "name":
+        return list.sort((a, b) => a.name.localeCompare(b.name));
+      default:
+        return list;
+    }
+  }, [filteredGroups, sortBy]);
+
+  const clearFilters = () => {
+    setCategoryFilter([]);
+    setColorGroupFilter([]);
+    setPriceMin("");
+    setPriceMax("");
+    setShowFast(true);
+    setShowPreorder(true);
+    setShowDealsOnly(false);
+    setShowBestsellersOnly(false);
+    setSearchQuery("");
   };
+
+  const hasActiveFilters =
+    categoryFilter.length > 0 ||
+    colorGroupFilter.length > 0 ||
+    priceMin !== "" ||
+    priceMax !== "" ||
+    !showFast ||
+    !showPreorder ||
+    showDealsOnly ||
+    showBestsellersOnly ||
+    searchQuery.trim() !== "";
+
+  // Color groups to show (collapsed by default)
+  const TOP_COLORS = 6;
+  const visibleColorGroups = showAllColors
+    ? availableColorGroups
+    : availableColorGroups.slice(0, TOP_COLORS);
+
+  const filterPanel = (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
+          Filters
+        </h3>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+
+      {/* Delivery tier filter chips */}
+      <div>
+        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+          Availability
+        </h4>
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setShowFast(!showFast);
+              pushEvent(CTA_EVENTS.filter_change, { filter_type: "delivery_fast", filter_action: showFast ? "remove" : "add" });
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors text-left ${
+              showFast
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                : "bg-white border-slate-200 text-slate-400"
+            }`}
+          >
+            <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${showFast ? "bg-emerald-600 border-emerald-600" : "border-slate-300"}`}>
+              {showFast && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            </span>
+            <span>
+              <span className="block font-semibold">In stock · ships in ~4 days</span>
+              <span className="text-slate-400 font-normal">Layer 1 &amp; 2 — ready inventory</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowPreorder(!showPreorder);
+              pushEvent(CTA_EVENTS.filter_change, { filter_type: "delivery_preorder", filter_action: showPreorder ? "remove" : "add" });
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors text-left ${
+              showPreorder
+                ? "bg-amber-50 border-amber-300 text-amber-800"
+                : "bg-white border-slate-200 text-slate-400"
+            }`}
+          >
+            <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${showPreorder ? "bg-amber-500 border-amber-500" : "border-slate-300"}`}>
+              {showPreorder && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            </span>
+            <span>
+              <span className="block font-semibold">Pre-order · ships in ~14 days</span>
+              <span className="text-slate-400 font-normal">Layer 3 — full catalog</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Quick filters: Deals & Bestsellers */}
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setShowDealsOnly(!showDealsOnly);
+            pushEvent(CTA_EVENTS.filter_change, { filter_type: "deals_only", filter_action: showDealsOnly ? "remove" : "add" });
+          }}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+            showDealsOnly
+              ? "bg-amber-50 border-amber-300 text-amber-700"
+              : "bg-white border-slate-200 text-slate-600 hover:border-amber-200 hover:bg-amber-50/50"
+          }`}
+        >
+          <Flame className="w-3.5 h-3.5" />
+          Deals
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setShowBestsellersOnly(!showBestsellersOnly);
+            pushEvent(CTA_EVENTS.filter_change, { filter_type: "bestsellers_only", filter_action: showBestsellersOnly ? "remove" : "add" });
+          }}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+            showBestsellersOnly
+              ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+              : "bg-white border-slate-200 text-slate-600 hover:border-emerald-200 hover:bg-emerald-50/50"
+          }`}
+        >
+          <Star className="w-3.5 h-3.5" />
+          Bestsellers
+        </button>
+      </div>
+
+      {/* Category */}
+      <div>
+        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+          Category
+        </h4>
+        <ul className="space-y-1">
+          {ALL_CATEGORIES.map((cat) => (
+            <li key={cat}>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={categoryFilter.includes(cat)}
+                  onChange={() => toggleArray(categoryFilter, cat, setCategoryFilter, "category")}
+                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
+                />
+                <span className="text-sm text-slate-700">{cat}</span>
+                <span className="text-xs text-slate-400 ml-auto">{categoryCounts.get(cat) || 0}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Price range */}
+      <div>
+        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+          Price per stem
+        </h4>
+        <div className="flex gap-2 items-center">
+          <input
+            type="number"
+            min={0}
+            step={0.01}
+            placeholder="Min"
+            value={priceMin === "" ? "" : priceMin}
+            onChange={(e) =>
+              setPriceMin(e.target.value === "" ? "" : Number(e.target.value))
+            }
+            className="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+          />
+          <span className="text-slate-400 text-xs">to</span>
+          <input
+            type="number"
+            min={0}
+            step={0.01}
+            placeholder="Max"
+            value={priceMax === "" ? "" : priceMax}
+            onChange={(e) =>
+              setPriceMax(e.target.value === "" ? "" : Number(e.target.value))
+            }
+            className="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+          />
+        </div>
+      </div>
+
+      {/* Color (simplified groups — at the bottom per Facu's feedback) */}
+      <div>
+        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+          Color
+        </h4>
+        <ul className="space-y-1">
+          {visibleColorGroups.map((cg) => (
+            <li key={cg}>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={colorGroupFilter.includes(cg)}
+                  onChange={() =>
+                    toggleArray(colorGroupFilter, cg, setColorGroupFilter, "color")
+                  }
+                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
+                />
+                <span className="text-sm text-slate-700">{cg}</span>
+                <span className="text-xs text-slate-400 ml-auto">{colorGroupCounts.get(cg) || 0}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+        {availableColorGroups.length > TOP_COLORS && (
+          <button
+            type="button"
+            onClick={() => setShowAllColors(!showAllColors)}
+            className="mt-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
+          >
+            {showAllColors
+              ? "Show fewer"
+              : `Show all ${availableColorGroups.length} colors`}
+            <ChevronDown
+              className={`w-3 h-3 transition-transform ${showAllColors ? "rotate-180" : ""}`}
+            />
+          </button>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 py-6 px-4">
-        <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-            Farm-Direct Flowers at Your Door in 4 Days
-          </h1>
-          <p className="text-lg text-slate-600 mb-2 max-w-2xl mx-auto">
-            Roses from $1.30/stem. Tropicals from $0.63/stem. Greens from $0.13/stem. Direct from Ecuador & Colombia farms to your shop.
-          </p>
-          <p className="text-sm text-slate-500 mb-4">
-            Rose prices include delivery. Tropicals, greens & combo boxes ship free.
-          </p>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Sample box CTA with scarcity countdown */}
+        <SampleBoxCTA />
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Collection"
-              onClick={(e) => trackShopClick(e, "browse_order")}
-              className="bg-emerald-600 text-white px-8 py-4 text-lg font-bold rounded-lg hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 inline-flex items-center justify-center gap-2"
-            >
-              Browse & Order
-              <ArrowRight className="w-5 h-5" />
-            </a>
-            <Link
-              href="/sample-box"
-              onClick={trackSampleClick}
-              className="border-2 border-emerald-600 text-emerald-600 px-8 py-4 text-lg font-bold rounded-lg hover:bg-emerald-50 transition-all inline-flex items-center justify-center"
-            >
-              Get a Free Sample Box
-            </Link>
+        {/* Popular Right Now — curated bestsellers to reduce choice paralysis */}
+        {popularProducts.length > 0 && !searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-900">Popular Right Now</h2>
+              <button
+                type="button"
+                onClick={() => setShowBestsellersOnly(true)}
+                className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+              >
+                See all bestsellers →
+              </button>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
+              {popularProducts.map((group) => {
+                const imgSrc = group.image || "/Floropolis-logo-only.png";
+                const displayPrice = group.is_on_deal && group.dealPrice != null
+                  ? group.dealPrice
+                  : group.minPrice;
+                return (
+                  <Link
+                    key={group.key}
+                    href={`/shop/${group.slug}`}
+                    className="flex-none w-40 sm:w-48 snap-start bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group/pop"
+                    onClick={() => pushEvent(CTA_EVENTS.product_click, {
+                      product_name: group.name,
+                      product_category: group.category,
+                      product_price: displayPrice,
+                      cta_location: "popular_section",
+                    })}
+                  >
+                    <div className="aspect-square relative bg-slate-50 overflow-hidden">
+                      <Image
+                        src={imgSrc}
+                        alt={group.name}
+                        fill
+                        className="object-contain group-hover/pop:scale-105 transition-transform"
+                        sizes="192px"
+                        unoptimized={imgSrc.startsWith("http")}
+                      />
+                      {group.bestseller && (
+                        <span className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <h3 className="font-semibold text-slate-900 text-xs leading-tight line-clamp-1 group-hover/pop:text-emerald-600 transition-colors">
+                        {group.name}
+                      </h3>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{group.category}</p>
+                      <p className="text-sm font-bold text-emerald-600 mt-1">
+                        ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/stem</span>
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
+        )}
 
-          {/* Trust Strip */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 justify-items-center text-sm text-slate-500 max-w-2xl mx-auto md:flex md:flex-wrap md:justify-center md:gap-x-2 md:gap-y-0">
-            <span>📦 4-Day Delivery</span>
-            <span className="text-slate-400 hidden md:inline">·</span>
-            <span>🌱 Farm Direct</span>
-            <span className="text-slate-400 hidden md:inline">·</span>
-            <span>💰 No Middlemen</span>
-            <span className="text-slate-400 hidden md:inline">·</span>
-            <span>✈️ Free Shipping</span>
-          </div>
-        </div>
-      </section>
+        <div className="flex gap-8">
+          {/* Sidebar: desktop */}
+          <aside className="hidden lg:block w-52 flex-shrink-0">
+            <div className="sticky top-24 rounded-xl border border-slate-200 bg-slate-50/50 p-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+              {filterPanel}
+            </div>
+          </aside>
 
-      {/* Premium Roses */}
-      <section className="py-6 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-              Premium Roses — 30+ Varieties in Stock
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Ecoroses direct from Ecuador. Same farms that supply the biggest wholesalers — without the middlemen.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1: Freedom Red Rose */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/Freedom.png"
-                  alt="Freedom Red Rose - Premium Ecoroses"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Freedom Red Rose</h3>
-                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    BESTSELLER
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $1.88/stem</p>
-                <p className="text-sm text-slate-500 mb-2">60cm · 20 stems/bunch · Price includes delivery</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                  onClick={(e) => trackShopClick(e, "freedom_red")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
+          <div className="flex-1 min-w-0">
+            {/* Mobile quick-filter chips — visible below lg (where sidebar is hidden) */}
+            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide -mx-1 px-1">
+              {["Rose", "Tropicals", "Greens & Foliage", "Delphinium", "Ranunculus", "Anemone", "Hydrangea"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => toggleArray(categoryFilter, cat, setCategoryFilter, "category")}
+                  className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    categoryFilter.includes(cat)
+                      ? "bg-emerald-600 text-white border-emerald-600"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-emerald-300"
+                  }`}
                 >
-                  Order Now →
-                </a>
+                  {cat === "Greens & Foliage" ? "Greens" : cat}
+                </button>
+              ))}
+            </div>
+            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide -mx-1 px-1">
+              {availableColorGroups.slice(0, 8).map((cg) => (
+                <button
+                  key={cg}
+                  type="button"
+                  onClick={() => toggleArray(colorGroupFilter, cg, setColorGroupFilter, "color")}
+                  className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    colorGroupFilter.includes(cg)
+                      ? "bg-emerald-600 text-white border-emerald-600"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-emerald-300"
+                  }`}
+                >
+                  {cg}
+                </button>
+              ))}
+            </div>
+
+            {/* Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+              <p className="text-sm text-slate-600 font-medium">
+                {sortedGroups.length} variet{sortedGroups.length !== 1 ? "ies" : "y"}
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  Filters
+                </button>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Card 2: White Tibet */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/white-tibet-ai.png"
-                  alt="White Tibet Rose - Premium Ecoroses"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">White Tibet</h3>
-                  <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    BEST PRICE
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $1.30/stem</p>
-                <p className="text-sm text-slate-500 mb-2">40-70cm · 25 stems/bunch · Our lowest-priced rose</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                  onClick={(e) => trackShopClick(e, "white_tibet")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
+            {/* Product grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {sortedGroups.map((group) => (
+                <VarietyCard key={group.key} group={group} />
+              ))}
             </div>
 
-            {/* Card 3: Orange Crush */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/orange-crush-ai.png"
-                  alt="Orange Crush Rose - Premium Ecoroses"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Orange Crush</h3>
-                  <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    VIBRANT
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $1.45/stem</p>
-                <p className="text-sm text-slate-500 mb-2">50-70cm · 25 stems/bunch</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                  onClick={(e) => trackShopClick(e, "orange_crush")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 4: Lavender Deep Purple */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/lavender-deep-purple-ai.png"
-                  alt="Lavender Deep Purple Rose - Premium Ecoroses"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Lavender Deep Purple</h3>
-                  <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    UNIQUE COLOR
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $1.45/stem</p>
-                <p className="text-sm text-slate-500 mb-2">50cm · 25 stems/bunch</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                  onClick={(e) => trackShopClick(e, "lavender_deep_purple")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 5: Pink Faith */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/Pink_Floyd.png"
-                  alt="Pink Faith Rose - Premium Ecoroses"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Pink Faith</h3>
-                  <span className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    POPULAR
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $1.52/stem</p>
-                <p className="text-sm text-slate-500 mb-2">50-60cm · 25 stems/bunch</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                  onClick={(e) => trackShopClick(e, "pink_faith")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 6: Browse All Roses */}
-            <div className="relative rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
-              <img src="/images/shop/shop-all-roses.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">30+ rose varieties in stock</h3>
-                <p className="text-slate-600 mb-4">
-                  Reds, pinks, whites, lavenders, oranges, bi-colors. 40-70cm. From $1.30/stem delivered.
+            {sortedGroups.length === 0 && (
+              <div className="text-center py-16 text-slate-500">
+                <p className="text-lg font-medium">No products match your filters.</p>
+                <p className="text-sm mt-1">
+                  Try selecting a later delivery date or clearing filters.
                 </p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses"
-                  onClick={(e) => trackShopClick(e, "shop_all_roses")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="mt-3 text-emerald-600 hover:text-emerald-700 font-medium"
                 >
-                  Shop All Roses →
-                </a>
+                  Clear filters
+                </button>
               </div>
-            </div>
-          </div>
-
-          <p className="text-center text-sm text-slate-500 mt-6 max-w-2xl mx-auto">
-            Compare: Potomac Floral charges $1.89/stem for Freedom Red 50cm. Floropolis: $1.88/stem for 60cm — longer stems, same price.
-          </p>
-          <p className="text-center text-sm text-slate-500 mt-2">
-            All rose prices include delivery to your door.
-          </p>
-        </div>
-      </section>
-
-      {/* Ranunculus Section */}
-      <section className="bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-              Premium Ranunculus
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Up to 57% cheaper than traditional wholesalers • Fresh from Ecuador • Stunning layered blooms
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6 mb-6">
-            {/* Card 1 - Rainbow Mix */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
-                  alt="Rainbow ranunculus mix with multiple vibrant colors"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-4 text-center">
-                <h3 className="text-xl font-bold text-slate-900 mb-1">Rainbow Mix</h3>
-                <p className="text-sm text-slate-600 mb-2">Assorted colors</p>
-                <div className="text-2xl font-bold text-emerald-600 mb-1">From $1.21</div>
-                <div className="text-xs text-slate-500 line-through mb-1">Was $1.73+</div>
-                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
-                  Up to 30% off
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2 - Red */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/shop/Ranunculus_Red_FINAL.png"
-                  alt="Deep red ranunculus with rich crimson petals"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-4 text-center">
-                <h3 className="text-xl font-bold text-slate-900 mb-1">Red</h3>
-                <p className="text-sm text-slate-600 mb-2">Mistral Rosso</p>
-                <div className="text-2xl font-bold text-emerald-600 mb-1">$1.21</div>
-                <div className="text-xs text-slate-500 line-through mb-1">Was $1.51</div>
-                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
-                  20% off
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 - Hot Pink */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/shop/Ranunculus_Hot_Pink_FINAL.PNG"
-                  alt="Vibrant hot pink ranunculus blooms"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-4 text-center">
-                <h3 className="text-xl font-bold text-slate-900 mb-1">Hot Pink</h3>
-                <p className="text-sm text-slate-600 mb-2">Bright fuchsia</p>
-                <div className="text-2xl font-bold text-emerald-600 mb-1">$1.35</div>
-                <div className="text-xs text-slate-500 line-through mb-1">Was $1.58</div>
-                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
-                  15% off
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4 - Yellow */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/TESTIMONIALS/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg"
-                  alt="Stunning yellow ranunculus arrangement"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-4 text-center">
-                <h3 className="text-xl font-bold text-slate-900 mb-1">Yellow</h3>
-                <p className="text-sm text-slate-600 mb-2">Bright & cheerful</p>
-                <div className="text-2xl font-bold text-emerald-600 mb-1">$1.28</div>
-                <div className="text-xs text-slate-500 line-through mb-1">Was $1.48</div>
-                <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
-                  14% off
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="text-center">
-            <a
-              href="https://eshops.kometsales.com/762172?search=ranunculus&utm_source=Website&utm_campaign=Shop-Ranunculus"
-              onClick={(e) => trackShopClick(e, "ranunculus")}
-              className="bg-emerald-600 text-white px-10 py-5 text-lg font-bold rounded-full hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center justify-center gap-2"
-            >
-              Shop All Ranunculus
-              <ArrowRight className="w-5 h-5" />
-            </a>
-            <p className="text-sm text-slate-500 mt-4">
-              Net terms available for established accounts
-            </p>
+            )}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Summer Flowers Section */}
-      <section className="bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-              Summer Flowers Collection
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Ranunculus, anemones, delphinium & more • Perfect for spring and summer weddings
-            </p>
+      {/* Mobile filter drawer */}
+      {mobileFiltersOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setMobileFiltersOpen(false)}
+            aria-hidden
+          />
+          <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-white shadow-xl z-50 overflow-y-auto lg:hidden">
+            <div className="sticky top-0 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+              <h2 className="font-bold text-slate-900">Filters</h2>
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(false)}
+                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                aria-label="Close filters"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4">{filterPanel}</div>
           </div>
+        </>
+      )}
 
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
-            {/* Card 1 - Ranunculus Mix */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
-                  alt="Colorful ranunculus mix"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-6 text-center">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Ranunculus Mix</h3>
-                <p className="text-slate-600 mb-3">White, yellow, orange, pink, red</p>
-                <div className="text-3xl font-bold text-emerald-600 mb-1">From $1.21/stem</div>
-                <div className="text-sm text-slate-500 line-through mb-2">Traditional: $1.51-1.73</div>
-                <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full font-semibold inline-block">
-                  Up to 30% cheaper
-                </div>
-              </div>
-            </div>
+      <WhatsAppWidget />
 
-            {/* Card 2 - Anemones */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/shop/Anemone_3.png"
-                  alt="Anemones — white, purple, pink varieties"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-6 text-center">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Anemones</h3>
-                <p className="text-slate-600 mb-3">White, purple, pink varieties</p>
-                <div className="text-3xl font-bold text-emerald-600 mb-1">From $1.35/stem</div>
-                <div className="text-sm text-slate-500 line-through mb-2">Traditional: $1.52</div>
-                <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full font-semibold inline-block">
-                  12% cheaper
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 - Delphinium */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-              <div className="aspect-square relative">
-                <img
-                  src="/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png"
-                  alt="Delphinium — blue, white, lavender"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-6 text-center">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Delphinium</h3>
-                <p className="text-slate-600 mb-3">Blue, white, lavender</p>
-                <div className="text-3xl font-bold text-emerald-600 mb-1">From $2.85/stem</div>
-                <div className="text-sm text-slate-500 line-through mb-2">Traditional: $3.20</div>
-                <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full font-semibold inline-block">
-                  11% cheaper
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="text-center">
-            <a
-              href="https://eshops.kometsales.com/762172?search=anemone+ranunculus+delphinium&utm_source=Website&utm_campaign=Shop-Summer"
-              onClick={(e) => trackShopClick(e, "summer_flowers")}
-              className="bg-emerald-600 text-white px-10 py-5 text-lg font-bold rounded-full hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105 inline-flex items-center gap-2"
-            >
-              Shop Summer Flowers
-              <ArrowRight className="w-5 h-5" />
-            </a>
-            <p className="text-sm text-slate-500 mt-4">
-              Most varieties available January-June
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Exotic Tropicals */}
-      <section className="py-6 px-4 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-              Exotic Tropicals — Direct from Ecuador's Jungle
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              From Magic Flowers' 80-hectare farms. Gingers, heliconias, anthuriums — flowers most wholesalers can't get. Last 2x longer than traditional cuts. All ship free.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Card 1: Heliconia Fire Opal */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/heliconia-fire-opal.png"
-                  alt="Heliconia Fire Opal - Exotic Tropical"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Heliconia Fire Opal</h3>
-                  <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    $0.93/STEM
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">$0.93/stem</p>
-                <p className="text-sm text-slate-500 mb-2">70cm · 5 stems/bunch · Lasts 14+ days · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                  onClick={(e) => trackShopClick(e, "heliconia_fire_opal")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 2: Heliconia Rostrata */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/heliconia-rostrata.png"
-                  alt="Heliconia Rostrata - Exotic Tropical"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Heliconia Rostrata</h3>
-                  <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    SHOWSTOPPER
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">$2.94/stem</p>
-                <p className="text-sm text-slate-500 mb-2">90cm · Iconic hanging tropical · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                  onClick={(e) => trackShopClick(e, "heliconia_rostrata")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 3: Ginger Nicole */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/ginger-nicole-pink.PNG"
-                  alt="Ginger Nicole (Pink) - Exotic Tropical"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Ginger Nicole (Pink)</h3>
-                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    POPULAR
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">$1.94/stem</p>
-                <p className="text-sm text-slate-500 mb-2">90cm · 3 stems/bunch · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                  onClick={(e) => trackShopClick(e, "ginger_nicole")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 4: Anthurium Assorted */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/anthurium-red.jpg"
-                  alt="Anthurium Assorted - Exotic Tropical"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Anthurium Assorted</h3>
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    3+ WEEKS VASE LIFE
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $2.72/stem</p>
-                <p className="text-sm text-slate-500 mb-2">50cm · 10-14cm heads · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                  onClick={(e) => trackShopClick(e, "anthurium_assorted")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 5: Novelties & Musas */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/french-kiss.png"
-                  alt="Novelties & Musas - Exotic Tropical"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Novelties & Musas</h3>
-                  <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    RARE FINDS
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">French Kiss $0.63 · Musa $1.18 · Anana $2.12</p>
-                <p className="text-sm text-slate-500 mb-2">Unique tropicals your clients have never seen</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                  onClick={(e) => trackShopClick(e, "novelties_musas")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 6: Browse All Tropicals */}
-            <div className="relative rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
-              <img src="/images/shop/shop-all-tropicals.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">16+ tropical varieties in stock</h3>
-                <p className="text-slate-600 mb-4">
-                  Gingers, heliconias, musas, anthuriums, novelties. From $0.63/stem. All ship free.
-                </p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Tropicals"
-                  onClick={(e) => trackShopClick(e, "shop_all_tropicals")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
-                >
-                  Shop All Tropicals →
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-center text-sm text-slate-500 mt-6">
-            All tropical stems and boxes include free shipping.
-          </p>
-        </div>
-      </section>
-
-      {/* Tropical Combo Boxes */}
-      <section className="py-8 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-              Not Sure Where to Start? Try a Combo Box.
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Pre-designed assorted boxes mixing tropical flowers and greens. One box = instant tropical collection. All ship free.
-            </p>
-          </div>
-
-          <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-            <table className="w-full min-w-[640px] border border-slate-200 rounded-xl overflow-hidden shadow-lg">
-              <thead>
-                <tr className="bg-slate-100 border-b border-slate-200">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Box Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-900">What&apos;s Inside</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Stems</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Price/Stem</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-900">~Box Total</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Shipping</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="bg-white border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">
-                    <span className="inline-flex items-center gap-2">
-                      Tabasco
-                      <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-semibold">BEST VALUE</span>
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">113</td>
-                  <td className="py-3 px-4 text-slate-600">$0.60</td>
-                  <td className="py-3 px-4 text-slate-600">~$68</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Mini Fiesta</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">50</td>
-                  <td className="py-3 px-4 text-slate-600">$0.75</td>
-                  <td className="py-3 px-4 text-slate-600">~$38</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-white border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Mini Tabasco</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">66</td>
-                  <td className="py-3 px-4 text-slate-600">$0.79</td>
-                  <td className="py-3 px-4 text-slate-600">~$52</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Fire</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">51</td>
-                  <td className="py-3 px-4 text-slate-600">$0.82</td>
-                  <td className="py-3 px-4 text-slate-600">~$42</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-white border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Tiki Limbo</td>
-                  <td className="py-3 px-4 text-slate-600">Flower Kit</td>
-                  <td className="py-3 px-4 text-slate-600">95</td>
-                  <td className="py-3 px-4 text-slate-600">$0.84</td>
-                  <td className="py-3 px-4 text-slate-600">~$80</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Fiesta</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">52</td>
-                  <td className="py-3 px-4 text-slate-600">$0.89</td>
-                  <td className="py-3 px-4 text-slate-600">~$46</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-white border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Tiki Limbo (Large)</td>
-                  <td className="py-3 px-4 text-slate-600">Flower Kit</td>
-                  <td className="py-3 px-4 text-slate-600">180</td>
-                  <td className="py-3 px-4 text-slate-600">$0.97</td>
-                  <td className="py-3 px-4 text-slate-600">~$175</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Capricho</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">41</td>
-                  <td className="py-3 px-4 text-slate-600">$1.02</td>
-                  <td className="py-3 px-4 text-slate-600">~$42</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-white border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Escarlata</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">41</td>
-                  <td className="py-3 px-4 text-slate-600">$1.02</td>
-                  <td className="py-3 px-4 text-slate-600">~$42</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Iniziativa</td>
-                  <td className="py-3 px-4 text-slate-600">Flowers + Greens</td>
-                  <td className="py-3 px-4 text-slate-600">41</td>
-                  <td className="py-3 px-4 text-slate-600">$1.02</td>
-                  <td className="py-3 px-4 text-slate-600">~$42</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-                <tr className="bg-white">
-                  <td className="py-3 px-4 text-slate-900 font-medium">Ginger Mix</td>
-                  <td className="py-3 px-4 text-slate-600">Assorted Gingers</td>
-                  <td className="py-3 px-4 text-slate-600">24</td>
-                  <td className="py-3 px-4 text-slate-600">$2.34</td>
-                  <td className="py-3 px-4 text-slate-600">~$56</td>
-                  <td className="py-3 px-4"><span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm font-medium">Free ✅</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="text-center mt-8">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-ComboBoxes"
-              onClick={(e) => trackShopClick(e, "combo_boxes")}
-              className="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 px-8 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-            >
-              Shop Combo Boxes →
-              <ArrowRight className="w-5 h-5" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Ready-Made Tropical Bouquets */}
-      <section className="py-8 px-4 bg-slate-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-              Ready-Made Tropical Bouquets
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Pre-designed bouquets straight from the farm. Buy, mark up, and resell — or use as a base for your arrangements. Zero labor. All ship free.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {/* Group 1: Green Bouquets */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden p-5">
-              <h3 className="text-lg font-bold text-slate-900 mb-3">Green Bouquets · From $5.85/bunch</h3>
-              <ul className="space-y-2 text-slate-600">
-                <li className="flex justify-between gap-2"><span>Green Round Emerald</span><span className="font-medium text-slate-900 whitespace-nowrap">$5.85/bunch</span></li>
-                <li className="text-sm text-slate-500">11 stems · 60cm</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Green Round Forest</span><span className="font-medium text-slate-900 whitespace-nowrap">$5.85/bunch</span></li>
-                <li className="text-sm text-slate-500">11 stems · 60cm</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Green Round Paradise</span><span className="font-medium text-slate-900 whitespace-nowrap">$5.85/bunch</span></li>
-                <li className="text-sm text-slate-500">11 stems · 60cm</li>
-              </ul>
-            </div>
-
-            {/* Group 2: Tropical Bouquets */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden p-5">
-              <h3 className="text-lg font-bold text-slate-900 mb-3">Tropical Bouquets · From $8.82/bunch</h3>
-              <ul className="space-y-2 text-slate-600">
-                <li className="flex justify-between gap-2"><span>Flat Hanna Farm Choice</span><span className="font-medium text-slate-900 whitespace-nowrap">$8.82/bunch</span></li>
-                <li className="text-sm text-slate-500">13 stems · 55cm · Assorted</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Red Round Lua Fuego</span><span className="font-medium text-slate-900 whitespace-nowrap">$8.82/bunch</span></li>
-                <li className="text-sm text-slate-500">13 stems · 50cm · Red</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Orange Round Confeti</span><span className="font-medium text-slate-900 whitespace-nowrap">$8.96/bunch</span></li>
-                <li className="text-sm text-slate-500">13 stems · 50cm · Orange</li>
-              </ul>
-            </div>
-
-            {/* Group 3: Premium Bouquets */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden p-5">
-              <h3 className="text-lg font-bold text-slate-900 mb-3">Premium Bouquets (21 stems) · From $10.19/bunch</h3>
-              <ul className="space-y-2 text-slate-600">
-                <li className="flex justify-between gap-2"><span>Medium Round Amazon</span><span className="font-medium text-slate-900 whitespace-nowrap">$10.19/bunch</span></li>
-                <li className="text-sm text-slate-500">21 stems · 50cm · Assorted</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Medium Round Brushed</span><span className="font-medium text-slate-900 whitespace-nowrap">$10.19/bunch</span></li>
-                <li className="text-sm text-slate-500">21 stems · 50cm · Assorted</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Medium Round Confeti</span><span className="font-medium text-slate-900 whitespace-nowrap">$10.19/bunch</span></li>
-                <li className="text-sm text-slate-500">21 stems · 50cm · Assorted</li>
-                <li className="flex justify-between gap-2 border-t border-slate-100 pt-2 mt-2"><span>Medium Round Fuego</span><span className="font-medium text-slate-900 whitespace-nowrap">$10.36/bunch</span></li>
-                <li className="text-sm text-slate-500">21 stems · 50cm · Assorted</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 max-w-2xl mx-auto">
-            <p className="text-slate-800 font-medium">
-              💡 Quick math: Buy 10 Lua Fuego bouquets for $88. Mark up to $25 each → $250 revenue, $162 profit. Zero arranging.
-            </p>
-          </div>
-
-          <div className="text-center mb-6">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Bouquets"
-              onClick={(e) => trackShopClick(e, "bouquets")}
-              className="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 px-8 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-            >
-              Shop Bouquets →
-              <ArrowRight className="w-5 h-5" />
-            </a>
-          </div>
-
-          <p className="text-center text-sm text-slate-500">
-            All bouquets include free shipping. Prices per bunch.
-          </p>
-        </div>
-      </section>
-
-      {/* Greens & Foliage */}
-      <section className="py-6 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-              Greens & Foliage — From $0.13/stem
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Palms, monstera, ferns, philodendrons, pandanus, eucalyptus. Bulk boxes available. All ship free.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1: Willow Greens */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/Greens.png"
-                  alt="Willow Greens - Bulk foliage"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Willow Greens</h3>
-                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    FROM $0.13
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">$0.13/stem</p>
-                <p className="text-sm text-slate-500 mb-2">90cm · 1,500-2,500 stems/box · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                  onClick={(e) => trackShopClick(e, "willow_greens")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 2: Pandanus Green & Variegated */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/pandanus-variegated.jpg"
-                  alt="Pandanus Green & Variegated - Foliage"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Pandanus Green & Variegated</h3>
-                  <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    TROPICAL ACCENT
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">$0.21/stem</p>
-                <p className="text-sm text-slate-500 mb-2">80cm · 1,300-2,500 stems/box · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                  onClick={(e) => trackShopClick(e, "pandanus_green_variegated")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 3: Foliage Mix Boxes */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/foliage-mix-box.png"
-                  alt="Foliage Mix Boxes - Jungle, Amazon, Greenery"
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Foliage Mix Boxes</h3>
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    STARTER BOX
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $0.31/stem</p>
-                <p className="text-sm text-slate-500 mb-2">Jungle 115 stems · Amazon 90 stems · Greenery 90 stems</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                  onClick={(e) => trackShopClick(e, "foliage_mix_boxes")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 4: Palm Areca */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/palm-areca.jpg"
-                  alt="Palm Areca - Foliage"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Palm Areca</h3>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $0.39/stem</p>
-                <p className="text-sm text-slate-500 mb-2">50-65cm · Up to 6,000 stems/box · Free shipping</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                  onClick={(e) => trackShopClick(e, "palm_areca")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 5: Monstera */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group">
-              <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-2">
-                <img
-                  src="/images/shop/monstera.jpg"
-                  alt="Monstera - Iconic Leaf Foliage"
-                  className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-2xl font-bold text-slate-900">Monstera</h3>
-                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    ICONIC LEAF
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-600 mb-1">From $1.15/stem</p>
-                <p className="text-sm text-slate-500 mb-2">Petite 30cm from $1.15 · Small 50cm from $1.64</p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                  onClick={(e) => trackShopClick(e, "monstera")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105"
-                >
-                  Order Now →
-                </a>
-              </div>
-            </div>
-
-            {/* Card 6: Browse All Greens */}
-            <div className="relative rounded-2xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all group flex flex-col justify-center p-6 bg-gradient-to-br from-slate-100 to-slate-200">
-              <img src="/images/shop/shop-all-greens.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">60+ green varieties in stock</h3>
-                <p className="text-slate-600 mb-4">
-                  Ferns, palms, philodendrons, foliage boxes. From $0.13/stem. All ship free.
-                </p>
-                <a
-                  href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Greens"
-                  onClick={(e) => trackShopClick(e, "shop_all_greens")}
-                  className="block w-full bg-emerald-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-emerald-700 transition-all text-center group-hover:scale-105 mt-auto"
-                >
-                  Shop All Greens →
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-center text-sm text-slate-500 mt-6">
-            All greens include free shipping.
-          </p>
-        </div>
-      </section>
-
-      {/* How It Works (in-page section for /shop) */}
-      <section id="how-it-works" className="py-8 px-4 bg-slate-50 scroll-mt-20">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-10 text-center">
-            Order Monday. Flowers at Your Shop by Thursday.
-          </h2>
-
-          {/* 4-step timeline: horizontal desktop, vertical mobile */}
-          <div className="flex flex-col md:flex-row md:items-stretch gap-6 md:gap-0 mb-12 border-l-2 border-emerald-300 pl-8 md:border-l-0 md:pl-0">
-            {/* Step 1 */}
-            <div className="relative flex-1 flex flex-col md:text-center p-5 bg-white rounded-xl shadow-lg border border-slate-200">
-              <div className="text-2xl mb-2">📋</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">You Order</h3>
-              <p className="text-slate-600 text-sm mb-2">Browse our catalog, pick your flowers, place your order.</p>
-              <p className="text-xs font-semibold text-emerald-600">Monday / Tuesday</p>
-            </div>
-            <div className="hidden md:flex flex-shrink-0 items-center justify-center px-2 text-emerald-500">
-              <ArrowRight className="w-8 h-8" />
-            </div>
-            {/* Step 2 */}
-            <div className="relative flex-1 flex flex-col md:text-center p-5 bg-white rounded-xl shadow-lg border border-slate-200">
-              <div className="text-2xl mb-2">✂️</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Farm Picks & Packs</h3>
-              <p className="text-slate-600 text-sm mb-2">Your flowers are cut fresh and packed at the farm in Ecuador or Colombia.</p>
-              <p className="text-xs font-semibold text-emerald-600">Tuesday / Wednesday</p>
-            </div>
-            <div className="hidden md:flex flex-shrink-0 items-center justify-center px-2 text-emerald-500">
-              <ArrowRight className="w-8 h-8" />
-            </div>
-            {/* Step 3 */}
-            <div className="relative flex-1 flex flex-col md:text-center p-5 bg-white rounded-xl shadow-lg border border-slate-200">
-              <div className="text-2xl mb-2">✈️</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Direct Ship</h3>
-              <p className="text-slate-600 text-sm mb-2">FedEx from farm to your door. No warehouse stops, no middlemen.</p>
-              <p className="text-xs font-semibold text-emerald-600">Wednesday / Thursday</p>
-            </div>
-            <div className="hidden md:flex flex-shrink-0 items-center justify-center px-2 text-emerald-500">
-              <ArrowRight className="w-8 h-8" />
-            </div>
-            {/* Step 4 */}
-            <div className="relative flex-1 flex flex-col md:text-center p-5 bg-white rounded-xl shadow-lg border border-slate-200">
-              <div className="text-2xl mb-2">📦</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">You Receive</h3>
-              <p className="text-slate-600 text-sm mb-2">A fresh box arrives at your shop. 4 days from farm to your cooler.</p>
-              <p className="text-xs font-semibold text-emerald-600">Thursday / Friday</p>
-            </div>
-          </div>
-
-          {/* Two-column comparison */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-slate-100 rounded-2xl p-6 border border-slate-200">
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Traditional Wholesale</h3>
-              <ul className="space-y-2 text-slate-700">
-                <li>Farm → Importer (+20%)</li>
-                <li>→ Distributor (+15%)</li>
-                <li>→ Regional Warehouse (+10%)</li>
-                <li>→ You</li>
-              </ul>
-              <p className="text-sm text-slate-500 mt-4">8-10 days. 3 middlemen. Each taking a cut.</p>
-            </div>
-            <div className="bg-emerald-50 rounded-2xl p-6 border-2 border-emerald-200">
-              <h3 className="text-xl font-bold text-emerald-900 mb-4">Floropolis</h3>
-              <p className="text-emerald-900 font-semibold mb-2">Farm → You</p>
-              <p className="text-emerald-800">4 days. 0 middlemen. Same farms, direct prices.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Cheaper Section */}
-      <section className="py-8 px-4 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-bold text-slate-900 mb-3">
-              Why We're 15-40% Cheaper
-            </h2>
-            <p className="text-xl text-slate-600">
-              It's simple: we eliminate every middleman between the farm and you
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Traditional Wholesale:</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center flex-shrink-0 font-bold">1</div>
-                  <div>
-                    <div className="font-semibold text-slate-900">Farm → Importer</div>
-                    <div className="text-slate-600 text-sm">+20% markup</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center flex-shrink-0 font-bold">2</div>
-                  <div>
-                    <div className="font-semibold text-slate-900">Importer → Distributor</div>
-                    <div className="text-slate-600 text-sm">+15% markup</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center flex-shrink-0 font-bold">3</div>
-                  <div>
-                    <div className="font-semibold text-slate-900">Distributor → Regional Warehouse</div>
-                    <div className="text-slate-600 text-sm">+10% markup</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center flex-shrink-0 font-bold">4</div>
-                  <div>
-                    <div className="font-semibold text-slate-900">Warehouse → You</div>
-                    <div className="text-slate-600 text-sm">8-10 days old</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-emerald-50 p-8 rounded-2xl border-2 border-emerald-200">
-              <h3 className="text-2xl font-bold text-emerald-900 mb-4">Floropolis Direct:</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">✓</div>
-                  <div>
-                    <div className="font-semibold text-emerald-900">Farm → You</div>
-                    <div className="text-emerald-700 text-sm">0% middleman markup</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">✓</div>
-                  <div>
-                    <div className="font-semibold text-emerald-900">48-72hr delivery</div>
-                    <div className="text-emerald-700 text-sm">5-7 days fresher</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">✓</div>
-                  <div>
-                    <div className="font-semibold text-emerald-900">12-40% lower prices</div>
-                    <div className="text-emerald-700 text-sm">Same premium quality</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Instagram Section */}
-      <section className="py-8 px-4 bg-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-slate-900 mb-3">
-            See Our Flowers in Action
-          </h2>
-          <p className="text-xl text-slate-600 mb-6">
-            Follow us on Instagram & TikTok for daily inspiration from professional florists
-          </p>
-          <div className="flex gap-6 justify-center items-center">
-            <a
-              href="https://www.instagram.com/floropolisdirect"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block hover:scale-110 transition-transform"
-              aria-label="Follow us on Instagram"
-              onClick={() => pushEvent(CTA_EVENTS.footer_instagram_click, { cta_location: "shop_page" })}
-            >
-              <svg className="w-12 h-12" viewBox="0 0 24 24" fill="url(#instagram-gradient)">
-                <defs>
-                  <linearGradient id="instagram-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#833AB4" />
-                    <stop offset="50%" stopColor="#FD1D1D" />
-                    <stop offset="100%" stopColor="#FCAF45" />
-                  </linearGradient>
-                </defs>
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-              </svg>
-            </a>
-            <a
-              href="https://www.tiktok.com/@floropolisdirect"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block hover:scale-110 transition-transform"
-              aria-label="Follow us on TikTok"
-              onClick={() => pushEvent(CTA_EVENTS.footer_tiktok_click, { cta_location: "shop_page" })}
-            >
-              <svg className="w-12 h-12" viewBox="0 0 24 24" fill="#000000">
-                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
-              </svg>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Note */}
-      <section className="py-8 px-4 bg-white">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            Real Prices. No Surprises.
-          </h2>
-          <p className="text-slate-600 leading-relaxed">
-            The prices on this page are what you&apos;ll pay. Rose prices include delivery to your door. Tropicals, greens, bouquets, and combo boxes all ship free. We don&apos;t inflate &apos;list prices&apos; to make discounts look bigger. What you see is what you pay. We&apos;re cheaper because we cut out the middlemen, not because of pricing tricks.
-          </p>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-8 px-4 bg-emerald-600 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Ready to order?
-          </h2>
-          <p className="text-xl text-emerald-100 mb-8">
-            Browse our full catalog — roses, tropicals, greens, bouquets, combo boxes. Place an order today, flowers at your shop in 4 days.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Collection"
-              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.shop_now_click, { cta_location: "shop_final_cta" })}
-              className="bg-white text-emerald-600 px-10 py-5 text-lg font-bold rounded-lg hover:bg-emerald-50 transition-all shadow-xl hover:scale-105 inline-flex items-center justify-center gap-2"
-            >
-              Shop Now →
-              <ArrowRight className="w-5 h-5" />
-            </a>
-            <a
-              href="https://wa.me/17869308463"
-              onClick={(e) => handleOutboundClick(e, CTA_EVENTS.footer_whatsapp_click, { cta_location: "shop_final_cta" })}
-              className="border-2 border-white text-white px-10 py-5 text-lg font-bold rounded-lg hover:bg-white/10 transition-all inline-flex items-center justify-center"
-            >
-              Talk to Us
-            </a>
-          </div>
-          <Link
-            href="/sample-box"
-            onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "shop_final_cta" })}
-            className="text-emerald-100 hover:text-white underline font-medium"
-          >
-            Or request a free sample box →
-          </Link>
-        </div>
-      </section>
+      {/* Client Login — fixed bottom-right, above WhatsApp */}
+      <a
+        href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-20 right-6 z-40 flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 px-4 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all text-sm font-medium"
+      >
+        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+        </svg>
+        Existing client? Login
+      </a>
 
       <Footer />
+    </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center text-slate-500">
+          Loading…
+        </div>
+      }
+    >
+      <ShopPageContent />
+    </Suspense>
+  );
+}
+
+function VarietyCard({ group }: { group: VarietyGroup }) {
+  const imgSrc = group.image || "/Floropolis-logo-only.png";
+
+  const hasPriceRange = group.minPrice !== group.maxPrice;
+  const displayPrice = group.is_on_deal && group.dealPrice != null
+    ? group.dealPrice
+    : group.minPrice;
+
+  const earliestDate = getEarliestDeliveryDate(group.tier);
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col">
+      <Link
+        href={`/shop/${group.slug}`}
+        className="block aspect-square relative bg-slate-50 overflow-hidden"
+        onClick={() => pushEvent(CTA_EVENTS.product_click, {
+          product_name: group.name,
+          product_category: group.category,
+          product_price: displayPrice,
+        })}
+      >
+        <Image
+          src={imgSrc}
+          alt={group.name}
+          fill
+          className="object-contain group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          unoptimized={imgSrc.startsWith("http")}
+        />
+        {group.bestseller && (
+          <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+            Bestseller
+          </span>
+        )}
+        {group.is_on_deal && group.deal_label && (
+          <span className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+            {group.deal_label}
+          </span>
+        )}
+      </Link>
+      <div className="p-3 flex flex-col flex-1">
+        <Link href={`/shop/${group.slug}`}>
+          <h3 className="font-semibold text-slate-900 text-sm leading-tight hover:text-emerald-600 transition-colors line-clamp-2">
+            {group.name}
+          </h3>
+        </Link>
+        <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
+        <div className="mt-2 flex items-baseline gap-1.5">
+          {group.hasPriceIssue && group.minPrice === 0 ? (
+            <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
+              Price pending
+            </span>
+          ) : (
+            <>
+              {group.compareAtPrice != null && group.compareAtPrice > displayPrice && (
+                <span className="text-xs text-slate-400 line-through">
+                  ${group.compareAtPrice.toFixed(2)}
+                </span>
+              )}
+              <span className="text-base font-bold text-emerald-600">
+                {hasPriceRange && !group.is_on_deal
+                  ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
+                  : `$${displayPrice.toFixed(2)}`}
+                <span className="text-xs font-normal text-slate-500">/stem</span>
+              </span>
+            </>
+          )}
+        </div>
+        <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          {group.tier === "T1" || group.tier === "T2" ? (
+            <span className="inline-flex items-center gap-0.5 text-emerald-600 font-medium">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+              In Stock
+            </span>
+          ) : (
+            <span className="text-amber-600 font-medium">Pre-Order</span>
+          )}
+          <span>· {formatDeliveryDate(earliestDate)}</span>
+          {group.variantCount > 1 && (
+            <span>· {group.variantCount} options</span>
+          )}
+        </p>
+        <Link
+          href={`/shop/${group.slug}`}
+          className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center text-xs"
+        >
+          View Options →
+        </Link>
+      </div>
     </div>
   );
 }

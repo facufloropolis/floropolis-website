@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div>
-            <p className="text-slate-400 leading-relaxed mb-4">Premium wholesale flowers direct from Ecuador & Colombia farms. 15-40% cheaper, 5-7 days fresher.</p>
+            <p className="text-slate-400 leading-relaxed mb-4">Premium wholesale flowers direct from Ecuador & Colombia farms. Farm-direct quality, 5-7 days fresher.</p>
           </div>
           <div>
             <h4 className="font-bold mb-4 text-lg">Company</h4>
@@ -19,9 +19,9 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4 text-lg">Shop</h4>
             <ul className="space-y-3 text-slate-400">
-              <li><Link href="/valentines" className="hover:text-emerald-400 transition-colors duration-200">Valentine's Day</Link></li>
+              <li><Link href="/shop" className="hover:text-emerald-400 transition-colors duration-200">Shop</Link></li>
               <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200">Free Sample Box</Link></li>
-              <li><a href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website" className="hover:text-emerald-400 transition-colors duration-200">Shop Now</a></li>
+              <li><Link href="/shop" className="hover:text-emerald-400 transition-colors duration-200">Browse Catalog</Link></li>
             </ul>
           </div>
           <div>
