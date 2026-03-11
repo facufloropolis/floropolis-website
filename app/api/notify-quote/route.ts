@@ -270,7 +270,7 @@ async function sendCustomerConfirmation(payload: QuotePayload, quoteId: number |
       <div style="padding:16px 24px;background:#f8fafc;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px;text-align:center">
         <p style="margin:0;font-size:12px;color:#94a3b8">
           Floropolis — Farm-Direct Wholesale Flowers<br>
-          <a href="https://mvp.floropolis.com" style="color:#059669">mvp.floropolis.com</a> · <a href="tel:+17864603229" style="color:#059669">(786) 460-3229</a>
+          <a href="https://www.floropolis.com" style="color:#059669">floropolis.com</a> · <a href="tel:+17864603229" style="color:#059669">(786) 460-3229</a>
         </p>
       </div>
     </div>
