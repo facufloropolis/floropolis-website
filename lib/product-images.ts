@@ -274,6 +274,58 @@ const IMAGE_MAP: Record<string, string> = {
   "roses-assorted-rainbow": "/images/shop/combos/roses-assorted-rainbow_3f985d44682c.png",
   "roses-assorted-reds": "/images/shop/combos/roses-assorted-reds_28e50b75acfe.png",
   "roses-assorted-whites": "/images/shop/combos/roses-assorted-whites_edb0ab505fd1.png",
+
+  // ── CDN eShop images — added 2026-03-12 by Alvar_Ops / Job_PM ──
+  // ANEMONE
+  "fullstar-fuchsia": "/images/shop/anemone/fullstar-fuchsia.png",
+  "fullstar-red": "/images/shop/anemone/fullstar-red.png",
+  "mariane-assorted": "/images/shop/anemone/mariane-assorted.jpg",
+  "mariane-blue": "/images/shop/anemone/mariane-blue.png",
+  "mariane-blue-v2": "/images/shop/anemone/mariane-blue-v2.png",
+  "mariane-fuchsia": "/images/shop/anemone/mariane-fuchsia.png",
+  "mariane-pink": "/images/shop/anemone/mariane-pink.png",
+  "mariane-red": "/images/shop/anemone/mariane-red.png",
+  // COMBOS
+  "variety-mixes-ginger-mix-assorted": "/images/shop/combos/variety-mixes-ginger-mix-assorted.png",
+  // DELPHINIUM
+  "blue-bird-blue-v2": "/images/shop/delphinium/blue-bird-blue-v2.png",
+  "blue-pacific-summer-skies-light-blue": "/images/shop/delphinium/blue-pacific-summer-skies-light-blue.jpg",
+  "blue-pacific-summer-skies-light-blue-v2": "/images/shop/delphinium/blue-pacific-summer-skies-light-blue-v2.jpg",
+  "blue-sea-waltz-dark-blue": "/images/shop/delphinium/blue-sea-waltz-dark-blue.png",
+  "blue-sky-waltz-light-blue": "/images/shop/delphinium/blue-sky-waltz-light-blue.png",
+  "blue-sky-waltz-light-blue-v2": "/images/shop/delphinium/blue-sky-waltz-light-blue-v2.png",
+  // GREENS
+  "eucalyptus-silver-dollar-green": "/images/shop/greens/eucalyptus-silver-dollar-green.png",
+  // OTHER
+  "focal-scoop-white": "/images/shop/other/focal-scoop-white.jpg",
+  "larkspur-white": "/images/shop/other/larkspur-white.png",
+  "magical-lagoon-blue": "/images/shop/other/magical-lagoon-blue.png",
+  "magical-lagoon-blue-v2": "/images/shop/other/magical-lagoon-blue-v2.png",
+  // RANUNCULUS
+  "amandine-assorted": "/images/shop/ranunculus/amandine-assorted.jpg",
+  "amandine-brown": "/images/shop/ranunculus/amandine-brown.png",
+  "amandine-cream": "/images/shop/ranunculus/amandine-cream.png",
+  "amandine-orange": "/images/shop/ranunculus/amandine-orange.png",
+  "amandine-salmon": "/images/shop/ranunculus/amandine-salmon.png",
+  "pink-amandine-hot-pink": "/images/shop/ranunculus/pink-amandine-hot-pink.jpg",
+  // ROSES
+  "mandarin-x-pression-coral": "/images/shop/roses/mandarin-x-pression-coral.png",
+  "pink-full-monty-hot-pink": "/images/shop/roses/pink-full-monty-hot-pink.png",
+  "pink-hot-explorer-hot-pink": "/images/shop/roses/pink-hot-explorer-hot-pink.png",
+  "silantoi-bicolor": "/images/shop/roses/silantoi-bicolor.png",
+  "sweet-escimo-pink": "/images/shop/roses/sweet-escimo-pink.png",
+  "tibet-white": "/images/shop/roses/tibet-white.png",
+  // TROPICALS
+  "anthurium-large-10-12cm-red": "/images/shop/tropicals/anthurium-large-10-12cm-red.png",
+  "anthurium-xlarge-12-14cm-red": "/images/shop/tropicals/anthurium-xlarge-12-14cm-red.png",
+  "ginger-nicole-pink": "/images/shop/tropicals/ginger-nicole-pink.png",
+  "ginger-plus-red": "/images/shop/tropicals/ginger-plus-red.png",
+  "ginger-torch-red": "/images/shop/tropicals/ginger-torch-red.png",
+  "heliconia-golden-fire-opal-red": "/images/shop/tropicals/heliconia-golden-fire-opal-red.png",
+  "heliconia-iris-red": "/images/shop/tropicals/heliconia-iris-red.png",
+  "heliconia-rostrata-red": "/images/shop/tropicals/heliconia-rostrata-red.png",
+  "heliconia-sassy-red": "/images/shop/tropicals/heliconia-sassy-red.png",
+  "novelty-tropicals-banana-fingers-green": "/images/shop/tropicals/novelty-tropicals-banana-fingers-green.png",
 };
 
 // ━━━ CATEGORY FALLBACKS ━━━
