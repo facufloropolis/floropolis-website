@@ -152,7 +152,7 @@ export async function appendQuoteToSheet(params: {
     params.notes ?? "",
   ];
 
-  return appendRow("Quotes Requests", row);
+  return appendRow("Quote Requests", row);
 }
 
 /** Append a sample box request row to Tab 2: "Sample Boxes" */
@@ -182,5 +182,5 @@ export async function appendSampleBoxToSheet(params: {
     params.notes,
   ];
 
-  return appendRow("Sample boxes", row);
+  return appendRow("Sample Boxes", row);
 }
