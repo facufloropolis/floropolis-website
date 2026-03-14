@@ -45,6 +45,8 @@ export const CTA_EVENTS = {
   contact_email_click: "contact_email_click",
   contact_whatsapp_click: "contact_whatsapp_click",
   contact_call_click: "contact_call_click",
+  // Experiment #20: WhatsApp sticky CTA
+  whatsapp_sticky_click: "whatsapp_sticky_click",
   // E-commerce funnel events
   view_product: "view_product",
   add_to_quote: "add_to_quote",
