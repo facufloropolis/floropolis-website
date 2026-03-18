@@ -17,10 +17,10 @@ export default function HowItWorks() {
       <section className="py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-            Farm to Door in 48-72 Hours
+            Farm to Door in 4 Days
           </h1>
           <p className="text-xl text-slate-600">
-            We've simplified the entire process so you can focus on creating beautiful arrangements.
+            We've simplified the entire supply chain so you get fresher flowers with less friction.
           </p>
         </div>
       </section>
@@ -62,7 +62,7 @@ export default function HowItWorks() {
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-600 rounded-full text-white font-bold flex items-center justify-center">4</div>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Delivered Fresh</h3>
-              <p className="text-slate-600">Full tracking and delivery to your door in 48-72 hours.</p>
+              <p className="text-slate-600">FedEx delivery to your door. Farm-to-door in 4 days.</p>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@ export default function HowItWorks() {
               <ul className="space-y-4 text-slate-600">
                 <li className="flex items-start gap-3">
                   <span className="text-red-500">✗</span>
-                  <span>7-10 days from farm to you</span>
+                  <span>7–14 days from farm to you (via distributors)</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-red-500">✗</span>
@@ -105,7 +105,7 @@ export default function HowItWorks() {
               <ul className="space-y-4 text-slate-700">
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-600">✓</span>
-                  <span>48-72 hours from farm to you</span>
+                  <span>4 days from farm to your door</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-emerald-600">✓</span>
