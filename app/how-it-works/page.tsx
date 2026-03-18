@@ -3,6 +3,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import Link from "next/link";
 import { Search, Package, Plane, Truck } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
@@ -146,6 +147,7 @@ export default function HowItWorks() {
       </section>
 
       <Footer />
+      <WhatsAppWidget message="Hi! I have a question about ordering from Floropolis." />
     </div>
   );
 }
