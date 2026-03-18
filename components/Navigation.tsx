@@ -44,17 +44,17 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              How It Works
-            </Link>
             <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               Shop
             </Link>
-            <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              About Us
+            <Link href="/blog" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
+              Blog
             </Link>
-            <Link href="/contact" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              Contact Us
+            <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
+              How It Works
+            </Link>
+            <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
+              About
             </Link>
           </div>
 
@@ -109,31 +109,29 @@ export default function Navigation() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block px-4 py-2 text-slate-500 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Client Login →
-            </a>
             <Link
-              href="/sample-box" 
+              href="/sample-box"
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
             >
               Free Sample Box
             </Link>
-            <Link 
-              href="/how-it-works" 
+            <Link
+              href="/blog"
+              className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Blog
+            </Link>
+            <Link
+              href="/how-it-works"
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
             >
               How It Works
             </Link>
-            <Link 
-              href="/about" 
+            <Link
+              href="/about"
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -153,6 +151,15 @@ export default function Navigation() {
             >
               Shop
             </Link>
+            <a
+              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Client Login →
+            </a>
           </div>
         )}
       </div>
