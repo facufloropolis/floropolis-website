@@ -8,6 +8,10 @@ export const metadata: Metadata = {
     title: "Premium Roses — 30+ Varieties | Floropolis",
     description:
       "Farm-direct roses. Clear pricing by tier. Delivery included.",
+    url: "https://www.floropolis.com/shop/roses",
+    siteName: "Floropolis",
+    images: [{ url: "https://www.floropolis.com/Floropolis-logo-only.png", alt: "Premium wholesale roses — Floropolis" }],
+    type: "website",
   },
 };
 

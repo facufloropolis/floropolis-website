@@ -4,6 +4,15 @@ export const metadata: Metadata = {
   title: "About Floropolis — Farm-Direct Flowers Built for Florists",
   description:
     "Floropolis connects florists directly with premium farm partners in Ecuador & Colombia — and soon the US and Mexico — with a cold chain built for 48–72 hour delivery.",
+  openGraph: {
+    title: "About Floropolis — Farm-Direct Flowers Built for Florists",
+    description:
+      "Floropolis connects florists directly with premium farm partners. Farm-direct, 48-72 hour delivery.",
+    url: "https://www.floropolis.com/about",
+    siteName: "Floropolis",
+    images: [{ url: "https://www.floropolis.com/Floropolis-logo-only.png", alt: "Floropolis — Farm-Direct Wholesale Flowers" }],
+    type: "website",
+  },
 };
 
 export default function AboutLayout({

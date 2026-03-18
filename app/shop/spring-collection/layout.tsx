@@ -8,6 +8,10 @@ export const metadata: Metadata = {
     title: "Spring Flowers Collection | Floropolis",
     description:
       "Seasonal spring flowers direct from Ecuador. EXCLUSIVE varieties. Farm-direct pricing.",
+    url: "https://www.floropolis.com/shop/spring-collection",
+    siteName: "Floropolis",
+    images: [{ url: "https://www.floropolis.com/Floropolis-logo-only.png", alt: "Wholesale spring flowers — Floropolis" }],
+    type: "website",
   },
 };
 

@@ -8,6 +8,10 @@ export const metadata: Metadata = {
     title: "Combo Boxes — Compare & Order | Floropolis",
     description:
       "Mixed flowers, tropicals & greens in one box. Sort by price, stems, or value. Free shipping.",
+    url: "https://www.floropolis.com/shop/combo-boxes",
+    siteName: "Floropolis",
+    images: [{ url: "https://www.floropolis.com/Floropolis-logo-only.png", alt: "Wholesale combo flower boxes — Floropolis" }],
+    type: "website",
   },
 };
 
