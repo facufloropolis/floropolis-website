@@ -8,11 +8,10 @@ const nextConfig: NextConfig = {
       // Old /catalog URLs → new /shop routes
       { source: "/catalog", destination: "/shop", permanent: true },
       { source: "/catalog/:path*", destination: "/shop", permanent: true },
-      // Category direct URLs → shop with filter
-      { source: "/shop/roses", destination: "/shop?category=Rose", permanent: true },
-      { source: "/shop/tropicals", destination: "/shop?category=Tropicals", permanent: true },
-      { source: "/shop/greens", destination: "/shop?category=Greens+%26+Foliage", permanent: true },
+      // Category redirect for URLs with no dedicated page
       { source: "/shop/bouquets", destination: "/shop?category=Bouquets", permanent: true },
+      // NOTE: /shop/roses, /shop/tropicals, /shop/greens, /shop/combo-boxes, /shop/spring-collection
+      // have their own curated pages — do NOT redirect them here
     ];
   },
   images: {
