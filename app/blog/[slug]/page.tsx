@@ -25,6 +25,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.metaTitle,
     description: post.metaDescription,
+    openGraph: {
+      title: post.metaTitle,
+      description: post.metaDescription,
+      url: `https://www.floropolis.com/blog/${slug}`,
+      siteName: "Floropolis",
+      images: [{ url: "https://www.floropolis.com/Floropolis-logo-only.png", alt: post.title }],
+      type: "article",
+    },
   };
 }
 

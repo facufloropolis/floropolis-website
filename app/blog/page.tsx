@@ -6,6 +6,15 @@ export const metadata: Metadata = {
   title: "Florist Guides & Resources | Floropolis Blog",
   description:
     "Expert guides for professional florists: flower care, conditioning tips, wholesale buying guides, and design inspiration. Farm-direct from Ecuador.",
+  openGraph: {
+    title: "Florist Guides & Resources | Floropolis Blog",
+    description:
+      "Expert guides for professional florists: flower care, conditioning tips, wholesale buying guides, and design inspiration.",
+    url: "https://www.floropolis.com/blog",
+    siteName: "Floropolis",
+    images: [{ url: "https://www.floropolis.com/Floropolis-logo-only.png", alt: "Floropolis — Florist Guides & Resources" }],
+    type: "website",
+  },
 };
 
 export default function BlogPage() {
