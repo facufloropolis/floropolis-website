@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
 export default function EmailPopup() {
+  const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -95,6 +97,10 @@ export default function EmailPopup() {
     }
   }
 
+  // Don't show on conversion pages — user is already in a funnel
+  const SUPPRESS_PATHS = ['/sample-box', '/quote']
+  if (SUPPRESS_PATHS.some(p => pathname?.startsWith(p))) return null
+
   if (!isVisible) return null
 
   return (
@@ -116,7 +122,7 @@ export default function EmailPopup() {
                 Get 10% Off Your First Order
               </h2>
               <p className="text-slate-600">
-                Join 500+ florists getting farm-fresh flowers at wholesale prices.
+                Join florists getting farm-fresh wholesale flowers — direct from Ecuador.
               </p>
             </div>
 

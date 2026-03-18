@@ -3,7 +3,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
@@ -269,7 +268,6 @@ export default function About() {
       </section>
 
       <Footer />
-      <WhatsAppWidget message="Hi! I have a question about Floropolis and your farm-direct flowers." />
     </div>
   );
 }

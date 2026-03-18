@@ -5,7 +5,6 @@ import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 import { getFeaturedProducts } from "@/lib/data/product-helpers";
@@ -518,7 +517,6 @@ export default function Home() {
       </section>
 
       <Footer />
-      <WhatsAppWidget message="Hi! I'm interested in ordering flowers from Floropolis." />
     </div>
   );
 }

@@ -21,6 +21,11 @@ export default function WhatsAppCTA() {
   // Hide on quote page — don't compete with the quote form
   if (pathname?.startsWith("/quote")) return null;
 
+  // Hide on PDP routes (/shop/[slug]) — WhatsAppWidget on those pages shows a product-specific message
+  const CATEGORY_SLUGS = ["roses", "tropicals", "greens", "combo-boxes", "spring-collection"];
+  const shopSegment = pathname?.startsWith("/shop/") ? (pathname.split("/")[2] ?? "") : "";
+  if (shopSegment && !CATEGORY_SLUGS.includes(shopSegment)) return null;
+
   function handleClick() {
     pushEvent("whatsapp_sticky_click", { page: pathname ?? "/" });
     setTimeout(() => {
