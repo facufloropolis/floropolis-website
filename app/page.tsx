@@ -41,26 +41,19 @@ export default function Home() {
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
             <Link
-              href="/shop"
+              href="/sample-box"
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
-              onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
+              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "hero" })}
             >
-              Browse the Catalog
+              Try Free Sample Box
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
-              href="/sample-box"
-              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all"
-              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "hero" })}
+              href="/shop"
+              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all inline-flex items-center gap-2"
+              onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
             >
-              Free Sample Box
-            </Link>
-            <Link
-              href="/quote"
-              className="border-2 border-emerald-300 text-emerald-100 px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-emerald-600/30 backdrop-blur hover:scale-105 transition-all"
-              onClick={() => pushEvent(CTA_EVENTS.product_click, { cta_location: "hero_quote" })}
-            >
-              Get a Quote →
+              Browse the Catalog
             </Link>
           </div>
         </div>
