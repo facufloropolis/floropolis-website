@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "@/lib/data/blog-posts";
 import BlogIndexList from "./BlogIndexList";
+import Navigation from "@/components/Navigation";
+import TopBanner from "@/components/TopBanner";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Florist Guides & Resources | Floropolis Blog",
@@ -22,7 +25,10 @@ export default function BlogPage() {
   const categories = [...new Set(blogPosts.map((p) => p.category))].sort();
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
+      <TopBanner />
+      <Navigation />
+      <main>
       {/* Header */}
       <section className="bg-gradient-to-br from-emerald-50 to-green-50 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -66,6 +72,8 @@ export default function BlogPage() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

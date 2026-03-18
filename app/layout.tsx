@@ -13,11 +13,11 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: 'Floropolis | Farm-Direct Wholesale Flowers from Ecuador & Colombia',
-  description: 'Premium wholesale roses, summer flowers, and gypsophila shipped direct from South American farms in 48-72 hours. Farm-direct quality, 5-7 days fresher.',
+  description: 'Premium wholesale roses, tropicals, and specialty stems shipped direct from Ecuador farms in 4 days. Farm-direct quality, 5-7 days fresher.',
   keywords: 'wholesale flowers, farm direct flowers, Ecuador roses, Colombia flowers, wholesale florist, bulk flowers, premium roses',
   openGraph: {
     title: 'Floropolis | Farm-Direct Wholesale Flowers',
-    description: 'Premium wholesale flowers delivered in 48-72 hours from Ecuador and Colombia farms',
+    description: 'Premium wholesale flowers delivered in 4 days from Ecuador farms. No middlemen, transparent pricing.',
     url: 'https://www.floropolis.com',
     siteName: 'Floropolis',
     type: 'website',

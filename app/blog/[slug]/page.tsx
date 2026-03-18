@@ -11,6 +11,9 @@ import { getProductsByCategory } from "@/lib/data/product-helpers";
 import { getProductImage } from "@/lib/product-images";
 import Image from "next/image";
 import BlogContent from "./BlogContent";
+import Navigation from "@/components/Navigation";
+import TopBanner from "@/components/TopBanner";
+import Footer from "@/components/Footer";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -42,7 +45,10 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const content = getBlogContent(slug);
-  const otherPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 3);
+  // Prefer same-category posts for related content
+  const sameCatPosts = blogPosts.filter((p) => p.slug !== slug && p.category === post.category);
+  const otherCatPosts = blogPosts.filter((p) => p.slug !== slug && p.category !== post.category);
+  const otherPosts = [...sameCatPosts, ...otherCatPosts].slice(0, 3);
 
   // Extract category from shopLink for featured products
   // Handles both /shop?category=Rose and curated pages like /shop/roses
@@ -96,7 +102,10 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
+      <TopBanner />
+      <Navigation />
+      <main>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -240,6 +249,8 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </section>
       )}
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
