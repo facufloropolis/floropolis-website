@@ -106,7 +106,13 @@ export default async function ProductPage({ params }: Props) {
         "@type": "ListItem",
         position: 3,
         name: product.category,
-        item: `https://www.floropolis.com/shop?category=${encodeURIComponent(product.category)}`,
+        item: product.category === "Rose"
+          ? "https://www.floropolis.com/shop/roses"
+          : product.category === "Tropicals"
+          ? "https://www.floropolis.com/shop/tropicals"
+          : product.category === "Greens & Foliage"
+          ? "https://www.floropolis.com/shop/greens"
+          : `https://www.floropolis.com/shop?category=${encodeURIComponent(product.category)}`,
       },
       {
         "@type": "ListItem",

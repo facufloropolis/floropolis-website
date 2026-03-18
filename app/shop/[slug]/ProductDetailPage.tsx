@@ -412,7 +412,12 @@ export default function ProductDetailPage({
             <li aria-hidden>/</li>
             <li>
               <Link
-                href={`/shop?category=${encodeURIComponent(product.category)}`}
+                href={
+                  product.category === "Rose" ? "/shop/roses"
+                  : product.category === "Tropicals" ? "/shop/tropicals"
+                  : product.category === "Greens & Foliage" ? "/shop/greens"
+                  : `/shop?category=${encodeURIComponent(product.category)}`
+                }
                 className="hover:text-emerald-700 hover:underline"
               >
                 {product.category}
