@@ -15,6 +15,45 @@ export const metadata: Metadata = {
   },
 };
 
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What's the minimum order for wholesale roses?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Our minimum order is 25 stems per variety. You can combine multiple varieties in a single order to meet volume requirements.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do you carry garden roses?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. We carry Quicksand, Free Spirit, Antonia Garden, and several other garden-style roses with open, lush blooms. Check current availability in the shop — selection varies by season.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How do I get the best vase life from Ecuador roses?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Re-cut stems at a 45° angle immediately on arrival, remove foliage below the waterline, and use clean buckets with floral preservative. You should expect 14-16 days consistently with proper conditioning.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How long does wholesale rose delivery take?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Farm-direct from Ecuador to your door in 4 days via FedEx Priority. Roses are cut fresh to order and shipped direct — no warehouse stops.",
+      },
+    },
+  ],
+};
+
 const breadcrumbLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -35,6 +74,10 @@ export default function RosesLayout({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
       {children}
     </>
