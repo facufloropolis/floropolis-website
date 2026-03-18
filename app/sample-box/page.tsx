@@ -186,29 +186,64 @@ function SampleBoxContent() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-50 flex items-center justify-center px-4">
-        <div className="max-w-md text-center">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-50 px-4 py-12">
+        <div className="max-w-lg mx-auto">
+          {/* Success header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-3">You&apos;re on the list!</h1>
+            <p className="text-lg text-slate-600">
+              We&apos;ll confirm by email within 24 hours and ship your sample box in 2–3 days.
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-4">Sample Box Requested!</h1>
-          <p className="text-lg text-slate-600 mb-8">
-            We'll be in touch within 24 hours to confirm your sample box details.
-          </p>
-          <div className="flex flex-col gap-4">
+
+          {/* What happens next */}
+          <div className="bg-white rounded-2xl border border-emerald-100 p-6 mb-6">
+            <h2 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wide">What happens next</h2>
+            <div className="space-y-3">
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Confirmation email within 24h</p>
+                  <p className="text-xs text-slate-500">We review every request and confirm shipping details.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Packed fresh at the farm</p>
+                  <p className="text-xs text-slate-500">Cut to order in Ecuador, shipped same day.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Arrives in 4 days via FedEx</p>
+                  <p className="text-xs text-slate-500">Track your box and message us any time on WhatsApp.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Browse catalog CTA */}
+          <div className="flex flex-col gap-3 mb-6">
             <Link
               href="/shop"
               className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
             >
-              Browse Our Catalog
+              Browse Catalog While You Wait
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link
-              href="/"
-              className="text-emerald-600 hover:text-emerald-700 font-medium"
+            <a
+              href="https://wa.me/17869308463?text=Hi!%20I%20just%20requested%20a%20sample%20box%20from%20Floropolis."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-center text-sm text-emerald-600 hover:text-emerald-700 font-medium"
             >
-              ← Back to Home
-            </Link>
+              💬 Questions? WhatsApp us →
+            </a>
           </div>
         </div>
       </div>
