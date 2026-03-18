@@ -84,7 +84,7 @@ function SampleBoxContent() {
     phone: "",
     company: "",
     state: "",
-    boxChoice: "",
+    boxChoice: "summer",
     notes: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -259,36 +259,36 @@ function SampleBoxContent() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Step 1: Choose Your Box *</label>
                   <div className="space-y-3">
-                    <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "roses" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
-                      <input
-                        type="radio"
-                        name="boxChoice"
-                        value="roses"
-                        required
-                        checked={formData.boxChoice === "roses"}
-                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-slate-900">🌹 Premium Roses — 100 stems</span>
-                          <span className="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full font-medium">Most popular</span>
-                        </div>
-                        <div className="text-sm text-slate-600 mt-0.5">Ecoroses — Playa Blanca, Veggie, Toffee, Freedom. 14-day vase life.</div>
-                      </div>
-                    </label>
                     <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "summer" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
                       <input
                         type="radio"
                         name="boxChoice"
                         value="summer"
+                        required
                         checked={formData.boxChoice === "summer"}
                         onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
                         className="mt-1"
                       />
-                      <div>
-                        <div className="font-semibold text-slate-900">🌸 Summer Flowers Mix</div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-slate-900">🌸 Summer Flowers Mix</span>
+                          <span className="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full font-medium">Most popular</span>
+                        </div>
                         <div className="text-sm text-slate-600 mt-0.5">Megaflor — Ranunculus, Anemones, Delphinium, Eryngium. Farm-direct variety.</div>
+                      </div>
+                    </label>
+                    <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "roses" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
+                      <input
+                        type="radio"
+                        name="boxChoice"
+                        value="roses"
+                        checked={formData.boxChoice === "roses"}
+                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
+                        className="mt-1"
+                      />
+                      <div>
+                        <span className="font-semibold text-slate-900">🌹 Premium Roses — 100 stems</span>
+                        <div className="text-sm text-slate-600 mt-0.5">Ecoroses — Playa Blanca, Veggie, Toffee, Freedom. 14-day vase life.</div>
                       </div>
                     </label>
                     <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "gypsophilia" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
