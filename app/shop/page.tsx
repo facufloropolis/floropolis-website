@@ -294,6 +294,8 @@ function ShopPageContent() {
     if (searchParams.get("bestsellers") === "1") setShowBestsellersOnly(true);
     const sort = searchParams.get("sort") as SortOption | null;
     if (sort && SORT_OPTIONS.some((o) => o.value === sort)) setSortBy(sort);
+    const q = searchParams.get("q");
+    if (q) setSearchQuery(q);
     setFiltersInitialized(true);
   }, [searchParams]);
 
@@ -307,10 +309,11 @@ function ShopPageContent() {
     if (showDealsOnly) params.set("deals", "1");
     if (showBestsellersOnly) params.set("bestsellers", "1");
     if (sortBy !== "recommended") params.set("sort", sortBy);
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
     const qs = params.toString();
     const newUrl = qs ? `/shop?${qs}` : "/shop";
     window.history.replaceState(null, "", newUrl);
-  }, [categoryFilter, colorGroupFilter, showDealsOnly, showBestsellersOnly, sortBy, filtersInitialized]);
+  }, [categoryFilter, colorGroupFilter, showDealsOnly, showBestsellersOnly, sortBy, searchQuery, filtersInitialized]);
 
   const toggleArray = <T,>(arr: T[], item: T, setter: (arr: T[]) => void, filterType?: string) => {
     const adding = !arr.includes(item);
@@ -709,6 +712,38 @@ function ShopPageContent() {
 
           <div className="flex-1 min-w-0">
             {/* Mobile quick-filter chips — visible below lg (where sidebar is hidden) */}
+            {/* Row 0: Availability + quick toggles */}
+            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide -mx-1 px-1">
+              <button
+                type="button"
+                onClick={() => { setShowFast(!showFast); pushEvent(CTA_EVENTS.filter_change, { filter_type: "delivery_fast", filter_action: showFast ? "remove" : "add" }); }}
+                className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${showFast ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-500 border-slate-200 hover:border-emerald-300"}`}
+              >
+                In Stock
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowPreorder(!showPreorder); pushEvent(CTA_EVENTS.filter_change, { filter_type: "delivery_preorder", filter_action: showPreorder ? "remove" : "add" }); }}
+                className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${showPreorder ? "bg-amber-500 text-white border-amber-500" : "bg-white text-slate-500 border-slate-200 hover:border-amber-300"}`}
+              >
+                Pre-Order
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowDealsOnly(!showDealsOnly); pushEvent(CTA_EVENTS.filter_change, { filter_type: "deals_only", filter_action: showDealsOnly ? "remove" : "add" }); }}
+                className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${showDealsOnly ? "bg-amber-500 text-white border-amber-500" : "bg-white text-slate-500 border-slate-200 hover:border-amber-300"}`}
+              >
+                Deals
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowBestsellersOnly(!showBestsellersOnly); pushEvent(CTA_EVENTS.filter_change, { filter_type: "bestsellers_only", filter_action: showBestsellersOnly ? "remove" : "add" }); }}
+                className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${showBestsellersOnly ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-slate-500 border-slate-200 hover:border-emerald-300"}`}
+              >
+                Bestsellers
+              </button>
+            </div>
+            {/* Row 1: Category chips */}
             <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide -mx-1 px-1">
               {["Rose", "Tropicals", "Greens & Foliage", "Delphinium", "Ranunculus", "Anemone", "Hydrangea"].map((cat) => (
                 <button
@@ -742,10 +777,34 @@ function ShopPageContent() {
               ))}
             </div>
 
+            {/* In-page search — filters the grid without triggering GA4 page views */}
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search within results…"
+                className="w-full pl-9 pr-9 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+                aria-label="Filter products by name, variety, or color"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
             {/* Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
               <p className="text-sm text-slate-600 font-medium">
                 {sortedGroups.length} variet{sortedGroups.length !== 1 ? "ies" : "y"}
+                {searchQuery.trim() && <span className="text-slate-400 font-normal"> matching &ldquo;{searchQuery.trim()}&rdquo;</span>}
               </p>
               <div className="flex items-center gap-3">
                 <button
