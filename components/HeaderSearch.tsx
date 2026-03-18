@@ -237,10 +237,31 @@ export default function HeaderSearch() {
                   </ul>
                 </div>
               )}
-              {!hasResults && categoryResults.length === 0 && (
-                <p className="px-4 py-6 text-sm text-slate-500 text-center">
-                  No products or categories match &quot;{query}&quot;
-                </p>
+              {!hasResults && (
+                <div className="px-4 py-5 text-center">
+                  <p className="text-sm text-slate-500 mb-3">
+                    No results for &quot;{query}&quot;
+                  </p>
+                  <p className="text-xs text-slate-400 mb-4">
+                    We may carry it — not all varieties are listed yet.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href={`/quote`}
+                      onClick={() => handleSelect("popular", query, "/quote")}
+                      className="block w-full text-center bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+                    >
+                      Request a custom quote &rarr;
+                    </Link>
+                    <Link
+                      href="/shop"
+                      onClick={() => { setQuery(""); setIsOpen(false); setIsFocused(false); }}
+                      className="block w-full text-center border border-slate-200 text-slate-600 text-sm py-2 rounded-lg hover:bg-slate-50 transition-colors"
+                    >
+                      Browse all products
+                    </Link>
+                  </div>
+                </div>
               )}
             </>
           )}

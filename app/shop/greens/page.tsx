@@ -113,6 +113,11 @@ export default function ShopGreensPage() {
               <p className="text-slate-600 text-sm">Farm-direct greens typically last 14-21 days in water. Eucalyptus can also be dried. Ruscus is one of our longest-lasting varieties at 3 weeks with proper care.</p>
             </div>
           </div>
+          <div className="mt-8 text-center">
+            <Link href="/blog/wholesale-greenery-foliage-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
+              Read our complete wholesale greenery guide &rarr;
+            </Link>
+          </div>
         </section>
       </main>
 

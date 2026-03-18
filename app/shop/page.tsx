@@ -837,18 +837,32 @@ function ShopPageContent() {
             </div>
 
             {sortedGroups.length === 0 && (
-              <div className="text-center py-16 text-slate-500">
-                <p className="text-lg font-medium">No products match your filters.</p>
-                <p className="text-sm mt-1">
-                  Try selecting a later delivery date or clearing filters.
+              <div className="text-center py-16">
+                <p className="text-lg font-medium text-slate-700">
+                  {searchQuery.trim()
+                    ? `No results for "${searchQuery.trim()}"`
+                    : "No products match your filters."}
                 </p>
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="mt-3 text-emerald-600 hover:text-emerald-700 font-medium"
-                >
-                  Clear filters
-                </button>
+                <p className="text-sm text-slate-500 mt-1">
+                  {searchQuery.trim()
+                    ? "We may carry it — not everything is listed yet."
+                    : "Try clearing filters or browsing a different category."}
+                </p>
+                <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link
+                    href="/quote"
+                    className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+                  >
+                    Request a custom quote →
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="inline-flex items-center justify-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
               </div>
             )}
           </div>

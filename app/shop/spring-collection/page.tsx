@@ -58,15 +58,50 @@ export default function SpringCollectionPage() {
         </div>
 
         {/* CTA */}
-        <div className="text-center border-t border-slate-200 pt-10">
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg"
-          >
-            Browse all flowers in catalog
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+        <div className="text-center border-t border-slate-200 pt-10 mb-12">
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg"
+            >
+              Browse all flowers in catalog
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/sample-box"
+              className="inline-flex items-center gap-2 border-2 border-emerald-600 text-emerald-700 px-8 py-4 rounded-lg font-bold hover:bg-emerald-50 transition-all"
+            >
+              Try a free sample box
+            </Link>
+          </div>
         </div>
+
+        {/* FAQ — SEO content */}
+        <section className="mt-4 mb-10 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-5">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">When is ranunculus season?</h3>
+              <p className="text-slate-600 text-sm">Ranunculus peak season runs January through May. We source directly from Ecuador farms that grow Amandine varieties — the most sought-after commercial ranunculus — giving you access even outside peak months.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Do you carry anemones year-round?</h3>
+              <p className="text-slate-600 text-sm">Anemones are available from October through May from our Ecuador partners. We carry 17 varieties including single and double forms in white, black, lavender, and bold bi-colors.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What makes your spring flowers exclusive?</h3>
+              <p className="text-slate-600 text-sm">Most wholesalers don't carry varieties like molucella, scabiosa, or specialty larkspur because they're harder to source reliably. Our direct farm relationships in Ecuador give us access to varieties traditional distributors can't offer consistently.</p>
+            </div>
+          </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm">
+            <Link href="/blog/ranunculus-season-guide-florists" className="text-emerald-600 font-semibold hover:underline">
+              Ranunculus buying guide &rarr;
+            </Link>
+            <Link href="/blog/anemone-care-guide-florists" className="text-emerald-600 font-semibold hover:underline">
+              Anemone care guide &rarr;
+            </Link>
+          </div>
+        </section>
       </main>
 
       <Footer />

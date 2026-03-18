@@ -15,10 +15,28 @@ export const metadata: Metadata = {
   },
 };
 
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.floropolis.com" },
+    { "@type": "ListItem", position: 2, name: "Shop", item: "https://www.floropolis.com/shop" },
+    { "@type": "ListItem", position: 3, name: "Greens & Foliage", item: "https://www.floropolis.com/shop/greens" },
+  ],
+};
+
 export default function GreensLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      {children}
+    </>
+  );
 }
