@@ -96,6 +96,8 @@ function toProduct(row) {
     images: Array.isArray(row.images) ? row.images : [],
     tier: row.tier || "T3",
     has_photo: Array.isArray(row.images) && row.images.length > 0,
+    total_stems: row.total_stems ? Number(row.total_stems) : null,
+    contents_note: row.contents_note || null,
   };
 }
 
