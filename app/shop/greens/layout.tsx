@@ -15,6 +15,45 @@ export const metadata: Metadata = {
   },
 };
 
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What's the minimum order for wholesale greens?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "No minimum order required. Greens are sold by the bunch — typical bunches range from 10-25 stems depending on variety. Free shipping on all orders.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do you carry eucalyptus year-round?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Eucalyptus silver dollar is one of our most consistent year-round varieties. We also carry willow eucalyptus, seeded eucalyptus, and other varieties depending on availability.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What greens and foliage varieties do you carry?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "We carry eucalyptus (silver dollar, willow, seeded), pandanus, Italian ruscus, pittosporum, foliage mix boxes from Magic Flowers (Amazon, Jungle, Botanical, Greenery mixes), and more. Browse our shop for current availability.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How long does foliage and greenery delivery take?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Farm-direct from Ecuador to your door in 4 days via FedEx Priority. Greens are cut fresh and shipped direct with no warehouse stops.",
+      },
+    },
+  ],
+};
+
 const breadcrumbLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -35,6 +74,10 @@ export default function GreensLayout({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
       {children}
     </>
