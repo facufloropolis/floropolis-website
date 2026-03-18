@@ -15,6 +15,23 @@ export const metadata: Metadata = {
   },
 };
 
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.floropolis.com" },
+    { "@type": "ListItem", position: 2, name: "Get a Quote", item: "https://www.floropolis.com/quote" },
+  ],
+};
+
 export default function QuoteLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      {children}
+    </>
+  );
 }
