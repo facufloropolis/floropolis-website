@@ -86,6 +86,26 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Sample Box Banner — conversion bridge for first-time visitors */}
+      <section className="bg-emerald-900 py-4 px-6">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <span className="text-2xl hidden sm:block">📦</span>
+            <div>
+              <p className="text-white font-semibold text-sm sm:text-base">Not ready to commit? Try a free sample box first.</p>
+              <p className="text-emerald-200 text-xs sm:text-sm">No credit card · Free shipping · 11 florists already tried it this week</p>
+            </div>
+          </div>
+          <Link
+            href="/sample-box"
+            className="bg-white text-emerald-900 px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap hover:bg-emerald-50 transition-colors flex-shrink-0"
+            onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "homepage_strip" })}
+          >
+            Get Free Sample Box →
+          </Link>
+        </div>
+      </section>
+
       {/* Shop Promo Section */}
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
