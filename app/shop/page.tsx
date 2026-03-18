@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
@@ -273,7 +273,6 @@ function ShopPageContent() {
       .sort((a, b) => (colorGroupCounts.get(b) || 0) - (colorGroupCounts.get(a) || 0));
   }, [colorGroupCounts]);
 
-  const router = useRouter();
   const [filtersInitialized, setFiltersInitialized] = useState(false);
 
   // Sync filters from URL on mount
@@ -298,7 +297,8 @@ function ShopPageContent() {
     setFiltersInitialized(true);
   }, [searchParams]);
 
-  // Sync filters to URL
+  // Sync filters to URL using replaceState (NOT router.replace) so GA4 doesn't count
+  // filter clicks as new /shop page views — keeps URL shareable without inflating analytics
   useEffect(() => {
     if (!filtersInitialized) return;
     const params = new URLSearchParams();
@@ -309,8 +309,8 @@ function ShopPageContent() {
     if (sortBy !== "recommended") params.set("sort", sortBy);
     const qs = params.toString();
     const newUrl = qs ? `/shop?${qs}` : "/shop";
-    router.replace(newUrl, { scroll: false });
-  }, [categoryFilter, colorGroupFilter, showDealsOnly, showBestsellersOnly, sortBy, router, filtersInitialized]);
+    window.history.replaceState(null, "", newUrl);
+  }, [categoryFilter, colorGroupFilter, showDealsOnly, showBestsellersOnly, sortBy, filtersInitialized]);
 
   const toggleArray = <T,>(arr: T[], item: T, setter: (arr: T[]) => void, filterType?: string) => {
     const adding = !arr.includes(item);
