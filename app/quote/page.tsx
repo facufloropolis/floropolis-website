@@ -729,10 +729,26 @@ export default function QuotePage() {
                   </p>
                 )}
 
+                {/* Trust bar above submit */}
+                <div className="grid grid-cols-3 gap-1 text-center text-[10px] text-slate-500 py-2 border-t border-slate-100">
+                  <div>
+                    <div className="font-semibold text-slate-700">11+ florists</div>
+                    <div>already ordering</div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-700">1 hr response</div>
+                    <div>Mon–Fri 8–6 ET</div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-700">Price includes</div>
+                    <div>shipping</div>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   disabled={submitting || items.length === 0}
-                  className="w-full rounded-xl bg-emerald-600 text-white text-sm font-bold px-6 py-3.5 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-700 transition-all mt-2"
+                  className="w-full rounded-xl bg-emerald-600 text-white text-sm font-bold px-6 py-3.5 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-700 transition-all"
                 >
                   {submitting ? "Submitting..." : "Submit Quote Request"}
                 </button>
