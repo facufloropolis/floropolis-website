@@ -116,7 +116,7 @@ export default function About() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-              Farm → Miami → your door in 48–72 hours
+              Farm → Miami → your door in 4 days
             </h2>
             <p className="text-lg text-slate-600 max-w-3xl mx-auto">
               We don&apos;t try to be everything. We focus on the part that actually changes flower performance: handling, cold chain, and speed.

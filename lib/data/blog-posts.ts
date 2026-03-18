@@ -25,7 +25,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-03-07",
     category: "Tropicals",
     readingTime: "8 min read",
-    shopLink: "/shop?category=Tropicals",
+    shopLink: "/shop/tropicals",
     shopLinkLabel: "Shop Tropical Flowers",
   },
   {
@@ -58,7 +58,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-03-07",
     category: "Rose",
     readingTime: "8 min read",
-    shopLink: "/shop?category=Rose",
+    shopLink: "/shop/roses",
     shopLinkLabel: "Shop Roses",
   },
   {
@@ -69,7 +69,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-03-07",
     category: "Tropicals",
     readingTime: "7 min read",
-    shopLink: "/shop?category=Tropicals",
+    shopLink: "/shop/tropicals",
     shopLinkLabel: "Shop Heliconia",
   },
   {
@@ -124,7 +124,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-03-07",
     category: "Greenery",
     readingTime: "7 min read",
-    shopLink: "/shop?category=Greenery",
+    shopLink: "/shop/greens",
     shopLinkLabel: "Shop Greenery",
   },
   {
@@ -696,7 +696,7 @@ export const blogPosts: BlogPost[] = [
     date: "2026-03-07",
     category: "Greenery",
     readingTime: "7 min read",
-    shopLink: "/shop?category=Greenery",
+    shopLink: "/shop/greens",
     shopLinkLabel: "Shop Greenery",
   },
   {

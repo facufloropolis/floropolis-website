@@ -469,7 +469,7 @@ function SampleBoxContent() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 mb-1">Fast Delivery</h3>
-                    <p className="text-slate-600">48-72 hours from Ecuador farm to your door</p>
+                    <p className="text-slate-600">Farm-direct from Ecuador. Arrives in 4 days.</p>
                   </div>
                 </div>
                 

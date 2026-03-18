@@ -89,12 +89,12 @@ export default function Contact() {
             
             <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
               <h3 className="text-xl font-bold text-slate-900 mb-3">Fresh guaranteed?</h3>
-              <p className="text-slate-600 leading-relaxed">Absolutely. Our flowers are cut fresh and delivered in 48-72 hours. If your flowers don't arrive fresh, we'll replace them or refund your order.</p>
+              <p className="text-slate-600 leading-relaxed">Absolutely. Our flowers are cut fresh and delivered in 4 days. If your flowers don't arrive fresh, we'll replace them or refund your order.</p>
             </div>
             
             <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
               <h3 className="text-xl font-bold text-slate-900 mb-3">What if I need flowers today?</h3>
-              <p className="text-slate-600 leading-relaxed">We currently specialize in planned orders with 2-3 day delivery. For emergency needs, we're building a Miami hub for same-day service in select markets (coming 2026).</p>
+              <p className="text-slate-600 leading-relaxed">We currently specialize in planned orders with 4-day delivery. For emergency needs, we're building a Miami hub for same-day service in select markets (coming 2026).</p>
             </div>
             
             <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
