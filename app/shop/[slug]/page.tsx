@@ -39,9 +39,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `${product.variety} ${product.color}. `) +
     "Farm-direct wholesale flowers. 4-day delivery.";
 
+  // Build OG image URL for social sharing
+  const firstImage = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : null;
+  const ogImageUrl = firstImage
+    ? firstImage.startsWith("http") || firstImage.startsWith("/")
+      ? firstImage
+      : `https://www.floropolis.com/product-photos/${firstImage}`
+    : "https://www.floropolis.com/Floropolis-logo-only.png";
+
   return {
     title,
     description: desc,
+    openGraph: {
+      title,
+      description: desc,
+      url: `https://www.floropolis.com/shop/${slug}`,
+      siteName: "Floropolis",
+      images: [{ url: ogImageUrl, alt: `${product.variety} ${product.color} wholesale flowers` }],
+      type: "website",
+    },
   };
 }
 

@@ -18,9 +18,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Floropolis | Farm-Direct Wholesale Flowers',
     description: 'Premium wholesale flowers delivered in 48-72 hours from Ecuador and Colombia farms',
-    url: 'https://floropolis.com',
+    url: 'https://www.floropolis.com',
     siteName: 'Floropolis',
     type: 'website',
+    images: [{ url: 'https://www.floropolis.com/Floropolis-logo-only.png', alt: 'Floropolis — Farm-Direct Wholesale Flowers' }],
   },
 };
 
