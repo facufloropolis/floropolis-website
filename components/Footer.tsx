@@ -19,9 +19,9 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4 text-lg">Shop</h4>
             <ul className="space-y-3 text-slate-400">
-              <li><Link href="/shop" className="hover:text-emerald-400 transition-colors duration-200">Shop</Link></li>
-              <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200">Free Sample Box</Link></li>
               <li><Link href="/shop" className="hover:text-emerald-400 transition-colors duration-200">Browse Catalog</Link></li>
+              <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200">Free Sample Box</Link></li>
+              <li><Link href="/quote" className="hover:text-emerald-400 transition-colors duration-200">Get a Quote</Link></li>
             </ul>
           </div>
           <div>
