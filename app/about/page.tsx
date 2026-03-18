@@ -3,6 +3,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
@@ -32,10 +33,11 @@ export default function About() {
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/shop"
+              href="/sample-box"
               className="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white px-7 py-3 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg"
+              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "about_hero" })}
             >
-              Browse catalog
+              Get free sample box
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
@@ -267,6 +269,7 @@ export default function About() {
       </section>
 
       <Footer />
+      <WhatsAppWidget message="Hi! I have a question about Floropolis and your farm-direct flowers." />
     </div>
   );
 }
