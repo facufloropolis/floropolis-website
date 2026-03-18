@@ -60,15 +60,28 @@ export default async function BlogPostPage({ params }: Props) {
     "@type": "Article",
     headline: post.title,
     description: post.metaDescription,
+    url: `https://www.floropolis.com/blog/${slug}`,
     datePublished: post.date,
     dateModified: post.date,
+    image: "https://www.floropolis.com/Floropolis-logo-only.png",
     author: { "@type": "Organization", name: "Floropolis" },
     publisher: {
       "@type": "Organization",
       name: "Floropolis",
       url: "https://www.floropolis.com",
+      logo: { "@type": "ImageObject", url: "https://www.floropolis.com/Floropolis-logo-only.png" },
     },
-    mainEntityOfPage: `https://www.floropolis.com/blog/${slug}`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.floropolis.com/blog/${slug}` },
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.floropolis.com" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.floropolis.com/blog" },
+      { "@type": "ListItem", position: 3, name: post.title, item: `https://www.floropolis.com/blog/${slug}` },
+    ],
   };
 
   return (
@@ -76,6 +89,10 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       {/* Breadcrumb */}
       <div className="max-w-3xl mx-auto px-4 pt-6 sm:pt-8">
