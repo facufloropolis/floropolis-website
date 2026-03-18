@@ -113,7 +113,7 @@ export const SUPPLY_CHAIN: SupplyChainStep[] = [
   { title: "Hydration + cold rooms", detail: "Proper hydration and controlled temps protect vase life." },
   { title: "Air freight", detail: "Fast lane to the US so flowers don't sit." },
   { title: "Miami hub", detail: "Quick transfer, tight handling, clear tracking." },
-  { title: "48–72h to your door", detail: "Reliable delivery windows for real schedules." },
+  { title: "4 days to your door", detail: "Reliable delivery windows for real schedules." },
 ];
 
 export interface MapPin {
