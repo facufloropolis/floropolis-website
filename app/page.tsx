@@ -97,17 +97,17 @@ export default function Home() {
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">Premium Roses & Summer Flowers</h2>
-            <p className="text-base sm:text-xl text-slate-600">Ecoroses from Ecuador — Order while supplies last</p>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">Roses, Tropicals & Spring Flowers</h2>
+            <p className="text-base sm:text-xl text-slate-600">Farm-direct from Ecuador — shipping included, transparent pricing</p>
           </div>
 
           {/* Category quick-links */}
           <div className="flex flex-wrap gap-2 justify-center mb-6">
             {[
-              { label: "Roses", href: "/shop?category=Rose" },
-              { label: "Tropicals", href: "/shop?category=Tropical" },
+              { label: "Roses", href: "/shop/roses" },
+              { label: "Tropicals", href: "/shop/tropicals" },
               { label: "Ranunculus", href: "/shop?category=Ranunculus" },
-              { label: "Greens", href: "/shop?category=Greens+%26+Foliage" },
+              { label: "Greens", href: "/shop/greens" },
               { label: "Hydrangeas", href: "/shop?category=Hydrangea" },
               { label: "Anemones", href: "/shop?category=Anemone" },
               { label: "All Flowers →", href: "/shop" },
