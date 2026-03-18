@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "@/lib/data/blog-posts";
+import BlogIndexList from "./BlogIndexList";
 
 export const metadata: Metadata = {
   title: "Florist Guides & Resources | Floropolis Blog",
@@ -18,6 +19,8 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  const categories = [...new Set(blogPosts.map((p) => p.category))].sort();
+
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
@@ -33,33 +36,9 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Posts grid */}
+      {/* Posts grid with category filter */}
       <section className="max-w-4xl mx-auto px-4 py-10 sm:py-14">
-        <div className="grid gap-6 sm:gap-8">
-          {blogPosts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group block border border-slate-200 rounded-xl p-5 sm:p-7 hover:border-emerald-300 hover:shadow-md transition-all"
-            >
-              <div className="flex items-center gap-3 text-xs text-slate-500 mb-2">
-                <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
-                  {post.category}
-                </span>
-                <span>{post.readingTime}</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors mb-2">
-                {post.title}
-              </h2>
-              <p className="text-sm sm:text-base text-slate-600 line-clamp-2">
-                {post.metaDescription}
-              </p>
-              <span className="inline-block mt-3 text-sm font-semibold text-emerald-600 group-hover:text-emerald-700">
-                Read guide &rarr;
-              </span>
-            </Link>
-          ))}
-        </div>
+        <BlogIndexList posts={blogPosts} categories={categories} />
       </section>
 
       {/* CTA */}
