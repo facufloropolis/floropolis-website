@@ -69,8 +69,8 @@ export default function Navigation() {
                 </span>
               )}
             </Link>
-            <Link href="/shop" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
-              Shop
+            <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
+              Free Sample Box
             </Link>
             <a
               href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
