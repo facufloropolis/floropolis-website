@@ -27,13 +27,14 @@ export default function EmailPopup() {
 
     let hasTriggered = false
 
-    // Timer trigger: 10 seconds
+    // Timer trigger: 45s on mobile (was 10s — too aggressive, caused bounces), 15s on desktop
+    const isMobile = window.innerWidth < 768
     const timer = setTimeout(() => {
       if (!hasTriggered && !hasBeenDismissed) {
         setIsVisible(true)
         hasTriggered = true
       }
-    }, 10000)
+    }, isMobile ? 45000 : 15000)
 
     // Scroll trigger: 50% of page
     const handleScroll = () => {

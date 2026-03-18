@@ -55,6 +55,13 @@ export default function Home() {
             >
               Free Sample Box
             </Link>
+            <Link
+              href="/quote"
+              className="border-2 border-emerald-300 text-emerald-100 px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-emerald-600/30 backdrop-blur hover:scale-105 transition-all"
+              onClick={() => pushEvent(CTA_EVENTS.product_click, { cta_location: "hero_quote" })}
+            >
+              Get a Quote →
+            </Link>
           </div>
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">

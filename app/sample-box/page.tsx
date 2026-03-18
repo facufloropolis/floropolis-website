@@ -120,28 +120,7 @@ function SampleBoxContent() {
     });
 
     try {
-      // Submit to Google Sheets webhook
-      // Column order: Timestamp, Name, Email, Address, City, Zip code, State, Phone, Company, Box Choice, Notes
-      await fetch('https://script.google.com/macros/s/AKfycbydKGArw3wL4NNI0-lx0ZbSwmtAHHRTD3RzdZo0PYKJfn_EisMALt9qKcpjXKwg8OA/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          timestamp: new Date().toISOString(),
-          name: formData.name,
-          email: formData.email,
-          address: formData.address,
-          city: formData.city,
-          zip: formData.zip,
-          state: formData.state,
-          phone: formData.phone,
-          company: formData.company,
-          boxChoice: formData.boxChoice,
-          notes: formData.notes,
-        }),
-      });
-
-      // Also trigger n8n directly (keep existing)
+      // Trigger n8n (keep existing)
       fetch('https://n8n.floropolis.com/webhook/sample-box-new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -244,6 +223,19 @@ function SampleBoxContent() {
       {/* Hero + Form Section */}
       <section className="py-6 sm:py-12 px-4 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
+          {/* Mobile-only trust strip — visible before the form on small screens */}
+          <div className="lg:hidden flex gap-4 justify-center mb-6 flex-wrap">
+            <div className="flex items-center gap-2 text-emerald-800 bg-emerald-100 px-4 py-2 rounded-full text-sm font-medium">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> No credit card
+            </div>
+            <div className="flex items-center gap-2 text-emerald-800 bg-emerald-100 px-4 py-2 rounded-full text-sm font-medium">
+              <Truck className="w-4 h-4 flex-shrink-0" /> We cover shipping
+            </div>
+            <div className="flex items-center gap-2 text-emerald-800 bg-emerald-100 px-4 py-2 rounded-full text-sm font-medium">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> No obligation
+            </div>
+          </div>
+
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Left: Form */}
             <div className="bg-white p-5 sm:p-8 rounded-2xl shadow-xl">
@@ -263,6 +255,78 @@ function SampleBoxContent() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Step 1: Box choice FIRST — commitment before info */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Step 1: Choose Your Box *</label>
+                  <div className="space-y-3">
+                    <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "roses" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
+                      <input
+                        type="radio"
+                        name="boxChoice"
+                        value="roses"
+                        required
+                        checked={formData.boxChoice === "roses"}
+                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-slate-900">🌹 Premium Roses — 100 stems</span>
+                          <span className="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full font-medium">Most popular</span>
+                        </div>
+                        <div className="text-sm text-slate-600 mt-0.5">Ecoroses — Playa Blanca, Veggie, Toffee, Freedom. 14-day vase life.</div>
+                      </div>
+                    </label>
+                    <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "summer" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
+                      <input
+                        type="radio"
+                        name="boxChoice"
+                        value="summer"
+                        checked={formData.boxChoice === "summer"}
+                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
+                        className="mt-1"
+                      />
+                      <div>
+                        <div className="font-semibold text-slate-900">🌸 Summer Flowers Mix</div>
+                        <div className="text-sm text-slate-600 mt-0.5">Megaflor — Ranunculus, Anemones, Delphinium, Eryngium. Farm-direct variety.</div>
+                      </div>
+                    </label>
+                    <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "gypsophilia" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
+                      <input
+                        type="radio"
+                        name="boxChoice"
+                        value="gypsophilia"
+                        checked={formData.boxChoice === "gypsophilia"}
+                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
+                        className="mt-1"
+                      />
+                      <div>
+                        <div className="font-semibold text-slate-900">✨ Gypsophilia — 250g</div>
+                        <div className="text-sm text-slate-600 mt-0.5">Flodecol — Premium baby&apos;s breath. The freshest you&apos;ll find in the US market.</div>
+                      </div>
+                    </label>
+                    <label className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.boxChoice === "tropical" ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-400"}`}>
+                      <input
+                        type="radio"
+                        name="boxChoice"
+                        value="tropical"
+                        checked={formData.boxChoice === "tropical"}
+                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
+                        className="mt-1"
+                      />
+                      <div>
+                        <div className="font-semibold text-slate-900">🌺 Tropical Assorted</div>
+                        <div className="text-sm text-slate-600 mt-0.5">Magic Flower — Best-of combo box. Variety you won&apos;t find at auction.</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-slate-100 pt-2">
+                  <p className="text-xs text-slate-500 font-medium uppercase tracking-wide mb-4">Step 2: Where should we ship it?</p>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
@@ -289,18 +353,10 @@ function SampleBoxContent() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
-                  <input
-                    type="text"
-                    value={formData.company}
-                    onChange={(e) => setFormData({...formData, company: e.target.value})}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="Your flower shop or business"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Shipping Address *</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Shipping Address *
+                    <span className="font-normal text-slate-400 ml-2 text-xs">We need this to ship your box — not shared.</span>
+                  </label>
                   <input
                     type="text"
                     required
@@ -311,8 +367,8 @@ function SampleBoxContent() {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="col-span-2 sm:col-span-1">
                     <label className="block text-sm font-medium text-slate-700 mb-1">City *</label>
                     <input
                       type="text"
@@ -324,103 +380,55 @@ function SampleBoxContent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Zip Code *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">ZIP *</label>
                     <input
                       type="text"
                       required
                       value={formData.zip}
                       onChange={(e) => setFormData({...formData, zip: e.target.value})}
                       className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                      placeholder="ZIP code"
+                      placeholder="ZIP"
                       maxLength={10}
                       pattern="[0-9\-]+"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">State *</label>
+                    <select
+                      required
+                      value={formData.state}
+                      onChange={(e) => setFormData({...formData, state: e.target.value})}
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                    >
+                      {US_STATES.map((s) => (
+                        <option key={s.value || "empty"} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">State *</label>
-                  <select
-                    required
-                    value={formData.state}
-                    onChange={(e) => setFormData({...formData, state: e.target.value})}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
-                  >
-                    {US_STATES.map((s) => (
-                      <option key={s.value || "empty"} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="For delivery updates"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Select Your Sample Box *</label>
-                  <div className="space-y-3">
-                    <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors">
-                      <input
-                        type="radio"
-                        name="boxChoice"
-                        value="roses"
-                        required
-                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
-                        className="mt-1"
-                      />
-                      <div>
-                        <div className="font-semibold text-slate-900">Box 1: Premium Roses (100 stems)</div>
-                        <div className="text-sm text-slate-600">Ecoroses - Playa Blanca, Veggie, Toffee, Freedom</div>
-                      </div>
-                    </label>
-                    <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors">
-                      <input
-                        type="radio"
-                        name="boxChoice"
-                        value="summer"
-                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
-                        className="mt-1"
-                      />
-                      <div>
-                        <div className="font-semibold text-slate-900">Box 2: Summer Flowers Mix</div>
-                        <div className="text-sm text-slate-600">Megaflor - Ranunculus, Anemones, Delphinium, Eryngium</div>
-                      </div>
-                    </label>
-                    <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors">
-                      <input
-                        type="radio"
-                        name="boxChoice"
-                        value="gypsophilia"
-                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
-                        className="mt-1"
-                      />
-                      <div>
-                        <div className="font-semibold text-slate-900">Box 3: Gypsophilia (250g)</div>
-                        <div className="text-sm text-slate-600">Flodecol - Premium baby's breath</div>
-                      </div>
-                    </label>
-                    <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors">
-                      <input
-                        type="radio"
-                        name="boxChoice"
-                        value="tropical"
-                        onChange={(e) => setFormData({...formData, boxChoice: e.target.value})}
-                        className="mt-1"
-                      />
-                      <div>
-                        <div className="font-semibold text-slate-900">Box 4: Tropical Flower</div>
-                        <div className="text-sm text-slate-600">Magic Flower - Best of assorted combo box</div>
-                      </div>
-                    </label>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
+                    <input
+                      type="text"
+                      value={formData.company}
+                      onChange={(e) => setFormData({...formData, company: e.target.value})}
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="Your flower shop"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="For delivery updates"
+                    />
                   </div>
                 </div>
 
@@ -430,10 +438,14 @@ function SampleBoxContent() {
                     value={formData.notes}
                     onChange={(e) => setFormData({...formData, notes: e.target.value})}
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    rows={3}
-                    placeholder="Any specific requirements or questions?"
+                    rows={2}
+                    placeholder="Any specific questions?"
                   />
                 </div>
+
+                <p className="text-center text-sm text-slate-500">
+                  🌿 Join 11 florists who&apos;ve already tried our sample boxes
+                </p>
 
                 <button
                   type="submit"

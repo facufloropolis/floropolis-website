@@ -72,7 +72,7 @@ export default function HeaderSearch() {
       ref={containerRef}
       className={`
         relative flex-1 max-w-md mx-2 md:mx-4
-        ${isFocused ? "fixed left-0 right-0 top-0 z-[100] mx-0 max-w-none px-4 pt-4 pb-2 bg-white md:bg-transparent md:static md:z-auto md:mx-2 md:mx-4 md:max-w-md md:px-0 md:pt-0 md:pb-0" : ""}
+        ${isFocused ? "z-50" : ""}
       `}
     >
       <div

@@ -866,16 +866,16 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
   const earliestDate = getEarliestDeliveryDate(group.tier);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col">
-      <Link
-        href={`/shop/${group.slug}`}
-        className="block aspect-square relative bg-slate-50 overflow-hidden"
-        onClick={() => pushEvent(CTA_EVENTS.product_click, {
-          product_name: group.name,
-          product_category: group.category,
-          product_price: displayPrice,
-        })}
-      >
+    <Link
+      href={`/shop/${group.slug}`}
+      className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col"
+      onClick={() => pushEvent(CTA_EVENTS.product_click, {
+        product_name: group.name,
+        product_category: group.category,
+        product_price: displayPrice,
+      })}
+    >
+      <div className="block aspect-square relative bg-slate-50 overflow-hidden">
         <Image
           src={imgSrc}
           alt={group.name}
@@ -894,13 +894,11 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             {group.deal_label}
           </span>
         )}
-      </Link>
+      </div>
       <div className="p-3 flex flex-col flex-1">
-        <Link href={`/shop/${group.slug}`}>
-          <h3 className="font-semibold text-slate-900 text-sm leading-tight hover:text-emerald-600 transition-colors line-clamp-2">
-            {group.name}
-          </h3>
-        </Link>
+        <h3 className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-emerald-600 transition-colors line-clamp-2">
+          {group.name}
+        </h3>
         <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
         <div className="mt-2 flex items-baseline gap-1.5">
           {group.hasPriceIssue && group.minPrice === 0 ? (
@@ -937,13 +935,10 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             <span>· {group.variantCount} options</span>
           )}
         </p>
-        <Link
-          href={`/shop/${group.slug}`}
-          className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-center text-xs"
-        >
+        <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
           View Options →
-        </Link>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

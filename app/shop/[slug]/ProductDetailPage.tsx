@@ -325,7 +325,10 @@ export default function ProductDetailPage({
     return cheapestVariant;
   }, [variants, selectedLength, selectedBoxType, cheapestVariant]);
 
-  const unitLabel = currentVariant.unit === "Bunch" ? "bunch" : "stem";
+  const unitLabel =
+    currentVariant.unit === "Bunch" ? "bunch"
+    : currentVariant.unit === "Box" ? "box"
+    : "stem";
   const basePrice = currentVariant.price ?? null;
   const dealPrice = currentVariant.deal_price ?? null;
   const hasDeal = !!currentVariant.is_on_deal && dealPrice != null;
@@ -333,10 +336,14 @@ export default function ProductDetailPage({
   const compareAtPrice = currentVariant.compare_at_price ?? null;
   const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
 
+  // For Box products (combo boxes), stems_per_bunch × units_per_box is meaningless.
+  // total_stems field will be added by Alvar for those products; for now suppress.
   const totalStems =
-    currentVariant.stems_per_bunch && currentVariant.units_per_box
-      ? Math.round(currentVariant.stems_per_bunch * currentVariant.units_per_box)
-      : null;
+    currentVariant.unit === "Box"
+      ? ((currentVariant as { total_stems?: number }).total_stems ?? null)
+      : currentVariant.stems_per_bunch && currentVariant.units_per_box
+        ? Math.round(currentVariant.stems_per_bunch * currentVariant.units_per_box)
+        : null;
 
   const displayName =
     [product.variety, product.color].filter(Boolean).join(" ") || product.name;
@@ -537,18 +544,15 @@ export default function ProductDetailPage({
                   <span className="text-xs text-slate-400">Contact us for pricing</span>
                 </div>
               )}
-              {totalStems != null && (
+              {totalStems != null && currentVariant.unit !== "Box" && (
                 <p className="mt-1 text-sm text-slate-600">
                   {totalStems.toLocaleString()} stems per{" "}
                   {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type} box
-                  {currentVariant.stems_per_bunch > 1 && (
-                    <span className="text-slate-400">
-                      {" "}
-                      ({currentVariant.stems_per_bunch} stems/bunch ×{" "}
-                      {currentVariant.units_per_box}{" "}
-                      {currentVariant.unit === "Bunch" ? "bunches" : "units"})
-                    </span>
-                  )}
+                </p>
+              )}
+              {effectivePrice != null && totalStems != null && currentVariant.unit !== "Box" && (
+                <p className="mt-0.5 text-sm font-semibold text-slate-500">
+                  ≈ ${(effectivePrice * totalStems).toFixed(2)} for this {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type}
                 </p>
               )}
             </div>
@@ -610,7 +614,9 @@ export default function ProductDetailPage({
                       (v) => v.box_type === bt && (!selectedLength || v.length === selectedLength),
                     ) || variants.find((v) => v.box_type === bt);
                     const stemCount = variantForBt
-                      ? Math.round((variantForBt.stems_per_bunch || 1) * (variantForBt.units_per_box || 0))
+                      ? variantForBt.unit === "Box"
+                        ? ((variantForBt as { total_stems?: number }).total_stems ?? null)
+                        : Math.round((variantForBt.stems_per_bunch || 1) * (variantForBt.units_per_box || 0))
                       : null;
                     return (
                       <button
@@ -636,6 +642,34 @@ export default function ProductDetailPage({
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* What's in this box — shown for Mixed Boxes and Assorted products */}
+            {(currentVariant.category === "Mixed Boxes" || currentVariant.color === "Assorted" || currentVariant.unit === "Box") && (
+              <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-2">
+                  What's in this box
+                </p>
+                {(currentVariant as { contents_note?: string }).contents_note ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {((currentVariant as { contents_note?: string }).contents_note ?? "").split(",").map((v) => (
+                      <span
+                        key={v.trim()}
+                        className="inline-block rounded-full bg-white border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-slate-700"
+                      >
+                        {v.trim()}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-amber-800">
+                    Curated mix — exact composition varies by season.
+                  </p>
+                )}
+                <p className="mt-2 text-xs text-amber-600">
+                  Want specific varieties? Add a note when you request your quote.
+                </p>
               </div>
             )}
 

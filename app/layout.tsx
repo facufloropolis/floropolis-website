@@ -32,6 +32,41 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Organization + WebSite JSON-LD — helps Google understand Floropolis as a business */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.floropolis.com/#organization",
+                  name: "Floropolis",
+                  url: "https://www.floropolis.com",
+                  description: "Farm-direct wholesale flowers from Ecuador and Colombia. Premium roses, tropicals, and specialty stems delivered in 4 days.",
+                  contactPoint: {
+                    "@type": "ContactPoint",
+                    contactType: "sales",
+                    email: "facu@floropolis.com",
+                  },
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.floropolis.com/#website",
+                  url: "https://www.floropolis.com",
+                  name: "Floropolis",
+                  publisher: { "@id": "https://www.floropolis.com/#organization" },
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: "https://www.floropolis.com/shop?q={search_term_string}",
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
         {/* Google Tag Manager – loads GA4 (G-TL18BYQ102) and listens for dataLayer events */}
         <Script id="gtm-head" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
