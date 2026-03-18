@@ -45,8 +45,19 @@ export default async function BlogPostPage({ params }: Props) {
   const otherPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
   // Extract category from shopLink for featured products
+  // Handles both /shop?category=Rose and curated pages like /shop/roses
+  const curatedCategoryMap: Record<string, string> = {
+    roses: "Rose",
+    tropicals: "Tropicals",
+    greens: "Greens & Foliage",
+  };
   const categoryMatch = post.shopLink.match(/category=([^&]+)/);
-  const categoryName = categoryMatch ? decodeURIComponent(categoryMatch[1]) : null;
+  const curatedMatch = post.shopLink.match(/\/shop\/([^/?]+)$/);
+  const categoryName = categoryMatch
+    ? decodeURIComponent(categoryMatch[1])
+    : curatedMatch
+    ? curatedCategoryMap[curatedMatch[1]] ?? null
+    : null;
   const featuredProducts = categoryName
     ? getProductsByCategory(categoryName)
         .filter((p) => p.price > 0 && p.has_photo)
