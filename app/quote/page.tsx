@@ -243,16 +243,36 @@ export default function QuotePage() {
             )}
 
             {items.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-sm text-slate-600 mb-4">
-                  Your quote cart is empty.
-                </p>
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 text-white px-6 py-3 text-sm font-semibold hover:bg-emerald-700"
-                >
-                  Browse Catalog
-                </Link>
+              <div className="py-10 space-y-6">
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-slate-700 mb-1">Your quote is empty</p>
+                  <p className="text-sm text-slate-500 mb-5">Browse the catalog, add items, and come back here to submit.</p>
+                  <Link
+                    href="/shop"
+                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 text-white px-6 py-3 text-sm font-semibold hover:bg-emerald-700"
+                  >
+                    Browse Catalog →
+                  </Link>
+                </div>
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="text-3xl flex-shrink-0">📦</div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800 text-sm">Not ready to order yet? Try a free sample box first.</p>
+                    <p className="text-xs text-slate-600 mt-0.5">No credit card · Free shipping · See the quality before you commit.</p>
+                  </div>
+                  <Link
+                    href="/sample-box"
+                    className="flex-shrink-0 rounded-lg bg-emerald-600 text-white px-4 py-2.5 text-sm font-bold hover:bg-emerald-700 transition-colors"
+                  >
+                    Get Free Sample Box
+                  </Link>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-500 space-y-1.5">
+                  <p className="font-semibold text-slate-700 text-sm mb-2">How it works</p>
+                  <p>1. Browse the catalog and click <strong>Add to Quote</strong> on any product</p>
+                  <p>2. Come back here to review items and set delivery dates</p>
+                  <p>3. Fill in your details and submit — we confirm within 1 hour (Mon–Fri)</p>
+                </div>
               </div>
             ) : (
               <div className="space-y-5">

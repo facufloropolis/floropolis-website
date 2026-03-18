@@ -178,6 +178,8 @@ export interface Product {
   images: string[];
   tier: string;
   has_photo: boolean;
+  total_stems: number | null;
+  contents_note: string | null;
 }
 
 export const products: Product[] = ${JSON.stringify(products, null, 2)};

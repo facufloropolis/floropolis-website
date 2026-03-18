@@ -15,10 +15,65 @@ export const metadata: Metadata = {
   },
 };
 
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "How long does wholesale flower delivery take?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Farm-direct from Ecuador to your door in 4 days via FedEx Priority. Flowers are cut fresh to order and shipped with no warehouse stops or middlemen.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do you ship wholesale flowers nationwide?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, Floropolis delivers to all 50 states via FedEx Priority. Free shipping on all orders, no minimum required.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How fresh are the flowers when they arrive?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Flowers are cut to order in Ecuador and arrive in 4 days. With no warehouse stops or distributor handling, you get flowers with 14+ days of vase life — significantly fresher than traditional wholesale channels.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What farms does Floropolis source from?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Floropolis sources direct from partner farms in Ecuador and Colombia, including MegaFlor, Ecoroses, Flodecol, and Magic Flowers. All farms ship direct — no middlemen or wholesale distributors.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is there a minimum order for wholesale flowers?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "No minimum order. Order a single box or hundreds of stems — free shipping applies to all orders regardless of size.",
+      },
+    },
+  ],
+};
+
 export default function HowItWorksLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
+      {children}
+    </>
+  );
 }
