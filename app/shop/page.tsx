@@ -1013,6 +1013,10 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             </>
           )}
         </div>
+        {/* EXP-027: Shipping-included signal — key differentiator vs competitors */}
+        {!group.hasPriceIssue && group.minPrice > 0 && (
+          <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
+        )}
         <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
           {group.tier === "T1" || group.tier === "T2" ? (
             <span className="inline-flex items-center gap-0.5 text-emerald-600 font-medium">
