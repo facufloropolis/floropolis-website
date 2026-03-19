@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/quote/confirmation"],
+        disallow: ["/api/", "/auth/", "/account", "/quote/confirmation"],
       },
     ],
     sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.floropolis.com"}/sitemap.xml`,
