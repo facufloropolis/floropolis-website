@@ -13,7 +13,6 @@ export default function Footer() {
             <ul className="space-y-3 text-slate-400">
               <li><Link href="/about" className="hover:text-emerald-400 transition-colors duration-200">About</Link></li>
               <li><Link href="/how-it-works" className="hover:text-emerald-400 transition-colors duration-200">How It Works</Link></li>
-              <li><Link href="/blog" className="hover:text-emerald-400 transition-colors duration-200">Blog</Link></li>
               <li><Link href="/contact" className="hover:text-emerald-400 transition-colors duration-200">Contact</Link></li>
             </ul>
           </div>

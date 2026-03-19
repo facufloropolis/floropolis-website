@@ -60,9 +60,6 @@ export default function Navigation() {
             <Link href="/shop" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               Shop
             </Link>
-            <Link href="/blog" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
-              Blog
-            </Link>
             <Link href="/how-it-works" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               How It Works
             </Link>
@@ -127,13 +124,6 @@ export default function Navigation() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Free Sample Box
-            </Link>
-            <Link
-              href="/blog"
-              className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Blog
             </Link>
             <Link
               href="/how-it-works"

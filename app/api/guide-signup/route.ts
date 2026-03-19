@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
             FIRSTNAME: first_name,
             SHOPNAME: shop_name || "",
           },
-          listIds: [4], // "Floropolis Guide Downloads" list — update list ID if different
+          listIds: [110], // "Floropolis Guide Downloads" — Brevo list ID confirmed 2026-03-19
           updateEnabled: true,
         }),
       });

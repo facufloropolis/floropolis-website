@@ -140,7 +140,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
             {featured.map((p) => {
               const img = (Array.isArray(p.images) && p.images.length > 0)
-                ? (p.images[0].startsWith("http") ? p.images[0] : `/product-photos/${p.images[0]}`)
+                ? ((p.images[0].startsWith("http") || p.images[0].startsWith("/")) ? p.images[0] : `/product-photos/${p.images[0]}`)
                 : getProductImage(p.variety, p.color, p.category);
               const displayPrice = p.deal_price ?? p.price;
               const unitLabel = p.unit === "Bunch" ? "bunch" : "stem";
@@ -156,6 +156,7 @@ export default function Home() {
                       src={img}
                       alt={displayName}
                       className="object-contain w-full h-full group-hover:scale-105 transition-transform"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/Floropolis-logo-only.png"; }}
                     />
                     {p.is_best_seller && (
                       <span className="absolute top-1 left-1 bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">Bestseller</span>
@@ -282,7 +283,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -292,7 +293,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202025-12-12%20at%2010.04.44%20(2).jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.44%20(2).jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -302,7 +303,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202026-01-30%20at%2010.28.32.jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202026-01-30%20at%2010.28.32.jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -312,7 +313,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202025-12-12%20at%2010.04.44.jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.44.jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -322,7 +323,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202025-12-12%20at%2010.04.45.jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.45.jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -332,7 +333,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -342,7 +343,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202026-02-01%20at%2010.12.56%20(1).jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202026-02-01%20at%2010.12.56%20(1).jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -352,7 +353,7 @@ export default function Home() {
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
                   <img
-                    src="/images/TESTIMONIALS/WhatsApp%20Image%202025-11-07%20at%2017.08.07.jpeg"
+                    src="/images/Testimonials/WhatsApp%20Image%202025-11-07%20at%2017.08.07.jpeg"
                     alt="Customer photo"
                     className="object-cover w-full h-full"
                     loading="lazy"
