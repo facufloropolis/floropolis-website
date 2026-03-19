@@ -153,7 +153,7 @@ ANEMONE CARE
 
 We carry FullStar anemones year-round.
 
-→ **[Shop Anemones](https://www.floropolis.com/shop)** — see current availability and pricing
+→ **[Shop Anemones](/shop?category=Anemone)** — see current availability and pricing
 
 → **[Request a Sample Box](https://www.floropolis.com/sample-box)** — try before you commit to a full order. We'll include anemones in your mix if they're in season.
 

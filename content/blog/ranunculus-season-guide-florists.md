@@ -157,7 +157,7 @@ A: The most common causes: bacteria in the bucket (clean thoroughly before each 
 
 We carry ranunculus year-round from Ecuador. Current availability and pricing at:
 
-→ **[Shop Ranunculus](https://www.floropolis.com/shop)** — check this week's stock
+→ **[Shop Ranunculus](/shop?category=Ranunculus)** — check this week's stock
 
 → **[Request a Sample Box](https://www.floropolis.com/sample-box)** — try our ranunculus before placing your first large order
 

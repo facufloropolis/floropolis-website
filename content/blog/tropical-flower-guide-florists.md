@@ -183,7 +183,7 @@ If you've never ordered tropicals before, here's a low-risk approach:
 
 ## Resources
 
-**Shop tropical flowers wholesale:** [floropolis.com/shop](https://www.floropolis.com/shop)
+**Shop tropical flowers wholesale:** [Shop Tropical Flowers](/shop/tropicals)
 
 **Request a free sample box:** [floropolis.com/sample-box](https://www.floropolis.com/sample-box)
 
