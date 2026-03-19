@@ -561,6 +561,10 @@ export default function ProductDetailPage({
                   <span className="text-xs text-slate-400">Contact us for pricing</span>
                 </div>
               )}
+              {/* EXP-032: "Shipping included" signal near price — feedback item 4 */}
+              {isPriceAvailable && (
+                <p className="mt-1 text-xs text-emerald-600 font-medium">✓ Price includes free shipping to your door</p>
+              )}
               {totalStems != null && (
                 <p className="mt-1 text-sm text-slate-600">
                   {currentVariant.unit === "Box"
