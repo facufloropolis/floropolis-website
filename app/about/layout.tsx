@@ -15,6 +15,15 @@ export const metadata: Metadata = {
   },
 };
 
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.floropolis.com" },
+    { "@type": "ListItem", position: 2, name: "About", item: "https://www.floropolis.com/about" },
+  ],
+};
+
 const localBusinessLd = {
   "@context": "https://schema.org",
   "@type": "WholesaleStore",
@@ -44,6 +53,10 @@ export default function AboutLayout({
 }) {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
