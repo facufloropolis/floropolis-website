@@ -65,7 +65,7 @@ export const FARMS: FarmProfile[] = [
     website: "https://www.flodecol.com/",
     shopCtaLabel: "Shop gypsophila",
     shopHref:
-      "https://eshops.kometsales.com/762172?search=gypsophila&utm_source=Website&utm_campaign=Shop-Gypsophila",
+      "/shop?category=Greens+%26+Foliage&q=Gypsophila",
   },
   {
     id: "magic-flowers",

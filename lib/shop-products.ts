@@ -3,8 +3,7 @@
  * Used for filtering, sorting, and display. Order-now links go to Komet (current ecommerce provider).
  */
 
-const KOMET_BASE =
-  "https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website";
+const SHOP_BASE = "/shop";
 
 export type ProductCategory =
   | "Rose"
@@ -556,11 +555,9 @@ export const AVAILABILITY_OPTIONS: Availability[] = [
   "Seasonal",
 ];
 
-/** Build checkout URL for a product (Komet) */
+/** Build shop URL for a product — routes to internal PDP */
 export function getProductCheckoutUrl(p: ShopProduct): string {
-  const url = new URL(KOMET_BASE);
-  url.searchParams.set("utm_campaign", p.campaign);
-  return url.toString();
+  return `${SHOP_BASE}/${encodeURIComponent(p.id)}`;
 }
 
 /** Get product by slug (id). For use in dynamic route app/shop/[slug]. */

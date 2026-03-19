@@ -512,5 +512,4 @@ export function getRosesByTier(): Record<RoseTier, RoseVariety[]> {
   };
 }
 
-export const KOMET_ROSES_URL =
-  "https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-Roses";
+export const ROSES_SHOP_URL = "/shop?category=Rose";
