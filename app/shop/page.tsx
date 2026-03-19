@@ -806,6 +806,9 @@ function ShopPageContent() {
               <p className="text-sm text-slate-600 font-medium">
                 {sortedGroups.length} variet{sortedGroups.length !== 1 ? "ies" : "y"}
                 {searchQuery.trim() && <span className="text-slate-400 font-normal"> matching &ldquo;{searchQuery.trim()}&rdquo;</span>}
+                <Link href="/quote" className="ml-3 text-emerald-600 hover:text-emerald-700 text-xs font-semibold hidden sm:inline">
+                  Can't find it? Custom quote →
+                </Link>
               </p>
               <div className="flex items-center gap-3">
                 <button

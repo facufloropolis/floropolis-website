@@ -92,8 +92,8 @@ export default function QuoteCartWidget() {
 
   return (
     <>
-      {/* Floating button */}
-      {!open && (
+      {/* Floating button — only shown when cart has items */}
+      {!open && itemCount > 0 && (
         <button
           type="button"
           onClick={() => setOpen(true)}
