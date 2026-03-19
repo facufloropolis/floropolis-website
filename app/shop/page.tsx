@@ -761,7 +761,8 @@ function ShopPageContent() {
                 </button>
               ))}
             </div>
-            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide -mx-1 px-1">
+            {/* Color chips: hidden on small mobile (use drawer instead), shown on tablet */}
+            <div className="hidden sm:flex lg:hidden gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide -mx-1 px-1">
               {availableColorGroups.slice(0, 8).map((cg) => (
                 <button
                   key={cg}
