@@ -638,8 +638,10 @@ function ShopPageContent() {
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Sample box CTA with scarcity countdown */}
-        <SampleBoxCTA />
+        {/* Sample box CTA — hidden on mobile (TopBanner already shows it) */}
+        <div className="hidden sm:block">
+          <SampleBoxCTA />
+        </div>
 
         {/* Popular Right Now — curated bestsellers. EXP-026: hidden on small mobile (products below fold) */}
         {popularProducts.length > 0 && !searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
