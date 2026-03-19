@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, X, Clock, TrendingUp } from "lucide-react";
 import {
@@ -25,6 +26,16 @@ export default function HeaderSearch() {
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  const handleSearchAll = useCallback((term: string) => {
+    if (!term.trim()) return;
+    addRecentSearch(term.trim());
+    setQuery("");
+    setIsOpen(false);
+    setIsFocused(false);
+    router.push(`/shop?q=${encodeURIComponent(term.trim())}`);
+  }, [router]);
 
   const showDropdown = isOpen && (isFocused || query.length > 0);
 
@@ -90,6 +101,9 @@ export default function HeaderSearch() {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && query.trim()) handleSearchAll(query);
+          }}
           onFocus={() => {
             setIsOpen(true);
             setIsFocused(true);
@@ -235,6 +249,17 @@ export default function HeaderSearch() {
                       />
                     ))}
                   </ul>
+                </div>
+              )}
+              {hasResults && (
+                <div className="px-3 pt-2 pb-1 border-t border-slate-100 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleSearchAll(query)}
+                    className="w-full text-left text-xs font-semibold text-emerald-600 hover:text-emerald-700 px-3 py-2 rounded-lg hover:bg-emerald-50 transition-colors"
+                  >
+                    View all results for &ldquo;{query.trim()}&rdquo; →
+                  </button>
                 </div>
               )}
               {!hasResults && (
