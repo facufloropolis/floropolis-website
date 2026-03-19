@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navigation from "@/components/Navigation";
@@ -384,6 +384,20 @@ export default function ProductDetailPage({
     setTimeout(() => setJustAdded(false), 2000);
   };
 
+  // Sticky mobile CTA — show when main Add to Quote button is off-screen (EXP-024)
+  const addToQuoteRef = useRef<HTMLButtonElement>(null);
+  const [showStickyBtn, setShowStickyBtn] = useState(false);
+  useEffect(() => {
+    const el = addToQuoteRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBtn(!entry.isIntersecting),
+      { rootMargin: "0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const whatsappText = encodeURIComponent(
     `Hi, I'm interested in ${displayName} (${currentVariant.length ?? "mixed stems"}) from Floropolis.`,
   );
@@ -716,6 +730,7 @@ export default function ProductDetailPage({
               )}
               {isPriceAvailable ? (
                 <button
+                  ref={addToQuoteRef}
                   type="button"
                   onClick={handleAddToQuote}
                   className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all ${
@@ -952,6 +967,33 @@ export default function ProductDetailPage({
       </main>
 
       <WhatsAppWidget message={`Hi! I'm interested in ${displayName} from Floropolis.`} />
+
+      {/* EXP-024: Sticky mobile Add to Quote bar — visible on small screens when main button off-screen */}
+      {showStickyBtn && isPriceAvailable && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-lg safe-area-inset-bottom">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-slate-900 truncate">{displayName}</p>
+              <p className="text-sm font-bold text-emerald-600">
+                ${(effectivePrice ?? 0).toFixed(2)}/{currentVariant.unit === "Bunch" ? "bunch" : "stem"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleAddToQuote}
+              className={`flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all ${
+                justAdded
+                  ? "bg-emerald-700 text-white"
+                  : "bg-emerald-600 text-white hover:bg-emerald-700"
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {justAdded ? "Added!" : "Add to Quote"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
