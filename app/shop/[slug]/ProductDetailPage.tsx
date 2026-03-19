@@ -657,7 +657,7 @@ export default function ProductDetailPage({
                         {BOX_TYPE_LABELS[bt] || bt}
                         {stemCount != null && stemCount > 0 && (
                           <span className={`ml-1 text-xs ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
-                            ({stemCount})
+                            ({stemCount.toLocaleString()} stems)
                           </span>
                         )}
                       </button>
