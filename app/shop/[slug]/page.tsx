@@ -80,11 +80,20 @@ export default async function ProductPage({ params }: Props) {
       ? "https://schema.org/InStock"
       : "https://schema.org/PreOrder";
 
+  // Resolve product image for JSON-LD (required by Google for Product rich results)
+  const firstImage = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : null;
+  const productImageUrl = firstImage
+    ? firstImage.startsWith("http") || firstImage.startsWith("/")
+      ? firstImage
+      : `https://www.floropolis.com/product-photos/${firstImage}`
+    : "https://www.floropolis.com/Floropolis-logo-only.png";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: `${product.variety} ${product.color}`,
     description: `Wholesale ${product.variety} ${product.color} — farm-direct from Ecuador. ${product.category}. 4-day delivery to your door.`,
+    image: productImageUrl,
     brand: { "@type": "Brand", name: "Floropolis" },
     category: product.category,
     offers: price
