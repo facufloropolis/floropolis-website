@@ -641,9 +641,9 @@ function ShopPageContent() {
         {/* Sample box CTA with scarcity countdown */}
         <SampleBoxCTA />
 
-        {/* Popular Right Now — curated bestsellers to reduce choice paralysis */}
+        {/* Popular Right Now — curated bestsellers. EXP-026: hidden on small mobile (products below fold) */}
         {popularProducts.length > 0 && !searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
-          <div className="mb-8">
+          <div className="hidden sm:block mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-900">Popular Right Now</h2>
               <button
