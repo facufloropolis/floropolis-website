@@ -169,6 +169,10 @@ export default function Home() {
                   <div className="text-xl md:text-3xl font-bold text-emerald-600">
                     ${displayPrice.toFixed(2)}/{unitLabel}
                   </div>
+                  {/* EXP-037: Shipping included signal — consistent with shop cards */}
+                  {displayPrice > 0 && (
+                    <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
+                  )}
                   <span className="text-xs md:text-sm text-emerald-600 font-medium mt-1 inline-block md:opacity-0 md:group-hover:opacity-100 transition-opacity">View Options →</span>
                 </Link>
               );
@@ -236,7 +240,8 @@ export default function Home() {
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Order</h3>
+              {/* EXP-037: "Browse & Quote" — accurate to actual process (no direct order) */}
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Add to Quote</h3>
               <p className="text-slate-600 text-sm">Browse 270+ varieties with transparent pricing</p>
             </div>
             <div className="text-center">
