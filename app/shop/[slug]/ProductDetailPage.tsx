@@ -761,6 +761,11 @@ export default function ProductDetailPage({
                   Request Pricing on WhatsApp
                 </a>
               )}
+              {/* Process hint — reduces "what happens next?" confusion */}
+              <p className="text-center text-xs text-slate-500">
+                No payment now — we confirm pricing &amp; delivery within 1 hour.
+              </p>
+
               <Link
                 href={`/sample-box?product=${encodeURIComponent(`${product.variety} ${product.color}`)}&category=${encodeURIComponent(product.category)}`}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all text-sm"
