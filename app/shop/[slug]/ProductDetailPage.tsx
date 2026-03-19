@@ -20,6 +20,7 @@ import {
   toISODate,
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
+import { getProductsByCategory } from "@/lib/data/product-helpers";
 
 type Props = {
   product: Product;
@@ -255,6 +256,12 @@ export default function ProductDetailPage({
   }, [variants]);
 
   const earliestDelivery = useMemo(() => getEarliestDeliveryDate(bestTier), [bestTier]);
+  // EXP-040: Related products — same category, exclude current slug, up to 8
+  const relatedProducts = useMemo(() => {
+    return getProductsByCategory(product.category)
+      .filter((p) => p.slug !== product.slug && (p.price ?? 0) > 0)
+      .slice(0, 8);
+  }, [product.category, product.slug]);
   const deliveryDates = useMemo(
     () => getDeliveryDates(earliestDelivery, 12),
     [earliestDelivery],
@@ -973,7 +980,7 @@ export default function ProductDetailPage({
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                  Free delivery on orders over $500
+                  Shipping always included — price shown is all-in
                 </li>
               </ul>
             </div>
@@ -1005,6 +1012,54 @@ export default function ProductDetailPage({
           </div>
         </section>
       </main>
+
+      {/* EXP-040: Related products — keeps users discovering more, increases quote size */}
+      {relatedProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 pb-12">
+          <h2 className="text-xl font-bold text-slate-900 mb-4">
+            More {product.category} Varieties
+          </h2>
+          <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1">
+            {relatedProducts.map((p) => {
+              const img = p.images?.[0]
+                ? (p.images[0].startsWith("http") ? p.images[0] : `/product-photos/${p.images[0]}`)
+                : getProductImage(p.variety, p.color, p.category);
+              const price = p.deal_price ?? p.price ?? 0;
+              return (
+                <Link
+                  key={p.slug}
+                  href={`/shop/${encodeURIComponent(p.slug)}`}
+                  className="flex-none w-40 border border-slate-200 rounded-xl overflow-hidden bg-white hover:shadow-md transition-shadow group"
+                  onClick={() => pushEvent(CTA_EVENTS.product_click, {
+                    product_name: p.name,
+                    cta_location: "pdp_related",
+                  })}
+                >
+                  <div className="aspect-square relative bg-slate-50">
+                    <Image
+                      src={img || "/Floropolis-logo-only.png"}
+                      alt={p.name}
+                      fill
+                      className="object-contain group-hover:scale-105 transition-transform"
+                      sizes="160px"
+                      unoptimized={img.startsWith("http")}
+                    />
+                  </div>
+                  <div className="p-2.5">
+                    <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                      {p.variety} {p.color}
+                    </p>
+                    <p className="text-sm font-bold text-emerald-600 mt-0.5">
+                      ${price.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/stem</span>
+                    </p>
+                    <p className="text-[9px] text-emerald-600 mt-0.5">✓ Shipping included</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <WhatsAppWidget message={`Hi! I'm interested in ${displayName} from Floropolis.`} />
 
