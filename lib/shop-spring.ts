@@ -3,7 +3,8 @@
  * Seasonal products with EXCLUSIVE badges.
  */
 
-const KOMET_BASE = "https://eshops.kometsales.com/762172?utm_source=Website";
+// Internal catalog — spring products are in our shop catalog
+const SHOP_BASE = "/shop";
 
 export interface SpringProduct {
   id: string;
@@ -97,5 +98,17 @@ export const SPRING_PRODUCTS: SpringProduct[] = [
 ];
 
 export function getSpringCheckoutUrl(product: SpringProduct): string {
-  return `${KOMET_BASE}&utm_campaign=${encodeURIComponent(product.campaign)}`;
+  const categoryMap: Record<string, string> = {
+    "ranunculus-amandine": "Ranunculus",
+    "anemone-fullstar-mariane": "Anemone",
+    delphinium: "Delphinium",
+    scabiosa: "Scabiosa",
+    thistle: "Thistle",
+    molucella: "Bells of Ireland",
+    larkspur: "Larkspur",
+  };
+  const cat = categoryMap[product.id];
+  return cat
+    ? `${SHOP_BASE}?category=${encodeURIComponent(cat)}`
+    : `${SHOP_BASE}`;
 }

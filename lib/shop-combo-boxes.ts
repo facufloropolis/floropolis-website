@@ -3,7 +3,8 @@
  * Sortable comparison: name, contents, stem count, price per stem, total, free shipping.
  */
 
-const KOMET_BASE = "https://eshops.kometsales.com/762172?utm_source=Website";
+// Internal catalog — Mixed Boxes (30) and Bouquets (21) are in our shop catalog
+const SHOP_BASE = "/shop";
 
 export interface ComboBox {
   id: string;
@@ -160,9 +161,10 @@ export const COMBO_BOUQUETS: ComboBouquet[] = [
 export type ComboSortKey = "totalPrice" | "stemCount" | "pricePerStem";
 
 export function getComboCheckoutUrl(box: ComboBox): string {
-  return `${KOMET_BASE}&utm_campaign=${encodeURIComponent(box.campaign)}`;
+  // Route to internal catalog — each box has a slug in /shop/[slug]
+  return `${SHOP_BASE}/${encodeURIComponent(box.id)}`;
 }
 
 export function getBouquetCheckoutUrl(bouquet: ComboBouquet): string {
-  return `${KOMET_BASE}&utm_campaign=${encodeURIComponent(bouquet.campaign)}`;
+  return `${SHOP_BASE}?category=${encodeURIComponent("Mixed Boxes")}`;
 }

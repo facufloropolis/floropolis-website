@@ -6,17 +6,10 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { SPRING_PRODUCTS, getSpringCheckoutUrl, type SpringProduct } from "@/lib/shop-spring";
 
 export default function SpringCollectionPage() {
-  const trackOrderClick = (e: React.MouseEvent<HTMLAnchorElement>, name: string) => {
-    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
-      cta_location: "spring_collection",
-      product_type: name,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
@@ -52,7 +45,6 @@ export default function SpringCollectionPage() {
             <SpringProductCard
               key={product.id}
               product={product}
-              onOrderClick={trackOrderClick}
             />
           ))}
         </div>
@@ -109,13 +101,7 @@ export default function SpringCollectionPage() {
   );
 }
 
-function SpringProductCard({
-  product,
-  onOrderClick,
-}: {
-  product: SpringProduct;
-  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
-}) {
+function SpringProductCard({ product }: { product: SpringProduct }) {
   const url = getSpringCheckoutUrl(product);
   const priceRange = `$${product.priceMin.toFixed(2)}–$${product.priceMax.toFixed(2)}/stem`;
   return (
@@ -141,15 +127,13 @@ function SpringProductCard({
           {product.varietyCount} varieties
         </p>
         <p className="text-lg font-bold text-emerald-600 mb-1">{priceRange}</p>
-        <a
+        <Link
           href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => onOrderClick(e, product.name)}
+          onClick={() => pushEvent(CTA_EVENTS.product_click, { product_name: product.name, cta_location: "spring_collection" })}
           className="mt-4 block w-full text-center bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors"
         >
-          Order now
-        </a>
+          Shop {product.name} →
+        </Link>
       </div>
     </div>
   );

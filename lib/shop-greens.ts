@@ -3,7 +3,8 @@
  * Eucalyptus, Willow, Pandanus, Foliage Mix Boxes. Volume pricing, free shipping.
  */
 
-const KOMET_BASE = "https://eshops.kometsales.com/762172?utm_source=Website";
+// Internal catalog — Greens & Foliage products are in our shop catalog (48 products)
+const SHOP_BASE = "/shop";
 
 export interface GreensCategory {
   id: string;
@@ -61,5 +62,14 @@ export const GREENS_CATEGORIES: GreensCategory[] = [
 export const COMBO_BOXES_LINK = "/shop/combo-boxes";
 
 export function getGreensCheckoutUrl(category: GreensCategory): string {
-  return `${KOMET_BASE}&utm_campaign=${encodeURIComponent(category.campaign)}`;
+  const queryMap: Record<string, string> = {
+    eucalyptus: "Eucalyptus",
+    willow: "Willow",
+    pandanus: "Pandanus",
+    "foliage-mix": "Foliage",
+  };
+  const q = queryMap[category.id];
+  return q
+    ? `${SHOP_BASE}?category=Greens+%26+Foliage&q=${encodeURIComponent(q)}`
+    : `${SHOP_BASE}?category=Greens+%26+Foliage`;
 }

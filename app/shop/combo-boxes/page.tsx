@@ -7,7 +7,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ArrowLeft, ArrowRight, ArrowUpDown, ArrowUp, ArrowDown, Truck } from "lucide-react";
-import { handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
+
 import {
   COMBO_BOXES,
   COMBO_BOUQUETS,
@@ -40,13 +41,6 @@ export default function ShopComboBoxesPage() {
       setSortBy(key);
       setSortDir(key === "stemCount" || key === "totalPrice" ? "desc" : "asc");
     }
-  };
-
-  const trackOrderClick = (e: React.MouseEvent<HTMLAnchorElement>, name: string) => {
-    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
-      cta_location: "shop_combo_boxes_page",
-      product_type: name,
-    });
   };
 
   const SortHeader = ({
@@ -145,7 +139,6 @@ export default function ShopComboBoxesPage() {
                 <ComboTableRow
                   key={box.id}
                   box={box}
-                  onOrderClick={trackOrderClick}
                 />
               ))}
             </tbody>
@@ -165,7 +158,6 @@ export default function ShopComboBoxesPage() {
               <BouquetCard
                 key={bouquet.id}
                 bouquet={bouquet}
-                onOrderClick={trackOrderClick}
               />
             ))}
           </div>
@@ -211,13 +203,7 @@ export default function ShopComboBoxesPage() {
   );
 }
 
-function ComboTableRow({
-  box,
-  onOrderClick,
-}: {
-  box: ComboBox;
-  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
-}) {
+function ComboTableRow({ box }: { box: ComboBox }) {
   const url = getComboCheckoutUrl(box);
   return (
     <tr className="border-b border-slate-100 hover:bg-slate-50/50">
@@ -250,27 +236,19 @@ function ComboTableRow({
         )}
       </td>
       <td className="py-4 px-4">
-        <a
+        <Link
           href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => onOrderClick(e, box.name)}
+          onClick={() => pushEvent(CTA_EVENTS.product_click, { product_name: box.name, product_category: "Mixed Boxes", cta_location: "combo_boxes_page" })}
           className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 hover:text-emerald-700"
         >
-          Order <ArrowRight className="w-4 h-4" />
-        </a>
+          View <ArrowRight className="w-4 h-4" />
+        </Link>
       </td>
     </tr>
   );
 }
 
-function BouquetCard({
-  bouquet,
-  onOrderClick,
-}: {
-  bouquet: (typeof COMBO_BOUQUETS)[number];
-  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
-}) {
+function BouquetCard({ bouquet }: { bouquet: (typeof COMBO_BOUQUETS)[number] }) {
   const url = getBouquetCheckoutUrl(bouquet);
   return (
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all flex flex-col">
@@ -290,15 +268,13 @@ function BouquetCard({
           {bouquet.stemCount} stems · ${bouquet.pricePerStem.toFixed(2)}/stem
         </p>
         <p className="font-bold text-emerald-600 mb-3">${bouquet.totalPrice.toFixed(2)}</p>
-        <a
+        <Link
           href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => onOrderClick(e, bouquet.name)}
+          onClick={() => pushEvent(CTA_EVENTS.product_click, { product_name: bouquet.name, product_category: "Bouquets", cta_location: "combo_boxes_page" })}
           className="block w-full text-center bg-emerald-600 text-white py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors text-sm"
         >
-          Order bouquet
-        </a>
+          Shop bouquets →
+        </Link>
       </div>
     </div>
   );

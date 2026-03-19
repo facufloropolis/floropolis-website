@@ -6,7 +6,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ArrowLeft, ArrowRight, Package } from "lucide-react";
-import { handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
   GREENS_CATEGORIES,
   COMBO_BOXES_LINK,
@@ -15,13 +15,6 @@ import {
 } from "@/lib/shop-greens";
 
 export default function ShopGreensPage() {
-  const trackOrderClick = (e: React.MouseEvent<HTMLAnchorElement>, name: string) => {
-    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
-      cta_location: "shop_greens_page",
-      product_type: name,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
@@ -62,7 +55,6 @@ export default function ShopGreensPage() {
             <GreensCard
               key={cat.id}
               category={cat}
-              onOrderClick={trackOrderClick}
             />
           ))}
         </div>
@@ -126,13 +118,7 @@ export default function ShopGreensPage() {
   );
 }
 
-function GreensCard({
-  category,
-  onOrderClick,
-}: {
-  category: GreensCategory;
-  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
-}) {
+function GreensCard({ category }: { category: GreensCategory }) {
   const url = getGreensCheckoutUrl(category);
 
   return (
@@ -157,15 +143,13 @@ function GreensCard({
           <p className="text-sm text-slate-500 mb-4">{category.volumeNote}</p>
         )}
         {!category.volumeNote && <div className="mb-4" />}
-        <a
+        <Link
           href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => onOrderClick(e, category.name)}
+          onClick={() => pushEvent(CTA_EVENTS.product_click, { product_category: "Greens & Foliage", cta_location: "greens_page", product_name: category.name })}
           className="block w-full text-center bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors"
         >
-          Order now
-        </a>
+          Shop {category.name} →
+        </Link>
       </div>
     </div>
   );
