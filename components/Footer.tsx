@@ -24,6 +24,8 @@ export default function Footer() {
               <li><Link href="/shop/roses" className="hover:text-emerald-400 transition-colors duration-200">Wholesale Roses</Link></li>
               <li><Link href="/shop/tropicals" className="hover:text-emerald-400 transition-colors duration-200">Tropical Flowers</Link></li>
               <li><Link href="/shop/greens" className="hover:text-emerald-400 transition-colors duration-200">Greenery & Foliage</Link></li>
+              <li><Link href="/shop/spring-collection" className="hover:text-emerald-400 transition-colors duration-200">Spring Collection</Link></li>
+              <li><Link href="/shop/combo-boxes" className="hover:text-emerald-400 transition-colors duration-200">Combo Boxes</Link></li>
               <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200">Free Sample Box</Link></li>
               <li><Link href="/quote" className="hover:text-emerald-400 transition-colors duration-200">Get a Quote</Link></li>
             </ul>
