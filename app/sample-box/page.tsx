@@ -227,14 +227,20 @@ function SampleBoxContent() {
             </div>
           </div>
 
-          {/* Browse catalog CTA */}
+          {/* EXP-041: Post-submission CTAs — capture momentum with catalog + quote nudge */}
           <div className="flex flex-col gap-3 mb-6">
             <Link
               href="/shop"
               className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
             >
-              Browse Catalog While You Wait
+              Browse the Full Catalog
               <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/quote"
+              className="border border-emerald-600 text-emerald-700 px-8 py-3.5 rounded-lg font-semibold hover:bg-emerald-50 transition-all inline-flex items-center justify-center gap-2 text-sm"
+            >
+              Already know what you need? Build a quote →
             </Link>
             <a
               href="https://wa.me/17869308463?text=Hi!%20I%20just%20requested%20a%20sample%20box%20from%20Floropolis."
