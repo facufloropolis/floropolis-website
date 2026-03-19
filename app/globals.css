@@ -21,6 +21,18 @@ body {
   color: var(--foreground);
 }
 
+/* One-time bounce for QuoteCartWidget floating button — draws attention when cart updates */
+@keyframes bounce-once {
+  0%, 100% { transform: translateY(0); }
+  20% { transform: translateY(-8px); }
+  40% { transform: translateY(0); }
+  60% { transform: translateY(-4px); }
+  80% { transform: translateY(0); }
+}
+.animate-bounce-once {
+  animation: bounce-once 0.8s ease-out;
+}
+
 /* Hide scrollbar for horizontal carousels */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
