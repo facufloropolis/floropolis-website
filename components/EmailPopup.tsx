@@ -102,8 +102,8 @@ export default function EmailPopup() {
     }
   }
 
-  // Don't show on conversion pages — user is already in a funnel
-  const SUPPRESS_PATHS = ['/sample-box', '/quote']
+  // Don't show on conversion pages or auth flows — user is already in a funnel
+  const SUPPRESS_PATHS = ['/sample-box', '/quote', '/auth', '/account']
   if (SUPPRESS_PATHS.some(p => pathname?.startsWith(p))) return null
 
   if (!isVisible) return null
