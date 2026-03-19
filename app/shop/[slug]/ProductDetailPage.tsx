@@ -19,6 +19,7 @@ import {
   formatDeliveryDate,
   toISODate,
 } from "@/lib/delivery-dates";
+import { getCategoryPageUrl } from "@/lib/shop-search";
 
 type Props = {
   product: Product;
@@ -426,12 +427,7 @@ export default function ProductDetailPage({
             <li aria-hidden>/</li>
             <li>
               <Link
-                href={
-                  product.category === "Rose" ? "/shop/roses"
-                  : product.category === "Tropicals" ? "/shop/tropicals"
-                  : product.category === "Greens & Foliage" ? "/shop/greens"
-                  : `/shop?category=${encodeURIComponent(product.category)}`
-                }
+                href={getCategoryPageUrl(product.category as import("@/lib/shop-search").ProductCategory)}
                 className="hover:text-emerald-700 hover:underline"
               >
                 {product.category}
