@@ -25,6 +25,12 @@ export const metadata: Metadata = {
     type: 'website',
     images: [{ url: 'https://www.floropolis.com/Floropolis-logo-only.png', alt: 'Floropolis — Farm-Direct Wholesale Flowers' }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Farm-Direct Wholesale Flowers — Roses, Tropicals & Specialty | Floropolis',
+    description: 'Buy wholesale flowers direct from Ecuador farms. 270+ varieties, 4-day delivery, free shipping, no minimum.',
+    images: ['https://www.floropolis.com/Floropolis-logo-only.png'],
+  },
 };
 
 export default function RootLayout({
