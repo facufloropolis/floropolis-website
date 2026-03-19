@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Tropicals — Heliconia, Ginger, Anthurium & Novelties | Floropolis",
   description:
     "Farm-direct tropicals from Ecuador. Lasts 2x longer than traditional cuts. All ship free. Heliconia, ginger, anthurium, French Kiss, Musas. Unique varieties.",
+  alternates: { canonical: 'https://www.floropolis.com/shop/tropicals' },
   openGraph: {
     title: "Tropicals — Heliconia, Ginger, Anthurium | Floropolis",
     description:

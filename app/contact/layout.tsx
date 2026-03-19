@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Contact Floropolis — Wholesale Flower Supplier",
   description:
     "Questions about wholesale accounts, ordering, or shipping? Contact Floropolis — farm-direct flowers from Ecuador and Colombia.",
+  alternates: { canonical: 'https://www.floropolis.com/contact' },
   openGraph: {
     title: "Contact Floropolis — Wholesale Flower Supplier",
     description:

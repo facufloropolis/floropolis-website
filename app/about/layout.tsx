@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "About Floropolis — Farm-Direct Flowers Built for Florists",
   description:
     "Floropolis connects florists directly with premium farm partners in Ecuador & Colombia — and soon the US and Mexico — with a cold chain built for 4-day delivery.",
+  alternates: { canonical: 'https://www.floropolis.com/about' },
   openGraph: {
     title: "About Floropolis — Farm-Direct Flowers Built for Florists",
     description:

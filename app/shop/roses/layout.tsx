@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Premium Roses — 30+ Varieties | Farm-Direct Wholesale | Floropolis",
   description:
     "30+ rose varieties from Ecuador. Best value to premium. Delivery included. 4-day to your shop.",
+  alternates: { canonical: 'https://www.floropolis.com/shop/roses' },
   openGraph: {
     title: "Premium Roses — 30+ Varieties | Floropolis",
     description:

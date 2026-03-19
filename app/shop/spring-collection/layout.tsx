@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Spring Flowers Collection — Ranunculus, Anemone, Delphinium | Floropolis",
   description:
     "Spring flowers no wholesaler carries. 13 Ranunculus Amandine, 17 Anemone, 16 Delphinium varieties + scabiosa, thistle, molucella, larkspur. Direct from Ecuador. EXCLUSIVE.",
+  alternates: { canonical: 'https://www.floropolis.com/shop/spring-collection' },
   openGraph: {
     title: "Spring Flowers Collection | Floropolis",
     description:

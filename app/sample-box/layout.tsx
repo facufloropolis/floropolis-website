@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Free Sample Box — Try Floropolis Before You Buy | Floropolis",
   description:
     "Request a free sample box of wholesale flowers — no credit card, no obligation. We cover shipping. Premium roses, tropical flowers, or greens. See the farm-direct quality yourself.",
+  alternates: { canonical: 'https://www.floropolis.com/sample-box' },
   openGraph: {
     title: "Free Sample Box — Try Farm-Direct Flowers | Floropolis",
     description:

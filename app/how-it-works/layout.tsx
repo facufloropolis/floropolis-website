@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "How It Works — Farm to Door in 4 Days | Floropolis",
   description:
     "Learn how Floropolis delivers fresh flowers from Ecuador farms to your door in 4 days. No middlemen. Farm-direct pricing. Full tracking.",
+  alternates: { canonical: 'https://www.floropolis.com/how-it-works' },
   openGraph: {
     title: "How It Works — Farm to Door in 4 Days | Floropolis",
     description:

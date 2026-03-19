@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Greens & Foliage — Volume Pricing from $0.13/Stem | Floropolis",
   description:
     "Wholesale greens and foliage. Eucalyptus silver dollar, willow, pandanus, foliage mix boxes. Volume pricing from $0.13/stem. All ship free.",
+  alternates: { canonical: 'https://www.floropolis.com/shop/greens' },
   openGraph: {
     title: "Greens & Foliage — Volume Pricing | Floropolis",
     description:

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: 'Farm-Direct Wholesale Flowers — Roses, Tropicals & Specialty | Floropolis',
   description: 'Buy wholesale flowers direct from Ecuador farms — 270+ varieties including roses, tropicals, greens & specialty stems. 4-day delivery, free shipping, no minimum order.',
   keywords: 'wholesale flowers, farm direct flowers, Ecuador roses, wholesale roses, wholesale florist, bulk flowers, tropical flowers wholesale',
+  alternates: { canonical: 'https://www.floropolis.com' },
   openGraph: {
     title: 'Farm-Direct Wholesale Flowers — Roses, Tropicals & Specialty | Floropolis',
     description: 'Buy wholesale flowers direct from Ecuador farms. 270+ varieties, 4-day delivery, free shipping, no minimum.',

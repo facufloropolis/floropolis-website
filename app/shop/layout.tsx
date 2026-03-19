@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Premium Wholesale Flowers | Roses, Tropicals & Greens — Farm Direct | Floropolis",
   description:
     "Farm-direct wholesale flowers from Ecuador & Colombia. Roses from $1.30/stem, tropicals from $0.63/stem, greens from $0.13/stem. 4-day delivery to your shop.",
+  alternates: { canonical: 'https://www.floropolis.com/shop' },
   openGraph: {
     title: "Premium Wholesale Flowers | Roses, Tropicals & Greens — Farm Direct | Floropolis",
     description:

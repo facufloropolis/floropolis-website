@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Combo Boxes — Compare Options & Order | Floropolis",
   description:
     "Compare combo boxes: Tabasco, Mini Fiesta, Fire, Tiki Limbo, and more. Stem count, price per stem, total price. All ship free. Pre-made tropical bouquets too.",
+  alternates: { canonical: 'https://www.floropolis.com/shop/combo-boxes' },
   openGraph: {
     title: "Combo Boxes — Compare & Order | Floropolis",
     description:
