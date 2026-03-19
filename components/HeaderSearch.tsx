@@ -325,6 +325,7 @@ function ProductRow({
   product: ShopProduct;
   onSelect: () => void;
 }) {
+  const price = product.dealPricePerStem ?? product.pricePerStem;
   return (
     <li>
       <Link
@@ -332,8 +333,13 @@ function ProductRow({
         onClick={onSelect}
         className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-800"
       >
-        <span className="font-medium">{product.name}</span>
-        <span className="text-slate-500 truncate">{product.variety}</span>
+        <span className="font-medium flex-1 min-w-0 truncate">{product.name}</span>
+        {/* EXP-039: Show price in search results — helps florists price-shop without clicking through */}
+        {price > 0 && (
+          <span className="text-emerald-600 font-semibold text-xs flex-shrink-0">
+            ${price.toFixed(2)}/stem
+          </span>
+        )}
         <span className="text-slate-400 text-xs flex-shrink-0">{product.category}</span>
       </Link>
     </li>
