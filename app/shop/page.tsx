@@ -109,6 +109,7 @@ interface VarietyGroup {
   variety: string;
   color: string;
   category: string;
+  unit: string; // Stem | Bunch | Box
   minPrice: number;
   maxPrice: number;
   originalMinPrice: number; // price before any deal
@@ -173,6 +174,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       variety: rep.variety,
       color: rep.color,
       category: rep.category,
+      unit: rep.unit || "Stem",
       minPrice: validPrices.length > 0 ? Math.min(...validPrices) : 0,
       maxPrice: validPrices.length > 0 ? Math.max(...validPrices) : 0,
       originalMinPrice: validOriginalPrices.length > 0 ? Math.min(...validOriginalPrices) : 0,
@@ -691,7 +693,7 @@ function ShopPageContent() {
                       </h3>
                       <p className="text-[10px] text-slate-400 mt-0.5">{group.category}</p>
                       <p className="text-sm font-bold text-emerald-600 mt-1">
-                        ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/stem</span>
+                        ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/{group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}</span>
                       </p>
                     </div>
                   </Link>
@@ -973,7 +975,9 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
                 {hasPriceRange && !group.is_on_deal
                   ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
                   : `$${displayPrice.toFixed(2)}`}
-                <span className="text-xs font-normal text-slate-500">/stem</span>
+                <span className="text-xs font-normal text-slate-500">
+                  /{group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}
+                </span>
               </span>
             </>
           )}
