@@ -650,6 +650,33 @@ function SampleBoxContent() {
         </div>
       </section>
 
+      {/* FAQ — content matches FAQPage JSON-LD schema in layout.tsx for Google rich results */}
+      <section className="max-w-3xl mx-auto px-4 py-10">
+        <h2 className="text-xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+        <div className="space-y-5 text-sm">
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">Is the sample box really free?</h3>
+            <p className="text-slate-600">Yes — we cover shipping and there&apos;s no credit card required. You pay nothing. We send it because we know once you see the quality, you&apos;ll want to order regularly.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">What&apos;s included in the sample box?</h3>
+            <p className="text-slate-600">Your choice of roses, tropical flowers, or greens — one QB (quarter box). The exact varieties may vary by season and availability, but you&apos;ll receive a curated selection that represents our best current inventory.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">How long does the sample box take to arrive?</h3>
+            <p className="text-slate-600">4 days from our Ecuador farms to your door via FedEx Priority. We coordinate the cutoff so flowers arrive Monday through Thursday — never on a weekend.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">Do I have to buy after getting the sample box?</h3>
+            <p className="text-slate-600">No obligation whatsoever. The sample box is exactly what it says — a free sample so you can see the quality yourself. If you love it, we&apos;d love your business. If not, no hard feelings.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">Who is the sample box for?</h3>
+            <p className="text-slate-600">Retail florists, event planners, and floral designers who want to evaluate farm-direct wholesale quality before committing to a first order. If you&apos;re buying flowers regularly for your business, this is for you.</p>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
