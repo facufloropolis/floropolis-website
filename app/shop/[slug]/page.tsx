@@ -27,17 +27,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dealPrice =
     product.deal_price != null ? product.deal_price.toFixed(2) : "";
 
-  const title = `${product.variety} ${product.color} | Floropolis`;
   const pricePart = dealPrice
     ? `$${dealPrice}/${unitLabel} (${product.deal_label ?? "deal"})`
     : basePrice
     ? `$${basePrice}/${unitLabel}`
     : "";
-  const desc =
-    (pricePart
-      ? `${product.variety} ${product.color} — ${pricePart}. `
-      : `${product.variety} ${product.color}. `) +
-    "Farm-direct wholesale flowers. 4-day delivery.";
+  // Include "wholesale" + category in title for SEO (people search "freedom red roses wholesale price")
+  const title = pricePart
+    ? `${product.variety} ${product.color} Wholesale ${product.category} — ${pricePart} | Floropolis`
+    : `${product.variety} ${product.color} Wholesale ${product.category} | Floropolis`;
+  // Description leads with buying intent + price + key benefits
+  const desc = pricePart
+    ? `Buy ${product.variety} ${product.color} wholesale from ${pricePart}. Farm-direct from Ecuador — arrives in 4 days. No minimum order. Free shipping.`
+    : `Buy ${product.variety} ${product.color} wholesale flowers. Farm-direct from Ecuador — arrives in 4 days. No minimum order. Free shipping.`;
 
   // Build OG image URL for social sharing
   const firstImage = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : null;
