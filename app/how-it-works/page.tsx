@@ -129,6 +129,35 @@ export default function HowItWorks() {
         </div>
       </section>
 
+      {/* FAQ — content matches FAQPage JSON-LD schema in layout.tsx for Google rich results */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Frequently Asked Questions</h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How long does wholesale flower delivery take?</h3>
+              <p className="text-slate-600 text-sm">Farm-direct from Ecuador to your door in 4 days via FedEx Priority. Flowers are cut fresh to order and shipped with no warehouse stops or middlemen.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Do you ship wholesale flowers nationwide?</h3>
+              <p className="text-slate-600 text-sm">Yes, Floropolis delivers to all 50 states via FedEx Priority. Free shipping on all orders, no minimum required.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How fresh are the flowers when they arrive?</h3>
+              <p className="text-slate-600 text-sm">Flowers are cut to order in Ecuador and arrive in 4 days. With no warehouse stops or distributor handling, you get flowers with 14+ days of vase life — significantly fresher than traditional wholesale channels.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What farms does Floropolis source from?</h3>
+              <p className="text-slate-600 text-sm">Floropolis sources direct from partner farms in Ecuador and Colombia, including MegaFlor, Ecoroses, Flodecol, and Magic Flowers. All farms ship direct — no middlemen or wholesale distributors.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Is there a minimum order for wholesale flowers?</h3>
+              <p className="text-slate-600 text-sm">No minimum order. Order a single box or hundreds of stems — free shipping applies to all orders regardless of size.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 px-4 bg-emerald-600">
         <div className="max-w-4xl mx-auto text-center">
