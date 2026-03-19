@@ -48,12 +48,14 @@ export default function Home() {
               Try Free Sample Box
               <ArrowRight className="w-5 h-5" />
             </Link>
+            {/* EXP-029: "See Flowers & Prices" vs "Browse the Catalog" — more specific, highlights key draw */}
             <Link
               href="/shop"
               className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
             >
-              Browse the Catalog
+              See Flowers &amp; Prices
+              <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
         </div>
