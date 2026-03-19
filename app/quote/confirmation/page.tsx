@@ -2,15 +2,21 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
   const quoteId = searchParams.get("id");
+
+  // Fire conversion event when confirmation page loads — used as GA4 Goal
+  useEffect(() => {
+    pushEvent(CTA_EVENTS.quote_confirmed, { quote_id: quoteId ?? undefined });
+  }, [quoteId]);
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-16 text-center">

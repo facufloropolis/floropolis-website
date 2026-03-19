@@ -51,6 +51,8 @@ export const CTA_EVENTS = {
   view_product: "view_product",
   add_to_quote: "add_to_quote",
   submit_quote: "submit_quote",
+  // Confirmation page load = definitive conversion (fires after redirect to /quote/confirmation)
+  quote_confirmed: "quote_confirmed",
   filter_change: "filter_change",
   product_click: "product_click",
 } as const;
