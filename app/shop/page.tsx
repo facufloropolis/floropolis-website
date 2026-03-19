@@ -697,6 +697,8 @@ function ShopPageContent() {
                       <p className="text-sm font-bold text-emerald-600 mt-1">
                         ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/{group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}</span>
                       </p>
+                      {/* EXP-038: Shipping included on Popular cards — consistency */}
+                      {displayPrice > 0 && <p className="text-[9px] text-emerald-600 mt-0.5">✓ Shipping included</p>}
                     </div>
                   </Link>
                 );
