@@ -183,9 +183,9 @@ If you've never ordered tropicals before, here's a low-risk approach:
 
 ## Resources
 
-**Shop tropical flowers wholesale:** [floropolis.com/shop](https://floropolis.com/shop)
+**Shop tropical flowers wholesale:** [floropolis.com/shop](https://www.floropolis.com/shop)
 
-**Request a free sample box:** [floropolis.com/sample-box](https://floropolis.com/sample-box)
+**Request a free sample box:** [floropolis.com/sample-box](https://www.floropolis.com/sample-box)
 
 *All tropicals ship farm-direct from Ecuador. Arrives in 4 days. 14-day vase life.*
 

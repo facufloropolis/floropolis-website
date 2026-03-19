@@ -205,11 +205,11 @@ A: Our pricing is based on the correct GPM formula — farm cost ÷ 0.67 plus de
 
 ## Shop Wholesale Roses
 
-→ **[Browse Current Rose Inventory](https://floropolis.com/shop)** — see available varieties and real-time stock
+→ **[Browse Current Rose Inventory](https://www.floropolis.com/shop)** — see available varieties and real-time stock
 
-→ **[Request a Sample Box](https://floropolis.com/sample-box)** — try before you commit
+→ **[Request a Sample Box](https://www.floropolis.com/sample-box)** — try before you commit
 
-→ **[Request a Custom Quote](https://floropolis.com/quote)** — for event-scale orders
+→ **[Request a Custom Quote](https://www.floropolis.com/quote)** — for event-scale orders
 
 ---
 

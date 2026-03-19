@@ -164,9 +164,9 @@ A: Yes — our Ecuador-sourced delphiniums hold their color consistently through
 
 All five varieties available year-round, farm-direct from Ecuador.
 
-→ **[Shop Delphiniums & Specialty Flowers](https://floropolis.com/shop)** — current availability and pricing
+→ **[Shop Delphiniums & Specialty Flowers](https://www.floropolis.com/shop)** — current availability and pricing
 
-→ **[Request a Sample Box](https://floropolis.com/sample-box)** — try our delphiniums before your next event order
+→ **[Request a Sample Box](https://www.floropolis.com/sample-box)** — try our delphiniums before your next event order
 
 ---
 

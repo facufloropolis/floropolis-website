@@ -173,9 +173,9 @@ A: Yes — Ecuador's climate allows year-round production. Some variety selectio
 
 All four varieties are available year-round at Floropolis, farm-direct from Ecuador.
 
-→ **[Shop Heliconia and Tropical Flowers](https://floropolis.com/shop)** — see current availability
+→ **[Shop Heliconia and Tropical Flowers](https://www.floropolis.com/shop)** — see current availability
 
-→ **[Request a Sample Box](https://floropolis.com/sample-box)** — try our tropicals before committing to an event order
+→ **[Request a Sample Box](https://www.floropolis.com/sample-box)** — try our tropicals before committing to an event order
 
 ---
 

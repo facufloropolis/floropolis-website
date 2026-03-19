@@ -157,9 +157,9 @@ A: The most common causes: bacteria in the bucket (clean thoroughly before each 
 
 We carry ranunculus year-round from Ecuador. Current availability and pricing at:
 
-→ **[Shop Ranunculus](https://floropolis.com/shop)** — check this week's stock
+→ **[Shop Ranunculus](https://www.floropolis.com/shop)** — check this week's stock
 
-→ **[Request a Sample Box](https://floropolis.com/sample-box)** — try our ranunculus before placing your first large order
+→ **[Request a Sample Box](https://www.floropolis.com/sample-box)** — try our ranunculus before placing your first large order
 
 *All stems ship farm-direct from Ecuador. 4-day delivery. $0.94/stem, delivery included.*
 
