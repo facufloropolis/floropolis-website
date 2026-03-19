@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
+import { pushEvent } from '@/lib/gtm'
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
@@ -35,18 +36,20 @@ export default function EmailPopup() {
       if (!hasTriggered && !hasBeenDismissed) {
         setIsVisible(true)
         hasTriggered = true
+        pushEvent('email_popup_shown', { trigger: 'timer', page: window.location.pathname })
       }
     }, isMobile ? 45000 : 15000)
 
     // Scroll trigger: 50% of page
     const handleScroll = () => {
       if (hasTriggered || hasBeenDismissed) return
-      
+
       const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
-      
+
       if (scrollPercent >= 50) {
         setIsVisible(true)
         hasTriggered = true
+        pushEvent('email_popup_shown', { trigger: 'scroll', page: window.location.pathname })
       }
     }
 
@@ -62,6 +65,7 @@ export default function EmailPopup() {
     setIsVisible(false)
     setHasBeenDismissed(true)
     sessionStorage.setItem('emailPopupDismissed', 'true')
+    pushEvent('email_popup_dismissed', { page: pathname ?? '/' })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -84,6 +88,7 @@ export default function EmailPopup() {
 
       setIsSubmitted(true)
       localStorage.setItem('emailPopupSubmitted', 'true')
+      pushEvent('email_popup_submitted', { page: pathname ?? '/' })
       
       // Auto close after 3 seconds
       setTimeout(() => {
