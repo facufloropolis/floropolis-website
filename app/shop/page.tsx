@@ -895,6 +895,33 @@ function ShopPageContent() {
         </>
       )}
 
+      {/* FAQ — content matches FAQPage JSON-LD schema in layout.tsx for Google rich results */}
+      <section className="max-w-3xl mx-auto px-4 py-12">
+        <h2 className="text-xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+        <div className="space-y-5 text-sm">
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">Do I need an account to see wholesale flower prices?</h3>
+            <p className="text-slate-600">No — all prices are shown openly on floropolis.com. No registration, no login required. Browse our full catalog of roses, tropicals, and greens with transparent per-stem pricing.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for wholesale flowers?</h3>
+            <p className="text-slate-600">No minimum order. You can order a single bunch or hundreds of boxes — free shipping applies regardless of order size.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">How does wholesale flower ordering work?</h3>
+            <p className="text-slate-600">Browse the catalog, add items to your quote, and submit. We confirm within 1 hour (Mon–Fri, 8 AM – 6 PM ET) and coordinate delivery. Flowers ship farm-direct to your door in 4 days.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">What types of wholesale flowers do you carry?</h3>
+            <p className="text-slate-600">We carry roses (30+ varieties), tropical flowers (heliconias, gingers, birds of paradise, anthuriums), greens and foliage (eucalyptus, monsteras, ferns), delphiniums, ranunculus, anemones, and combo boxes from Magic Flowers.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">Is shipping included in the wholesale flower price?</h3>
+            <p className="text-slate-600">Yes. All prices shown on Floropolis include FedEx Priority shipping from Ecuador to your door. No surprise freight charges at checkout.</p>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
