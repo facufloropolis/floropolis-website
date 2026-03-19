@@ -246,14 +246,55 @@ export default function QuotePage() {
               <div className="py-10 space-y-6">
                 <div className="text-center">
                   <p className="text-lg font-semibold text-slate-700 mb-1">Your quote is empty</p>
-                  <p className="text-sm text-slate-500 mb-5">Browse the catalog, add items, and come back here to submit.</p>
+                  <p className="text-sm text-slate-500 mb-4">Add products below or browse the full catalog.</p>
                   <Link
                     href="/shop"
-                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 text-white px-6 py-3 text-sm font-semibold hover:bg-emerald-700"
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 text-slate-700 px-5 py-2.5 text-sm font-semibold hover:bg-slate-50"
                   >
-                    Browse Catalog →
+                    Browse Full Catalog →
                   </Link>
                 </div>
+
+                {/* EXP-031: Quick-add featured products on empty quote state */}
+                {suggestedProducts.length > 0 && (
+                  <div>
+                    <p className="text-sm font-bold text-slate-800 mb-3">Popular with florists — quick add:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {suggestedProducts.slice(0, 6).map((p) => {
+                        const dbImg = p.images?.[0];
+                        const img = dbImg ? resolveImage(dbImg) : getProductImage(p.variety, p.color, p.category);
+                        const price = p.deal_price ?? p.price;
+                        return (
+                          <div key={p.slug} className="border border-slate-200 rounded-xl overflow-hidden bg-white flex flex-col">
+                            <div className="aspect-square relative bg-slate-50">
+                              <Image
+                                src={img || "/Floropolis-logo-only.png"}
+                                alt={p.name}
+                                fill
+                                className="object-contain"
+                                sizes="(max-width: 640px) 50vw, 33vw"
+                                unoptimized={img.startsWith("http")}
+                              />
+                            </div>
+                            <div className="p-2 flex flex-col flex-1">
+                              <p className="text-xs font-semibold text-slate-900 line-clamp-1">{p.variety} {p.color}</p>
+                              <p className="text-xs text-emerald-600 font-bold mb-1.5">${price.toFixed(2)}/stem</p>
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAdd(p)}
+                                className="mt-auto w-full flex items-center justify-center gap-1 rounded-lg bg-emerald-600 text-white text-[11px] font-semibold py-1.5 hover:bg-emerald-700"
+                              >
+                                <Plus className="w-3 h-3" />
+                                Add to Quote
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="text-3xl flex-shrink-0">📦</div>
                   <div className="flex-1">
