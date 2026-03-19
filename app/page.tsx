@@ -9,7 +9,6 @@ import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
 import { getFeaturedProducts } from "@/lib/data/product-helpers";
 import { getProductImage } from "@/lib/product-images";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
 
 export default function Home() {
   const featured = getFeaturedProducts(4);
@@ -517,7 +516,6 @@ export default function Home() {
         </div>
       </section>
 
-      <WhatsAppWidget message="Hi! I'm interested in ordering wholesale flowers from Floropolis." />
       <Footer />
     </div>
   );
