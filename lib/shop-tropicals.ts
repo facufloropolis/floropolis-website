@@ -3,7 +3,8 @@
  * Heliconia, Ginger, Anthurium, Novelties. Value props: 2x longer vase life, free shipping, unique varieties.
  */
 
-const KOMET_BASE = "https://eshops.kometsales.com/762172?utm_source=Website";
+// Internal catalog base — tropicals are in our shop catalog (42 products)
+const SHOP_BASE = "/shop";
 
 export interface TropicalCategory {
   id: string;
@@ -56,6 +57,15 @@ export const TROPICAL_CATEGORIES: TropicalCategory[] = [
 
 export const COMBO_BOXES_LINK = "/shop/combo-boxes";
 
+// EXP-030: Route to internal catalog instead of Koronet — 42 tropicals in our shop
 export function getTropicalCheckoutUrl(category: TropicalCategory): string {
-  return `${KOMET_BASE}&utm_campaign=${encodeURIComponent(category.campaign)}`;
+  const searchMap: Record<string, string> = {
+    heliconia: "Heliconia",
+    ginger: "Ginger",
+    anthurium: "Anthurium",
+  };
+  const q = searchMap[category.id];
+  return q
+    ? `${SHOP_BASE}?category=Tropicals&q=${encodeURIComponent(q)}`
+    : `${SHOP_BASE}?category=Tropicals`;
 }
