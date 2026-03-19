@@ -11,6 +11,7 @@ import { getProductsByCategory } from "@/lib/data/product-helpers";
 import { getProductImage } from "@/lib/product-images";
 import Image from "next/image";
 import BlogContent from "./BlogContent";
+import BlogStickyBox from "./BlogStickyBox";
 import Navigation from "@/components/Navigation";
 import TopBanner from "@/components/TopBanner";
 import Footer from "@/components/Footer";
@@ -149,10 +150,13 @@ export default async function BlogPostPage({ params }: Props) {
         </h1>
       </header>
 
-      {/* Post content */}
-      <article className="max-w-3xl mx-auto px-4 pb-12">
-        <BlogContent content={content} />
-      </article>
+      {/* Post content + sticky sidebar */}
+      <div className="max-w-5xl mx-auto px-4 pb-12 flex gap-10 items-start">
+        <article className="flex-1 min-w-0">
+          <BlogContent content={content} />
+        </article>
+        <BlogStickyBox category={post.category} />
+      </div>
 
       {/* Shop CTA */}
       <section className="max-w-3xl mx-auto px-4 pb-10">
