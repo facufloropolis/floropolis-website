@@ -1,0 +1,12 @@
+⚠️ PRODUCTION WORKING DIRECTORY ⚠️
+
+This is the ONLY active Floropolis website directory.
+
+Path: /Users/facu/Desktop/floropolis-upgrade
+Repository: https://github.com/facufloropolis/floropolis-website.git
+Latest: 39608867 - fix: update ecommerce links with correct UTM tracking
+
+DO NOT DELETE THIS DIRECTORY.
+
+All old versions archived in:
+/Users/facu/Desktop/FLOROPOLIS_ARCHIVE_OLD_VERSIONS/

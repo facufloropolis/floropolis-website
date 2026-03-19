@@ -3,14 +3,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ShoppingBag } from 'lucide-react'
+import { Menu, X, ShoppingBag, User } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import HeaderSearch from '@/components/HeaderSearch'
 import { getItemCount } from '@/lib/quote-cart'
+import { createClient } from '@/lib/supabase/client'
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -18,6 +20,17 @@ export default function Navigation() {
     updateCount();
     window.addEventListener('quote-cart-updated', updateCount);
     return () => window.removeEventListener('quote-cart-updated', updateCount);
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      setIsSignedIn(!!data.session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsSignedIn(!!session);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
@@ -72,14 +85,13 @@ export default function Navigation() {
             <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
               Free Sample Box
             </Link>
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-400 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
+            <Link
+              href={isSignedIn ? "/account" : "/auth/login"}
+              className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
             >
-              Client Login
-            </a>
+              <User className="w-3.5 h-3.5" />
+              {isSignedIn ? "Account" : "Sign In"}
+            </Link>
           </div>
 
           {/* Mobile: search + cart + menu button */}
@@ -151,15 +163,13 @@ export default function Navigation() {
             >
               Shop
             </Link>
-            <a
-              href="https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={isSignedIn ? "/account" : "/auth/login"}
               className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Client Login →
-            </a>
+              {isSignedIn ? "My Account →" : "Sign In →"}
+            </Link>
           </div>
         )}
       </div>
