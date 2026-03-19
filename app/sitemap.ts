@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllSlugs } from "@/lib/data/product-helpers";
-import { getAllBlogSlugs } from "@/lib/data/blog-posts";
+import { blogPosts } from "@/lib/data/blog-posts";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.floropolis.com";
 
@@ -37,10 +37,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  // Blog posts
-  const blogPages: MetadataRoute.Sitemap = getAllBlogSlugs().map((slug) => ({
-    url: `${BASE}/blog/${slug}`,
-    lastModified: now,
+  // Blog posts — use actual publication date for accurate lastModified
+  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${BASE}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
