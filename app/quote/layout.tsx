@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Request a Wholesale Quote | Floropolis",
   description:
     "Build your custom wholesale flower quote. Add roses, tropicals, greens and specialty stems. Farm-direct from Ecuador. Response within 1 hour.",
+  alternates: { canonical: 'https://www.floropolis.com/quote' },
   openGraph: {
     title: "Request a Wholesale Quote | Floropolis",
     description:
