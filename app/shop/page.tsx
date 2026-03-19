@@ -13,7 +13,6 @@ import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { getEarliestDeliveryDate, formatDeliveryDate } from "@/lib/delivery-dates";
 
 type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
@@ -893,8 +892,6 @@ function ShopPageContent() {
           </div>
         </>
       )}
-
-      <WhatsAppWidget />
 
       {/* Client Login — fixed bottom-right, above WhatsApp */}
       <a
