@@ -1017,18 +1017,19 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
         {!group.hasPriceIssue && group.minPrice > 0 && (
           <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
         )}
-        <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+        {/* EXP-033: Delivery date more prominent — decision signal for event florists */}
+        <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
           {group.tier === "T1" || group.tier === "T2" ? (
-            <span className="inline-flex items-center gap-0.5 text-emerald-600 font-medium">
+            <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
               In Stock
             </span>
           ) : (
-            <span className="text-amber-600 font-medium">Pre-Order</span>
+            <span className="text-amber-600 font-semibold">Pre-Order</span>
           )}
-          <span>· {formatDeliveryDate(earliestDate)}</span>
+          <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
           {group.variantCount > 1 && (
-            <span>· {group.variantCount} options</span>
+            <span className="text-slate-400">· {group.variantCount} options</span>
           )}
         </p>
         <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
