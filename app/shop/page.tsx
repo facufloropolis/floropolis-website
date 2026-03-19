@@ -712,8 +712,7 @@ function ShopPageContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            {/* Mobile quick-filter chips — visible below lg (where sidebar is hidden) */}
-            {/* Row 0: Availability + quick toggles */}
+            {/* Mobile quick-filter chips — single scrollable row (saves ~52px vs 2 rows) */}
             <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide -mx-1 px-1">
               <button
                 type="button"
@@ -743,9 +742,8 @@ function ShopPageContent() {
               >
                 Bestsellers
               </button>
-            </div>
-            {/* Row 1: Category chips */}
-            <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide -mx-1 px-1">
+              {/* Separator */}
+              <span className="flex-none w-px bg-slate-200 mx-0.5 self-stretch" aria-hidden />
               {["Rose", "Tropicals", "Greens & Foliage", "Delphinium", "Ranunculus", "Anemone", "Hydrangea"].map((cat) => (
                 <button
                   key={cat}
