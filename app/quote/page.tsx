@@ -649,14 +649,16 @@ export default function QuotePage() {
                   </div>
                 </div>
 
-                {/* Shipping address — required for new clients */}
+                {/* EXP-036: Shipping address optional — Facu collects on callback call */}
                 {!isExistingClient && (
                   <div className="space-y-3 pt-2 border-t border-slate-200">
-                    <p className="text-xs font-semibold text-slate-700">Shipping Address *</p>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-700">Shipping Address <span className="text-slate-400 font-normal">(optional)</span></p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">We'll confirm your shipping details when we call to finalize your order.</p>
+                    </div>
                     <div>
                       <input
                         name="shipping_address"
-                        required
                         className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                         placeholder="Street address"
                       />
@@ -665,7 +667,6 @@ export default function QuotePage() {
                       <div>
                         <input
                           name="shipping_city"
-                          required
                           className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                           placeholder="City"
                         />
@@ -673,7 +674,6 @@ export default function QuotePage() {
                       <div>
                         <select
                           name="shipping_state"
-                          required
                           className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-700"
                           defaultValue=""
                         >
@@ -734,7 +734,6 @@ export default function QuotePage() {
                       <div>
                         <input
                           name="shipping_zip"
-                          required
                           className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                           placeholder="ZIP"
                           pattern="[0-9]{5}"
