@@ -12,8 +12,21 @@ import { usePathname } from "next/navigation";
 import { pushEvent } from "@/lib/gtm";
 
 const WA_NUMBER = "17869308463";
-const WA_MESSAGE = "Hi! I have a question about your wholesale flowers.";
-const WA_URL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`;
+
+// Context-aware messages make it easier for Facu to qualify leads immediately
+function getWhatsAppMessage(pathname: string | null): string {
+  if (!pathname) return "Hi! I have a question about your wholesale flowers.";
+  if (pathname.startsWith("/sample-box")) return "Hi! I'd like to know more about your free sample box.";
+  if (pathname.startsWith("/blog")) return "Hi! I read your blog and I'm interested in ordering wholesale flowers.";
+  if (pathname === "/shop/roses") return "Hi! I'm interested in your wholesale roses from Ecuador.";
+  if (pathname === "/shop/tropicals") return "Hi! I'm interested in wholesale tropical flowers.";
+  if (pathname === "/shop/greens") return "Hi! I'm interested in wholesale greenery and foliage.";
+  if (pathname === "/shop/combo-boxes") return "Hi! I'm interested in your mixed flower combo boxes.";
+  if (pathname.startsWith("/shop")) return "Hi! I'm browsing your flower catalog and have a question.";
+  if (pathname === "/about") return "Hi! I'm a florist and I'm interested in becoming a Floropolis client.";
+  if (pathname === "/how-it-works") return "Hi! I'm learning about Floropolis and have some questions.";
+  return "Hi! I have a question about your wholesale flowers.";
+}
 
 export default function WhatsAppCTA() {
   const pathname = usePathname();
@@ -26,10 +39,13 @@ export default function WhatsAppCTA() {
   const shopSegment = pathname?.startsWith("/shop/") ? (pathname.split("/")[2] ?? "") : "";
   if (shopSegment && !CATEGORY_SLUGS.includes(shopSegment)) return null;
 
+  const waMessage = getWhatsAppMessage(pathname);
+  const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waMessage)}`;
+
   function handleClick() {
     pushEvent("whatsapp_sticky_click", { page: pathname ?? "/" });
     setTimeout(() => {
-      window.open(WA_URL, "_blank", "noopener,noreferrer");
+      window.open(waUrl, "_blank", "noopener,noreferrer");
     }, 150);
   }
 
