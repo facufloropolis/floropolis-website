@@ -283,6 +283,8 @@ export default function ProductDetailPage({
     deliveryDates[0] ? toISODate(deliveryDates[0]) : "",
   );
   const [justAdded, setJustAdded] = useState(false);
+  // EXP-028: Box quantity selector — florists often need 2-5 boxes, reduce quote-page round-trip
+  const [boxQty, setBoxQty] = useState(1);
 
   // Track product view on mount
   useEffect(() => {
@@ -366,7 +368,7 @@ export default function ProductDetailPage({
       vendor: currentVariant.vendor || "",
       price: currentVariant.price ?? 0,
       deal_price: currentVariant.deal_price ?? undefined,
-      quantity: 1,
+      quantity: boxQty,
       units_per_box: currentVariant.units_per_box || 0,
       box_type: currentVariant.box_type || "Standard",
       unit: currentVariant.unit || "Stem",
@@ -701,6 +703,39 @@ export default function ProductDetailPage({
                 tier={bestTier}
               />
             </div>
+
+            {/* EXP-028: Box quantity selector — reduces quote-page round-trip for multi-box orders */}
+            {isPriceAvailable && (
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-sm font-semibold text-slate-700">Boxes:</span>
+                <div className="flex items-center rounded-lg border border-slate-300 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setBoxQty((q) => Math.max(1, q - 1))}
+                    className="px-3 py-2 text-slate-600 hover:bg-slate-100 transition-colors font-bold text-base leading-none"
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <span className="px-4 py-2 text-sm font-bold text-slate-900 min-w-[2.5rem] text-center border-x border-slate-300">
+                    {boxQty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setBoxQty((q) => Math.min(20, q + 1))}
+                    className="px-3 py-2 text-slate-600 hover:bg-slate-100 transition-colors font-bold text-base leading-none"
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+                {totalStems != null && (
+                  <span className="text-xs text-slate-500">
+                    = {(totalStems * boxQty).toLocaleString()} stems total
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Add to Quote — PROMINENT */}
             <div className="mt-4 space-y-3">
