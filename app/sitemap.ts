@@ -18,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/quote`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/wholesale-delphiniums`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/wholesale-ranunculus`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/wholesale-anemone`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
   ];
 
