@@ -7,7 +7,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
-import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 // US states only (50 states + DC) – value = abbreviation for sheet
 const US_STATES = [

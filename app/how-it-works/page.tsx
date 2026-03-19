@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import Link from "next/link";
 import { Search, Package, Plane, Truck } from "lucide-react";
-import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 export default function HowItWorks() {
   return (

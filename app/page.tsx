@@ -6,7 +6,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ChevronDown, ArrowRight } from "lucide-react";
-import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { getFeaturedProducts } from "@/lib/data/product-helpers";
 import { getProductImage } from "@/lib/product-images";
 

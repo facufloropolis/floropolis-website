@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { pushEvent, handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { FARMS, SUSTAINABILITY_RECEIPTS, TEAM } from "@/lib/about-farms";
 import ProcessFlow from "@/components/about/ProcessFlow";
 import FarmMap from "@/components/about/FarmMap";
