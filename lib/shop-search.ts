@@ -49,7 +49,7 @@ export function searchCategories(query: string): ProductCategory[] {
 /** Dedicated category page when one exists; otherwise /shop?category= */
 export function getCategoryPageUrl(category: ProductCategory): string {
   switch (category) {
-    case "Roses":
+    case "Rose":
       return "/shop/roses";
     case "Tropicals":
       return "/shop/tropicals";
