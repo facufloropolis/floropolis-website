@@ -6,7 +6,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { handleOutboundClick, CTA_EVENTS } from "@/lib/gtm";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
   getRosesByTier,
   type RoseVariety,
@@ -36,13 +36,6 @@ const TIER_LABELS: Record<RoseTier, { title: string; subtitle: string }> = {
 export default function ShopRosesPage() {
   const { value, popular, premium, assorted } = getRosesByTier();
   const varietyCount = value.length + popular.length + premium.length + assorted.length;
-
-  const trackOrderClick = (e: React.MouseEvent<HTMLAnchorElement>, name: string) => {
-    handleOutboundClick(e, CTA_EVENTS.valentine_shop_click, {
-      cta_location: "shop_roses_page",
-      product_type: name,
-    });
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -98,10 +91,10 @@ export default function ShopRosesPage() {
         </div>
 
         {/* Tiers */}
-        <TierSection roses={value} tier="value" onOrderClick={trackOrderClick} />
-        <TierSection roses={popular} tier="popular" onOrderClick={trackOrderClick} />
-        <TierSection roses={premium} tier="premium" onOrderClick={trackOrderClick} />
-        <TierSection roses={assorted} tier="assorted" onOrderClick={trackOrderClick} />
+        <TierSection roses={value} tier="value" />
+        <TierSection roses={popular} tier="popular" />
+        <TierSection roses={premium} tier="premium" />
+        <TierSection roses={assorted} tier="assorted" />
 
         {/* FAQ — SEO content */}
         <section className="mt-16 mb-10 max-w-3xl mx-auto">
@@ -136,11 +129,9 @@ export default function ShopRosesPage() {
 function TierSection({
   roses,
   tier,
-  onOrderClick,
 }: {
   roses: RoseVariety[];
   tier: RoseTier;
-  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
 }) {
   if (roses.length === 0) return null;
 
@@ -154,20 +145,14 @@ function TierSection({
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {roses.map((rose) => (
-          <RoseCard key={rose.id} rose={rose} onOrderClick={onOrderClick} />
+          <RoseCard key={rose.id} rose={rose} />
         ))}
       </div>
     </section>
   );
 }
 
-function RoseCard({
-  rose,
-  onOrderClick,
-}: {
-  rose: RoseVariety;
-  onOrderClick: (e: React.MouseEvent<HTMLAnchorElement>, name: string) => void;
-}) {
+function RoseCard({ rose }: { rose: RoseVariety }) {
   const detailProduct = getProductBySlug(rose.id);
   const orderUrl = detailProduct ? `/shop/${rose.id}` : `/shop?category=Rose`;
 
@@ -200,6 +185,7 @@ function RoseCard({
         <p className="text-xs text-slate-500">{rose.stemsPerBunch} stems per bunch</p>
         <Link
           href={orderUrl}
+          onClick={() => pushEvent(CTA_EVENTS.product_click, { product_name: rose.name, product_category: "Rose", cta_location: "roses_page" })}
           className="mt-3 block w-full text-center bg-emerald-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
         >
           View & Add to Quote
