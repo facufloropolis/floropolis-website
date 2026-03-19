@@ -9,11 +9,11 @@ import { CheckCircle, ArrowRight, Truck, Leaf, Package } from "lucide-react";
 export const metadata: Metadata = {
   title: "Wholesale Delphiniums — Farm-Direct | Floropolis",
   description:
-    "Professional florists: farm-direct delphiniums at $0.89–$1.10/stem. 53+ varieties. Free delivery. 50% below major B2B suppliers. No minimums.",
+    "Professional florists: farm-direct delphiniums from $1.22/stem. 53+ varieties. Free delivery. 31% below major B2B suppliers. No minimums.",
   openGraph: {
     title: "Wholesale Delphiniums — Farm-Direct from Ecuador | Floropolis",
     description:
-      "53 delphinium varieties. $0.89–$1.10/stem delivered. 50% below PetalJet and BloomsByTheBox. No minimums.",
+      "53 delphinium varieties. From $1.22/stem delivered. 31% below PetalJet and BloomsByTheBox. No minimums.",
     images: ["/images/shop/delphinium/sky-waltz-light-blue.png"],
   },
 };
@@ -84,7 +84,7 @@ export default function WholesaleDelphiniums() {
           <div className="inline-block bg-emerald-50 border border-emerald-200 rounded-2xl px-8 py-5 mb-8">
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
               <div className="text-center">
-                <p className="text-3xl font-bold text-emerald-700">$0.89–$1.10</p>
+                <p className="text-3xl font-bold text-emerald-700">From $1.22</p>
                 <p className="text-sm text-slate-600">per stem · delivered</p>
               </div>
               <div className="hidden sm:block w-px h-10 bg-emerald-200" />
@@ -94,7 +94,7 @@ export default function WholesaleDelphiniums() {
               </div>
               <div className="hidden sm:block w-px h-10 bg-emerald-200" />
               <div className="text-center">
-                <p className="text-3xl font-bold text-emerald-700">50%</p>
+                <p className="text-3xl font-bold text-emerald-700">31%</p>
                 <p className="text-sm text-slate-600">below market</p>
               </div>
             </div>
@@ -174,8 +174,8 @@ export default function WholesaleDelphiniums() {
           </p>
           <p className="text-slate-600 leading-relaxed mb-8">
             Most florists pay $1.78 to $2.50 per stem when buying from B2B wholesale distributors.
-            At Floropolis, our delphiniums start at $0.89 per stem — farm-direct from Ecuador, with
-            delivery already included in the price.
+            At Floropolis, our delphiniums start at $1.22 per stem — farm-direct with delivery
+            already included in the price.
           </p>
 
           <h2 className="text-2xl font-bold text-slate-900 mb-4">
@@ -195,8 +195,8 @@ export default function WholesaleDelphiniums() {
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center py-2 border-b border-emerald-200">
-                <span className="text-slate-600">Floropolis (100 stems × $0.89)</span>
-                <span className="font-bold text-emerald-700">~$89</span>
+                <span className="text-slate-600">Floropolis (100 stems × $1.22, delivery included)</span>
+                <span className="font-bold text-emerald-700">~$122</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-emerald-200">
                 <span className="text-slate-600">Typical B2B wholesale (same 100 stems)</span>
@@ -204,7 +204,7 @@ export default function WholesaleDelphiniums() {
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="font-semibold text-emerald-700">Your savings per 100-stem box</span>
-                <span className="font-bold text-emerald-700">$89–$106</span>
+                <span className="font-bold text-emerald-700">$56–$73</span>
               </div>
             </div>
           </div>
@@ -274,7 +274,7 @@ export default function WholesaleDelphiniums() {
             Ready to order farm-direct delphiniums?
           </h2>
           <p className="text-emerald-200 mb-6 text-sm">
-            53 varieties · Starting at $0.89/stem delivered · No minimums
+            53 varieties · From $1.22/stem delivered · No minimums
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link

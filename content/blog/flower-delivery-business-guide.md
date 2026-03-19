@@ -83,7 +83,7 @@ For a delivery business doing 15-25 arrangements per week:
 |--------|-----------|---------------|
 | Roses (mixed colors) | 60 stems | $55 |
 | Eucalyptus | 30 stems | $19.50 |
-| Seasonal focal (ranunculus/delphinium) | 30 stems | $28-52 |
+| Seasonal focal (ranunculus/[delphinium](/wholesale-delphiniums)) | 30 stems | $28-52 |
 | Filler (baby's breath/ruscus) | 25 stems | $11-15 |
 | **Weekly total** | **145 stems** | **$113-141** |
 

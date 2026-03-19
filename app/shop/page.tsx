@@ -804,6 +804,23 @@ function ShopPageContent() {
               )}
             </div>
 
+            {/* EXP-044: Category context header — when single category is filtered, show "Showing: [Category] · N varieties" */}
+            {categoryFilter.length === 1 && !searchQuery.trim() && (
+              <div className="flex items-center justify-between mb-3 px-3 py-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                <p className="text-sm font-semibold text-emerald-800">
+                  Showing: <span className="font-bold">{categoryFilter[0]}</span>
+                  <span className="font-normal text-emerald-600 ml-1">· {sortedGroups.length} {sortedGroups.length !== 1 ? "varieties" : "variety"}</span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setCategoryFilter([])}
+                  className="text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+                >
+                  Show all →
+                </button>
+              </div>
+            )}
+
             {/* Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
               <p className="text-sm text-slate-600 font-medium">

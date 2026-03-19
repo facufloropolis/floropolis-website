@@ -55,7 +55,7 @@ These elevate a wedding from "nice" to "stunning." Higher price point, but clien
 |---------|----------------|-----------|-------------|-------------|
 | Ranunculus | $1.74/stem | 10-12 days | Dec-May | Bridal bouquets, centerpieces |
 | Anemone | $1.30/stem | 7-9 days | Nov-April | Accent flowers, bouquets |
-| Delphinium | $0.94/stem | 8-10 days | Year-round | Height, drama, blue accent |
+| [Delphinium](/wholesale-delphiniums) | $0.94/stem | 8-10 days | Year-round | Height, drama, blue accent |
 | Peony | Market price | 5-7 days | April-June | #1 requested wedding flower |
 | Garden Rose | Market price | 7-10 days | May-Oct | "Peony alternative" year-round |
 
