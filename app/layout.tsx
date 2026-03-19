@@ -13,12 +13,12 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Floropolis | Farm-Direct Wholesale Flowers from Ecuador & Colombia',
-  description: 'Premium wholesale roses, tropicals, and specialty stems shipped direct from Ecuador farms in 4 days. Farm-direct quality, 5-7 days fresher.',
-  keywords: 'wholesale flowers, farm direct flowers, Ecuador roses, Colombia flowers, wholesale florist, bulk flowers, premium roses',
+  title: 'Farm-Direct Wholesale Flowers — Roses, Tropicals & Specialty | Floropolis',
+  description: 'Buy wholesale flowers direct from Ecuador farms — 270+ varieties including roses, tropicals, greens & specialty stems. 4-day delivery, free shipping, no minimum order.',
+  keywords: 'wholesale flowers, farm direct flowers, Ecuador roses, wholesale roses, wholesale florist, bulk flowers, tropical flowers wholesale',
   openGraph: {
-    title: 'Floropolis | Farm-Direct Wholesale Flowers',
-    description: 'Premium wholesale flowers delivered in 4 days from Ecuador farms. No middlemen, transparent pricing.',
+    title: 'Farm-Direct Wholesale Flowers — Roses, Tropicals & Specialty | Floropolis',
+    description: 'Buy wholesale flowers direct from Ecuador farms. 270+ varieties, 4-day delivery, free shipping, no minimum.',
     url: 'https://www.floropolis.com',
     siteName: 'Floropolis',
     type: 'website',
