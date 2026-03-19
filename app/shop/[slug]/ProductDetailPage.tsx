@@ -455,7 +455,7 @@ export default function ProductDetailPage({
               </div>
             ) : (
               <>
-                <div className="relative w-full aspect-square rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+                <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
                   <Image
                     src={images[selectedImageIndex] ?? images[0]}
                     alt={displayName}
