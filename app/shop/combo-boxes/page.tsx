@@ -181,6 +181,29 @@ export default function ShopComboBoxesPage() {
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
+
+        {/* FAQ — content matches FAQPage JSON-LD schema in layout.tsx for Google rich results */}
+        <section className="mt-16 mb-10 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-5 text-sm">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">What&apos;s in a combo box?</h3>
+              <p className="text-slate-600">Combo boxes are curated mixes of tropical flowers and greens from Magic Flowers in Ecuador. Each box has a set composition — for example, the Fiesta Box includes a mix of heliconias, gingers, anthuriums, and tropical foliage. Exact variety details are listed on each product page.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Can I customize what&apos;s in my combo box?</h3>
+              <p className="text-slate-600">Yes — you can add a note when requesting your quote specifying variety preferences. For large orders, we can work with Magic Flowers to customize the composition. Add your preferences in the quote notes field.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How many stems are in a combo box?</h3>
+              <p className="text-slate-600">Stem counts vary by box. Quarter boxes (QB) typically contain 41–113 stems depending on the mix. Each product page shows the total stem count so you can compare value before ordering.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">How long does combo box delivery take?</h3>
+              <p className="text-slate-600">Farm-direct from Ecuador to your door in 4 days via FedEx Priority. Combo boxes ship direct from Magic Flowers with no warehouse stops.</p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
