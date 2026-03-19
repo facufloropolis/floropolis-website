@@ -117,11 +117,11 @@ export default function Home() {
           {/* Category quick-links */}
           <div className="flex flex-wrap gap-2 justify-center mb-6">
             {[
+              { label: "🌸 Spring Collection", href: "/shop/spring-collection" },
               { label: "Roses", href: "/shop/roses" },
               { label: "Tropicals", href: "/shop/tropicals" },
               { label: "Ranunculus", href: "/shop?category=Ranunculus" },
               { label: "Greens", href: "/shop/greens" },
-              { label: "Hydrangeas", href: "/shop?category=Hydrangea" },
               { label: "Anemones", href: "/shop?category=Anemone" },
               { label: "All Flowers →", href: "/shop" },
             ].map(({ label, href }) => (
