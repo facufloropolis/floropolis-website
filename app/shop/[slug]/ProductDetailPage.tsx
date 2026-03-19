@@ -156,7 +156,7 @@ function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDat
                 fill
                 className="object-contain"
                 sizes="64px"
-                unoptimized={bImg.startsWith("http")}
+                unoptimized
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -460,9 +460,7 @@ export default function ProductDetailPage({
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-contain"
-                    unoptimized={(
-                      images[selectedImageIndex] ?? images[0]
-                    ).startsWith("http")}
+                    unoptimized
                   />
                   {hasDeal &&
                     (product.deal_label || currentVariant.deal_label) && (
@@ -490,7 +488,7 @@ export default function ProductDetailPage({
                           fill
                           className="object-contain"
                           sizes="64px"
-                          unoptimized={src.startsWith("http")}
+                          unoptimized
                         />
                       </button>
                     ))}
@@ -873,7 +871,7 @@ export default function ProductDetailPage({
                           fill
                           className="object-contain group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-                          unoptimized={img.startsWith("http")}
+                          unoptimized
                         />
                         {hasDealRel && p.deal_label && (
                           <span className="absolute top-2 left-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 shadow">

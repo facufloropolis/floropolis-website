@@ -681,7 +681,7 @@ function ShopPageContent() {
                         fill
                         className="object-contain group-hover/pop:scale-105 transition-transform"
                         sizes="192px"
-                        unoptimized={imgSrc.startsWith("http")}
+                        unoptimized
                       />
                       {group.bestseller && (
                         <span className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
@@ -991,7 +991,7 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
           fill
           className="object-contain group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          unoptimized={imgSrc.startsWith("http")}
+          unoptimized
         />
         {group.bestseller && (
           <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
