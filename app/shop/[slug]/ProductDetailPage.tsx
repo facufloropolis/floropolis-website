@@ -549,13 +549,14 @@ export default function ProductDetailPage({
                   <span className="text-xs text-slate-400">Contact us for pricing</span>
                 </div>
               )}
-              {totalStems != null && currentVariant.unit !== "Box" && (
+              {totalStems != null && (
                 <p className="mt-1 text-sm text-slate-600">
-                  {totalStems.toLocaleString()} stems per{" "}
-                  {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type} box
+                  {currentVariant.unit === "Box"
+                    ? `${totalStems.toLocaleString()} stems in this box`
+                    : `${totalStems.toLocaleString()} stems per ${BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type} box`}
                 </p>
               )}
-              {effectivePrice != null && totalStems != null && currentVariant.unit !== "Box" && (
+              {effectivePrice != null && totalStems != null && (
                 <p className="mt-0.5 text-sm font-semibold text-slate-500">
                   ≈ ${(effectivePrice * totalStems).toFixed(2)} for this {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type}
                 </p>
