@@ -36,25 +36,26 @@ export default function Home() {
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-3 sm:mb-4 tracking-tight drop-shadow-2xl">
             Farm-Direct Wholesale Flowers — 270+ Varieties
           </h1>
+          {/* EXP-036: Stronger wholesale signal — "no login required" is #1 differentiator vs Koronet */}
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 font-light mb-4 sm:mb-6 max-w-2xl mx-auto">
-            Roses, tropicals, specialty stems, and greens. Farm-direct from Ecuador in 4 days.
+            270+ varieties with transparent per-stem pricing. No login required to see prices.
           </p>
+          {/* EXP-035: Flip CTA hierarchy — catalog/prices is primary for florists in discovery mode, sample box is hesitation handler */}
           <div className="flex gap-3 justify-center flex-wrap">
             <Link
-              href="/sample-box"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
-              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "hero" })}
-            >
-              Try Free Sample Box
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            {/* EXP-029: "See Flowers & Prices" vs "Browse the Catalog" — more specific, highlights key draw */}
-            <Link
               href="/shop"
-              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all inline-flex items-center gap-2"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "hero" })}
             >
               See Flowers &amp; Prices
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/sample-box"
+              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold rounded-full hover:bg-white/10 backdrop-blur hover:scale-105 transition-all inline-flex items-center gap-2"
+              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "hero" })}
+            >
+              Try Free Sample Box
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -88,32 +89,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sample Box Banner — conversion bridge for first-time visitors */}
-      <section className="bg-emerald-900 py-4 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6">
-          <div className="flex items-center gap-3 text-center sm:text-left">
-            <span className="text-2xl hidden sm:block">📦</span>
-            <div>
-              <p className="text-white font-semibold text-sm sm:text-base">Not ready to commit? Try a free sample box first.</p>
-              <p className="text-emerald-200 text-xs sm:text-sm">No credit card · Free shipping · 11 florists already tried it this week</p>
-            </div>
-          </div>
-          <Link
-            href="/sample-box"
-            className="bg-white text-emerald-900 px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap hover:bg-emerald-50 transition-colors flex-shrink-0"
-            onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "homepage_strip" })}
-          >
-            Get Free Sample Box →
-          </Link>
-        </div>
-      </section>
-
       {/* Shop Promo Section */}
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-50 to-green-50">
         <div className="max-w-6xl mx-auto">
+          {/* EXP-035: Stronger B2B headline — lead with transparent pricing signal */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">Roses, Tropicals & Spring Flowers</h2>
-            <p className="text-base sm:text-xl text-slate-600">Farm-direct from Ecuador — shipping included, transparent pricing</p>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3">Wholesale Pricing — Transparent, No Login Required</h2>
+            <p className="text-base sm:text-xl text-slate-600">Roses, tropicals & specialty stems from Ecuador — shipping included in every price</p>
           </div>
 
           {/* Category quick-links */}
@@ -190,6 +172,26 @@ export default function Home() {
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* EXP-037: Sample Box Banner moved below product grid — hesitation handler works after product exposure, not before */}
+      <section className="bg-emerald-900 py-4 px-6">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <span className="text-2xl hidden sm:block">📦</span>
+            <div>
+              <p className="text-white font-semibold text-sm sm:text-base">Not ready to commit? Try a free sample box first.</p>
+              <p className="text-emerald-200 text-xs sm:text-sm">No credit card · Free shipping · 11 florists already tried it this week</p>
+            </div>
+          </div>
+          <Link
+            href="/sample-box"
+            className="bg-white text-emerald-900 px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap hover:bg-emerald-50 transition-colors flex-shrink-0"
+            onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "homepage_strip" })}
+          >
+            Get Free Sample Box →
+          </Link>
         </div>
       </section>
 
