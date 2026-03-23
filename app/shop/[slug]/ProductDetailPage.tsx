@@ -47,12 +47,14 @@ function DeliveryDateChips({
   onSelect: (iso: string) => void;
   tier: string;
 }) {
+  // EXP-047: Collapsed by default — show selected date as single row, expand to pick a different date
+  const [expanded, setExpanded] = useState(false);
+
   // Group dates by week (Mon-Sun)
   const weeks: { weekLabel: string; dates: Date[] }[] = [];
   for (const d of dates) {
-    // Week label = "Week of Mon DD"
     const monday = new Date(d);
-    monday.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // roll back to Monday
+    monday.setDate(d.getDate() - ((d.getDay() + 6) % 7));
     const label = monday.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     const last = weeks[weeks.length - 1];
     if (last && last.weekLabel === label) {
@@ -61,9 +63,31 @@ function DeliveryDateChips({
       weeks.push({ weekLabel: label, dates: [d] });
     }
   }
-  // Only show first 4 weeks
   const visibleWeeks = weeks.slice(0, 4);
   const isFast = tier === "T1" || tier === "T2";
+
+  // Format the currently selected date for the collapsed row
+  const selectedLabel = selected
+    ? new Date(selected + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    : "Not set";
+
+  if (!expanded) {
+    return (
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+        <div>
+          <p className="text-xs text-slate-500">{isFast ? "In stock · ships ~4 days" : "Pre-order · ships ~14 days"}</p>
+          <p className="text-sm font-semibold text-slate-900">{selectedLabel}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-2"
+        >
+          Change date
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -82,7 +106,7 @@ function DeliveryDateChips({
                 <button
                   key={iso}
                   type="button"
-                  onClick={() => onSelect(iso)}
+                  onClick={() => { onSelect(iso); setExpanded(false); }}
                   className={`flex flex-col items-center px-3 py-2 rounded-xl border text-xs font-medium transition-colors min-w-[60px] ${
                     isSelected
                       ? "border-emerald-600 bg-emerald-50 text-emerald-800"
@@ -97,9 +121,18 @@ function DeliveryDateChips({
           </div>
         </div>
       ))}
-      <p className="text-xs text-slate-400">
-        {isFast ? "In stock · ships in ~4 days" : "Pre-order · ships in ~14 days"}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-400">
+          {isFast ? "In stock · ships in ~4 days" : "Pre-order · ships in ~14 days"}
+        </p>
+        <button
+          type="button"
+          onClick={() => setExpanded(false)}
+          className="text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2"
+        >
+          Collapse ↑
+        </button>
+      </div>
     </div>
   );
 }
@@ -383,8 +416,9 @@ export default function ProductDetailPage({
       stem_length: selectedLength || "default",
       box_type: currentVariant.box_type || "Standard",
     });
+    // EXP-046: Persistent success banner — no auto-dismiss, user navigates or closes manually
+    // Previously 2s auto-dismiss caused "View Quote →" to vanish before many users saw it
     setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 2000);
   };
 
   // Sticky mobile CTA — show when main Add to Quote button is off-screen (EXP-024)
@@ -741,24 +775,32 @@ export default function ProductDetailPage({
 
             {/* Add to Quote — PROMINENT */}
             <div className="mt-4 space-y-3">
-              {/* Success confirmation banner */}
+              {/* EXP-046: Persistent success banner — stays until user navigates or closes (was 2s auto-dismiss) */}
               {justAdded && (
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3 animate-in slide-in-from-top">
                   <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
                     <Check className="w-5 h-5 text-white" />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-emerald-800">Added to your quote!</p>
-                    <p className="text-xs text-emerald-600">
+                    <p className="text-xs text-emerald-600 truncate">
                       {displayName} · {selectedLength || "Standard"} · {deliveryFrom ? formatDeliveryDate(new Date(deliveryFrom + "T12:00:00")) : ""}
                     </p>
                   </div>
                   <Link
                     href="/quote"
-                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 underline flex-shrink-0"
+                    className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg flex-shrink-0 transition-colors"
                   >
                     View Quote →
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => setJustAdded(false)}
+                    className="text-emerald-400 hover:text-emerald-600 flex-shrink-0 p-1"
+                    aria-label="Dismiss"
+                  >
+                    ×
+                  </button>
                 </div>
               )}
               {isPriceAvailable ? (

@@ -127,6 +127,14 @@ export default function Navigation() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-3 border-t border-slate-200">
+            {/* EXP-045: Shop first — consistent with hero CTA hierarchy (catalog/prices is primary for florists) */}
+            <Link
+              href="/shop"
+              className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              See Flowers &amp; Prices
+            </Link>
             <Link
               href="/sample-box"
               className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium"
@@ -154,13 +162,6 @@ export default function Navigation() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us
-            </Link>
-            <Link
-              href="/shop"
-              className="block mx-4 px-4 py-3 text-center bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Shop
             </Link>
             {isSignedIn ? (
               <Link
