@@ -83,7 +83,7 @@ export default function Navigation() {
               Free Sample Box
             </Link>
             <Link
-              href={isSignedIn ? "/account" : "/shop"}
+              href={isSignedIn ? "/account" : "https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"}
               className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
             >
               <User className="w-3.5 h-3.5" />
@@ -154,7 +154,7 @@ export default function Navigation() {
               Shop
             </Link>
             <Link
-              href={isSignedIn ? "/account" : "/shop"}
+              href={isSignedIn ? "/account" : "https://eshops.kometsales.com/762172?utm_source=Website&utm_campaign=Shop-website"}
               className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
               onClick={() => setMobileMenuOpen(false)}
             >
