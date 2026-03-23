@@ -82,13 +82,22 @@ export default function Navigation() {
             <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
               Free Sample Box
             </Link>
-            <Link
-              href={isSignedIn ? "/account" : "https://eshops.kometsales.com/762172/login?utm_source=floropolis&utm_medium=nav&utm_campaign=signin"}
-              className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
-            >
-              <User className="w-3.5 h-3.5" />
-              {isSignedIn ? "Account" : "Sign In"}
-            </Link>
+            {isSignedIn ? (
+              <Link href="/account" className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap">
+                <User className="w-3.5 h-3.5" />
+                Account
+              </Link>
+            ) : (
+              <a
+                href="https://eshops.kometsales.com/762172/login?utm_source=floropolis&utm_medium=nav&utm_campaign=signin"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
+              >
+                <User className="w-3.5 h-3.5" />
+                Sign In
+              </a>
+            )}
           </div>
 
           {/* Mobile: search + cart + menu button */}
@@ -153,13 +162,25 @@ export default function Navigation() {
             >
               Shop
             </Link>
-            <Link
-              href={isSignedIn ? "/account" : "https://eshops.kometsales.com/762172/login?utm_source=floropolis&utm_medium=nav&utm_campaign=signin"}
-              className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {isSignedIn ? "My Account →" : "Sign In →"}
-            </Link>
+            {isSignedIn ? (
+              <Link
+                href="/account"
+                className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                My Account →
+              </Link>
+            ) : (
+              <a
+                href="https://eshops.kometsales.com/762172/login?utm_source=floropolis&utm_medium=nav&utm_campaign=signin"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In →
+              </a>
+            )}
           </div>
         )}
       </div>
