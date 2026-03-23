@@ -476,8 +476,17 @@ function getCandidateKeys(variety: string, color: string): string[] {
   }
 
   // 14. Gypsophila tinted: "Tinted" + color → "tinted-{color}"
+  // DB colors don't always match file names — map known variants
   if (v === "tinted") {
     keys.push(`tinted-${c}`);
+    const tintedColorMap: Record<string, string> = {
+      blue: "tinted-light-blue",
+      brown: "tinted-mocca",
+      green: "tinted-apple-green",
+      pink: "tinted-light-pink",
+      red: "tinted-viva-magenta",
+    };
+    if (tintedColorMap[c]) keys.push(tintedColorMap[c]);
   }
 
   // 15. Scabiosa: "Focal Scoop" → "scabiosa-popsicle-focal" etc.
