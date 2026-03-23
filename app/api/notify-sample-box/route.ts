@@ -30,7 +30,7 @@ async function saveToSupabase(payload: SampleBoxPayload): Promise<{ id: number |
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         "Content-Type": "application/json",
-        Prefer: "return=representation",
+        Prefer: "return=headers-only",
       },
       body: JSON.stringify({
         customer_name: payload.name,
@@ -50,13 +50,13 @@ async function saveToSupabase(payload: SampleBoxPayload): Promise<{ id: number |
 
     if (!res.ok) {
       const text = await res.text();
-      // Table may not exist yet — log but don't fail
       console.warn("[Supabase] Sample box save:", res.status, text);
       return { id: null, error: text };
     }
 
-    const data = await res.json();
-    return { id: data[0]?.id ?? null, error: null };
+    const location = res.headers.get("location") || "";
+    const idMatch = location.match(/id=eq\.(\d+)/);
+    return { id: idMatch ? parseInt(idMatch[1], 10) : null, error: null };
   } catch (err) {
     console.error("[Supabase] Sample box exception:", err);
     return { id: null, error: String(err) };
