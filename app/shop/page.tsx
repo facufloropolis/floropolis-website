@@ -128,19 +128,15 @@ interface VarietyGroup {
   compareAtPrice: number | null; // market rate for strikethrough display
 }
 
-// Returns true if a product is available to show based on tier + available_from rules.
-// T1/T2: must have arrival_date >= today+5. Null = HIDE (no scheduled availability).
-// T3: passive catalog — null = SHOW (orderable on request). Past dates = HIDE (batch expired).
+// Returns true if a product is available to show based on tier + arrival_date rules.
+// T1/T2: arrival_date must be >= today+5. No date or too soon = HIDE.
+// T3: arrival_date must be >= today+14 AND price > 0. No date or too soon = HIDE.
 function isAvailable(p: Product): boolean {
-  if (p.tier === "T3") {
-    if (!p.available_from) return true; // T3 passive catalog: no date = always show
-    const daysUntil = Math.ceil((new Date(p.available_from).getTime() - Date.now()) / 86400000);
-    return daysUntil >= 14;
-  }
-  // T1, T2: must have a valid date >= 5 days out
-  if (!p.available_from) return false; // T1/T2 with no date = hide
+  if (!p.available_from) return false; // all tiers: no date = hide
+  if (!p.price || p.price <= 0) return false; // all tiers: no valid price = hide
   const daysUntil = Math.ceil((new Date(p.available_from).getTime() - Date.now()) / 86400000);
-  return daysUntil >= 5;
+  if (p.tier === "T3") return daysUntil >= 14;
+  return daysUntil >= 5; // T1, T2
 }
 
 function buildVarietyGroups(): VarietyGroup[] {
