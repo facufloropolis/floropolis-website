@@ -170,6 +170,11 @@ const IMAGE_MAP: Record<string, string> = {
   "sky-waltz-light-blue": "/images/shop/delphinium/sky-waltz-light-blue.png",
   "summer-skies": "/images/shop/delphinium/summer-skies.png",
   "pacific-assorted": "/images/shop/delphinium/summer-skies.png",
+  "pacific-summer-skies-light-blue": "/images/shop/delphinium/summer-skies.png",
+  // Larkspur color aliases (variety="Larkspur" + color → larkspur-{color})
+  "larkspur-pink": "/images/shop/delphinium/larkspur-pink-carmine.png",
+  "larkspur-purple": "/images/shop/delphinium/larkspur-quis-purple.png",
+  "larkspur-assorted": "/images/shop/delphinium/larkspur-quis-purple.png",
 
   // ── Ranunculus (11) ──
   "ranunculus-burgundy": "/images/shop/ranunculus/burgundy.png",
@@ -187,6 +192,8 @@ const IMAGE_MAP: Record<string, string> = {
   "ranunculus-white": "/images/shop/ranunculus/white.png",
   "ranunculus-yellow": "/images/shop/ranunculus/yellow.png",
   "ranunculus-assorted": "/images/shop/ranunculus/hot-pink.png",    // Assorted → hot-pink fallback
+  "ranunculus-light-pink": "/images/shop/ranunculus/pink.png",      // Light Pink → pink (for Bon Bon)
+  "bon-bon-light-pink": "/images/shop/ranunculus/pink.png",
 
   // ── Greens (21) ──
   "anglonema-tip-green": "/images/shop/greens/anglonema-tip-green.png",
@@ -219,6 +226,14 @@ const IMAGE_MAP: Record<string, string> = {
   "raphis-palm-green": "/images/shop/greens/raphis-palm-green.png",
   "schefflera-tip-green": "/images/shop/greens/schefflera-tip-green.png",
   "silver-dollar-green": "/images/shop/greens/silver-dollar-green.jpg",
+  // Color/variety aliases for greens with no dedicated image
+  "variegated-green": "/images/shop/greens/pandanus-variegated-green.jpg",
+  "tree-fern-assorted": "/images/shop/greens/lettuce-fern-green.jpg",   // fern family
+  "lemon-green": "/images/shop/greens/croton-tip-lemon-drop-green.png", // lemon in name
+  "white-green": "/images/shop/greens/dieffenbachia-white.jpg",         // white-variegated green
+  "green-green": "/images/shop/greens/monstera-green.jpg",              // generic green
+  "willow-green": "/images/shop/greens/eucalyptus-silver-dollar-green.jpg", // closest stems
+  "other-greens-willow-green": "/images/shop/greens/eucalyptus-silver-dollar-green.jpg",
 
   // ── Tropicals (8) ──
   "gingers-nicole-pink": "/images/shop/tropicals/gingers-nicole-pink.png",
@@ -235,6 +250,9 @@ const IMAGE_MAP: Record<string, string> = {
   "anthurium-green": "/images/shop/tropicals/anthurium-green.png",
   // Coccinea + other tropicals
   "coccinea-red": "/images/shop/tropicals/musa-coccinea-red.png",
+  "musa-mix-red": "/images/shop/tropicals/musa-coccinea-red.png",  // Musa Mix → coccinea (closest red musa)
+  "anana-lucidus-red": "/images/shop/tropicals/novelties-anana-torch-red.jpg", // Anana family
+  "small-tropical-green": "/images/shop/tropicals/eucalyptus-doll-green.jpg",  // small green tropical
   "golden-fire-opal-red": "/images/shop/tropicals/heliconia-golden-fire-opal-red.png",
   "banana-fingers-green": "/images/shop/tropicals/novelty-tropicals-banana-fingers-green.png",
   "banana-fingers-green-15": "/images/shop/tropicals/novelty-tropicals-banana-fingers-green.png",
@@ -242,6 +260,9 @@ const IMAGE_MAP: Record<string, string> = {
   "eucalyptus-fresh-doll-cluster-green": "/images/shop/tropicals/eucalyptus-doll-green.jpg",
   // Million Star — same plant as Cosmic, use cosmic image
   "million-star-white": "/images/shop/other/cosmic.png",
+  "million-star-250g-white": "/images/shop/other/cosmic.png",
+  "million-star-white-250g": "/images/shop/other/cosmic.png",
+  "million-star-white-750g": "/images/shop/other/cosmic.png",
 
   // ── Other flowers (gypsophila, bells, scabiosa, craspedia, lavender, thistle) ──
   "bells-of-ireland": "/images/shop/other/bells-of-ireland.png",
@@ -369,6 +390,65 @@ const IMAGE_MAP: Record<string, string> = {
   "heliconia-rostrata-red": "/images/shop/tropicals/heliconia-rostrata-red.png",
   "heliconia-sassy-red": "/images/shop/tropicals/heliconia-sassy-red.png",
   "novelty-tropicals-banana-fingers-green": "/images/shop/tropicals/novelty-tropicals-banana-fingers-green.png",
+
+  // ── Cande batch 2026-03-23 — aliases + new keys ──
+  // Anemone with "anemone-" prefix
+  "anemone-full-star-blue": "/images/shop/anemone/anemone-full-star-blue.jpg",
+  "anemone-full-star-red": "/images/shop/anemone/anemone-full-star-red.png",
+  "anemone-full-star-white": "/images/shop/anemone/anemone-full-star-white.png",
+  "anemone-mistral-burgundy": "/images/shop/anemone/anemone-mistral-burgundy.png",
+  "anemone-mistral-pink": "/images/shop/anemone/anemone-mistral-pink.png",
+  // Delphinium with "delphinium-" prefix
+  "delphinium-bella-andes-white": "/images/shop/delphinium/delphinium-bella-andes-white.png",
+  "delphinium-blue-bird": "/images/shop/delphinium/delphinium-blue-bird.png",
+  "delphinium-galahad-white": "/images/shop/delphinium/delphinium-galahad-white.png",
+  "delphinium-sea-waltz-dark-blue": "/images/shop/delphinium/delphinium-sea-waltz-dark-blue.png",
+  "delphinium-sky-waltz-light-blue": "/images/shop/delphinium/delphinium-sky-waltz-light-blue.png",
+  "delphinium-summer-skies": "/images/shop/delphinium/delphinium-summer-skies.png",
+  // Larkspur with "larkspur-" prefix
+  "larkspur-pink-carmine": "/images/shop/delphinium/larkspur-pink-carmine.png",
+  "larkspur-quis-purple": "/images/shop/delphinium/larkspur-quis-purple.png",
+  "larkspur-quis-white": "/images/shop/delphinium/larkspur-quis-white.png",
+  // Greens
+  "phi-pinnatifidum-green": "/images/shop/greens/phi-pinnatifidum-green.jpg",
+  // Other flowers
+  "bells-of-ireland-green": "/images/shop/other/bells-of-ireland-green.png",
+  "bouquet-combo-capricho-box_v1": "/images/shop/other/bouquet-combo-capricho-box_v1.png",
+  "bouquet-combo-escarlata-box_v1": "/images/shop/other/bouquet-combo-escarlata-box_v1.png",
+  "bouquet-combo-fire-box_v1": "/images/shop/other/bouquet-combo-fire-box_v1.png",
+  "bouquet-combo-heliconia-mix-box_v1": "/images/shop/other/bouquet-combo-heliconia-mix-box_v1.png",
+  "bouquet-combo-mini-fiesta-box_v1": "/images/shop/other/bouquet-combo-mini-fiesta-box_v1.png",
+  "bouquet-combo-mini-tabasco-box_v1": "/images/shop/other/bouquet-combo-mini-tabasco-box_v1.png",
+  "bouquet-combo-tabasco-box_v1": "/images/shop/other/bouquet-combo-tabasco-box_v1.png",
+  "bouquet-combo-tiki-limbo-box_v1": "/images/shop/other/bouquet-combo-tiki-limbo-box_v1.png",
+  "bouquet-flat-hanna-assorted_v1": "/images/shop/other/bouquet-flat-hanna-assorted_v1.png",
+  "bouquet-green-aforest_v1": "/images/shop/other/bouquet-green-aforest_v1.png",
+  "bouquet-green-assorted-amazon-foliage_v1": "/images/shop/other/bouquet-green-assorted-amazon-foliage_v1.png",
+  "bouquet-green-assorted-botanical_v1": "/images/shop/other/bouquet-green-assorted-botanical_v1.png",
+  "bouquet-green-assorted-greenery-foliage_v1": "/images/shop/other/bouquet-green-assorted-greenery-foliage_v1.png",
+  "bouquet-green-assorted-jungle-foliage_v1": "/images/shop/other/bouquet-green-assorted-jungle-foliage_v1.png",
+  "bouquet-green-bunch-emerald_v1": "/images/shop/other/bouquet-green-bunch-emerald_v1.png",
+  "craspedias-jumbo-yellow": "/images/shop/other/craspedias-jumbo-yellow.jpg",
+  "gypsophilia-cosmic": "/images/shop/other/gypsophilia-cosmic.png",
+  "gypsophilia-lavender": "/images/shop/other/gypsophilia-lavender.png",
+  "gypsophilia-light-rainbow": "/images/shop/other/gypsophilia-light-rainbow.png",
+  "gypsophilia-light-yellow": "/images/shop/other/gypsophilia-light-yellow.png",
+  "gypsophilia-tinted-apple-green": "/images/shop/other/gypsophilia-tinted-apple-green.png",
+  "gypsophilia-tinted-hot-pink": "/images/shop/other/gypsophilia-tinted-hot-pink.png",
+  "gypsophilia-tinted-light-blue": "/images/shop/other/gypsophilia-tinted-light-blue.png",
+  "gypsophilia-tinted-light-pink": "/images/shop/other/gypsophilia-tinted-light-pink.png",
+  "gypsophilia-tinted-mocca": "/images/shop/other/gypsophilia-tinted-mocca.jpg",
+  "gypsophilia-tinted-peach": "/images/shop/other/gypsophilia-tinted-peach.png",
+  "gypsophilia-tinted-viva-magenta": "/images/shop/other/gypsophilia-tinted-viva-magenta.png",
+  "gypsophilia-xlence-white": "/images/shop/other/gypsophilia-xlence-white.png",
+  "thistle-magical-lagoon-blue": "/images/shop/other/thistle-magical-lagoon-blue.jpg",
+  // Tropicals with "heliconias-" prefix and other variants
+  "anthuriums-tropical-xlarge-red": "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg",
+  "heliconias-hel.-fire-opal-red": "/images/shop/tropicals/heliconias-hel.-fire-opal-red.png",
+  "heliconias-hel.-sassy-red": "/images/shop/tropicals/heliconias-hel.-sassy-red.png",
+  "heliconias-iris-red": "/images/shop/tropicals/heliconias-iris-red.png",
+  "heliconias-rostrata-red": "/images/shop/tropicals/heliconias-rostrata-red.png",
+  "novelties-anana-torch-red": "/images/shop/tropicals/novelties-anana-torch-red.jpg",
 };
 
 // ━━━ CATEGORY FALLBACKS ━━━
@@ -529,66 +609,7 @@ function getCandidateKeys(variety: string, color: string): string[] {
       pink: "tinted-light-pink",
       red: "tinted-viva-magenta",
     
-  // ── Cande batch 2026-03-23 (53 new) ──
-  // anemone
-  "anemone-full-star-blue": "/images/shop/anemone/anemone-full-star-blue.jpg",
-  "anemone-full-star-red": "/images/shop/anemone/anemone-full-star-red.png",
-  "anemone-full-star-white": "/images/shop/anemone/anemone-full-star-white.png",
-  "anemone-mistral-burgundy": "/images/shop/anemone/anemone-mistral-burgundy.png",
-  "anemone-mistral-pink": "/images/shop/anemone/anemone-mistral-pink.png",
-  // delphinium
-  "delphinium-bella-andes-white": "/images/shop/delphinium/delphinium-bella-andes-white.png",
-  "delphinium-blue-bird": "/images/shop/delphinium/delphinium-blue-bird.png",
-  "delphinium-galahad-white": "/images/shop/delphinium/delphinium-galahad-white.png",
-  "delphinium-sea-waltz-dark-blue": "/images/shop/delphinium/delphinium-sea-waltz-dark-blue.png",
-  "delphinium-sky-waltz-light-blue": "/images/shop/delphinium/delphinium-sky-waltz-light-blue.png",
-  "delphinium-summer-skies": "/images/shop/delphinium/delphinium-summer-skies.png",
-  "larkspur-pink-carmine": "/images/shop/delphinium/larkspur-pink-carmine.png",
-  "larkspur-quis-purple": "/images/shop/delphinium/larkspur-quis-purple.png",
-  "larkspur-quis-white": "/images/shop/delphinium/larkspur-quis-white.png",
-  // greens
-  "phi-pinnatifidum-green": "/images/shop/greens/phi-pinnatifidum-green.jpg",
-  // other
-  "bells-of-ireland-green": "/images/shop/other/bells-of-ireland-green.png",
-  "bouquet-combo-capricho-box_v1": "/images/shop/other/bouquet-combo-capricho-box_v1.png",
-  "bouquet-combo-escarlata-box_v1": "/images/shop/other/bouquet-combo-escarlata-box_v1.png",
-  "bouquet-combo-fire-box_v1": "/images/shop/other/bouquet-combo-fire-box_v1.png",
-  "bouquet-combo-heliconia-mix-box_v1": "/images/shop/other/bouquet-combo-heliconia-mix-box_v1.png",
-  "bouquet-combo-mini-fiesta-box_v1": "/images/shop/other/bouquet-combo-mini-fiesta-box_v1.png",
-  "bouquet-combo-mini-tabasco-box_v1": "/images/shop/other/bouquet-combo-mini-tabasco-box_v1.png",
-  "bouquet-combo-tabasco-box_v1": "/images/shop/other/bouquet-combo-tabasco-box_v1.png",
-  "bouquet-combo-tiki-limbo-box_v1": "/images/shop/other/bouquet-combo-tiki-limbo-box_v1.png",
-  "bouquet-flat-hanna-assorted_v1": "/images/shop/other/bouquet-flat-hanna-assorted_v1.png",
-  "bouquet-green-aforest_v1": "/images/shop/other/bouquet-green-aforest_v1.png",
-  "bouquet-green-assorted-amazon-foliage_v1": "/images/shop/other/bouquet-green-assorted-amazon-foliage_v1.png",
-  "bouquet-green-assorted-botanical_v1": "/images/shop/other/bouquet-green-assorted-botanical_v1.png",
-  "bouquet-green-assorted-greenery-foliage_v1": "/images/shop/other/bouquet-green-assorted-greenery-foliage_v1.png",
-  "bouquet-green-assorted-jungle-foliage_v1": "/images/shop/other/bouquet-green-assorted-jungle-foliage_v1.png",
-  "bouquet-green-bunch-emerald_v1": "/images/shop/other/bouquet-green-bunch-emerald_v1.png",
-  "craspedias-jumbo-yellow": "/images/shop/other/craspedias-jumbo-yellow.jpg",
-  "gypsophilia-cosmic": "/images/shop/other/gypsophilia-cosmic.png",
-  "gypsophilia-lavender": "/images/shop/other/gypsophilia-lavender.png",
-  "gypsophilia-light-rainbow": "/images/shop/other/gypsophilia-light-rainbow.png",
-  "gypsophilia-light-yellow": "/images/shop/other/gypsophilia-light-yellow.png",
-  "gypsophilia-tinted-apple-green": "/images/shop/other/gypsophilia-tinted-apple-green.png",
-  "gypsophilia-tinted-hot-pink": "/images/shop/other/gypsophilia-tinted-hot-pink.png",
-  "gypsophilia-tinted-light-blue": "/images/shop/other/gypsophilia-tinted-light-blue.png",
-  "gypsophilia-tinted-light-pink": "/images/shop/other/gypsophilia-tinted-light-pink.png",
-  "gypsophilia-tinted-mocca": "/images/shop/other/gypsophilia-tinted-mocca.jpg",
-  "gypsophilia-tinted-peach": "/images/shop/other/gypsophilia-tinted-peach.png",
-  "gypsophilia-tinted-viva-magenta": "/images/shop/other/gypsophilia-tinted-viva-magenta.png",
-  "gypsophilia-xlence-white": "/images/shop/other/gypsophilia-xlence-white.png",
-  "thistle-magical-lagoon-blue": "/images/shop/other/thistle-magical-lagoon-blue.jpg",
-  // tropicals
-  "anthuriums-tropical-xlarge-red": "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg",
-  "banana-fingers-green": "/images/shop/tropicals/banana-fingers-green.jpg",
-  "eucalyptus-doll-green": "/images/shop/tropicals/eucalyptus-doll-green.jpg",
-  "heliconias-hel.-fire-opal-red": "/images/shop/tropicals/heliconias-hel.-fire-opal-red.png",
-  "heliconias-hel.-sassy-red": "/images/shop/tropicals/heliconias-hel.-sassy-red.png",
-  "heliconias-iris-red": "/images/shop/tropicals/heliconias-iris-red.png",
-  "heliconias-rostrata-red": "/images/shop/tropicals/heliconias-rostrata-red.png",
-  "novelties-anana-torch-red": "/images/shop/tropicals/novelties-anana-torch-red.jpg",
-};
+    };
     if (tintedColorMap[c]) keys.push(tintedColorMap[c]);
   }
 
