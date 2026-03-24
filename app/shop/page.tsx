@@ -706,7 +706,7 @@ function ShopPageContent() {
                       </h3>
                       <p className="text-[10px] text-slate-400 mt-0.5">{group.category}</p>
                       <p className="text-sm font-bold text-emerald-600 mt-1">
-                        ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/{group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}</span>
+                        ${displayPrice.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/{group.category === "Bouquets" ? "bouquet" : group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}</span>
                       </p>
                       {/* EXP-038: Shipping included on Popular cards — consistency */}
                       {displayPrice > 0 && <p className="text-[9px] text-emerald-600 mt-0.5">✓ Shipping included</p>}
@@ -1038,7 +1038,7 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
                   ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
                   : `$${displayPrice.toFixed(2)}`}
                 <span className="text-xs font-normal text-slate-500">
-                  /{group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}
+                  /{group.category === "Bouquets" ? "bouquet" : group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}
                 </span>
               </span>
             </>

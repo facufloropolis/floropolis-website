@@ -98,7 +98,7 @@ function toProduct(row) {
     has_photo: Array.isArray(row.images) && row.images.length > 0,
     total_stems: row.total_stems ? Number(row.total_stems) : null,
     contents_note: row.contents_note || null,
-    available_from: row.available_from || null,
+    available_from: row.arrival_date || null,
   };
 }
 
