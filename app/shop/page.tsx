@@ -8,6 +8,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { SlidersHorizontal, X, ChevronDown, Package, Flame, Star, Search } from "lucide-react";
+import QuoteBar from "@/components/QuoteBar";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
@@ -956,6 +957,7 @@ function ShopPageContent() {
       </section>
 
       <Footer />
+      <QuoteBar />
     </div>
   );
 }

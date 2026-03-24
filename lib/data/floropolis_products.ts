@@ -5325,7 +5325,7 @@ export const products: Product[] = [
     "display_order": 999,
     "slug": "tips-and-accents-schefflera-green",
     "images": [
-      "/images/shop/greens/schefflera-tip-green.png"
+      "/images/shop/greens/schefflera-tip-green.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -7208,7 +7208,7 @@ export const products: Product[] = [
     "display_order": 999,
     "slug": "ginger-plus-red",
     "images": [
-      "/images/shop/tropicals/gingers-plus-red.png"
+      "/images/shop/tropicals/gingers-plus-red.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -9864,7 +9864,7 @@ export const products: Product[] = [
     "display_order": 999,
     "slug": "schefflera-tip-green-green-45",
     "images": [
-      "/images/shop/greens/schefflera-tip-green.png"
+      "/images/shop/greens/schefflera-tip-green.jpg"
     ],
     "tier": "T3",
     "has_photo": true,
@@ -29130,7 +29130,7 @@ export const products: Product[] = [
     "display_order": 999,
     "slug": "plus-red-90",
     "images": [
-      "/images/shop/tropicals/gingers-plus-red.png"
+      "/images/shop/tropicals/gingers-plus-red.jpg"
     ],
     "tier": "T3",
     "has_photo": true,

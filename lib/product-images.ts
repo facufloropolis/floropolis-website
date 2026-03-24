@@ -224,7 +224,7 @@ const IMAGE_MAP: Record<string, string> = {
   "xantal-green": "/images/shop/greens/phi-xantal-green.png",
   "podocarpus-green": "/images/shop/greens/podocarpus-green.png",
   "raphis-palm-green": "/images/shop/greens/raphis-palm-green.png",
-  "schefflera-tip-green": "/images/shop/greens/schefflera-tip-green.png",
+  "schefflera-tip-green": "/images/shop/greens/schefflera-tip-green.jpg",
   "silver-dollar-green": "/images/shop/greens/silver-dollar-green.jpg",
   // Color/variety aliases for greens with no dedicated image
   "variegated-green": "/images/shop/greens/pandanus-variegated-green.jpg",
@@ -237,7 +237,7 @@ const IMAGE_MAP: Record<string, string> = {
 
   // ── Tropicals (8) ──
   "gingers-nicole-pink": "/images/shop/tropicals/gingers-nicole-pink.png",
-  "gingers-plus-red": "/images/shop/tropicals/gingers-plus-red.png",
+  "gingers-plus-red": "/images/shop/tropicals/gingers-plus-red.jpg",
   "gingers-torch-red-pink": "/images/shop/tropicals/gingers-torch-red-pink.png",
   "hel-fire-opal-red": "/images/shop/tropicals/hel-fire-opal-red.png",
   "hel-sassy-red": "/images/shop/tropicals/hel-sassy-red.png",
