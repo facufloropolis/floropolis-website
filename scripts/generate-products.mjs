@@ -98,6 +98,7 @@ function toProduct(row) {
     has_photo: Array.isArray(row.images) && row.images.length > 0,
     total_stems: row.total_stems ? Number(row.total_stems) : null,
     contents_note: row.contents_note || null,
+    available_from: row.available_from || null,
   };
 }
 
@@ -180,6 +181,7 @@ export interface Product {
   has_photo: boolean;
   total_stems: number | null;
   contents_note: string | null;
+  available_from: string | null;
 }
 
 export const products: Product[] = ${JSON.stringify(products, null, 2)};

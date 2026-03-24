@@ -1,6 +1,6 @@
 /**
  * Auto-generated product catalog from Supabase floropolis_inventory.
- * Generated: 2026-03-24T00:45:20.608Z
+ * Generated: 2026-03-24T04:00:55.161Z
  * Total products: 969
  * Tiers: {"T1":102,"T2":142,"T3":725}
  *
@@ -34,22 +34,23 @@ export interface Product {
   has_photo: boolean;
   total_stems: number | null;
   contents_note: string | null;
+  available_from: string | null;
 }
 
 export const products: Product[] = [
   {
-    "id": 6678,
-    "name": "FullStar Red 35cm",
+    "id": 6677,
+    "name": "FullStar Blue 35cm",
     "category": "Anemone",
-    "color": "Red",
+    "color": "Blue",
     "variety": "FullStar",
     "length": "35 cm",
     "price": 1.23,
     "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
     "box_type": "EB",
-    "stock": 0,
+    "stock": 20,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -58,14 +59,15 @@ export const products: Product[] = [
     "is_best_seller": true,
     "is_featured": false,
     "display_order": 999,
-    "slug": "fullstar-red-35cm",
+    "slug": "fullstar-blue-35cm",
     "images": [
-      "/images/shop/anemone/anemone-full-star-red.png"
+      "/images/shop/anemone/anemone-full-star-blue.jpg"
     ],
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6676,
@@ -95,21 +97,22 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 6677,
-    "name": "FullStar Blue 35cm",
+    "id": 6678,
+    "name": "FullStar Red 35cm",
     "category": "Anemone",
-    "color": "Blue",
+    "color": "Red",
     "variety": "FullStar",
     "length": "35 cm",
     "price": 1.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
     "box_type": "EB",
-    "stock": 20,
+    "stock": 0,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -118,14 +121,15 @@ export const products: Product[] = [
     "is_best_seller": true,
     "is_featured": false,
     "display_order": 999,
-    "slug": "fullstar-blue-35cm",
+    "slug": "fullstar-red-35cm",
     "images": [
-      "/images/shop/anemone/anemone-full-star-blue.jpg"
+      "/images/shop/anemone/anemone-full-star-red.png"
     ],
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6695,
@@ -155,7 +159,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6696,
@@ -185,7 +190,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6679,
@@ -215,7 +221,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6680,
@@ -245,7 +252,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6681,
@@ -275,7 +283,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6682,
@@ -305,7 +314,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6683,
@@ -335,7 +345,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6684,
@@ -365,7 +376,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6685,
@@ -395,7 +407,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6686,
@@ -425,7 +438,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6687,
@@ -455,7 +469,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6688,
@@ -485,7 +500,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6689,
@@ -515,7 +531,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6690,
@@ -545,7 +562,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6691,
@@ -575,7 +593,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6692,
@@ -605,7 +624,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6693,
@@ -635,7 +655,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6694,
@@ -665,7 +686,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6697,
@@ -695,7 +717,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6698,
@@ -725,7 +748,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6699,
@@ -755,7 +779,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6700,
@@ -785,7 +810,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6701,
@@ -815,7 +841,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6702,
@@ -845,7 +872,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6703,
@@ -875,7 +903,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6704,
@@ -905,7 +934,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6705,
@@ -935,7 +965,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6706,
@@ -965,7 +996,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6707,
@@ -995,7 +1027,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6708,
@@ -1025,7 +1058,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6709,
@@ -1055,7 +1089,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6710,
@@ -1085,7 +1120,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6711,
@@ -1115,7 +1151,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6712,
@@ -1145,7 +1182,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6713,
@@ -1175,7 +1213,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6714,
@@ -1205,7 +1244,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6715,
@@ -1235,7 +1275,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6716,
@@ -1265,7 +1306,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6717,
@@ -1295,7 +1337,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6718,
@@ -1325,7 +1368,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6719,
@@ -1355,7 +1399,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6720,
@@ -1385,7 +1430,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6721,
@@ -1415,7 +1461,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6722,
@@ -1445,7 +1492,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6723,
@@ -1475,7 +1523,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6724,
@@ -1505,7 +1554,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6725,
@@ -1535,7 +1585,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6726,
@@ -1565,7 +1616,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6727,
@@ -1595,7 +1647,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6728,
@@ -1625,7 +1678,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6729,
@@ -1655,7 +1709,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6730,
@@ -1685,7 +1740,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6731,
@@ -1715,7 +1771,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6732,
@@ -1745,7 +1802,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6733,
@@ -1775,7 +1833,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6734,
@@ -1805,7 +1864,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6735,
@@ -1835,7 +1895,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6736,
@@ -1865,7 +1926,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6737,
@@ -1895,7 +1957,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6738,
@@ -1925,7 +1988,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6739,
@@ -1955,7 +2019,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6742,
@@ -1985,7 +2050,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6743,
@@ -2015,7 +2081,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6744,
@@ -2045,7 +2112,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6745,
@@ -2075,7 +2143,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6746,
@@ -2105,7 +2174,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6747,
@@ -2135,7 +2205,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6748,
@@ -2165,7 +2236,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6749,
@@ -2195,7 +2267,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6750,
@@ -2225,7 +2298,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6751,
@@ -2255,7 +2329,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6752,
@@ -2264,7 +2339,7 @@ export const products: Product[] = [
     "color": "Orange",
     "variety": "Orange Crush",
     "length": "40 cm",
-    "price": 1.31,
+    "price": 1.38,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2285,7 +2360,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6753,
@@ -2315,7 +2391,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6754,
@@ -2345,7 +2422,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6755,
@@ -2354,7 +2432,7 @@ export const products: Product[] = [
     "color": "Orange",
     "variety": "Orange Crush",
     "length": "70 cm",
-    "price": 1.59,
+    "price": 1.38,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2375,7 +2453,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6756,
@@ -2384,7 +2463,7 @@ export const products: Product[] = [
     "color": "Orange",
     "variety": "Orange Crush",
     "length": "80 cm",
-    "price": 1.65,
+    "price": 1.38,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2405,7 +2484,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6757,
@@ -2435,7 +2515,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6758,
@@ -2465,7 +2546,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6759,
@@ -2495,7 +2577,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6760,
@@ -2525,7 +2608,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6761,
@@ -2555,7 +2639,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6762,
@@ -2585,7 +2670,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6763,
@@ -2615,7 +2701,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6764,
@@ -2645,7 +2732,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6765,
@@ -2675,7 +2763,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6766,
@@ -2705,7 +2794,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6767,
@@ -2714,7 +2804,7 @@ export const products: Product[] = [
     "color": "Peach Pink",
     "variety": "Shimmer",
     "length": "40 cm",
-    "price": 1.35,
+    "price": 1.55,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2735,7 +2825,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6768,
@@ -2765,7 +2856,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6769,
@@ -2795,7 +2887,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6770,
@@ -2804,7 +2897,7 @@ export const products: Product[] = [
     "color": "Peach Pink",
     "variety": "Shimmer",
     "length": "70 cm",
-    "price": 1.75,
+    "price": 1.55,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2825,7 +2918,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6771,
@@ -2834,7 +2928,7 @@ export const products: Product[] = [
     "color": "Peach Pink",
     "variety": "Shimmer",
     "length": "80 cm",
-    "price": 1.81,
+    "price": 1.55,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2855,7 +2949,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6772,
@@ -2885,7 +2980,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6773,
@@ -2915,7 +3011,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6774,
@@ -2945,7 +3042,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6775,
@@ -2975,7 +3073,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6776,
@@ -3005,7 +3104,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6777,
@@ -3035,7 +3135,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6778,
@@ -3065,7 +3166,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6779,
@@ -3095,7 +3197,8 @@ export const products: Product[] = [
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6780,
@@ -3125,127 +3228,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6784,
-    "name": "Mariane Fuchsia",
-    "category": "Anemone",
-    "color": "Fuchsia",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-fuchsia",
-    "images": [
-      "/images/shop/anemone/anemones-fucsia.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6785,
-    "name": "Mariane Pink",
-    "category": "Anemone",
-    "color": "Pink",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-pink",
-    "images": [
-      "/images/shop/anemone/anemones-pink.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6781,
-    "name": "Mariane Assorted",
-    "category": "Anemone",
-    "color": "Assorted",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-assorted",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634575.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6783,
-    "name": "Mariane Burgundy",
-    "category": "Anemone",
-    "color": "Burgundy",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-burgundy",
-    "images": [
-      "/images/shop/anemone/anemones-burdeaux.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6786,
@@ -3275,7 +3259,101 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6783,
+    "name": "Mariane Burgundy",
+    "category": "Anemone",
+    "color": "Burgundy",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-burgundy",
+    "images": [
+      "/images/shop/anemone/anemones-burdeaux.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6781,
+    "name": "Mariane Assorted",
+    "category": "Anemone",
+    "color": "Assorted",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-assorted",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634575.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6785,
+    "name": "Mariane Pink",
+    "category": "Anemone",
+    "color": "Pink",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-pink",
+    "images": [
+      "/images/shop/anemone/anemones-pink.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6787,
@@ -3305,7 +3383,39 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6784,
+    "name": "Mariane Fuchsia",
+    "category": "Anemone",
+    "color": "Fuchsia",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-fuchsia",
+    "images": [
+      "/images/shop/anemone/anemones-fucsia.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6782,
@@ -3335,37 +3445,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7787,
-    "name": "Anemone Red Mariane 30-35CM",
-    "category": "Anemone",
-    "color": "Red",
-    "variety": "Mariane",
-    "length": "30-35 cm",
-    "price": 1.16,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "anemone-red-mariane-30-35cm",
-    "images": [
-      "/images/shop/anemone/mariane-red.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7785,
@@ -3395,7 +3476,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7786,
@@ -3425,13 +3507,14 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7781,
-    "name": "Anemone White Mariane 30-35CM",
+    "id": 7787,
+    "name": "Anemone Red Mariane 30-35CM",
     "category": "Anemone",
-    "color": "White",
+    "color": "Red",
     "variety": "Mariane",
     "length": "30-35 cm",
     "price": 1.16,
@@ -3439,7 +3522,7 @@ export const products: Product[] = [
     "stems_per_bunch": 1,
     "units_per_box": 120,
     "box_type": "EB",
-    "stock": 2,
+    "stock": 20,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -3448,14 +3531,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "anemone-white-mariane-30-35cm",
+    "slug": "anemone-red-mariane-30-35cm",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634584.png"
+      "/images/shop/anemone/mariane-red.png"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7784,
@@ -3485,7 +3569,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7783,
@@ -3515,7 +3600,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7782,
@@ -3545,21 +3631,22 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7789,
-    "name": "Anemone Blue Mariane 35CM",
+    "id": 7781,
+    "name": "Anemone White Mariane 30-35CM",
     "category": "Anemone",
-    "color": "Blue",
+    "color": "White",
     "variety": "Mariane",
-    "length": "35 cm",
-    "price": 1.23,
+    "length": "30-35 cm",
+    "price": 1.16,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 100,
+    "units_per_box": 120,
     "box_type": "EB",
-    "stock": 20,
+    "stock": 2,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -3568,14 +3655,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "anemone-blue-mariane-35cm",
+    "slug": "anemone-white-mariane-30-35cm",
     "images": [
-      "/images/shop/anemone/mariane-blue-v2.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634584.png"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7790,
@@ -3605,7 +3693,39 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7789,
+    "name": "Anemone Blue Mariane 35CM",
+    "category": "Anemone",
+    "color": "Blue",
+    "variety": "Mariane",
+    "length": "35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "anemone-blue-mariane-35cm",
+    "images": [
+      "/images/shop/anemone/mariane-blue-v2.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7788,
@@ -3635,7 +3755,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7791,
@@ -3665,7 +3786,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7793,
@@ -3674,7 +3796,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Medium Amazon",
     "length": "50 cm",
-    "price": 0.87,
+    "price": 18.27,
     "unit": "Bunch",
     "stems_per_bunch": 21,
     "units_per_box": 6,
@@ -3689,11 +3811,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-assorted-round-medium-amazon-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-amazon_d6eaa8149f7d.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "21 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7794,
@@ -3702,7 +3827,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Medium Brushed",
     "length": "50 cm",
-    "price": 0.87,
+    "price": 18.27,
     "unit": "Bunch",
     "stems_per_bunch": 21,
     "units_per_box": 12,
@@ -3717,11 +3842,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-assorted-round-medium-brushed-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-brushed_c856915749c4.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "21 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7795,
@@ -3730,7 +3858,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Medium Confeti",
     "length": "50 cm",
-    "price": 0.87,
+    "price": 18.27,
     "unit": "Bunch",
     "stems_per_bunch": 21,
     "units_per_box": 6,
@@ -3745,11 +3873,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-assorted-round-medium-confeti-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-confeti_760de8d7c852.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "21 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7796,
@@ -3758,7 +3889,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Medium Fuego",
     "length": "50 cm",
-    "price": 1.15,
+    "price": 18.27,
     "unit": "Bunch",
     "stems_per_bunch": 21,
     "units_per_box": 12,
@@ -3773,11 +3904,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-assorted-round-medium-fuego-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-fuego_0e3ecb9096b7.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "21 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7797,
@@ -3786,7 +3920,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Medium Parrot",
     "length": "50 cm",
-    "price": 0.87,
+    "price": 18.27,
     "unit": "Bunch",
     "stems_per_bunch": 21,
     "units_per_box": 12,
@@ -3805,7 +3939,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "21 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 6801,
@@ -3814,7 +3949,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Medium Rainbow",
     "length": null,
-    "price": 0.87,
+    "price": 8.7,
     "unit": "Bunch",
     "stems_per_bunch": 10,
     "units_per_box": 12,
@@ -3829,11 +3964,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "round-medium-rainbow-assorted",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-rainbow_be2ae9aa066b.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "10 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 6804,
@@ -3842,7 +3980,7 @@ export const products: Product[] = [
     "color": "Orange",
     "variety": "Round - Plus Confeti Orange",
     "length": null,
-    "price": 1.15,
+    "price": 11.5,
     "unit": "Bunch",
     "stems_per_bunch": 10,
     "units_per_box": 16,
@@ -3857,11 +3995,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "round-plus-confeti-orange-orange",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-confeti-orange-plus_a79270452f09.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "10 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7800,
@@ -3870,7 +4011,7 @@ export const products: Product[] = [
     "color": "Green",
     "variety": "Round - Plus Jungle",
     "length": "50 cm",
-    "price": 1.15,
+    "price": 14.95,
     "unit": "Bunch",
     "stems_per_bunch": 13,
     "units_per_box": 8,
@@ -3885,11 +4026,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-green-round-plus-jungle-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-jungle-plus_306b20dd08c4.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "13 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7801,
@@ -3898,7 +4042,7 @@ export const products: Product[] = [
     "color": "Red",
     "variety": "Round - Plus Lua Fuego",
     "length": "50 cm",
-    "price": 14.91,
+    "price": 14.95,
     "unit": "Bunch",
     "stems_per_bunch": 13,
     "units_per_box": 16,
@@ -3913,11 +4057,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-red-round-plus-lua-fuego-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-fuego-plus_f7d240d38d54.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "13 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 6809,
@@ -3926,7 +4073,7 @@ export const products: Product[] = [
     "color": "Assorted",
     "variety": "Round - Plus Rainbow",
     "length": null,
-    "price": 1.15,
+    "price": 11.5,
     "unit": "Bunch",
     "stems_per_bunch": 10,
     "units_per_box": 8,
@@ -3941,11 +4088,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "round-plus-rainbow-assorted",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-rainbow_be2ae9aa066b.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "10 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7802,
@@ -3954,7 +4104,7 @@ export const products: Product[] = [
     "color": "Green",
     "variety": "Round - Plus Rainforest",
     "length": "50 cm",
-    "price": 1.15,
+    "price": 14.95,
     "unit": "Bunch",
     "stems_per_bunch": 13,
     "units_per_box": 8,
@@ -3969,11 +4119,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-green-round-plus-rainforest-50-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-aforest_11a115f409c6.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "13 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7803,
@@ -3982,7 +4135,7 @@ export const products: Product[] = [
     "color": "Green",
     "variety": "Round Afforest",
     "length": "60 cm",
-    "price": 8.14,
+    "price": 9.35,
     "unit": "Bunch",
     "stems_per_bunch": 11,
     "units_per_box": 25,
@@ -4003,7 +4156,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "11 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7804,
@@ -4012,7 +4166,7 @@ export const products: Product[] = [
     "color": "Green",
     "variety": "Round Emerald",
     "length": "60 cm",
-    "price": 9.31,
+    "price": 9.35,
     "unit": "Bunch",
     "stems_per_bunch": 11,
     "units_per_box": 25,
@@ -4033,7 +4187,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "11 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7805,
@@ -4042,7 +4197,7 @@ export const products: Product[] = [
     "color": "Green",
     "variety": "Round Forest",
     "length": "60 cm",
-    "price": 0.85,
+    "price": 9.35,
     "unit": "Bunch",
     "stems_per_bunch": 11,
     "units_per_box": 12,
@@ -4057,11 +4212,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-green-round-forest-60-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-forest_ead5b4568c54.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "11 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 7806,
@@ -4070,7 +4228,7 @@ export const products: Product[] = [
     "color": "Green",
     "variety": "Round Paradise",
     "length": "60 cm",
-    "price": 0.85,
+    "price": 9.35,
     "unit": "Bunch",
     "stems_per_bunch": 11,
     "units_per_box": 40,
@@ -4085,11 +4243,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "bouquets-green-round-paradise-60-cm",
-    "images": [],
+    "images": [
+      "/images/shop/bouquets/bouquet-paradise_346875b6f089.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": "11 stems per bouquet",
+    "available_from": null
   },
   {
     "id": 6820,
@@ -4119,7 +4280,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7807,
@@ -4149,7 +4311,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6821,
@@ -4179,7 +4342,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7808,
@@ -4209,7 +4373,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7809,
@@ -4239,7 +4404,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6822,
@@ -4269,7 +4435,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7810,
@@ -4299,7 +4466,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6823,
@@ -4329,7 +4497,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7811,
@@ -4359,7 +4528,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7812,
@@ -4389,7 +4559,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7813,
@@ -4419,7 +4590,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7814,
@@ -4449,7 +4621,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6824,
@@ -4458,7 +4631,7 @@ export const products: Product[] = [
     "color": "White",
     "variety": "Galahad",
     "length": null,
-    "price": 1.63,
+    "price": 1.27,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -4479,7 +4652,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7815,
@@ -4509,7 +4683,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6853,
@@ -4533,11 +4708,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "palm-areca-small-green",
-    "images": [],
+    "images": [
+      "/images/shop/greens/areca-palm-green.jpg"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6852,
@@ -4567,7 +4745,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6854,
@@ -4597,7 +4776,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6845,
@@ -4627,7 +4807,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6847,
@@ -4655,7 +4836,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6848,
@@ -4685,37 +4867,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6850,
-    "name": "Monstera Small Green",
-    "category": "Greens & Foliage",
-    "color": "Green",
-    "variety": "Monstera",
-    "length": null,
-    "price": 1.82,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 250,
-    "box_type": "EB/QB",
-    "stock": 21,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "monstera-small-green",
-    "images": [
-      "/images/shop/greens/monstera-green.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6849,
@@ -4745,7 +4898,39 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6850,
+    "name": "Monstera Small Green",
+    "category": "Greens & Foliage",
+    "color": "Green",
+    "variety": "Monstera",
+    "length": null,
+    "price": 1.82,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 250,
+    "box_type": "EB/QB",
+    "stock": 21,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "monstera-small-green",
+    "images": [
+      "/images/shop/greens/monstera-green.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6851,
@@ -4773,7 +4958,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6856,
@@ -4803,7 +4989,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6857,
@@ -4833,37 +5020,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6859,
-    "name": "Philodendron Congo Red",
-    "category": "Greens & Foliage",
-    "color": "Red",
-    "variety": "Philodendron Congo",
-    "length": null,
-    "price": 1.69,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 150,
-    "box_type": "HB/QB",
-    "stock": 7,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "philodendron-congo-red",
-    "images": [
-      "/images/shop/greens/phi-congo-red.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6858,
@@ -4893,7 +5051,39 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6859,
+    "name": "Philodendron Congo Red",
+    "category": "Greens & Foliage",
+    "color": "Red",
+    "variety": "Philodendron Congo",
+    "length": null,
+    "price": 1.69,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 150,
+    "box_type": "HB/QB",
+    "stock": 7,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "philodendron-congo-red",
+    "images": [
+      "/images/shop/greens/phi-congo-red.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6860,
@@ -4923,7 +5113,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6861,
@@ -4953,7 +5144,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6862,
@@ -4983,7 +5175,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6863,
@@ -5013,7 +5206,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6855,
@@ -5043,7 +5237,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6864,
@@ -5067,11 +5262,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "tips-and-accents-aglaonema-green",
-    "images": [],
+    "images": [
+      "/images/shop/other/anglonema-tip-green.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6865,
@@ -5101,7 +5299,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6866,
@@ -5131,7 +5330,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6867,
@@ -5161,7 +5361,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6868,
@@ -5185,11 +5386,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "million-star-250g-white",
-    "images": [],
+    "images": [
+      "/images/shop/other/cosmic.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6869,
@@ -5219,7 +5423,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6870,
@@ -5249,7 +5454,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6876,
@@ -5279,7 +5485,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6877,
@@ -5309,7 +5516,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6878,
@@ -5339,7 +5547,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6879,
@@ -5369,7 +5578,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6880,
@@ -5399,7 +5609,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6881,
@@ -5429,7 +5640,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6882,
@@ -5453,11 +5665,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "tropical-mixes-fiesta-assorted",
-    "images": [],
+    "images": [
+      "/images/shop/combos/combo-fiesta-box_e75c56fcc271.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6883,
@@ -5487,7 +5702,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6884,
@@ -5515,7 +5731,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6885,
@@ -5545,7 +5762,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6886,
@@ -5575,7 +5793,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6887,
@@ -5605,7 +5824,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6888,
@@ -5635,7 +5855,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6889,
@@ -5665,37 +5886,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6896,
-    "name": "Amandine Yellow",
-    "category": "Ranunculus",
-    "color": "Yellow",
-    "variety": "Amandine",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB-M",
-    "stock": 82,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-yellow",
-    "images": [
-      "/images/shop/ranunculus/amandine-yellow.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6892,
@@ -5725,95 +5917,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6891,
-    "name": "Amandine Brown",
-    "category": "Ranunculus",
-    "color": "Brown",
-    "variety": "Amandine",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 38,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-brown",
-    "images": [
-      "/images/shop/ranunculus/amandine-brown.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6890,
-    "name": "Amandine Assorted",
-    "category": "Ranunculus",
-    "color": "Assorted",
-    "variety": "Amandine",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 40,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-assorted",
-    "images": [
-      "/images/shop/ranunculus/amandine-assorted.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6893,
-    "name": "Amandine Lavender",
-    "category": "Ranunculus",
-    "color": "Lavender",
-    "variety": "Amandine",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-lavender",
-    "images": [],
-    "tier": "T2",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6895,
@@ -5843,7 +5948,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6894,
@@ -5873,20 +5979,52 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7715,
-    "name": "Amandine Purple 30-35CM",
+    "id": 6896,
+    "name": "Amandine Yellow",
     "category": "Ranunculus",
-    "color": "Purple",
+    "color": "Yellow",
     "variety": "Amandine",
-    "length": "30-35 cm",
-    "price": 1.23,
+    "length": null,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
-    "box_type": "QB",
+    "box_type": "EB-M",
+    "stock": 82,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-yellow",
+    "images": [
+      "/images/shop/ranunculus/amandine-yellow.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6893,
+    "name": "Amandine Lavender",
+    "category": "Ranunculus",
+    "color": "Lavender",
+    "variety": "Amandine",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
     "stock": 0,
     "vendor": "Megaflor",
     "is_on_deal": false,
@@ -5896,26 +6034,27 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "amandine-purple-30-35cm",
+    "slug": "amandine-lavender",
     "images": [],
     "tier": "T2",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7712,
-    "name": "Amandine Hot Pink 30-35CM",
+    "id": 6890,
+    "name": "Amandine Assorted",
     "category": "Ranunculus",
-    "color": "Hot Pink",
+    "color": "Assorted",
     "variety": "Amandine",
-    "length": "30-35 cm",
-    "price": 1.23,
+    "length": null,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
-    "box_type": "QB",
-    "stock": 70,
+    "box_type": "EB",
+    "stock": 40,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -5924,28 +6063,29 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "amandine-hot-pink-30-35cm",
+    "slug": "amandine-assorted",
     "images": [
-      "/images/shop/ranunculus/pink-amandine-hot-pink.jpg"
+      "/images/shop/ranunculus/amandine-assorted.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7714,
-    "name": "Amandine Pink 30-35CM",
+    "id": 6891,
+    "name": "Amandine Brown",
     "category": "Ranunculus",
-    "color": "Pink",
+    "color": "Brown",
     "variety": "Amandine",
-    "length": "30-35 cm",
-    "price": 1.23,
+    "length": null,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
-    "box_type": "QB",
-    "stock": 26,
+    "box_type": "EB",
+    "stock": 38,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -5954,42 +6094,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "amandine-pink-30-35cm",
+    "slug": "amandine-brown",
     "images": [
-      "/images/shop/ranunculus/amandine-pink.png"
+      "/images/shop/ranunculus/amandine-brown.png"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7713,
-    "name": "Amandine Light Pink 30-35CM",
-    "category": "Ranunculus",
-    "color": "Light Pink",
-    "variety": "Amandine",
-    "length": "30-35 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "QB",
-    "stock": 12,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-light-pink-30-35cm",
-    "images": [],
-    "tier": "T2",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7717,
@@ -6019,13 +6132,14 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7716,
-    "name": "Amandine Red 30-35CM",
+    "id": 7712,
+    "name": "Amandine Hot Pink 30-35CM",
     "category": "Ranunculus",
-    "color": "Red",
+    "color": "Hot Pink",
     "variety": "Amandine",
     "length": "30-35 cm",
     "price": 1.23,
@@ -6033,7 +6147,7 @@ export const products: Product[] = [
     "stems_per_bunch": 1,
     "units_per_box": 120,
     "box_type": "QB",
-    "stock": 78,
+    "stock": 70,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -6042,14 +6156,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "amandine-red-30-35cm",
+    "slug": "amandine-hot-pink-30-35cm",
     "images": [
-      "/images/shop/ranunculus/amandine-red.png"
+      "/images/shop/ranunculus/pink-amandine-hot-pink.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7711,
@@ -6079,7 +6194,128 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7713,
+    "name": "Amandine Light Pink 30-35CM",
+    "category": "Ranunculus",
+    "color": "Light Pink",
+    "variety": "Amandine",
+    "length": "30-35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 12,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-light-pink-30-35cm",
+    "images": [],
+    "tier": "T2",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7716,
+    "name": "Amandine Red 30-35CM",
+    "category": "Ranunculus",
+    "color": "Red",
+    "variety": "Amandine",
+    "length": "30-35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 78,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-red-30-35cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-red.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7715,
+    "name": "Amandine Purple 30-35CM",
+    "category": "Ranunculus",
+    "color": "Purple",
+    "variety": "Amandine",
+    "length": "30-35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-purple-30-35cm",
+    "images": [],
+    "tier": "T2",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7714,
+    "name": "Amandine Pink 30-35CM",
+    "category": "Ranunculus",
+    "color": "Pink",
+    "variety": "Amandine",
+    "length": "30-35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 26,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-pink-30-35cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-pink.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6897,
@@ -6109,63 +6345,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6904,
-    "name": "Assorted White",
-    "category": "Rose",
-    "color": "White",
-    "variety": "Assorted",
-    "length": null,
-    "price": 1.47,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 5,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "assorted-white",
-    "images": [],
-    "tier": "T2",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6902,
-    "name": "Assorted Cream",
-    "category": "Rose",
-    "color": "Cream",
-    "variety": "Assorted",
-    "length": null,
-    "price": 1.47,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "assorted-cream",
-    "images": [],
-    "tier": "T2",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6903,
@@ -6189,11 +6370,76 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "assorted-rainbow",
-    "images": [],
+    "images": [
+      "/images/shop/combos/roses-assorted-rainbow_3f985d44682c.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6904,
+    "name": "Assorted White",
+    "category": "Rose",
+    "color": "White",
+    "variety": "Assorted",
+    "length": null,
+    "price": 1.47,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 5,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "assorted-white",
+    "images": [
+      "/images/shop/combos/roses-assorted-whites_edb0ab505fd1.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6902,
+    "name": "Assorted Cream",
+    "category": "Rose",
+    "color": "Cream",
+    "variety": "Assorted",
+    "length": null,
+    "price": 1.47,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "assorted-cream",
+    "images": [
+      "/images/shop/combos/roses-assorted-creams_a9067a47cbe2.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6905,
@@ -6223,7 +6469,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6907,
@@ -6253,7 +6500,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6913,
@@ -6283,7 +6531,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6916,
@@ -6307,11 +6556,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "lavender-blueberry-lavender",
-    "images": [],
+    "images": [
+      "/images/shop/roses/lavender-blueberry-lavender.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6917,
@@ -6335,11 +6587,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "lighthouse-yellow",
-    "images": [],
+    "images": [
+      "/images/shop/roses/lighthouse-deep-yellow.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6918,
@@ -6369,7 +6624,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6919,
@@ -6399,7 +6655,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6920,
@@ -6429,7 +6686,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6921,
@@ -6459,7 +6717,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6922,
@@ -6489,7 +6748,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6923,
@@ -6519,7 +6779,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6925,
@@ -6549,7 +6810,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6926,
@@ -6579,7 +6841,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6927,
@@ -6609,7 +6872,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6928,
@@ -6639,7 +6903,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6929,
@@ -6663,11 +6928,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "tiffany-lavender",
-    "images": [],
+    "images": [
+      "/images/shop/roses/tiffany-lavender.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6930,
@@ -6691,11 +6959,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "tiffany-peach",
-    "images": [],
+    "images": [
+      "/images/shop/roses/tiffany-peach.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6931,
@@ -6719,11 +6990,14 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "yellow-cancun-yellow",
-    "images": [],
+    "images": [
+      "/images/shop/roses/cancun-light-yellow.png"
+    ],
     "tier": "T2",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6932,
@@ -6753,37 +7027,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6937,
-    "name": "Anthurium XLarge (12-14cm) Assorted",
-    "category": "Tropicals",
-    "color": "Assorted",
-    "variety": "Anthurium",
-    "length": null,
-    "price": 5.12,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 20,
-    "box_type": "EB/QB",
-    "stock": 28,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "anthurium-xlarge-12-14cm-assorted",
-    "images": [
-      "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6938,
@@ -6813,21 +7058,22 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 6933,
-    "name": "Anthurium Large (10-12cm) Assorted",
+    "id": 6937,
+    "name": "Anthurium XLarge (12-14cm) Assorted",
     "category": "Tropicals",
     "color": "Assorted",
     "variety": "Anthurium",
     "length": null,
-    "price": 4.1,
+    "price": 5.12,
     "unit": "Stem",
     "stems_per_bunch": 10,
-    "units_per_box": 30,
+    "units_per_box": 20,
     "box_type": "EB/QB",
-    "stock": 29,
+    "stock": 28,
     "vendor": "Magic Flowers",
     "is_on_deal": false,
     "deal_label": null,
@@ -6836,14 +7082,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "anthurium-large-10-12cm-assorted",
+    "slug": "anthurium-xlarge-12-14cm-assorted",
     "images": [
-      "https://swhglnjyuorkycpgkmec.supabase.co/storage/v1/object/public/product-images/magicflowers/flores/Anthurium%20Large%20Mix.jpg"
+      "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6934,
@@ -6873,7 +7120,39 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6933,
+    "name": "Anthurium Large (10-12cm) Assorted",
+    "category": "Tropicals",
+    "color": "Assorted",
+    "variety": "Anthurium",
+    "length": null,
+    "price": 4.1,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 30,
+    "box_type": "EB/QB",
+    "stock": 29,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "anthurium-large-10-12cm-assorted",
+    "images": [
+      "https://swhglnjyuorkycpgkmec.supabase.co/storage/v1/object/public/product-images/magicflowers/flores/Anthurium%20Large%20Mix.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6950,
@@ -6903,7 +7182,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6952,
@@ -6933,7 +7213,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6954,
@@ -6963,7 +7244,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6956,
@@ -6993,7 +7275,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6958,
@@ -7023,7 +7306,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6960,
@@ -7053,7 +7337,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6962,
@@ -7083,7 +7368,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6964,
@@ -7113,7 +7399,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6966,
@@ -7144,7 +7431,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6970,
@@ -7174,7 +7462,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6972,
@@ -7204,7 +7493,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6974,
@@ -7234,7 +7524,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6976,
@@ -7264,7 +7555,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6978,
@@ -7294,37 +7586,8 @@ export const products: Product[] = [
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6996,
-    "name": "Full Star Blue 25cm",
-    "category": "Anemone",
-    "color": "Blue",
-    "variety": "Full Star",
-    "length": "25 cm",
-    "price": 1.01,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "full-star-blue-25cm",
-    "images": [
-      "/images/shop/anemone/anemone-full-star-blue.jpg"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6998,
@@ -7354,7 +7617,39 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6996,
+    "name": "Full Star Blue 25cm",
+    "category": "Anemone",
+    "color": "Blue",
+    "variety": "Full Star",
+    "length": "25 cm",
+    "price": 1.01,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "full-star-blue-25cm",
+    "images": [
+      "/images/shop/anemone/anemone-full-star-blue.jpg"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7000,
@@ -7384,7 +7679,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6997,
@@ -7412,7 +7708,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6999,
@@ -7442,7 +7739,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6981,
@@ -7472,7 +7770,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6980,
@@ -7502,127 +7801,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7004,
-    "name": "Mariane Fuchsia 25cm",
-    "category": "Anemone",
-    "color": "Fuchsia",
-    "variety": "Mariane",
-    "length": "25 cm",
-    "price": 0.94,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-fuchsia-25cm",
-    "images": [
-      "/images/shop/anemone/anemones-fucsia.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7007,
-    "name": "Mariane White 25cm",
-    "category": "Anemone",
-    "color": "White",
-    "variety": "Mariane",
-    "length": "25 cm",
-    "price": 0.94,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-white-25cm",
-    "images": [
-      "/images/shop/anemone/anemones-white.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7006,
-    "name": "Mariane Red 25cm",
-    "category": "Anemone",
-    "color": "Red",
-    "variety": "Mariane",
-    "length": "25 cm",
-    "price": 0.94,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-red-25cm",
-    "images": [
-      "/images/shop/anemone/anemones-red.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7005,
-    "name": "Mariane Pink 25cm",
-    "category": "Anemone",
-    "color": "Pink",
-    "variety": "Mariane",
-    "length": "25 cm",
-    "price": 0.94,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-pink-25cm",
-    "images": [
-      "/images/shop/anemone/anemones-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7003,
@@ -7631,7 +7811,7 @@ export const products: Product[] = [
     "color": "Burgundy",
     "variety": "Mariane",
     "length": "25 cm",
-    "price": 0.94,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 120,
@@ -7652,7 +7832,132 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7006,
+    "name": "Mariane Red 25cm",
+    "category": "Anemone",
+    "color": "Red",
+    "variety": "Mariane",
+    "length": "25 cm",
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-red-25cm",
+    "images": [
+      "/images/shop/anemone/anemones-red.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7007,
+    "name": "Mariane White 25cm",
+    "category": "Anemone",
+    "color": "White",
+    "variety": "Mariane",
+    "length": "25 cm",
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-white-25cm",
+    "images": [
+      "/images/shop/anemone/anemones-white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7005,
+    "name": "Mariane Pink 25cm",
+    "category": "Anemone",
+    "color": "Pink",
+    "variety": "Mariane",
+    "length": "25 cm",
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-pink-25cm",
+    "images": [
+      "/images/shop/anemone/anemones-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7004,
+    "name": "Mariane Fuchsia 25cm",
+    "category": "Anemone",
+    "color": "Fuchsia",
+    "variety": "Mariane",
+    "length": "25 cm",
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-fuchsia-25cm",
+    "images": [
+      "/images/shop/anemone/anemones-fucsia.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7002,
@@ -7661,7 +7966,7 @@ export const products: Product[] = [
     "color": "Blue",
     "variety": "Mariane",
     "length": "25 cm",
-    "price": 0.94,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 120,
@@ -7682,7 +7987,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7001,
@@ -7712,187 +8018,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6988,
-    "name": "Mistral Hot Pink 30-35 cm",
-    "category": "Anemone",
-    "color": "Hot Pink",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.16,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-hot-pink-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634604.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6984,
-    "name": "Mistral Blue 30-35 cm",
-    "category": "Anemone",
-    "color": "Blue",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.16,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-blue-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634600.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6990,
-    "name": "Mistral Pink 30-35 cm",
-    "category": "Anemone",
-    "color": "Pink",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.16,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-pink-30-35-cm",
-    "images": [
-      "/images/shop/anemone/anemone-mistral-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6992,
-    "name": "Mistral Red 30-35 cm",
-    "category": "Anemone",
-    "color": "Red",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.16,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-red-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634608.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6994,
-    "name": "Mistral White 30-35 cm",
-    "category": "Anemone",
-    "color": "White",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.2,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-white-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634610.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6982,
-    "name": "Mistral Assorted 30-35 cm",
-    "category": "Anemone",
-    "color": "Assorted",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.13,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-assorted-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634598.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6986,
@@ -7922,21 +8049,22 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 6987,
-    "name": "Mistral Burgundy 35-40cm",
+    "id": 6992,
+    "name": "Mistral Red 30-35 cm",
     "category": "Anemone",
-    "color": "Burgundy",
+    "color": "Red",
     "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
+    "length": "30-35 cm",
+    "price": 1.16,
     "unit": "Stem",
     "stems_per_bunch": 10,
-    "units_per_box": 100,
+    "units_per_box": 120,
     "box_type": "EB",
-    "stock": 20,
+    "stock": 0,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -7945,25 +8073,57 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-burgundy-35-40cm",
+    "slug": "mistral-red-30-35-cm",
     "images": [
-      "/images/shop/anemone/anemone-mistral-burgundy.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634608.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 6983,
-    "name": "Mistral Assorted 35-40cm",
+    "id": 6994,
+    "name": "Mistral White 30-35 cm",
     "category": "Anemone",
-    "color": "Assorted",
+    "color": "White",
     "variety": "Mistral",
-    "length": "35-40 cm",
+    "length": "30-35 cm",
     "price": 1.2,
     "unit": "Stem",
     "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-white-30-35-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634610.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6984,
+    "name": "Mistral Blue 30-35 cm",
+    "category": "Anemone",
+    "color": "Blue",
+    "variety": "Mistral",
+    "length": "30-35 cm",
+    "price": 1.16,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
     "units_per_box": 100,
     "box_type": "EB",
     "stock": 20,
@@ -7975,14 +8135,108 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-assorted-35-40cm",
+    "slug": "mistral-blue-30-35-cm",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634600.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6988,
+    "name": "Mistral Hot Pink 30-35 cm",
+    "category": "Anemone",
+    "color": "Hot Pink",
+    "variety": "Mistral",
+    "length": "30-35 cm",
+    "price": 1.16,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-hot-pink-30-35-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634604.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6990,
+    "name": "Mistral Pink 30-35 cm",
+    "category": "Anemone",
+    "color": "Pink",
+    "variety": "Mistral",
+    "length": "30-35 cm",
+    "price": 1.16,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-pink-30-35-cm",
+    "images": [
+      "/images/shop/anemone/anemone-mistral-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6982,
+    "name": "Mistral Assorted 30-35 cm",
+    "category": "Anemone",
+    "color": "Assorted",
+    "variety": "Mistral",
+    "length": "30-35 cm",
+    "price": 1.13,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-assorted-30-35-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634598.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6995,
@@ -8012,97 +8266,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6993,
-    "name": "Mistral Red 35-40cm",
-    "category": "Anemone",
-    "color": "Red",
-    "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-red-35-40cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634609.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6985,
-    "name": "Mistral Blue 35-40cm",
-    "category": "Anemone",
-    "color": "Blue",
-    "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-blue-35-40cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634601.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 6991,
-    "name": "Mistral Pink 35-40cm",
-    "category": "Anemone",
-    "color": "Pink",
-    "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-pink-35-40cm",
-    "images": [
-      "/images/shop/anemone/anemone-mistral-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6989,
@@ -8132,7 +8297,163 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6993,
+    "name": "Mistral Red 35-40cm",
+    "category": "Anemone",
+    "color": "Red",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-red-35-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634609.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6985,
+    "name": "Mistral Blue 35-40cm",
+    "category": "Anemone",
+    "color": "Blue",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-blue-35-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634601.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6991,
+    "name": "Mistral Pink 35-40cm",
+    "category": "Anemone",
+    "color": "Pink",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-pink-35-40cm",
+    "images": [
+      "/images/shop/anemone/anemone-mistral-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6987,
+    "name": "Mistral Burgundy 35-40cm",
+    "category": "Anemone",
+    "color": "Burgundy",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-burgundy-35-40cm",
+    "images": [
+      "/images/shop/anemone/anemone-mistral-burgundy.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6983,
+    "name": "Mistral Assorted 35-40cm",
+    "category": "Anemone",
+    "color": "Assorted",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.2,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-assorted-35-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7012,
@@ -8162,7 +8483,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7013,
@@ -8192,7 +8514,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7059,
@@ -8220,7 +8543,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7060,
@@ -8250,7 +8574,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7687,
@@ -8278,7 +8603,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7688,
@@ -8306,7 +8632,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7065,
@@ -8334,37 +8661,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7033,
-    "name": "Larkspur Pink 70cm",
-    "category": "Delphinium",
-    "color": "Pink",
-    "variety": "Larkspur",
-    "length": "70 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "larkspur-pink-70cm",
-    "images": [
-      "/images/shop/delphinium/larkspur-pink-carmine.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7036,
@@ -8394,35 +8692,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7030,
-    "name": "Larkspur Assorted 70 cm",
-    "category": "Delphinium",
-    "color": "Assorted",
-    "variety": "Larkspur",
-    "length": "70 cm",
-    "price": 0.97,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "larkspur-assorted-70-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7032,
@@ -8452,7 +8723,68 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7030,
+    "name": "Larkspur Assorted 70 cm",
+    "category": "Delphinium",
+    "color": "Assorted",
+    "variety": "Larkspur",
+    "length": "70 cm",
+    "price": 0.97,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "larkspur-assorted-70-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7033,
+    "name": "Larkspur Pink 70cm",
+    "category": "Delphinium",
+    "color": "Pink",
+    "variety": "Larkspur",
+    "length": "70 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "larkspur-pink-70cm",
+    "images": [
+      "/images/shop/delphinium/larkspur-pink-carmine.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7038,
@@ -8482,7 +8814,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7040,
@@ -8512,46 +8845,17 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7035,
-    "name": "Larkspur Pink 80cm",
+    "id": 7031,
+    "name": "Larkspur Assorted 80 cm",
     "category": "Delphinium",
-    "color": "Pink",
+    "color": "Assorted",
     "variety": "Larkspur",
     "length": "80 cm",
-    "price": 1.42,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "larkspur-pink-80cm",
-    "images": [
-      "/images/shop/delphinium/larkspur-pink-carmine.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7037,
-    "name": "Larkspur Purple 80 cm",
-    "category": "Delphinium",
-    "color": "Purple",
-    "variety": "Larkspur",
-    "length": "80 cm",
-    "price": 1.08,
+    "price": 1.03,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 100,
@@ -8565,44 +8869,13 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "larkspur-purple-80-cm",
-    "images": [
-      "/images/shop/delphinium/larkspur-quis-purple.png"
-    ],
+    "slug": "larkspur-assorted-80-cm",
+    "images": [],
     "tier": "T3",
-    "has_photo": true,
+    "has_photo": false,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7034,
-    "name": "Larkspur Pink 80 cm",
-    "category": "Delphinium",
-    "color": "Pink",
-    "variety": "Larkspur",
-    "length": "80 cm",
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "larkspur-pink-80-cm",
-    "images": [
-      "/images/shop/delphinium/larkspur-pink-carmine.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7039,
@@ -8632,16 +8905,48 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7031,
-    "name": "Larkspur Assorted 80 cm",
+    "id": 7035,
+    "name": "Larkspur Pink 80cm",
     "category": "Delphinium",
-    "color": "Assorted",
+    "color": "Pink",
     "variety": "Larkspur",
     "length": "80 cm",
-    "price": 1.03,
+    "price": 1.42,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "larkspur-pink-80cm",
+    "images": [
+      "/images/shop/delphinium/larkspur-pink-carmine.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7037,
+    "name": "Larkspur Purple 80 cm",
+    "category": "Delphinium",
+    "color": "Purple",
+    "variety": "Larkspur",
+    "length": "80 cm",
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 100,
@@ -8655,12 +8960,46 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "larkspur-assorted-80-cm",
-    "images": [],
+    "slug": "larkspur-purple-80-cm",
+    "images": [
+      "/images/shop/delphinium/larkspur-quis-purple.png"
+    ],
     "tier": "T3",
-    "has_photo": false,
+    "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7034,
+    "name": "Larkspur Pink 80 cm",
+    "category": "Delphinium",
+    "color": "Pink",
+    "variety": "Larkspur",
+    "length": "80 cm",
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "larkspur-pink-80-cm",
+    "images": [
+      "/images/shop/delphinium/larkspur-pink-carmine.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7041,
@@ -8690,7 +9029,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7042,
@@ -8720,7 +9060,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7043,
@@ -8748,7 +9089,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7044,
@@ -8776,7 +9118,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7045,
@@ -8804,7 +9147,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7046,
@@ -8832,7 +9176,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7047,
@@ -8862,7 +9207,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7048,
@@ -8892,7 +9238,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7049,
@@ -8922,7 +9269,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7050,
@@ -8952,7 +9300,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7051,
@@ -8980,7 +9329,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7104,
@@ -9008,7 +9358,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7103,
@@ -9036,7 +9387,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7105,
@@ -9064,7 +9416,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7110,
@@ -9094,7 +9447,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7111,
@@ -9124,7 +9478,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7699,
@@ -9154,7 +9509,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7107,
@@ -9184,7 +9540,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7055,
@@ -9212,7 +9569,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7112,
@@ -9242,7 +9600,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7108,
@@ -9270,7 +9629,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7052,
@@ -9298,7 +9658,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7056,
@@ -9326,7 +9687,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7089,
@@ -9354,7 +9716,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7090,
@@ -9382,7 +9745,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7115,
@@ -9412,7 +9776,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7700,
@@ -9442,7 +9807,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7106,
@@ -9472,7 +9838,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7701,
@@ -9502,7 +9869,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7054,
@@ -9532,7 +9900,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7698,
@@ -9562,7 +9931,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7057,
@@ -9590,7 +9960,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7058,
@@ -9618,7 +9989,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7109,
@@ -9646,7 +10018,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7053,
@@ -9674,7 +10047,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7702,
@@ -9702,7 +10076,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7113,
@@ -9732,7 +10107,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7114,
@@ -9762,7 +10138,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7066,
@@ -9790,7 +10167,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7067,
@@ -9820,7 +10198,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7068,
@@ -9848,7 +10227,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7069,
@@ -9876,7 +10256,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7070,
@@ -9904,7 +10285,99 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7076,
+    "name": "Tinted Light Pink 250g",
+    "category": "Gypsophila",
+    "color": "Light Pink",
+    "variety": "Tinted",
+    "length": "250g",
+    "price": 1.06,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 150,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Flodecol",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tinted-light-pink-250g",
+    "images": [
+      "/images/shop/other/gypsophilia-tinted-light-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7080,
+    "name": "Tinted Red 250g",
+    "category": "Gypsophila",
+    "color": "Red",
+    "variety": "Tinted",
+    "length": "250g",
+    "price": 1.06,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 150,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Flodecol",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tinted-red-250g",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7071,
+    "name": "Tinted Green 250g",
+    "category": "Gypsophila",
+    "color": "Green",
+    "variety": "Tinted",
+    "length": "250g",
+    "price": 1.06,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 150,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Flodecol",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tinted-green-250g",
+    "images": [
+      "/images/shop/other/gypsophilia-tinted-apple-green.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7072,
@@ -9934,67 +10407,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7075,
-    "name": "Tinted Light Blue 250g",
-    "category": "Gypsophila",
-    "color": "Light Blue",
-    "variety": "Tinted",
-    "length": "250g",
-    "price": 1.06,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 150,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Flodecol",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tinted-light-blue-250g",
-    "images": [
-      "/images/shop/other/gypsophilia-tinted-light-blue.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7074,
-    "name": "Tinted Hot Pink 250g",
-    "category": "Gypsophila",
-    "color": "Hot Pink",
-    "variety": "Tinted",
-    "length": "250g",
-    "price": 1.06,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 150,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Flodecol",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tinted-hot-pink-250g",
-    "images": [
-      "/images/shop/other/gypsophilia-tinted-hot-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7073,
@@ -10025,13 +10439,14 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7071,
-    "name": "Tinted Green 250g",
+    "id": 7074,
+    "name": "Tinted Hot Pink 250g",
     "category": "Gypsophila",
-    "color": "Green",
+    "color": "Hot Pink",
     "variety": "Tinted",
     "length": "250g",
     "price": 1.06,
@@ -10048,50 +10463,21 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "tinted-green-250g",
+    "slug": "tinted-hot-pink-250g",
     "images": [
-      "/images/shop/other/gypsophilia-tinted-apple-green.png"
+      "/images/shop/other/gypsophilia-tinted-hot-pink.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7079,
-    "name": "Tinted Rainbow 250g",
+    "id": 7075,
+    "name": "Tinted Light Blue 250g",
     "category": "Gypsophila",
-    "color": "Rainbow",
-    "variety": "Tinted",
-    "length": "250g",
-    "price": 1.21,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 150,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Flodecol",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tinted-rainbow-250g",
-    "images": [
-      "/images/shop/other/gypsophilia-light-rainbow.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7078,
-    "name": "Tinted Pink 250g",
-    "category": "Gypsophila",
-    "color": "Pink",
+    "color": "Light Blue",
     "variety": "Tinted",
     "length": "250g",
     "price": 1.06,
@@ -10108,72 +10494,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "tinted-pink-250g",
+    "slug": "tinted-light-blue-250g",
     "images": [
-      "/images/shop/other/gypsophilia-tinted-viva-magenta.png"
+      "/images/shop/other/gypsophilia-tinted-light-blue.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7077,
-    "name": "Tinted Peach 250g",
-    "category": "Gypsophila",
-    "color": "Peach",
-    "variety": "Tinted",
-    "length": "250g",
-    "price": 1.06,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 150,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Flodecol",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tinted-peach-250g",
-    "images": [
-      "/images/shop/other/gypsophilia-tinted-peach.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7080,
-    "name": "Tinted Red 250g",
-    "category": "Gypsophila",
-    "color": "Red",
-    "variety": "Tinted",
-    "length": "250g",
-    "price": 1.06,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 150,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Flodecol",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tinted-red-250g",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7081,
@@ -10203,13 +10532,45 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7076,
-    "name": "Tinted Light Pink 250g",
+    "id": 7079,
+    "name": "Tinted Rainbow 250g",
     "category": "Gypsophila",
-    "color": "Light Pink",
+    "color": "Rainbow",
+    "variety": "Tinted",
+    "length": "250g",
+    "price": 1.21,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 150,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Flodecol",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tinted-rainbow-250g",
+    "images": [
+      "/images/shop/other/gypsophilia-light-rainbow.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7078,
+    "name": "Tinted Pink 250g",
+    "category": "Gypsophila",
+    "color": "Pink",
     "variety": "Tinted",
     "length": "250g",
     "price": 1.06,
@@ -10226,14 +10587,46 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "tinted-light-pink-250g",
+    "slug": "tinted-pink-250g",
     "images": [
-      "/images/shop/other/gypsophilia-tinted-light-pink.png"
+      "/images/shop/other/gypsophilia-tinted-viva-magenta.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7077,
+    "name": "Tinted Peach 250g",
+    "category": "Gypsophila",
+    "color": "Peach",
+    "variety": "Tinted",
+    "length": "250g",
+    "price": 1.06,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 150,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Flodecol",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tinted-peach-250g",
+    "images": [
+      "/images/shop/other/gypsophilia-tinted-peach.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7082,
@@ -10261,7 +10654,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7083,
@@ -10291,7 +10685,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7084,
@@ -10319,7 +10714,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7018,
@@ -10349,7 +10745,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 41,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7019,
@@ -10377,7 +10774,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": 52,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7020,
@@ -10407,7 +10805,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 51,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7014,
@@ -10437,7 +10836,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 160,
-    "contents_note": "Monsteras, Phi Xantal, Dieffenbachia, Pandanus, Areca Palms, Cordelyne"
+    "contents_note": "Monsteras, Phi Xantal, Dieffenbachia, Pandanus, Areca Palms, Cordelyne",
+    "available_from": null
   },
   {
     "id": 7015,
@@ -10467,7 +10867,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 86,
-    "contents_note": "Cordelyne, Dracaena Sanderiana, Pandanus, Croto, Curly Pandanus, Aspidistra, Marginata, Philodendro Esmeralda, Podocarpus, Sanseveria"
+    "contents_note": "Cordelyne, Dracaena Sanderiana, Pandanus, Croto, Curly Pandanus, Aspidistra, Marginata, Philodendro Esmeralda, Podocarpus, Sanseveria",
+    "available_from": null
   },
   {
     "id": 7016,
@@ -10497,7 +10898,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 180,
-    "contents_note": "Palma Raphis, Areca Palm, Pandanus Variegated, Accordeon, Davalia, Cordelyne green, Cordelyne Xerox, Eucalypto Silver Dollar, Schiflera"
+    "contents_note": "Palma Raphis, Areca Palm, Pandanus Variegated, Accordeon, Davalia, Cordelyne green, Cordelyne Xerox, Eucalypto Silver Dollar, Schiflera",
+    "available_from": null
   },
   {
     "id": 7017,
@@ -10527,7 +10929,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 230,
-    "contents_note": "Masajeana, Phi. Lemon, Dieffenbachia, Pandanus, Lettuce Fern, Cordelyne"
+    "contents_note": "Masajeana, Phi. Lemon, Dieffenbachia, Pandanus, Lettuce Fern, Cordelyne",
+    "available_from": null
   },
   {
     "id": 7021,
@@ -10555,7 +10958,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": 41,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7022,
@@ -10585,7 +10989,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 50,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7023,
@@ -10613,7 +11018,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": 43,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7024,
@@ -10643,7 +11049,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 66,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7025,
@@ -10673,7 +11080,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 113,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7026,
@@ -10703,7 +11111,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 41,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7027,
@@ -10731,7 +11140,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": 24,
-    "contents_note": "King Plus Red, King Nicole, Torch Red & Pink"
+    "contents_note": "King Plus Red, King Nicole, Torch Red & Pink",
+    "available_from": null
   },
   {
     "id": 7028,
@@ -10761,7 +11171,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7029,
@@ -10791,7 +11202,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": 95,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7130,
@@ -10819,119 +11231,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7120,
-    "name": "Elegance Burgundy 30-35 cm",
-    "category": "Ranunculus",
-    "color": "Burgundy",
-    "variety": "Elegance",
-    "length": "30-35 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-burgundy-30-35-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7122,
-    "name": "Elegance Brown 30-35 cm",
-    "category": "Ranunculus",
-    "color": "Brown",
-    "variety": "Elegance",
-    "length": "30-35 cm",
-    "price": 1.31,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-brown-30-35-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7138,
-    "name": "Elegance Pink 30-35 cm",
-    "category": "Ranunculus",
-    "color": "Pink",
-    "variety": "Elegance",
-    "length": "30-35 cm",
-    "price": 1.26,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-pink-30-35-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7150,
-    "name": "Elegance Yellow 30-35 cm",
-    "category": "Ranunculus",
-    "color": "Yellow",
-    "variety": "Elegance",
-    "length": "30-35 cm",
-    "price": 1.26,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-yellow-30-35-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7124,
@@ -10959,7 +11260,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7133,
@@ -10987,13 +11289,14 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7126,
-    "name": "Elegance Hot Pink 30-35 cm",
+    "id": 7138,
+    "name": "Elegance Pink 30-35 cm",
     "category": "Ranunculus",
-    "color": "Hot Pink",
+    "color": "Pink",
     "variety": "Elegance",
     "length": "30-35 cm",
     "price": 1.26,
@@ -11010,40 +11313,13 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-hot-pink-30-35-cm",
+    "slug": "elegance-pink-30-35-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7142,
-    "name": "Elegance Red 30-35 cm",
-    "category": "Ranunculus",
-    "color": "Red",
-    "variety": "Elegance",
-    "length": "30-35 cm",
-    "price": 1.26,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-red-30-35-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7116,
@@ -11071,7 +11347,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7146,
@@ -11099,15 +11376,45 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7136,
-    "name": "Elegance Peach 35-40 cm",
+    "id": 7122,
+    "name": "Elegance Brown 30-35 cm",
     "category": "Ranunculus",
-    "color": "Peach",
+    "color": "Brown",
     "variety": "Elegance",
-    "length": "35-40 cm",
+    "length": "30-35 cm",
+    "price": 1.31,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-brown-30-35-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7120,
+    "name": "Elegance Burgundy 30-35 cm",
+    "category": "Ranunculus",
+    "color": "Burgundy",
+    "variety": "Elegance",
+    "length": "30-35 cm",
     "price": 1.35,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -11122,49 +11429,22 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-peach-35-40-cm",
+    "slug": "elegance-burgundy-30-35-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7147,
-    "name": "Elegance White 35-40 cm",
-    "category": "Ranunculus",
-    "color": "White",
-    "variety": "Elegance",
-    "length": "35-40 cm",
-    "price": 1.34,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-35-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7151,
-    "name": "Elegance Yellow 35-40 cm",
+    "id": 7150,
+    "name": "Elegance Yellow 30-35 cm",
     "category": "Ranunculus",
     "color": "Yellow",
     "variety": "Elegance",
-    "length": "35-40 cm",
-    "price": 1.34,
+    "length": "30-35 cm",
+    "price": 1.26,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 120,
@@ -11178,12 +11458,71 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-yellow-35-40-cm",
+    "slug": "elegance-yellow-30-35-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7126,
+    "name": "Elegance Hot Pink 30-35 cm",
+    "category": "Ranunculus",
+    "color": "Hot Pink",
+    "variety": "Elegance",
+    "length": "30-35 cm",
+    "price": 1.26,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-30-35-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7142,
+    "name": "Elegance Red 30-35 cm",
+    "category": "Ranunculus",
+    "color": "Red",
+    "variety": "Elegance",
+    "length": "30-35 cm",
+    "price": 1.26,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-red-30-35-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7143,
@@ -11211,41 +11550,14 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7123,
-    "name": "Elegance Brown 35-40cm",
+    "id": 7151,
+    "name": "Elegance Yellow 35-40 cm",
     "category": "Ranunculus",
-    "color": "Brown",
-    "variety": "Elegance",
-    "length": "35-40 cm",
-    "price": 1.38,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-brown-35-40cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7139,
-    "name": "Elegance Pink 35-40 cm",
-    "category": "Ranunculus",
-    "color": "Pink",
+    "color": "Yellow",
     "variety": "Elegance",
     "length": "35-40 cm",
     "price": 1.34,
@@ -11262,12 +11574,13 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-pink-35-40-cm",
+    "slug": "elegance-yellow-35-40-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7117,
@@ -11295,69 +11608,14 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7121,
-    "name": "Elegance Burgundy 35-40 cm",
+    "id": 7136,
+    "name": "Elegance Peach 35-40 cm",
     "category": "Ranunculus",
-    "color": "Burgundy",
-    "variety": "Elegance",
-    "length": "35-40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-burgundy-35-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7125,
-    "name": "Elegance Cream 35-40 cm",
-    "category": "Ranunculus",
-    "color": "Cream",
-    "variety": "Elegance",
-    "length": "35-40 cm",
-    "price": 1.38,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-cream-35-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7127,
-    "name": "Elegance Hot Pink 35-40 cm",
-    "category": "Ranunculus",
-    "color": "Hot Pink",
+    "color": "Peach",
     "variety": "Elegance",
     "length": "35-40 cm",
     "price": 1.35,
@@ -11374,12 +11632,13 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-hot-pink-35-40-cm",
+    "slug": "elegance-peach-35-40-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7131,
@@ -11407,7 +11666,37 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7139,
+    "name": "Elegance Pink 35-40 cm",
+    "category": "Ranunculus",
+    "color": "Pink",
+    "variety": "Elegance",
+    "length": "35-40 cm",
+    "price": 1.34,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-pink-35-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7134,
@@ -11435,15 +11724,74 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7118,
-    "name": "Elegance Assorted 40-45 cm",
+    "id": 7147,
+    "name": "Elegance White 35-40 cm",
     "category": "Ranunculus",
-    "color": "Assorted",
+    "color": "White",
     "variety": "Elegance",
-    "length": "40-45 cm",
+    "length": "35-40 cm",
+    "price": 1.34,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-35-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7127,
+    "name": "Elegance Hot Pink 35-40 cm",
+    "category": "Ranunculus",
+    "color": "Hot Pink",
+    "variety": "Elegance",
+    "length": "35-40 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-35-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7125,
+    "name": "Elegance Cream 35-40 cm",
+    "category": "Ranunculus",
+    "color": "Cream",
+    "variety": "Elegance",
+    "length": "35-40 cm",
     "price": 1.38,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -11458,21 +11806,22 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-assorted-40-45-cm",
+    "slug": "elegance-cream-35-40-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7135,
-    "name": "Elegance Orange 40-45 cm",
+    "id": 7123,
+    "name": "Elegance Brown 35-40cm",
     "category": "Ranunculus",
-    "color": "Orange",
+    "color": "Brown",
     "variety": "Elegance",
-    "length": "40-45 cm",
-    "price": 1.46,
+    "length": "35-40 cm",
+    "price": 1.38,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 120,
@@ -11486,20 +11835,21 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-orange-40-45-cm",
+    "slug": "elegance-brown-35-40cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7137,
-    "name": "Elegance Peach 40-45 cm",
+    "id": 7121,
+    "name": "Elegance Burgundy 35-40 cm",
     "category": "Ranunculus",
-    "color": "Peach",
+    "color": "Burgundy",
     "variety": "Elegance",
-    "length": "40-45 cm",
+    "length": "35-40 cm",
     "price": 1.41,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -11514,40 +11864,13 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-peach-40-45-cm",
+    "slug": "elegance-burgundy-35-40-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7148,
-    "name": "Elegance White 40-45 cm",
-    "category": "Ranunculus",
-    "color": "White",
-    "variety": "Elegance",
-    "length": "40-45 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-40-45-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7144,
@@ -11575,13 +11898,14 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7140,
-    "name": "Elegance Pink 40-45 cm",
+    "id": 7137,
+    "name": "Elegance Peach 40-45 cm",
     "category": "Ranunculus",
-    "color": "Pink",
+    "color": "Peach",
     "variety": "Elegance",
     "length": "40-45 cm",
     "price": 1.41,
@@ -11598,12 +11922,42 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-pink-40-45-cm",
+    "slug": "elegance-peach-40-45-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7135,
+    "name": "Elegance Orange 40-45 cm",
+    "category": "Ranunculus",
+    "color": "Orange",
+    "variety": "Elegance",
+    "length": "40-45 cm",
+    "price": 1.46,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-orange-40-45-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7132,
@@ -11631,7 +11985,37 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7140,
+    "name": "Elegance Pink 40-45 cm",
+    "category": "Ranunculus",
+    "color": "Pink",
+    "variety": "Elegance",
+    "length": "40-45 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-pink-40-45-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7128,
@@ -11659,16 +12043,17 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7145,
-    "name": "Elegance Red 45-50 cm",
+    "id": 7118,
+    "name": "Elegance Assorted 40-45 cm",
     "category": "Ranunculus",
-    "color": "Red",
+    "color": "Assorted",
     "variety": "Elegance",
-    "length": "45-50 cm",
-    "price": 1.46,
+    "length": "40-45 cm",
+    "price": 1.38,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 120,
@@ -11682,77 +12067,22 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-red-45-50-cm",
+    "slug": "elegance-assorted-40-45-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
-    "id": 7129,
-    "name": "Elegance Hot Pink 45-50 cm",
-    "category": "Ranunculus",
-    "color": "Hot Pink",
-    "variety": "Elegance",
-    "length": "45-50 cm",
-    "price": 1.46,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-hot-pink-45-50-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7141,
-    "name": "Elegance Pink 45-50 cm",
-    "category": "Ranunculus",
-    "color": "Pink",
-    "variety": "Elegance",
-    "length": "45-50 cm",
-    "price": 1.46,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-pink-45-50-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7149,
-    "name": "Elegance White 45-50 cm",
+    "id": 7148,
+    "name": "Elegance White 40-45 cm",
     "category": "Ranunculus",
     "color": "White",
     "variety": "Elegance",
-    "length": "45-50 cm",
-    "price": 1.46,
+    "length": "40-45 cm",
+    "price": 1.41,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 120,
@@ -11766,12 +12096,13 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-white-45-50-cm",
+    "slug": "elegance-white-40-45-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7119,
@@ -11799,7 +12130,124 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7129,
+    "name": "Elegance Hot Pink 45-50 cm",
+    "category": "Ranunculus",
+    "color": "Hot Pink",
+    "variety": "Elegance",
+    "length": "45-50 cm",
+    "price": 1.46,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-45-50-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7141,
+    "name": "Elegance Pink 45-50 cm",
+    "category": "Ranunculus",
+    "color": "Pink",
+    "variety": "Elegance",
+    "length": "45-50 cm",
+    "price": 1.46,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-pink-45-50-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7149,
+    "name": "Elegance White 45-50 cm",
+    "category": "Ranunculus",
+    "color": "White",
+    "variety": "Elegance",
+    "length": "45-50 cm",
+    "price": 1.46,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-45-50-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7145,
+    "name": "Elegance Red 45-50 cm",
+    "category": "Ranunculus",
+    "color": "Red",
+    "variety": "Elegance",
+    "length": "45-50 cm",
+    "price": 1.46,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-red-45-50-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7152,
@@ -11810,7 +12258,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -11829,7 +12277,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7153,
@@ -11840,7 +12289,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -11859,7 +12308,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7154,
@@ -11870,7 +12320,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -11889,7 +12339,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7155,
@@ -11900,7 +12351,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -11919,7 +12370,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7156,
@@ -11930,7 +12382,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -11949,7 +12401,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7157,
@@ -11960,7 +12413,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -11979,7 +12432,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7158,
@@ -11990,7 +12444,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12009,7 +12463,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7159,
@@ -12020,7 +12475,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 2,
@@ -12039,7 +12494,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7160,
@@ -12050,7 +12506,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 1,
@@ -12069,7 +12525,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7161,
@@ -12080,7 +12537,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12099,7 +12556,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7162,
@@ -12110,7 +12568,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12129,7 +12587,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7163,
@@ -12140,7 +12599,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12159,7 +12618,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7164,
@@ -12170,7 +12630,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12189,7 +12649,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7165,
@@ -12200,7 +12661,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12219,7 +12680,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7166,
@@ -12230,7 +12692,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12249,7 +12711,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7167,
@@ -12260,7 +12723,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12279,7 +12742,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7168,
@@ -12290,7 +12754,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12309,7 +12773,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7169,
@@ -12320,7 +12785,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12339,7 +12804,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7170,
@@ -12350,7 +12816,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12369,7 +12835,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7171,
@@ -12380,7 +12847,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12399,7 +12866,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7172,
@@ -12410,7 +12878,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12429,7 +12897,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7173,
@@ -12440,7 +12909,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12459,7 +12928,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7174,
@@ -12470,7 +12940,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12489,7 +12959,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7175,
@@ -12500,7 +12971,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 1,
@@ -12519,7 +12990,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7176,
@@ -12530,7 +13002,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 1,
@@ -12549,7 +13021,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7177,
@@ -12560,7 +13033,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12579,7 +13052,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7178,
@@ -12590,7 +13064,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 4,
@@ -12609,7 +13083,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7179,
@@ -12620,7 +13095,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12639,7 +13114,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7180,
@@ -12650,7 +13126,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12669,7 +13145,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7181,
@@ -12680,7 +13157,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12699,7 +13176,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7182,
@@ -12710,7 +13188,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12729,7 +13207,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7183,
@@ -12740,7 +13219,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12759,7 +13238,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7184,
@@ -12770,7 +13250,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 4,
@@ -12789,7 +13269,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7185,
@@ -12800,7 +13281,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 7,
@@ -12819,7 +13300,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7186,
@@ -12830,7 +13312,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12849,7 +13331,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7187,
@@ -12860,7 +13343,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12877,7 +13360,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7188,
@@ -12888,7 +13372,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12905,7 +13389,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7189,
@@ -12916,7 +13401,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12933,7 +13418,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7190,
@@ -12944,7 +13430,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12961,7 +13447,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7191,
@@ -12972,7 +13459,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -12989,7 +13476,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7192,
@@ -13000,7 +13488,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13019,7 +13507,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7193,
@@ -13030,7 +13519,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 1,
@@ -13049,7 +13538,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7194,
@@ -13060,7 +13550,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13079,7 +13569,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7195,
@@ -13090,7 +13581,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13109,7 +13600,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7196,
@@ -13120,7 +13612,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13139,7 +13631,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7197,
@@ -13150,7 +13643,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13167,7 +13660,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7198,
@@ -13178,7 +13672,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13195,7 +13689,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7199,
@@ -13206,7 +13701,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13223,7 +13718,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7200,
@@ -13234,7 +13730,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13251,7 +13747,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7201,
@@ -13262,7 +13759,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13279,7 +13776,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7202,
@@ -13290,7 +13788,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13309,7 +13807,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7203,
@@ -13320,7 +13819,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13339,7 +13838,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7204,
@@ -13350,7 +13850,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 8,
@@ -13369,7 +13869,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7205,
@@ -13380,7 +13881,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13399,7 +13900,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7206,
@@ -13410,7 +13912,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13429,7 +13931,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7207,
@@ -13440,7 +13943,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13457,7 +13960,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7208,
@@ -13468,7 +13972,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13485,7 +13989,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7209,
@@ -13496,7 +14001,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13513,7 +14018,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7210,
@@ -13524,7 +14030,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13541,7 +14047,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7211,
@@ -13552,7 +14059,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13569,7 +14076,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7212,
@@ -13580,7 +14088,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13599,7 +14107,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7213,
@@ -13610,7 +14119,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13629,7 +14138,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7214,
@@ -13640,7 +14150,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13659,7 +14169,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7215,
@@ -13670,7 +14181,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13689,7 +14200,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7216,
@@ -13700,7 +14212,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13719,7 +14231,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7217,
@@ -13730,7 +14243,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13749,7 +14262,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7218,
@@ -13760,7 +14274,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13779,7 +14293,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7219,
@@ -13790,7 +14305,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13809,7 +14324,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7220,
@@ -13820,7 +14336,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13839,7 +14355,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7221,
@@ -13850,7 +14367,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13869,7 +14386,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7222,
@@ -13880,7 +14398,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 1,
@@ -13899,7 +14417,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7223,
@@ -13910,7 +14429,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13929,7 +14448,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7224,
@@ -13940,7 +14460,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13959,7 +14479,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7225,
@@ -13970,7 +14491,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -13989,7 +14510,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7226,
@@ -14000,7 +14522,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14019,7 +14541,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7227,
@@ -14030,7 +14553,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14049,7 +14572,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7228,
@@ -14060,7 +14584,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14079,7 +14603,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7229,
@@ -14090,7 +14615,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14109,7 +14634,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7230,
@@ -14120,7 +14646,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14139,7 +14665,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7231,
@@ -14150,7 +14677,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14169,7 +14696,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7232,
@@ -14180,7 +14708,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14197,7 +14725,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7233,
@@ -14208,7 +14737,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14225,7 +14754,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7234,
@@ -14236,7 +14766,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14253,7 +14783,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7235,
@@ -14264,7 +14795,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14281,7 +14812,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7236,
@@ -14292,7 +14824,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14309,7 +14841,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7237,
@@ -14320,7 +14853,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14337,7 +14870,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7238,
@@ -14348,7 +14882,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14365,7 +14899,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7239,
@@ -14376,7 +14911,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14393,7 +14928,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7240,
@@ -14404,7 +14940,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14421,7 +14957,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7241,
@@ -14432,7 +14969,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14449,7 +14986,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7242,
@@ -14460,7 +14998,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14477,7 +15015,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7243,
@@ -14488,7 +15027,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14505,7 +15044,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7244,
@@ -14516,7 +15056,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14533,7 +15073,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7245,
@@ -14544,7 +15085,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14561,7 +15102,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7246,
@@ -14572,7 +15114,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14589,7 +15131,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7247,
@@ -14600,7 +15143,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14617,7 +15160,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7248,
@@ -14628,7 +15172,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14645,7 +15189,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7249,
@@ -14656,7 +15201,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14673,7 +15218,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7250,
@@ -14684,7 +15230,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14701,7 +15247,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7251,
@@ -14712,7 +15259,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14729,7 +15276,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7252,
@@ -14740,7 +15288,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14757,7 +15305,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7253,
@@ -14768,7 +15317,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14785,7 +15334,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7254,
@@ -14796,7 +15346,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14813,7 +15363,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7255,
@@ -14824,7 +15375,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14841,7 +15392,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7256,
@@ -14852,7 +15404,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14869,7 +15421,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7257,
@@ -14880,7 +15433,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14899,7 +15452,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7258,
@@ -14910,7 +15464,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14929,7 +15483,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7259,
@@ -14940,7 +15495,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14959,7 +15514,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7260,
@@ -14970,7 +15526,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -14989,7 +15545,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7261,
@@ -15000,7 +15557,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15019,7 +15576,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7262,
@@ -15030,7 +15588,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15049,7 +15607,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7263,
@@ -15060,7 +15619,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15079,7 +15638,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7264,
@@ -15090,7 +15650,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15109,7 +15669,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7265,
@@ -15120,7 +15681,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15139,7 +15700,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7266,
@@ -15150,7 +15712,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15169,7 +15731,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7267,
@@ -15180,7 +15743,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.55,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15199,7 +15762,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7268,
@@ -15210,7 +15774,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15229,7 +15793,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7269,
@@ -15240,7 +15805,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -15259,7 +15824,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7270,
@@ -15270,7 +15836,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.55,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15289,7 +15855,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7271,
@@ -15300,7 +15867,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.55,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15319,7 +15886,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7272,
@@ -15330,7 +15898,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.22,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15349,7 +15917,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7273,
@@ -15360,7 +15929,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15379,7 +15948,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7274,
@@ -15390,7 +15960,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.39,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15409,7 +15979,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7275,
@@ -15420,7 +15991,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.45,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15439,7 +16010,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7276,
@@ -15450,7 +16022,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.48,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15469,7 +16041,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7277,
@@ -15480,7 +16053,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15499,7 +16072,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7278,
@@ -15510,7 +16084,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15529,7 +16103,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7279,
@@ -15540,7 +16115,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15559,7 +16134,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7280,
@@ -15570,7 +16146,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15589,7 +16165,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7281,
@@ -15600,7 +16177,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15619,7 +16196,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7282,
@@ -15630,7 +16208,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15649,7 +16227,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7283,
@@ -15660,7 +16239,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 1,
@@ -15679,7 +16258,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7284,
@@ -15690,7 +16270,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 2,
@@ -15709,7 +16289,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7285,
@@ -15720,7 +16301,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15739,7 +16320,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7286,
@@ -15750,7 +16332,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 3,
@@ -15769,7 +16351,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7287,
@@ -15780,7 +16363,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15799,7 +16382,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7288,
@@ -15810,7 +16394,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15829,7 +16413,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7289,
@@ -15840,7 +16425,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15859,7 +16444,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7290,
@@ -15870,7 +16456,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15889,7 +16475,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7291,
@@ -15900,7 +16487,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15919,7 +16506,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7292,
@@ -15930,7 +16518,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15949,7 +16537,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7293,
@@ -15960,7 +16549,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -15979,7 +16568,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7294,
@@ -15990,7 +16580,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16009,7 +16599,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7295,
@@ -16020,7 +16611,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16039,7 +16630,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7296,
@@ -16050,7 +16642,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16069,7 +16661,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7297,
@@ -16080,7 +16673,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16097,7 +16690,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7298,
@@ -16108,7 +16702,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16125,7 +16719,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7299,
@@ -16136,7 +16731,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16153,7 +16748,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7300,
@@ -16164,7 +16760,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16181,7 +16777,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7301,
@@ -16192,7 +16789,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16209,7 +16806,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7302,
@@ -16220,7 +16818,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16237,7 +16835,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7303,
@@ -16248,7 +16847,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16265,7 +16864,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7304,
@@ -16276,7 +16876,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16293,7 +16893,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7305,
@@ -16304,7 +16905,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16321,7 +16922,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7306,
@@ -16332,7 +16934,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16349,7 +16951,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7307,
@@ -16360,7 +16963,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16379,7 +16982,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7308,
@@ -16390,7 +16994,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16409,7 +17013,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7309,
@@ -16420,7 +17025,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16439,7 +17044,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7310,
@@ -16450,7 +17056,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16469,7 +17075,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7311,
@@ -16480,7 +17087,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16499,7 +17106,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7312,
@@ -16510,7 +17118,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16529,7 +17137,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7313,
@@ -16540,7 +17149,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16559,7 +17168,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7314,
@@ -16570,7 +17180,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16589,7 +17199,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7315,
@@ -16600,7 +17211,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16619,7 +17230,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7316,
@@ -16630,7 +17242,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16649,7 +17261,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7317,
@@ -16660,7 +17273,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.9,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16679,7 +17292,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7318,
@@ -16690,7 +17304,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16709,7 +17323,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7319,
@@ -16720,7 +17335,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16739,7 +17354,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7320,
@@ -16750,7 +17366,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16769,7 +17385,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7321,
@@ -16780,7 +17397,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16799,7 +17416,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6740,
@@ -16810,7 +17428,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16829,7 +17447,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 6741,
@@ -16840,7 +17459,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16859,7 +17478,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7322,
@@ -16870,7 +17490,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16887,7 +17507,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7323,
@@ -16898,7 +17519,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16915,7 +17536,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7324,
@@ -16926,7 +17548,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16943,7 +17565,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7325,
@@ -16954,7 +17577,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16971,7 +17594,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7326,
@@ -16982,7 +17606,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -16999,7 +17623,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7327,
@@ -17010,7 +17635,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17029,7 +17654,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7328,
@@ -17040,7 +17666,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -17059,7 +17685,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7329,
@@ -17070,7 +17697,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -17089,7 +17716,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7330,
@@ -17100,7 +17728,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17119,7 +17747,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7331,
@@ -17130,7 +17759,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17149,7 +17778,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7332,
@@ -17160,7 +17790,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17179,7 +17809,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7333,
@@ -17190,7 +17821,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17209,7 +17840,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7334,
@@ -17220,7 +17852,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17239,7 +17871,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7335,
@@ -17250,7 +17883,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17269,7 +17902,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7336,
@@ -17280,7 +17914,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17299,7 +17933,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7337,
@@ -17310,7 +17945,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17329,7 +17964,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7338,
@@ -17340,7 +17976,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 1,
@@ -17359,7 +17995,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7339,
@@ -17370,7 +18007,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17389,7 +18026,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7340,
@@ -17400,7 +18038,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17419,7 +18057,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7341,
@@ -17430,7 +18069,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17449,7 +18088,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7342,
@@ -17460,7 +18100,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17479,7 +18119,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7343,
@@ -17490,7 +18131,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17509,7 +18150,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7344,
@@ -17520,7 +18162,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17539,7 +18181,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7345,
@@ -17550,7 +18193,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17569,7 +18212,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7346,
@@ -17580,7 +18224,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17599,7 +18243,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7347,
@@ -17610,7 +18255,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17629,7 +18274,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7348,
@@ -17640,7 +18286,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17659,7 +18305,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7349,
@@ -17670,7 +18317,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17689,7 +18336,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7350,
@@ -17700,7 +18348,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17719,7 +18367,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7351,
@@ -17730,7 +18379,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17749,7 +18398,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7352,
@@ -17760,7 +18410,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17779,7 +18429,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7353,
@@ -17790,7 +18441,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17809,7 +18460,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7354,
@@ -17820,7 +18472,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17839,7 +18491,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7355,
@@ -17850,7 +18503,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17869,7 +18522,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7356,
@@ -17880,7 +18534,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17899,7 +18553,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7357,
@@ -17910,7 +18565,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17927,7 +18582,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7358,
@@ -17938,7 +18594,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17955,7 +18611,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7359,
@@ -17966,7 +18623,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -17983,7 +18640,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7360,
@@ -17994,7 +18652,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18011,7 +18669,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7361,
@@ -18022,7 +18681,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18039,7 +18698,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7362,
@@ -18050,7 +18710,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18069,7 +18729,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7363,
@@ -18080,7 +18741,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18099,7 +18760,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7364,
@@ -18110,7 +18772,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18129,7 +18791,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7365,
@@ -18140,7 +18803,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18159,7 +18822,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7366,
@@ -18170,7 +18834,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18189,7 +18853,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7367,
@@ -18200,7 +18865,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18219,7 +18884,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7368,
@@ -18230,7 +18896,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18249,7 +18915,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7369,
@@ -18260,7 +18927,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18279,7 +18946,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7370,
@@ -18290,7 +18958,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18309,7 +18977,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7371,
@@ -18320,7 +18989,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18339,7 +19008,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7372,
@@ -18350,7 +19020,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18367,7 +19037,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7373,
@@ -18378,7 +19049,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18395,7 +19066,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7374,
@@ -18406,7 +19078,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18423,7 +19095,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7375,
@@ -18434,7 +19107,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18451,7 +19124,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7376,
@@ -18462,7 +19136,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18479,7 +19153,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7377,
@@ -18490,7 +19165,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18509,7 +19184,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7378,
@@ -18520,7 +19196,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18539,7 +19215,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7379,
@@ -18550,7 +19227,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18569,7 +19246,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7380,
@@ -18580,7 +19258,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18599,7 +19277,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7381,
@@ -18610,7 +19289,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18629,7 +19308,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7382,
@@ -18640,7 +19320,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18659,7 +19339,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7383,
@@ -18670,7 +19351,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18689,7 +19370,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7384,
@@ -18700,7 +19382,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18719,7 +19401,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7385,
@@ -18730,7 +19413,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18749,7 +19432,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7386,
@@ -18760,7 +19444,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18779,7 +19463,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7387,
@@ -18790,7 +19475,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18809,7 +19494,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7388,
@@ -18820,7 +19506,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18839,7 +19525,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7389,
@@ -18850,7 +19537,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18869,7 +19556,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7390,
@@ -18880,7 +19568,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18899,7 +19587,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7391,
@@ -18910,7 +19599,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18929,7 +19618,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7392,
@@ -18940,7 +19630,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -18959,7 +19649,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7393,
@@ -18970,7 +19661,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -18989,7 +19680,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7394,
@@ -19000,7 +19692,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.55,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -19019,7 +19711,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7395,
@@ -19030,7 +19723,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19049,7 +19742,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7396,
@@ -19060,7 +19754,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19079,7 +19773,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7397,
@@ -19090,7 +19785,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19109,7 +19804,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7398,
@@ -19120,7 +19816,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19139,7 +19835,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7399,
@@ -19150,7 +19847,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19169,7 +19866,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7400,
@@ -19180,7 +19878,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19199,7 +19897,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7401,
@@ -19210,7 +19909,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19229,7 +19928,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7402,
@@ -19240,7 +19940,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19257,7 +19957,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7403,
@@ -19268,7 +19969,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19285,7 +19986,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7404,
@@ -19296,7 +19998,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19313,7 +20015,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7405,
@@ -19324,7 +20027,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19341,7 +20044,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7406,
@@ -19352,7 +20056,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19369,7 +20073,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7407,
@@ -19380,7 +20085,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19397,7 +20102,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7408,
@@ -19408,7 +20114,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19425,7 +20131,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7409,
@@ -19436,7 +20143,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19453,7 +20160,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7410,
@@ -19464,7 +20172,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19481,7 +20189,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7411,
@@ -19492,7 +20201,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19509,7 +20218,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7412,
@@ -19520,7 +20230,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19537,7 +20247,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7413,
@@ -19548,7 +20259,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19565,7 +20276,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7414,
@@ -19576,7 +20288,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19593,7 +20305,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7415,
@@ -19604,7 +20317,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19621,7 +20334,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7416,
@@ -19632,7 +20346,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19649,7 +20363,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7417,
@@ -19660,7 +20375,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 1,
@@ -19679,7 +20394,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7418,
@@ -19690,7 +20406,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19709,7 +20425,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7419,
@@ -19720,7 +20437,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19739,7 +20456,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7420,
@@ -19750,7 +20468,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19769,7 +20487,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7421,
@@ -19780,7 +20499,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19799,7 +20518,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7422,
@@ -19810,7 +20530,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19827,7 +20547,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7423,
@@ -19838,7 +20559,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19855,7 +20576,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7424,
@@ -19866,7 +20588,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19883,7 +20605,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7425,
@@ -19894,7 +20617,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19911,7 +20634,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7426,
@@ -19922,7 +20646,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19939,7 +20663,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7427,
@@ -19950,7 +20675,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19967,7 +20692,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7428,
@@ -19978,7 +20704,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -19995,7 +20721,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7429,
@@ -20006,7 +20733,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20023,7 +20750,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7430,
@@ -20034,7 +20762,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20051,7 +20779,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7431,
@@ -20062,7 +20791,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20079,7 +20808,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7432,
@@ -20090,7 +20820,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20107,7 +20837,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7433,
@@ -20118,7 +20849,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20135,7 +20866,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7434,
@@ -20146,7 +20878,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.55,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 5,
@@ -20163,7 +20895,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7435,
@@ -20174,7 +20907,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20191,7 +20924,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7436,
@@ -20202,7 +20936,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20219,7 +20953,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7437,
@@ -20230,7 +20965,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20247,7 +20982,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7438,
@@ -20258,7 +20994,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20275,7 +21011,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7439,
@@ -20286,7 +21023,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20303,7 +21040,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7440,
@@ -20314,7 +21052,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20331,7 +21069,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7441,
@@ -20342,7 +21081,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20359,7 +21098,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7442,
@@ -20370,7 +21110,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20387,7 +21127,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7443,
@@ -20398,7 +21139,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20415,7 +21156,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7444,
@@ -20426,7 +21168,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20443,7 +21185,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7445,
@@ -20454,7 +21197,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20471,7 +21214,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7446,
@@ -20482,7 +21226,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20499,7 +21243,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7447,
@@ -20510,7 +21255,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20529,7 +21274,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7448,
@@ -20540,7 +21286,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20559,7 +21305,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7449,
@@ -20570,7 +21317,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20589,7 +21336,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7450,
@@ -20600,7 +21348,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20619,7 +21367,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7451,
@@ -20630,7 +21379,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20649,7 +21398,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7452,
@@ -20660,7 +21410,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20677,7 +21427,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7453,
@@ -20688,7 +21439,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20705,7 +21456,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7454,
@@ -20716,7 +21468,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20733,7 +21485,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7455,
@@ -20744,7 +21497,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20761,7 +21514,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7456,
@@ -20772,7 +21526,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20789,7 +21543,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7457,
@@ -20800,7 +21555,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20817,7 +21572,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7458,
@@ -20828,7 +21584,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20845,7 +21601,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7459,
@@ -20856,7 +21613,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20873,7 +21630,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7460,
@@ -20884,7 +21642,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20901,7 +21659,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7461,
@@ -20912,7 +21671,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 4,
@@ -20929,7 +21688,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7462,
@@ -20940,7 +21700,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20957,7 +21717,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7463,
@@ -20968,7 +21729,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -20985,7 +21746,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7464,
@@ -20996,7 +21758,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21013,7 +21775,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7465,
@@ -21024,7 +21787,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21041,7 +21804,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7466,
@@ -21052,7 +21816,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21069,7 +21833,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7467,
@@ -21080,7 +21845,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21097,7 +21862,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7468,
@@ -21108,7 +21874,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21125,7 +21891,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7469,
@@ -21136,7 +21903,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21153,7 +21920,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7470,
@@ -21164,7 +21932,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21181,7 +21949,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7471,
@@ -21192,7 +21961,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21209,7 +21978,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7472,
@@ -21220,7 +21990,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21239,7 +22009,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7473,
@@ -21250,7 +22021,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21269,7 +22040,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7474,
@@ -21280,7 +22052,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21299,7 +22071,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7475,
@@ -21310,7 +22083,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21329,7 +22102,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7476,
@@ -21340,7 +22114,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21359,7 +22133,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7477,
@@ -21370,7 +22145,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21389,7 +22164,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7478,
@@ -21400,7 +22176,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21419,7 +22195,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7479,
@@ -21430,7 +22207,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 1,
@@ -21449,7 +22226,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7480,
@@ -21460,7 +22238,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21479,7 +22257,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7481,
@@ -21490,7 +22269,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21509,7 +22288,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7482,
@@ -21520,7 +22300,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21537,7 +22317,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7483,
@@ -21548,7 +22329,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21565,7 +22346,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7484,
@@ -21576,7 +22358,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21593,7 +22375,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7485,
@@ -21604,7 +22387,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21621,7 +22404,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7486,
@@ -21632,7 +22416,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21649,7 +22433,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7487,
@@ -21660,7 +22445,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21679,7 +22464,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7488,
@@ -21690,7 +22476,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21709,7 +22495,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7489,
@@ -21720,7 +22507,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21739,7 +22526,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7490,
@@ -21750,7 +22538,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21769,7 +22557,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7491,
@@ -21780,7 +22569,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21799,7 +22588,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7492,
@@ -21810,7 +22600,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21827,7 +22617,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7493,
@@ -21838,7 +22629,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21855,7 +22646,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7494,
@@ -21866,7 +22658,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21883,7 +22675,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7495,
@@ -21894,7 +22687,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21911,7 +22704,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7496,
@@ -21922,7 +22716,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21939,7 +22733,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7497,
@@ -21950,7 +22745,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -21969,7 +22764,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7498,
@@ -21980,7 +22776,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -21999,7 +22795,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7499,
@@ -22008,9 +22805,9 @@ export const products: Product[] = [
     "color": "Bicolor",
     "variety": "Paloma",
     "length": "60 cm",
-    "price": 1.66,
+    "price": 1.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22029,7 +22826,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7500,
@@ -22040,7 +22838,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22059,7 +22857,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7501,
@@ -22068,9 +22867,9 @@ export const products: Product[] = [
     "color": "Bicolor",
     "variety": "Paloma",
     "length": "80 cm",
-    "price": 1.81,
+    "price": 1.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22089,7 +22888,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7502,
@@ -22100,7 +22900,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22117,7 +22917,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7503,
@@ -22128,7 +22929,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22145,7 +22946,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7504,
@@ -22156,7 +22958,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22173,7 +22975,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7505,
@@ -22184,7 +22987,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22201,7 +23004,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7506,
@@ -22212,7 +23016,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22229,7 +23033,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7507,
@@ -22240,7 +23045,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22257,7 +23062,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7508,
@@ -22268,7 +23074,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22285,7 +23091,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7509,
@@ -22296,7 +23103,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22313,7 +23120,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7510,
@@ -22324,7 +23132,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22341,7 +23149,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7511,
@@ -22352,7 +23161,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22369,7 +23178,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7512,
@@ -22380,7 +23190,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22397,7 +23207,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7513,
@@ -22408,7 +23219,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22425,7 +23236,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7514,
@@ -22436,7 +23248,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22453,7 +23265,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7515,
@@ -22464,7 +23277,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22481,7 +23294,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7516,
@@ -22492,7 +23306,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 2,
@@ -22509,7 +23323,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7517,
@@ -22520,7 +23335,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22537,7 +23352,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7518,
@@ -22548,7 +23364,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22565,7 +23381,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7519,
@@ -22576,7 +23393,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22593,7 +23410,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7520,
@@ -22604,7 +23422,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22621,7 +23439,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7521,
@@ -22632,7 +23451,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22649,7 +23468,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7522,
@@ -22660,7 +23480,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22677,7 +23497,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7523,
@@ -22688,7 +23509,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22705,7 +23526,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7524,
@@ -22716,7 +23538,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22733,7 +23555,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7525,
@@ -22744,7 +23567,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22761,7 +23584,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7526,
@@ -22772,7 +23596,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22789,7 +23613,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7527,
@@ -22800,7 +23625,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22819,7 +23644,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7528,
@@ -22830,7 +23656,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22849,7 +23675,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7529,
@@ -22860,7 +23687,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22879,7 +23706,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7530,
@@ -22890,7 +23718,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22909,7 +23737,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7531,
@@ -22920,7 +23749,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22939,7 +23768,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7532,
@@ -22950,7 +23780,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22967,7 +23797,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7533,
@@ -22978,7 +23809,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -22995,7 +23826,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7534,
@@ -23006,7 +23838,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23023,7 +23855,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7535,
@@ -23034,7 +23867,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23051,7 +23884,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7536,
@@ -23062,7 +23896,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23079,7 +23913,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7537,
@@ -23090,7 +23925,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23107,7 +23942,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7538,
@@ -23118,7 +23954,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23135,7 +23971,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7539,
@@ -23146,7 +23983,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23163,7 +24000,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7540,
@@ -23174,7 +24012,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23191,7 +24029,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7541,
@@ -23202,7 +24041,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23219,7 +24058,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7542,
@@ -23230,7 +24070,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23247,7 +24087,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7543,
@@ -23258,7 +24099,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23275,7 +24116,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7544,
@@ -23286,7 +24128,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23303,7 +24145,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7545,
@@ -23314,7 +24157,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23331,7 +24174,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7546,
@@ -23342,7 +24186,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.16,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23359,7 +24203,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7547,
@@ -23370,7 +24215,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23389,7 +24234,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7548,
@@ -23400,7 +24246,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -23419,7 +24265,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7549,
@@ -23430,7 +24277,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23449,7 +24296,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7550,
@@ -23460,7 +24308,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23479,7 +24327,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7551,
@@ -23490,7 +24339,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23507,7 +24356,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7552,
@@ -23518,7 +24368,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23537,7 +24387,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7553,
@@ -23548,7 +24399,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23567,7 +24418,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7554,
@@ -23578,7 +24430,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23597,7 +24449,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7555,
@@ -23608,7 +24461,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23627,7 +24480,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7556,
@@ -23638,7 +24492,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23657,7 +24511,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7557,
@@ -23668,7 +24523,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23685,7 +24540,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7558,
@@ -23696,7 +24552,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23713,7 +24569,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7559,
@@ -23724,7 +24581,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23741,7 +24598,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7560,
@@ -23752,7 +24610,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23769,7 +24627,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7561,
@@ -23780,7 +24639,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.53,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23797,7 +24656,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7562,
@@ -23808,7 +24668,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23827,7 +24687,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7563,
@@ -23838,7 +24699,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23857,7 +24718,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7564,
@@ -23868,7 +24730,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23887,7 +24749,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7565,
@@ -23898,7 +24761,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23917,7 +24780,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7566,
@@ -23928,7 +24792,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23947,7 +24811,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7567,
@@ -23958,7 +24823,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -23977,7 +24842,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7568,
@@ -23988,7 +24854,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24007,7 +24873,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7569,
@@ -24018,7 +24885,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24037,7 +24904,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7570,
@@ -24048,7 +24916,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24067,7 +24935,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7571,
@@ -24078,7 +24947,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24097,7 +24966,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7572,
@@ -24108,7 +24978,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24127,7 +24997,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7573,
@@ -24138,7 +25009,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24157,7 +25028,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7574,
@@ -24168,7 +25040,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24187,7 +25059,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7575,
@@ -24198,7 +25071,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24217,7 +25090,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7576,
@@ -24228,7 +25102,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24247,7 +25121,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7577,
@@ -24258,7 +25133,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.22,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24275,7 +25150,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7578,
@@ -24286,7 +25162,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24303,7 +25179,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7579,
@@ -24314,7 +25191,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.39,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24331,7 +25208,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7580,
@@ -24342,7 +25220,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.45,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24359,7 +25237,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7581,
@@ -24370,7 +25249,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.48,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24387,7 +25266,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7582,
@@ -24398,7 +25278,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24415,7 +25295,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7583,
@@ -24426,7 +25307,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24443,7 +25324,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7584,
@@ -24454,7 +25336,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24471,7 +25353,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7585,
@@ -24482,7 +25365,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24499,7 +25382,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7586,
@@ -24510,7 +25394,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24527,7 +25411,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7587,
@@ -24538,7 +25423,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24557,7 +25442,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7588,
@@ -24568,7 +25454,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -24587,7 +25473,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7589,
@@ -24598,7 +25485,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -24617,7 +25504,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7590,
@@ -24628,7 +25516,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24647,7 +25535,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7591,
@@ -24658,7 +25547,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.47,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 5,
@@ -24677,7 +25566,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7592,
@@ -24688,7 +25578,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24707,7 +25597,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7593,
@@ -24718,7 +25609,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24737,7 +25628,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7594,
@@ -24748,7 +25640,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24767,7 +25659,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7595,
@@ -24778,7 +25671,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24797,7 +25690,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7596,
@@ -24808,7 +25702,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24827,7 +25721,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7597,
@@ -24838,7 +25733,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24857,7 +25752,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7598,
@@ -24868,7 +25764,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24887,7 +25783,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7599,
@@ -24898,7 +25795,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24917,7 +25814,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7600,
@@ -24928,7 +25826,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24947,7 +25845,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7601,
@@ -24958,7 +25857,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -24977,7 +25876,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7602,
@@ -24988,7 +25888,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25007,7 +25907,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7603,
@@ -25018,7 +25919,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25037,7 +25938,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7604,
@@ -25048,7 +25950,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25067,7 +25969,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7605,
@@ -25078,7 +25981,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25097,7 +26000,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7606,
@@ -25108,7 +26012,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25127,7 +26031,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7607,
@@ -25138,7 +26043,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25157,7 +26062,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7608,
@@ -25168,7 +26074,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25187,7 +26093,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7609,
@@ -25198,7 +26105,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25217,7 +26124,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7610,
@@ -25228,7 +26136,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25247,7 +26155,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7611,
@@ -25258,7 +26167,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25277,7 +26186,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7622,
@@ -25288,7 +26198,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.22,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25305,7 +26215,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7623,
@@ -25316,7 +26227,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25333,7 +26244,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7624,
@@ -25344,7 +26256,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.39,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25361,7 +26273,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7625,
@@ -25372,7 +26285,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.45,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25389,7 +26302,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7626,
@@ -25400,7 +26314,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.48,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25417,7 +26331,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7612,
@@ -25428,7 +26343,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25447,7 +26362,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7613,
@@ -25458,7 +26374,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25477,7 +26393,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7614,
@@ -25488,7 +26405,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25507,7 +26424,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7615,
@@ -25518,7 +26436,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25537,7 +26455,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7616,
@@ -25548,7 +26467,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25567,7 +26486,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7617,
@@ -25578,7 +26498,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25597,7 +26517,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7618,
@@ -25608,7 +26529,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.51,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 3,
@@ -25627,7 +26548,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7619,
@@ -25638,7 +26560,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.66,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 4,
@@ -25657,7 +26579,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7620,
@@ -25668,7 +26591,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 1,
@@ -25687,7 +26610,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7621,
@@ -25698,7 +26622,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 8,
@@ -25717,7 +26641,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7627,
@@ -25728,7 +26653,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25745,7 +26670,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7628,
@@ -25756,7 +26682,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25773,7 +26699,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7629,
@@ -25784,7 +26711,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25801,7 +26728,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7630,
@@ -25812,7 +26740,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25829,7 +26757,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7631,
@@ -25840,7 +26769,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.53,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25857,7 +26786,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7632,
@@ -25868,7 +26798,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.35,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -25887,7 +26817,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7633,
@@ -25896,9 +26827,9 @@ export const products: Product[] = [
     "color": "White",
     "variety": "Tibet",
     "length": "50 cm",
-    "price": 1.51,
+    "price": 1.32,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -25917,7 +26848,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7634,
@@ -25926,9 +26858,9 @@ export const products: Product[] = [
     "color": "White",
     "variety": "Tibet",
     "length": "60 cm",
-    "price": 1.66,
+    "price": 1.4,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 125,
     "box_type": "QB",
     "stock": 5,
@@ -25947,7 +26879,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7635,
@@ -25958,7 +26891,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.75,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 3,
@@ -25977,7 +26910,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7636,
@@ -25988,7 +26922,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.81,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26007,7 +26941,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7637,
@@ -26018,7 +26953,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26035,7 +26970,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7638,
@@ -26046,7 +26982,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26063,7 +26999,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7639,
@@ -26074,7 +27011,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26091,7 +27028,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7640,
@@ -26102,7 +27040,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26119,7 +27057,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7641,
@@ -26130,7 +27069,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26147,7 +27086,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7642,
@@ -26158,7 +27098,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26175,7 +27115,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7643,
@@ -26186,7 +27127,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26203,7 +27144,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7644,
@@ -26214,7 +27156,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26231,7 +27173,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7645,
@@ -26242,7 +27185,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26259,7 +27202,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7646,
@@ -26270,7 +27214,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26287,7 +27231,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7652,
@@ -26298,7 +27243,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26317,7 +27262,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7653,
@@ -26328,7 +27274,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26347,7 +27293,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7654,
@@ -26358,7 +27305,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26377,7 +27324,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7655,
@@ -26388,7 +27336,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26407,7 +27355,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7656,
@@ -26418,7 +27367,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26437,7 +27386,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7657,
@@ -26448,7 +27398,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.22,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26467,7 +27417,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7658,
@@ -26478,7 +27429,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26497,7 +27448,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7659,
@@ -26508,7 +27460,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.39,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 1,
@@ -26527,7 +27479,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7660,
@@ -26538,7 +27491,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.45,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 5,
@@ -26557,7 +27510,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7661,
@@ -26568,7 +27522,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.48,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26587,7 +27541,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7647,
@@ -26598,7 +27553,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26617,7 +27572,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7648,
@@ -26628,7 +27584,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26647,7 +27603,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7649,
@@ -26658,7 +27615,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26677,7 +27634,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7650,
@@ -26688,7 +27646,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26707,7 +27665,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7651,
@@ -26718,7 +27677,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26737,7 +27696,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7662,
@@ -26748,7 +27708,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26765,7 +27725,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7663,
@@ -26776,7 +27737,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26793,7 +27754,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7664,
@@ -26804,7 +27766,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26821,7 +27783,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7665,
@@ -26832,7 +27795,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26849,7 +27812,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7666,
@@ -26860,7 +27824,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26877,7 +27841,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7667,
@@ -26888,7 +27853,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.31,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26907,7 +27872,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7668,
@@ -26918,7 +27884,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26937,7 +27903,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7669,
@@ -26948,7 +27915,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.5,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26967,7 +27934,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7670,
@@ -26978,7 +27946,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.59,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -26997,7 +27965,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7671,
@@ -27008,7 +27977,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 1.65,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27027,7 +27996,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7672,
@@ -27038,7 +28008,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.41,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27057,7 +28027,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7673,
@@ -27068,7 +28039,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.56,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27087,7 +28058,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7674,
@@ -27098,7 +28070,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 1.71,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27117,7 +28089,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7675,
@@ -27128,7 +28101,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 1.86,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27147,7 +28120,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7676,
@@ -27158,7 +28132,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.01,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27177,7 +28151,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7677,
@@ -27188,7 +28163,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27205,7 +28180,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7678,
@@ -27216,7 +28192,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27233,7 +28209,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7679,
@@ -27244,7 +28221,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27261,7 +28238,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7680,
@@ -27272,7 +28250,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27289,7 +28267,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7681,
@@ -27300,7 +28279,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27317,7 +28296,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7682,
@@ -27328,7 +28308,7 @@ export const products: Product[] = [
     "length": "40 cm",
     "price": 1.78,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27345,7 +28325,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7683,
@@ -27356,7 +28337,7 @@ export const products: Product[] = [
     "length": "50 cm",
     "price": 1.93,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27373,7 +28354,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7684,
@@ -27384,7 +28366,7 @@ export const products: Product[] = [
     "length": "60 cm",
     "price": 2.08,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27401,7 +28383,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7685,
@@ -27412,7 +28395,7 @@ export const products: Product[] = [
     "length": "70 cm",
     "price": 2.23,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27429,7 +28412,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7686,
@@ -27440,7 +28424,7 @@ export const products: Product[] = [
     "length": "80 cm",
     "price": 2.38,
     "unit": "Stem",
-    "stems_per_bunch": 10,
+    "stems_per_bunch": 1,
     "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
@@ -27457,7 +28441,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7689,
@@ -27488,7 +28473,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7690,
@@ -27518,37 +28504,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7695,
-    "name": "Focal Scoop White 55-60cm",
-    "category": "Scabiosa",
-    "color": "White",
-    "variety": "Focal Scoop",
-    "length": "55-60 cm",
-    "price": 1.46,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "focal-scoop-white-55-60cm",
-    "images": [
-      "/images/shop/other/scabiosa-white-improved.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7691,
@@ -27557,7 +28514,7 @@ export const products: Product[] = [
     "color": "Burgundy",
     "variety": "Focal Scoop",
     "length": "55-60 cm",
-    "price": 0,
+    "price": 1.46,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 0,
@@ -27578,7 +28535,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7693,
@@ -27608,7 +28566,39 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7695,
+    "name": "Focal Scoop White 55-60cm",
+    "category": "Scabiosa",
+    "color": "White",
+    "variety": "Focal Scoop",
+    "length": "55-60 cm",
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "focal-scoop-white-55-60cm",
+    "images": [
+      "/images/shop/other/scabiosa-white-improved.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7692,
@@ -27638,7 +28628,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7694,
@@ -27647,7 +28638,7 @@ export const products: Product[] = [
     "color": "White",
     "variety": "Focal Scoop",
     "length": "70 cm",
-    "price": 1.3,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 10,
     "units_per_box": 100,
@@ -27666,7 +28657,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7696,
@@ -27696,7 +28688,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7697,
@@ -27724,7 +28717,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7098,
@@ -27754,35 +28748,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7011,
-    "name": "XLarge Red 50",
-    "category": "Tropicals",
-    "color": "Red",
-    "variety": "Anthurium",
-    "length": "50 cm",
-    "price": 5.12,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 40,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "xlarge-red-50",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7009,
@@ -27810,35 +28777,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
-  },
-  {
-    "id": 7010,
-    "name": "XLarge Assorted 50",
-    "category": "Tropicals",
-    "color": "Assorted",
-    "variety": "Anthurium",
-    "length": "50 cm",
-    "price": 5.12,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 40,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "xlarge-assorted-50",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7008,
@@ -27866,7 +28806,66 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7010,
+    "name": "XLarge Assorted 50",
+    "category": "Tropicals",
+    "color": "Assorted",
+    "variety": "Anthurium",
+    "length": "50 cm",
+    "price": 5.12,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 40,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "xlarge-assorted-50",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7011,
+    "name": "XLarge Red 50",
+    "category": "Tropicals",
+    "color": "Red",
+    "variety": "Anthurium",
+    "length": "50 cm",
+    "price": 5.12,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 40,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "xlarge-red-50",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7091,
@@ -27896,7 +28895,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7099,
@@ -27926,7 +28926,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7093,
@@ -27954,7 +28955,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7094,
@@ -27982,7 +28984,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7095,
@@ -28010,7 +29013,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7100,
@@ -28040,7 +29044,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7101,
@@ -28068,7 +29073,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7061,
@@ -28098,7 +29104,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7062,
@@ -28128,7 +29135,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7063,
@@ -28158,7 +29166,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7086,
@@ -28188,7 +29197,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7087,
@@ -28218,7 +29228,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7088,
@@ -28248,7 +29259,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7096,
@@ -28276,7 +29288,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7097,
@@ -28304,7 +29317,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7102,
@@ -28334,7 +29348,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7085,
@@ -28364,7 +29379,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7064,
@@ -28394,7 +29410,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7092,
@@ -28422,7 +29439,8 @@ export const products: Product[] = [
     "tier": "T3",
     "has_photo": false,
     "total_stems": null,
-    "contents_note": null
+    "contents_note": null,
+    "available_from": null
   }
 ];
 

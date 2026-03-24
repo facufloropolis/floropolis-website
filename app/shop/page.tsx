@@ -127,9 +127,19 @@ interface VarietyGroup {
   compareAtPrice: number | null; // market rate for strikethrough display
 }
 
+// Returns true if a product is available to show based on tier + available_from rules.
+// T1/T2: must be 5+ days out. T3: must be 14+ days out. Null available_from = always show.
+function isAvailable(p: Product): boolean {
+  if (!p.available_from) return true;
+  const daysUntil = Math.ceil((new Date(p.available_from).getTime() - Date.now()) / 86400000);
+  if (p.tier === "T3") return daysUntil >= 14;
+  return daysUntil >= 5; // T1, T2
+}
+
 function buildVarietyGroups(): VarietyGroup[] {
   const groups = new Map<string, Product[]>();
   for (const p of catalogProducts) {
+    if (!isAvailable(p)) continue;
     if (p.price <= 0) {
       console.warn(`[PRICE ISSUE] Product "${p.name}" (ID: ${p.id}, slug: ${p.slug}) has price=${p.price}. Needs data fix.`);
     }
