@@ -8,6 +8,13 @@ const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+// Validate required env vars at startup — errors visible in Vercel logs
+if (!BREVO_API_KEY) console.error("[notify-quote] MISSING ENV: BREVO_API_KEY — team emails will NOT send");
+if (!SUPABASE_URL) console.error("[notify-quote] MISSING ENV: NEXT_PUBLIC_SUPABASE_URL — quotes will NOT be saved");
+if (!SUPABASE_ANON_KEY) console.error("[notify-quote] MISSING ENV: NEXT_PUBLIC_SUPABASE_ANON_KEY — quotes will NOT be saved");
+if (!process.env.FACU_EMAIL) console.warn("[notify-quote] FACU_EMAIL not set, falling back to facu@floropolis.com");
+if (!process.env.JJ_EMAIL) console.warn("[notify-quote] JJ_EMAIL not set, falling back to jjp@floropolis.com");
+
 interface QuoteItem {
   slug: string;
   name: string;
@@ -145,7 +152,7 @@ async function saveToSupabase(payload: QuotePayload): Promise<{ id: number | nul
 // 2. Send email via Brevo
 async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null): Promise<boolean> {
   if (!BREVO_API_KEY) {
-    console.warn("[Brevo] No API key configured, skipping email");
+    console.error("[Brevo] MISSING BREVO_API_KEY — team notification email NOT sent for this quote");
     return false;
   }
 
@@ -307,6 +314,24 @@ async function sendCustomerConfirmation(payload: QuotePayload, quoteId: number |
   }
 }
 
+// Flag quote in Supabase when notifications fail
+async function flagQuoteNotificationFailure(quoteId: number, reason: string): Promise<void> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !quoteId) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/quote_requests?id=eq.${quoteId}`, {
+      method: "PATCH",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ internal_notes: `NOTIFICATION FAILED: ${reason}` }),
+    });
+  } catch (err) {
+    console.error("[Quote] Could not flag notification failure:", err);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const payload: QuotePayload = await req.json();
@@ -314,11 +339,15 @@ export async function POST(req: NextRequest) {
     // 1. Save to Supabase
     const { id: quoteId, error: dbError } = await saveToSupabase(payload);
     if (dbError) {
-      console.warn("[Quote] DB save failed:", dbError, "— continuing with email");
+      console.error("[Quote] DB save FAILED:", dbError, "— quote may be lost");
     }
 
     // 2. Send internal notification email via Brevo
     const emailSent = await sendBrevoEmail(payload, quoteId);
+    if (!emailSent) {
+      console.error(`[Quote] Team email FAILED for #${quoteId} (${payload.business_name}) — manual follow-up required`);
+      if (quoteId) flagQuoteNotificationFailure(quoteId, "Team email not sent — check BREVO_API_KEY");
+    }
 
     // 2b. Append to Google Sheet (Tab 1: Quote Requests) — non-blocking
     appendQuoteToSheet({
@@ -334,10 +363,13 @@ export async function POST(req: NextRequest) {
       shippingCity: payload.shipping_city,
       shippingState: payload.shipping_state,
       notes: payload.notes,
-    }).catch((err) => console.error("[Sheets] Quote append failed:", err));
+    }).catch((err) => console.error("[Sheets] Quote append FAILED:", err));
 
     // 3. Send customer confirmation email
     const customerEmailSent = await sendCustomerConfirmation(payload, quoteId);
+    if (!customerEmailSent) {
+      console.error(`[Quote] Customer confirmation email FAILED for #${quoteId} — ${payload.email}`);
+    }
 
     // 4. Build WhatsApp URL for client
     const itemsText = formatItemsText(payload.items);
@@ -364,12 +396,19 @@ export async function POST(req: NextRequest) {
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}`;
 
     // Log result
-    console.log(`[Quote] Saved: ${quoteId ? `#${quoteId}` : "FAILED"} | Team email: ${emailSent ? "SENT" : "FAILED"} | Customer email: ${customerEmailSent ? "SENT" : "FAILED"} | ${payload.business_name} | $${payload.total.toFixed(2)}`);
+    console.log(`[Quote] #${quoteId ?? "NO_ID"} | db:${dbError ? "FAILED" : "OK"} | team_email:${emailSent ? "OK" : "FAILED"} | customer_email:${customerEmailSent ? "OK" : "FAILED"} | ${payload.business_name} | $${payload.total.toFixed(2)}`);
+
+    const warnings: string[] = [];
+    if (!emailSent) warnings.push("Team notification email failed — check Vercel logs");
+    if (!customerEmailSent) warnings.push("Customer confirmation email failed");
+    if (dbError) warnings.push("Quote may not have saved to database");
 
     return NextResponse.json({
       success: true,
       quote_id: quoteId,
       email_sent: emailSent,
+      customer_email_sent: customerEmailSent,
+      warnings: warnings.length > 0 ? warnings : undefined,
       whatsapp_url: whatsappUrl,
     });
   } catch (err) {
