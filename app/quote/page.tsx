@@ -574,8 +574,9 @@ export default function QuotePage() {
               <h2 className="text-lg font-bold text-slate-900 mb-1">
                 Your Details
               </h2>
+              {/* EXP-052: Reduce commitment anxiety — "quote request" framing vs "order confirmation" */}
               <p className="text-xs text-slate-500 mb-4">
-                We'll confirm your order within 1 hour (Mon–Fri, 8 AM – 6 PM ET).
+                No commitment. We'll respond with availability &amp; final pricing within 1 hour (Mon–Fri, 8–6 ET).
               </p>
 
               {/* Existing client toggle */}
@@ -610,12 +611,12 @@ export default function QuotePage() {
                     />
                   </div>
                   <div>
+                    {/* EXP-051: Business name optional — reduces barrier for new visitors exploring for first time */}
                     <label className="block text-slate-700 mb-1 text-xs font-medium">
-                      Business Name *
+                      Business Name <span className="text-slate-400 font-normal">(optional)</span>
                     </label>
                     <input
                       name="business_name"
-                      required
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your shop"
                     />
@@ -810,7 +811,7 @@ export default function QuotePage() {
                   disabled={submitting || items.length === 0}
                   className="w-full rounded-xl bg-emerald-600 text-white text-sm font-bold px-6 py-3.5 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-700 transition-all"
                 >
-                  {submitting ? "Submitting..." : "Submit Quote Request"}
+                  {submitting ? "Sending..." : "Get My Free Quote →"}
                 </button>
 
                 <p className="text-[10px] text-slate-400 text-center mt-1">
