@@ -129,12 +129,18 @@ interface VarietyGroup {
 }
 
 // Returns true if a product is available to show based on tier + available_from rules.
-// T1/T2: must be 5+ days out. T3: must be 14+ days out. Null available_from = always show.
+// T1/T2: must have arrival_date >= today+5. Null = HIDE (no scheduled availability).
+// T3: passive catalog — null = SHOW (orderable on request). Past dates = HIDE (batch expired).
 function isAvailable(p: Product): boolean {
-  if (!p.available_from) return true;
+  if (p.tier === "T3") {
+    if (!p.available_from) return true; // T3 passive catalog: no date = always show
+    const daysUntil = Math.ceil((new Date(p.available_from).getTime() - Date.now()) / 86400000);
+    return daysUntil >= 14;
+  }
+  // T1, T2: must have a valid date >= 5 days out
+  if (!p.available_from) return false; // T1/T2 with no date = hide
   const daysUntil = Math.ceil((new Date(p.available_from).getTime() - Date.now()) / 86400000);
-  if (p.tier === "T3") return daysUntil >= 14;
-  return daysUntil >= 5; // T1, T2
+  return daysUntil >= 5;
 }
 
 function buildVarietyGroups(): VarietyGroup[] {
