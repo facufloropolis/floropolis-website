@@ -1108,9 +1108,9 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             <span className="text-slate-400">· {group.variantCount} options</span>
           )}
         </p>
-        {/* EXP-053: "Select Size →" is clearer than "View Options →" for B2B florists choosing stem length */}
+        {/* EXP-053/066: "Select Size →" for multi-variant, "Add to Quote →" for single-variant */}
         <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
-          Select Size →
+          {group.variantCount > 1 ? "Select Size →" : "Add to Quote →"}
         </span>
       </div>
     </Link>
