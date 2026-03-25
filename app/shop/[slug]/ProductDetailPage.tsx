@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import QuoteBar from "@/components/QuoteBar";
 import TopBanner from "@/components/TopBanner";
 import { ShoppingCart, Check, Package } from "lucide-react";
 import type { Product } from "@/lib/data/products";
@@ -1077,6 +1078,7 @@ export default function ProductDetailPage({
         </div>
       )}
 
+      <QuoteBar />
       <Footer />
     </div>
   );
