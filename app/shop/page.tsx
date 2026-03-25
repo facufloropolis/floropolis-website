@@ -313,6 +313,17 @@ function ShopPageContent() {
     setFiltersInitialized(true);
   }, [searchParams]);
 
+  // EXP-061: Track shop page entry with initial filter context
+  useEffect(() => {
+    if (!filtersInitialized) return;
+    pushEvent(CTA_EVENTS.shop_page_viewed, {
+      has_filters: (searchParams.get("category") || searchParams.get("color") || searchParams.get("q")) ? true : false,
+      category_filter: searchParams.get("category") ?? "",
+      color_filter: searchParams.get("color") ?? "",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersInitialized]);
+
   // Sync filters to URL using replaceState (NOT router.replace) so GA4 doesn't count
   // filter clicks as new /shop page views — keeps URL shareable without inflating analytics
   useEffect(() => {

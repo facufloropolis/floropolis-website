@@ -60,6 +60,8 @@ export const CTA_EVENTS = {
   quote_form_started: "quote_form_started",
   // EXP-056: WhatsApp quote path
   quote_whatsapp_click: "quote_whatsapp_click",
+  // EXP-061: Shop page funnel entry
+  shop_page_viewed: "shop_page_viewed",
 } as const;
 
 /** Delay (ms) before following external/mailto/tel links so GTM can send the hit before page unload. */
