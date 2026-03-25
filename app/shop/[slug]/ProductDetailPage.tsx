@@ -11,7 +11,7 @@ import { ShoppingCart, Check, Package } from "lucide-react";
 import type { Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
-import { addItem, type QuoteItem } from "@/lib/quote-cart";
+import { addItem, getItemCount, type QuoteItem } from "@/lib/quote-cart";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
@@ -434,6 +434,15 @@ export default function ProductDetailPage({
     );
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // EXP-024 conflict fix: hide sticky mobile CTA when QuoteBar is showing (both occupy fixed bottom-0)
+  const [cartCount, setCartCount] = useState(0);
+  useEffect(() => {
+    const update = () => setCartCount(getItemCount());
+    update();
+    window.addEventListener("quote-cart-updated", update);
+    return () => window.removeEventListener("quote-cart-updated", update);
   }, []);
 
   const whatsappText = encodeURIComponent(
@@ -1069,7 +1078,7 @@ export default function ProductDetailPage({
       <WhatsAppWidget message={`Hi! I'm interested in ${displayName} from Floropolis.`} />
 
       {/* EXP-024: Sticky mobile Add to Quote bar — visible on small screens when main button off-screen */}
-      {showStickyBtn && isPriceAvailable && (
+      {showStickyBtn && isPriceAvailable && cartCount === 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-lg pb-safe">
           <div className="flex items-center gap-3">
             <div className="flex-1 min-w-0">
