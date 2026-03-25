@@ -134,7 +134,9 @@ interface VarietyGroup {
 function isAvailable(p: Product): boolean {
   if (!p.available_from) return false; // all tiers: no date = hide
   if (!p.price || p.price <= 0) return false; // all tiers: no valid price = hide
-  const daysUntil = Math.ceil((new Date(p.available_from).getTime() - Date.now()) / 86400000);
+  // Parse with T12:00:00 (noon UTC) so date-only strings aren't treated as UTC midnight,
+  // which can cause products to appear 1 UTC day short when business runs on Pacific time.
+  const daysUntil = Math.ceil((new Date(p.available_from + "T12:00:00").getTime() - Date.now()) / 86400000);
   if (p.tier === "T3") return daysUntil >= 14;
   return daysUntil >= 5; // T1, T2
 }
