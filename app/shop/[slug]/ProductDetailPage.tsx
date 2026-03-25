@@ -621,91 +621,89 @@ export default function ProductDetailPage({
               )}
             </div>
 
-            {/* Length toggle */}
-            {uniqueLengths.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm font-semibold text-slate-700 mb-2">
-                  Stem Length
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {uniqueLengths.map((len) => {
-                    const available = availableLengthsForBoxType.has(len);
-                    const isSelected = selectedLength === len;
-                    // Find price for this length
-                    const variantForLen = variants.find(
-                      (v) => v.length === len && (!selectedBoxType || v.box_type === selectedBoxType),
-                    ) || variants.find((v) => v.length === len);
-                    const lenPrice = variantForLen ? (variantForLen.deal_price ?? variantForLen.price) : null;
-                    return (
-                      <button
-                        key={len}
-                        type="button"
-                        onClick={() => available && setSelectedLength(len)}
-                        disabled={!available}
-                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                          isSelected
-                            ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                            : available
-                            ? "border-slate-300 text-slate-700 hover:border-emerald-400"
-                            : "border-slate-200 text-slate-300 cursor-not-allowed bg-slate-50"
-                        }`}
-                      >
-                        {len}
-                        {lenPrice != null && uniqueLengths.length > 1 && (
-                          <span className={`ml-1 text-xs ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
-                            ${lenPrice.toFixed(2)}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+            {/* EXP-072: Unified variant selector — replaces separate Length + Box pill selectors.
+                Shows all variants as tap cards with price/stem + total box cost at a glance.
+                One tap selects both length and box type simultaneously. */}
+            {(uniqueLengths.length > 1 || uniqueBoxTypes.length > 1) && (
+              <div className="mb-5">
+                <p className="text-sm font-semibold text-slate-700 mb-2">Choose Your Option</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {[...variants]
+                    .sort((a, b) => (a.deal_price ?? a.price) - (b.deal_price ?? b.price))
+                    .map((v) => {
+                      const vPrice = v.deal_price ?? v.price;
+                      const vStems =
+                        v.unit === "Box"
+                          ? ((v as { total_stems?: number }).total_stems ?? null)
+                          : v.stems_per_bunch && v.units_per_box
+                          ? Math.round(v.stems_per_bunch * v.units_per_box)
+                          : null;
+                      const vTotal = vPrice > 0 && vStems ? vPrice * vStems : null;
+                      const isSelected = v.length === selectedLength && v.box_type === selectedBoxType;
+                      const dimLabel = [
+                        v.length,
+                        BOX_TYPE_LABELS[v.box_type ?? ""] || v.box_type,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ");
+                      return (
+                        <button
+                          key={v.slug}
+                          type="button"
+                          onClick={() => {
+                            if (v.length) setSelectedLength(v.length);
+                            if (v.box_type) setSelectedBoxType(v.box_type);
+                          }}
+                          className={`text-left rounded-xl border p-3 transition-colors ${
+                            isSelected
+                              ? "border-emerald-600 bg-emerald-50 ring-1 ring-emerald-500"
+                              : "border-slate-200 hover:border-emerald-300 bg-white"
+                          }`}
+                        >
+                          <p
+                            className={`text-sm font-semibold leading-snug ${
+                              isSelected ? "text-emerald-800" : "text-slate-800"
+                            }`}
+                          >
+                            {dimLabel || v.name}
+                          </p>
+                          {vStems != null && vStems > 0 && (
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              {vStems.toLocaleString()} stems
+                            </p>
+                          )}
+                          {vPrice > 0 && (
+                            <p
+                              className={`text-sm font-bold mt-1 ${
+                                isSelected ? "text-emerald-700" : "text-slate-700"
+                              }`}
+                            >
+                              ${vPrice.toFixed(2)}/{v.unit === "Bunch" ? "bunch" : "stem"}
+                            </p>
+                          )}
+                          {vTotal != null && vTotal > 0 && (
+                            <p
+                              className={`text-xs mt-0.5 ${
+                                isSelected ? "text-emerald-600" : "text-slate-400"
+                              }`}
+                            >
+                              ≈ ${vTotal.toFixed(0)} box total
+                            </p>
+                          )}
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
             )}
-
-            {/* Box type toggle */}
-            {uniqueBoxTypes.length > 0 && (
+            {/* Single-variant: show box info as read-only label */}
+            {uniqueLengths.length <= 1 && uniqueBoxTypes.length <= 1 && uniqueBoxTypes.length > 0 && (
               <div className="mb-4">
-                <p className="text-sm font-semibold text-slate-700 mb-2">
-                  Box Size
+                <p className="text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">Box Size</p>
+                <p className="text-sm text-slate-700 font-semibold">
+                  {BOX_TYPE_LABELS[uniqueBoxTypes[0]] || uniqueBoxTypes[0]}
+                  {uniqueLengths[0] ? ` · ${uniqueLengths[0]}` : ""}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {uniqueBoxTypes.map((bt) => {
-                    const available = availableBoxTypesForLength.has(bt);
-                    const isSelected = selectedBoxType === bt;
-                    // Find variant for this box type to show stem count
-                    const variantForBt = variants.find(
-                      (v) => v.box_type === bt && (!selectedLength || v.length === selectedLength),
-                    ) || variants.find((v) => v.box_type === bt);
-                    const stemCount = variantForBt
-                      ? variantForBt.unit === "Box"
-                        ? ((variantForBt as { total_stems?: number }).total_stems ?? null)
-                        : Math.round((variantForBt.stems_per_bunch || 1) * (variantForBt.units_per_box || 0))
-                      : null;
-                    return (
-                      <button
-                        key={bt}
-                        type="button"
-                        onClick={() => available && setSelectedBoxType(bt)}
-                        disabled={!available}
-                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                          isSelected
-                            ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                            : available
-                            ? "border-slate-300 text-slate-700 hover:border-emerald-400"
-                            : "border-slate-200 text-slate-300 cursor-not-allowed bg-slate-50"
-                        }`}
-                      >
-                        {BOX_TYPE_LABELS[bt] || bt}
-                        {stemCount != null && stemCount > 0 && (
-                          <span className={`ml-1 text-xs ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
-                            ({stemCount.toLocaleString()} stems)
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
             )}
 
