@@ -33,6 +33,11 @@ body {
   animation: bounce-once 0.8s ease-out;
 }
 
+/* iOS safe-area padding for fixed bottom bars (QuoteBar, WhatsApp widget) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* Hide scrollbar for horizontal carousels */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
