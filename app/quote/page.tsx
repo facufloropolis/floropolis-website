@@ -66,6 +66,15 @@ export default function QuotePage() {
   // EXP-060: Pre-fill form for logged-in users
   const { user, profile } = useAuth();
 
+  // EXP-063: Pre-fill from localStorage for returning visitors who aren't logged in
+  const savedContact = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem("fp_quote_contact");
+      return raw ? JSON.parse(raw) as { name: string; business: string; email: string; phone: string } : null;
+    } catch { return null; }
+  }, []);
+
   const sync = () => setItems(getCartItems());
 
   useEffect(() => {
@@ -234,6 +243,15 @@ export default function QuotePage() {
         throw new Error(data.error || "Submission failed");
       }
 
+      // EXP-063: Save contact info so returning visitors get pre-filled form
+      try {
+        localStorage.setItem("fp_quote_contact", JSON.stringify({
+          name: payload.contact_name,
+          business: payload.business_name ?? "",
+          email: payload.email,
+          phone: payload.phone ?? "",
+        }));
+      } catch { /* ignore storage errors */ }
       pushEvent(CTA_EVENTS.submit_quote, {
         item_count: items.length,
         quote_total: total,
@@ -654,7 +672,7 @@ export default function QuotePage() {
                       required
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your name"
-                      defaultValue={user?.user_metadata?.full_name ?? ""}
+                      defaultValue={user?.user_metadata?.full_name ?? savedContact?.name ?? ""}
                     />
                   </div>
                   <div>
@@ -666,7 +684,7 @@ export default function QuotePage() {
                       name="business_name"
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your shop"
-                      defaultValue={profile?.business_name ?? ""}
+                      defaultValue={profile?.business_name ?? savedContact?.business ?? ""}
                     />
                   </div>
                 </div>
@@ -682,7 +700,7 @@ export default function QuotePage() {
                       required
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="you@company.com"
-                      defaultValue={user?.email ?? ""}
+                      defaultValue={user?.email ?? savedContact?.email ?? ""}
                     />
                   </div>
                   <div>
@@ -695,7 +713,7 @@ export default function QuotePage() {
                       type="tel"
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Speeds up confirmation"
-                      defaultValue={profile?.phone ?? ""}
+                      defaultValue={profile?.phone ?? savedContact?.phone ?? ""}
                     />
                   </div>
                 </div>
