@@ -1,6 +1,6 @@
 /**
  * Auto-generated product catalog from Supabase floropolis_inventory.
- * Generated: 2026-03-24T23:17:47.245Z
+ * Generated: 2026-03-25T02:19:07.790Z
  * Total products: 1034
  * Tiers: {"T1":102,"T2":142,"T3":790}
  *
@@ -39,18 +39,18 @@ export interface Product {
 
 export const products: Product[] = [
   {
-    "id": 6677,
-    "name": "FullStar Blue 35cm",
+    "id": 6676,
+    "name": "FullStar Assorted 35cm",
     "category": "Anemone",
-    "color": "Blue",
+    "color": "Assorted",
     "variety": "FullStar",
     "length": "35 cm",
-    "price": 1.23,
+    "price": 1.28,
     "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
     "box_type": "EB",
-    "stock": 20,
+    "stock": 10,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -59,15 +59,15 @@ export const products: Product[] = [
     "is_best_seller": true,
     "is_featured": false,
     "display_order": 999,
-    "slug": "fullstar-blue-35cm",
+    "slug": "fullstar-assorted-35cm",
     "images": [
-      "/images/shop/anemone/anemone-full-star-blue.jpg"
+      "/images/shop/anemone/fullstar-assorted.png"
     ],
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-04"
+    "available_from": "2026-03-29"
   },
   {
     "id": 6678,
@@ -101,18 +101,18 @@ export const products: Product[] = [
     "available_from": "2026-04-04"
   },
   {
-    "id": 6676,
-    "name": "FullStar Assorted 35cm",
+    "id": 6677,
+    "name": "FullStar Blue 35cm",
     "category": "Anemone",
-    "color": "Assorted",
+    "color": "Blue",
     "variety": "FullStar",
     "length": "35 cm",
-    "price": 1.28,
+    "price": 1.23,
     "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
     "box_type": "EB",
-    "stock": 10,
+    "stock": 20,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -121,15 +121,15 @@ export const products: Product[] = [
     "is_best_seller": true,
     "is_featured": false,
     "display_order": 999,
-    "slug": "fullstar-assorted-35cm",
+    "slug": "fullstar-blue-35cm",
     "images": [
-      "/images/shop/anemone/fullstar-assorted.png"
+      "/images/shop/anemone/anemone-full-star-blue.jpg"
     ],
     "tier": "T1",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-04"
   },
   {
     "id": 6695,
@@ -3232,99 +3232,6 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 6787,
-    "name": "Mariane White",
-    "category": "Anemone",
-    "color": "White",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-white",
-    "images": [
-      "/images/shop/anemone/anemones-white.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-23"
-  },
-  {
-    "id": 6782,
-    "name": "Mariane Blue",
-    "category": "Anemone",
-    "color": "Blue",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-blue",
-    "images": [
-      "/images/shop/anemone/anemones-blue.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-05"
-  },
-  {
-    "id": 6785,
-    "name": "Mariane Pink",
-    "category": "Anemone",
-    "color": "Pink",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-pink",
-    "images": [
-      "/images/shop/anemone/anemones-pink.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-21"
-  },
-  {
     "id": 6784,
     "name": "Mariane Fuchsia",
     "category": "Anemone",
@@ -3354,68 +3261,6 @@ export const products: Product[] = [
     "total_stems": null,
     "contents_note": null,
     "available_from": "2026-04-16"
-  },
-  {
-    "id": 6786,
-    "name": "Mariane Red",
-    "category": "Anemone",
-    "color": "Red",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-red",
-    "images": [
-      "/images/shop/anemone/anemones-red.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-23"
-  },
-  {
-    "id": 6783,
-    "name": "Mariane Burgundy",
-    "category": "Anemone",
-    "color": "Burgundy",
-    "variety": "Mariane",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mariane-burgundy",
-    "images": [
-      "/images/shop/anemone/anemones-burdeaux.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-10"
   },
   {
     "id": 6781,
@@ -3449,6 +3294,192 @@ export const products: Product[] = [
     "available_from": "2026-03-30"
   },
   {
+    "id": 6783,
+    "name": "Mariane Burgundy",
+    "category": "Anemone",
+    "color": "Burgundy",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-burgundy",
+    "images": [
+      "/images/shop/anemone/anemones-burdeaux.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-10"
+  },
+  {
+    "id": 6785,
+    "name": "Mariane Pink",
+    "category": "Anemone",
+    "color": "Pink",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-pink",
+    "images": [
+      "/images/shop/anemone/anemones-pink.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-21"
+  },
+  {
+    "id": 6782,
+    "name": "Mariane Blue",
+    "category": "Anemone",
+    "color": "Blue",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-blue",
+    "images": [
+      "/images/shop/anemone/anemones-blue.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-05"
+  },
+  {
+    "id": 6787,
+    "name": "Mariane White",
+    "category": "Anemone",
+    "color": "White",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-white",
+    "images": [
+      "/images/shop/anemone/anemones-white.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-03-23"
+  },
+  {
+    "id": 6786,
+    "name": "Mariane Red",
+    "category": "Anemone",
+    "color": "Red",
+    "variety": "Mariane",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mariane-red",
+    "images": [
+      "/images/shop/anemone/anemones-red.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-03-23"
+  },
+  {
+    "id": 7784,
+    "name": "Anemone Burgundy Mariane 30-35CM",
+    "category": "Anemone",
+    "color": "Burgundy",
+    "variety": "Mariane",
+    "length": "30-35 cm",
+    "price": 1.16,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "anemone-burgundy-mariane-30-35cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634590.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-10"
+  },
+  {
     "id": 7785,
     "name": "Anemone Fuchsia Mariane 30-35CM",
     "category": "Anemone",
@@ -3480,10 +3511,10 @@ export const products: Product[] = [
     "available_from": "2026-04-16"
   },
   {
-    "id": 7783,
-    "name": "Anemone Blue Mariane 30-35CM",
+    "id": 7787,
+    "name": "Anemone Red Mariane 30-35CM",
     "category": "Anemone",
-    "color": "Blue",
+    "color": "Red",
     "variety": "Mariane",
     "length": "30-35 cm",
     "price": 1.16,
@@ -3491,7 +3522,7 @@ export const products: Product[] = [
     "stems_per_bunch": 1,
     "units_per_box": 120,
     "box_type": "EB",
-    "stock": 32,
+    "stock": 20,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -3500,9 +3531,9 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "anemone-blue-mariane-30-35cm",
+    "slug": "anemone-red-mariane-30-35cm",
     "images": [
-      "/images/shop/anemone/mariane-blue.png"
+      "/images/shop/anemone/mariane-red.png"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -3542,10 +3573,10 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 7787,
-    "name": "Anemone Red Mariane 30-35CM",
+    "id": 7783,
+    "name": "Anemone Blue Mariane 30-35CM",
     "category": "Anemone",
-    "color": "Red",
+    "color": "Blue",
     "variety": "Mariane",
     "length": "30-35 cm",
     "price": 1.16,
@@ -3553,7 +3584,7 @@ export const products: Product[] = [
     "stems_per_bunch": 1,
     "units_per_box": 120,
     "box_type": "EB",
-    "stock": 20,
+    "stock": 32,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -3562,40 +3593,9 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "anemone-red-mariane-30-35cm",
+    "slug": "anemone-blue-mariane-30-35cm",
     "images": [
-      "/images/shop/anemone/mariane-red.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-29"
-  },
-  {
-    "id": 7782,
-    "name": "Anemone Assorted Mariane 30-35CM",
-    "category": "Anemone",
-    "color": "Assorted",
-    "variety": "Mariane",
-    "length": "30-35 cm",
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 40,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "anemone-assorted-mariane-30-35cm",
-    "images": [
-      "/images/shop/anemone/mariane-assorted.jpg"
+      "/images/shop/anemone/mariane-blue.png"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -3635,18 +3635,18 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 7784,
-    "name": "Anemone Burgundy Mariane 30-35CM",
+    "id": 7782,
+    "name": "Anemone Assorted Mariane 30-35CM",
     "category": "Anemone",
-    "color": "Burgundy",
+    "color": "Assorted",
     "variety": "Mariane",
     "length": "30-35 cm",
-    "price": 1.16,
+    "price": 1.08,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 100,
+    "units_per_box": 120,
     "box_type": "EB",
-    "stock": 20,
+    "stock": 40,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -3655,46 +3655,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "anemone-burgundy-mariane-30-35cm",
+    "slug": "anemone-assorted-mariane-30-35cm",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634590.png"
+      "/images/shop/anemone/mariane-assorted.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-10"
-  },
-  {
-    "id": 7790,
-    "name": "Anemone Fuchsia Mariane 35CM",
-    "category": "Anemone",
-    "color": "Fuchsia",
-    "variety": "Mariane",
-    "length": "35 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "anemone-fuchsia-mariane-35cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634580.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-18"
+    "available_from": "2026-03-29"
   },
   {
     "id": 7789,
@@ -3726,6 +3695,37 @@ export const products: Product[] = [
     "total_stems": null,
     "contents_note": null,
     "available_from": "2026-04-07"
+  },
+  {
+    "id": 7790,
+    "name": "Anemone Fuchsia Mariane 35CM",
+    "category": "Anemone",
+    "color": "Fuchsia",
+    "variety": "Mariane",
+    "length": "35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "anemone-fuchsia-mariane-35cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634580.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-18"
   },
   {
     "id": 7788,
@@ -3787,7 +3787,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7793,
@@ -3818,7 +3818,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7794,
@@ -3849,7 +3849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7795,
@@ -3880,7 +3880,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7796,
@@ -3911,7 +3911,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7797,
@@ -3940,7 +3940,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6801,
@@ -3971,7 +3971,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6804,
@@ -4002,7 +4002,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7800,
@@ -4033,7 +4033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7801,
@@ -4064,7 +4064,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6809,
@@ -4095,7 +4095,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7802,
@@ -4126,7 +4126,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7803,
@@ -4157,7 +4157,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7804,
@@ -4188,7 +4188,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7805,
@@ -4219,7 +4219,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 7806,
@@ -4250,7 +4250,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6820,
@@ -4687,37 +4687,6 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 6853,
-    "name": "Palm Areca Small Green",
-    "category": "Greens & Foliage",
-    "color": "Green",
-    "variety": "Areca Palm",
-    "length": null,
-    "price": 0.43,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 6000,
-    "box_type": "EB/HB/QB",
-    "stock": 54,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "palm-areca-small-green",
-    "images": [
-      "/images/shop/greens/areca-palm-green.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-29"
-  },
-  {
     "id": 6852,
     "name": "Palm Areca Medium Green",
     "category": "Greens & Foliage",
@@ -4746,7 +4715,38 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
+  },
+  {
+    "id": 6853,
+    "name": "Palm Areca Small Green",
+    "category": "Greens & Foliage",
+    "color": "Green",
+    "variety": "Areca Palm",
+    "length": null,
+    "price": 0.43,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 6000,
+    "box_type": "EB/HB/QB",
+    "stock": 54,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "palm-areca-small-green",
+    "images": [
+      "/images/shop/greens/areca-palm-green.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-01"
   },
   {
     "id": 6854,
@@ -4777,7 +4777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6845,
@@ -4808,7 +4808,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6847,
@@ -4837,7 +4837,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6848,
@@ -4868,7 +4868,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6849,
@@ -4899,7 +4899,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6850,
@@ -4930,7 +4930,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6851,
@@ -4959,7 +4959,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6856,
@@ -4990,7 +4990,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6857,
@@ -5021,7 +5021,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6858,
@@ -5052,7 +5052,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6859,
@@ -5083,7 +5083,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6860,
@@ -5114,7 +5114,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6861,
@@ -5145,7 +5145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6862,
@@ -5176,7 +5176,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6863,
@@ -5207,7 +5207,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6855,
@@ -5238,7 +5238,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6864,
@@ -5269,7 +5269,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6865,
@@ -5300,7 +5300,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6866,
@@ -5331,7 +5331,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6867,
@@ -5486,7 +5486,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6877,
@@ -5517,7 +5517,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6878,
@@ -5548,7 +5548,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6879,
@@ -5579,7 +5579,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6880,
@@ -5610,7 +5610,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6881,
@@ -5641,7 +5641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6882,
@@ -5672,7 +5672,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6883,
@@ -5703,7 +5703,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6884,
@@ -5732,7 +5732,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6885,
@@ -5763,7 +5763,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6886,
@@ -5794,7 +5794,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6887,
@@ -5825,7 +5825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6888,
@@ -5856,7 +5856,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6889,
@@ -5887,7 +5887,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6892,
@@ -5944,6 +5944,37 @@ export const products: Product[] = [
     "slug": "amandine-salmon",
     "images": [
       "/images/shop/ranunculus/amandine-salmon.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-03-29"
+  },
+  {
+    "id": 6894,
+    "name": "Amandine Orange",
+    "category": "Ranunculus",
+    "color": "Orange",
+    "variety": "Amandine",
+    "length": null,
+    "price": 1.08,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 48,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-orange",
+    "images": [
+      "/images/shop/ranunculus/amandine-orange.png"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -6074,41 +6105,10 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 6894,
-    "name": "Amandine Orange",
+    "id": 7717,
+    "name": "Amandine White 30-35CM",
     "category": "Ranunculus",
-    "color": "Orange",
-    "variety": "Amandine",
-    "length": null,
-    "price": 1.08,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 48,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-orange",
-    "images": [
-      "/images/shop/ranunculus/amandine-orange.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-29"
-  },
-  {
-    "id": 7712,
-    "name": "Amandine Hot Pink 30-35CM",
-    "category": "Ranunculus",
-    "color": "Hot Pink",
+    "color": "White",
     "variety": "Amandine",
     "length": "30-35 cm",
     "price": 1.23,
@@ -6116,7 +6116,7 @@ export const products: Product[] = [
     "stems_per_bunch": 1,
     "units_per_box": 120,
     "box_type": "QB",
-    "stock": 70,
+    "stock": 299,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -6125,9 +6125,9 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "amandine-hot-pink-30-35cm",
+    "slug": "amandine-white-30-35cm",
     "images": [
-      "/images/shop/ranunculus/pink-amandine-hot-pink.jpg"
+      "/images/shop/ranunculus/amandine-white.png"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -6165,10 +6165,10 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 7711,
-    "name": "Amandine Burgundy 30-35CM",
+    "id": 7712,
+    "name": "Amandine Hot Pink 30-35CM",
     "category": "Ranunculus",
-    "color": "Burgundy",
+    "color": "Hot Pink",
     "variety": "Amandine",
     "length": "30-35 cm",
     "price": 1.23,
@@ -6176,7 +6176,7 @@ export const products: Product[] = [
     "stems_per_bunch": 1,
     "units_per_box": 120,
     "box_type": "QB",
-    "stock": 0,
+    "stock": 70,
     "vendor": "Megaflor",
     "is_on_deal": false,
     "deal_label": null,
@@ -6185,40 +6185,9 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "amandine-burgundy-30-35cm",
+    "slug": "amandine-hot-pink-30-35cm",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634736.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-10"
-  },
-  {
-    "id": 7717,
-    "name": "Amandine White 30-35CM",
-    "category": "Ranunculus",
-    "color": "White",
-    "variety": "Amandine",
-    "length": "30-35 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 120,
-    "box_type": "QB",
-    "stock": 299,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "amandine-white-30-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-white.png"
+      "/images/shop/ranunculus/pink-amandine-hot-pink.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -6289,6 +6258,37 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
+    "id": 7711,
+    "name": "Amandine Burgundy 30-35CM",
+    "category": "Ranunculus",
+    "color": "Burgundy",
+    "variety": "Amandine",
+    "length": "30-35 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "amandine-burgundy-30-35cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634736.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-10"
+  },
+  {
     "id": 7715,
     "name": "Amandine Purple 30-35CM",
     "category": "Ranunculus",
@@ -6349,37 +6349,6 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 6903,
-    "name": "Assorted Rainbow",
-    "category": "Rose",
-    "color": "Rainbow",
-    "variety": "Assorted",
-    "length": null,
-    "price": 1.47,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 5,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "assorted-rainbow",
-    "images": [
-      "/images/shop/combos/roses-assorted-rainbow_3f985d44682c.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-29"
-  },
-  {
     "id": 6904,
     "name": "Assorted White",
     "category": "Rose",
@@ -6403,6 +6372,37 @@ export const products: Product[] = [
     "slug": "assorted-white",
     "images": [
       "/images/shop/combos/roses-assorted-whites_edb0ab505fd1.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-03-29"
+  },
+  {
+    "id": 6903,
+    "name": "Assorted Rainbow",
+    "category": "Rose",
+    "color": "Rainbow",
+    "variety": "Assorted",
+    "length": null,
+    "price": 1.47,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 5,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "assorted-rainbow",
+    "images": [
+      "/images/shop/combos/roses-assorted-rainbow_3f985d44682c.png"
     ],
     "tier": "T2",
     "has_photo": true,
@@ -6907,37 +6907,6 @@ export const products: Product[] = [
     "available_from": "2026-03-29"
   },
   {
-    "id": 6929,
-    "name": "Tiffany Lavender",
-    "category": "Rose",
-    "color": "Lavender",
-    "variety": "Tiffany",
-    "length": null,
-    "price": 1.55,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tiffany-lavender",
-    "images": [
-      "/images/shop/roses/tiffany-lavender.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-01"
-  },
-  {
     "id": 6930,
     "name": "Tiffany Peach",
     "category": "Rose",
@@ -6967,6 +6936,37 @@ export const products: Product[] = [
     "total_stems": null,
     "contents_note": null,
     "available_from": "2026-04-21"
+  },
+  {
+    "id": 6929,
+    "name": "Tiffany Lavender",
+    "category": "Rose",
+    "color": "Lavender",
+    "variety": "Tiffany",
+    "length": null,
+    "price": 1.55,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tiffany-lavender",
+    "images": [
+      "/images/shop/roses/tiffany-lavender.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-01"
   },
   {
     "id": 6931,
@@ -7059,7 +7059,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6934,
@@ -7090,38 +7090,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
-  },
-  {
-    "id": 6938,
-    "name": "Anthurium XLarge (12-14cm) Red",
-    "category": "Tropicals",
-    "color": "Red",
-    "variety": "Anthurium",
-    "length": null,
-    "price": 5.12,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 20,
-    "box_type": "EB/QB",
-    "stock": 28,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "anthurium-xlarge-12-14cm-red",
-    "images": [
-      "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6933,
@@ -7152,7 +7121,38 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
+  },
+  {
+    "id": 6938,
+    "name": "Anthurium XLarge (12-14cm) Red",
+    "category": "Tropicals",
+    "color": "Red",
+    "variety": "Anthurium",
+    "length": null,
+    "price": 5.12,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 20,
+    "box_type": "EB/QB",
+    "stock": 28,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "anthurium-xlarge-12-14cm-red",
+    "images": [
+      "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-01"
   },
   {
     "id": 6950,
@@ -7183,7 +7183,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6952,
@@ -7214,7 +7214,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6954,
@@ -7245,7 +7245,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6956,
@@ -7276,7 +7276,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6958,
@@ -7307,7 +7307,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6960,
@@ -7338,7 +7338,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6962,
@@ -7369,7 +7369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6964,
@@ -7400,7 +7400,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6966,
@@ -7432,7 +7432,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6970,
@@ -7463,7 +7463,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6972,
@@ -7494,7 +7494,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6974,
@@ -7525,7 +7525,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6976,
@@ -7556,7 +7556,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
   },
   {
     "id": 6978,
@@ -7587,7 +7587,36 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-29"
+    "available_from": "2026-04-01"
+  },
+  {
+    "id": 6997,
+    "name": "Full Star Fuchsia 25cm",
+    "category": "Anemone",
+    "color": "Fuchsia",
+    "variety": "Full Star",
+    "length": "25 cm",
+    "price": 1.01,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "full-star-fuchsia-25cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
   },
   {
     "id": 7000,
@@ -7616,35 +7645,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 6997,
-    "name": "Full Star Fuchsia 25cm",
-    "category": "Anemone",
-    "color": "Fuchsia",
-    "variety": "Full Star",
-    "length": "25 cm",
-    "price": 1.01,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "full-star-fuchsia-25cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -8084,37 +8084,6 @@ export const products: Product[] = [
     "available_from": "2026-04-08"
   },
   {
-    "id": 6988,
-    "name": "Mistral Hot Pink 30-35 cm",
-    "category": "Anemone",
-    "color": "Hot Pink",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.16,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-hot-pink-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634604.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-19"
-  },
-  {
     "id": 6982,
     "name": "Mistral Assorted 30-35 cm",
     "category": "Anemone",
@@ -8146,41 +8115,10 @@ export const products: Product[] = [
     "available_from": "2026-04-02"
   },
   {
-    "id": 6994,
-    "name": "Mistral White 30-35 cm",
+    "id": 6990,
+    "name": "Mistral Pink 30-35 cm",
     "category": "Anemone",
-    "color": "White",
-    "variety": "Mistral",
-    "length": "30-35 cm",
-    "price": 1.2,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-white-30-35-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634610.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 6992,
-    "name": "Mistral Red 30-35 cm",
-    "category": "Anemone",
-    "color": "Red",
+    "color": "Pink",
     "variety": "Mistral",
     "length": "30-35 cm",
     "price": 1.16,
@@ -8197,9 +8135,9 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-red-30-35-cm",
+    "slug": "mistral-pink-30-35-cm",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634608.png"
+      "/images/shop/anemone/anemone-mistral-pink.png"
     ],
     "tier": "T3",
     "has_photo": true,
@@ -8239,10 +8177,10 @@ export const products: Product[] = [
     "available_from": "2026-04-13"
   },
   {
-    "id": 6990,
-    "name": "Mistral Pink 30-35 cm",
+    "id": 6992,
+    "name": "Mistral Red 30-35 cm",
     "category": "Anemone",
-    "color": "Pink",
+    "color": "Red",
     "variety": "Mistral",
     "length": "30-35 cm",
     "price": 1.16,
@@ -8259,15 +8197,139 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-pink-30-35-cm",
+    "slug": "mistral-red-30-35-cm",
     "images": [
-      "/images/shop/anemone/anemone-mistral-pink.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634608.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
+  },
+  {
+    "id": 6994,
+    "name": "Mistral White 30-35 cm",
+    "category": "Anemone",
+    "color": "White",
+    "variety": "Mistral",
+    "length": "30-35 cm",
+    "price": 1.2,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-white-30-35-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634610.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6988,
+    "name": "Mistral Hot Pink 30-35 cm",
+    "category": "Anemone",
+    "color": "Hot Pink",
+    "variety": "Mistral",
+    "length": "30-35 cm",
+    "price": 1.16,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-hot-pink-30-35-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634604.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-19"
+  },
+  {
+    "id": 6989,
+    "name": "Mistral Hot Pink 35-40cm",
+    "category": "Anemone",
+    "color": "Hot Pink",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-hot-pink-35-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634605.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-20"
+  },
+  {
+    "id": 6987,
+    "name": "Mistral Burgundy 35-40cm",
+    "category": "Anemone",
+    "color": "Burgundy",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 20,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-burgundy-35-40cm",
+    "images": [
+      "/images/shop/anemone/anemone-mistral-burgundy.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-04-14"
   },
   {
     "id": 6993,
@@ -8293,6 +8355,37 @@ export const products: Product[] = [
     "slug": "mistral-red-35-40cm",
     "images": [
       "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634609.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 6991,
+    "name": "Mistral Pink 35-40cm",
+    "category": "Anemone",
+    "color": "Pink",
+    "variety": "Mistral",
+    "length": "35-40 cm",
+    "price": 1.23,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-pink-35-40cm",
+    "images": [
+      "/images/shop/anemone/anemone-mistral-pink.png"
     ],
     "tier": "T3",
     "has_photo": true,
@@ -8330,99 +8423,6 @@ export const products: Product[] = [
     "total_stems": null,
     "contents_note": null,
     "available_from": "2026-04-09"
-  },
-  {
-    "id": 6987,
-    "name": "Mistral Burgundy 35-40cm",
-    "category": "Anemone",
-    "color": "Burgundy",
-    "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-burgundy-35-40cm",
-    "images": [
-      "/images/shop/anemone/anemone-mistral-burgundy.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-14"
-  },
-  {
-    "id": 6991,
-    "name": "Mistral Pink 35-40cm",
-    "category": "Anemone",
-    "color": "Pink",
-    "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-pink-35-40cm",
-    "images": [
-      "/images/shop/anemone/anemone-mistral-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 6989,
-    "name": "Mistral Hot Pink 35-40cm",
-    "category": "Anemone",
-    "color": "Hot Pink",
-    "variety": "Mistral",
-    "length": "35-40 cm",
-    "price": 1.23,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 20,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mistral-hot-pink-35-40cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634605.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-04-20"
   },
   {
     "id": 6995,
@@ -8841,6 +8841,37 @@ export const products: Product[] = [
     "available_from": "2026-03-23"
   },
   {
+    "id": 7032,
+    "name": "Larkspur Pink 70 cm",
+    "category": "Delphinium",
+    "color": "Pink",
+    "variety": "Larkspur",
+    "length": "70 cm",
+    "price": 1,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 100,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "larkspur-pink-70-cm",
+    "images": [
+      "/images/shop/delphinium/larkspur-pink-carmine.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7030,
     "name": "Larkspur Assorted 70 cm",
     "category": "Delphinium",
@@ -8955,37 +8986,6 @@ export const products: Product[] = [
     "slug": "larkspur-purple-70-cm",
     "images": [
       "/images/shop/delphinium/larkspur-quis-purple.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7032,
-    "name": "Larkspur Pink 70 cm",
-    "category": "Delphinium",
-    "color": "Pink",
-    "variety": "Larkspur",
-    "length": "70 cm",
-    "price": 1,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 100,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "larkspur-pink-70-cm",
-    "images": [
-      "/images/shop/delphinium/larkspur-pink-carmine.png"
     ],
     "tier": "T3",
     "has_photo": true,
@@ -11788,35 +11788,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7124,
-    "name": "Elegance Cream 30-35 cm",
-    "category": "Ranunculus",
-    "color": "Cream",
-    "variety": "Elegance",
-    "length": "30-35 cm",
-    "price": 1.31,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-cream-30-35-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7122,
     "name": "Elegance Brown 30-35 cm",
     "category": "Ranunculus",
@@ -11838,6 +11809,35 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "elegance-brown-30-35-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7124,
+    "name": "Elegance Cream 30-35 cm",
+    "category": "Ranunculus",
+    "color": "Cream",
+    "variety": "Elegance",
+    "length": "30-35 cm",
+    "price": 1.31,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-cream-30-35-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
@@ -13830,6 +13830,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7187,
+    "name": "Be Sweet Light Pink 40 cm",
+    "category": "Rose",
+    "color": "Light Pink",
+    "variety": "Be Sweet",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "be-sweet-light-pink-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7727,
     "name": "Be Sweet Soft Pink 40 cm",
     "category": "Rose",
@@ -13856,35 +13885,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7187,
-    "name": "Be Sweet Light Pink 40 cm",
-    "category": "Rose",
-    "color": "Light Pink",
-    "variety": "Be Sweet",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "be-sweet-light-pink-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -15783,35 +15783,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7247,
-    "name": "Cotton X-Pression White 40 cm",
-    "category": "Rose",
-    "color": "White",
-    "variety": "Cotton X-Pression",
-    "length": "40 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "cotton-x-pression-white-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7734,
     "name": "Cotton X-Pression Cream 40 cm",
     "category": "Rose",
@@ -15838,6 +15809,35 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7247,
+    "name": "Cotton X-Pression White 40 cm",
+    "category": "Rose",
+    "color": "White",
+    "variety": "Cotton X-Pression",
+    "length": "40 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "cotton-x-pression-white-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -17375,6 +17375,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7297,
+    "name": "Esperance Bicolor 40 cm",
+    "category": "Rose",
+    "color": "Bicolor",
+    "variety": "Esperance",
+    "length": "40 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "esperance-bicolor-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7736,
     "name": "Esperance Soft Pink 40 cm",
     "category": "Rose",
@@ -17401,35 +17430,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7297,
-    "name": "Esperance Bicolor 40 cm",
-    "category": "Rose",
-    "color": "Bicolor",
-    "variety": "Esperance",
-    "length": "40 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "esperance-bicolor-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -20704,35 +20704,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7402,
-    "name": "Kahala Bicolor 40 cm",
-    "category": "Rose",
-    "color": "Bicolor",
-    "variety": "Kahala",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "kahala-bicolor-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7741,
     "name": "Kahala Brown 40 cm",
     "category": "Rose",
@@ -20759,6 +20730,35 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7402,
+    "name": "Kahala Bicolor 40 cm",
+    "category": "Rose",
+    "color": "Bicolor",
+    "variety": "Kahala",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "kahala-bicolor-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -21470,6 +21470,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7427,
+    "name": "Mandala Bicolor 40 cm",
+    "category": "Rose",
+    "color": "Bicolor",
+    "variety": "Mandala",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mandala-bicolor-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7742,
     "name": "Mandala Soft Pink 40 cm",
     "category": "Rose",
@@ -21496,35 +21525,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7427,
-    "name": "Mandala Bicolor 40 cm",
-    "category": "Rose",
-    "color": "Bicolor",
-    "variety": "Mandala",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mandala-bicolor-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -21965,35 +21965,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7442,
-    "name": "Miss Piggy Coral 40 cm",
-    "category": "Rose",
-    "color": "Coral",
-    "variety": "Miss Piggy",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "miss-piggy-coral-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7744,
     "name": "Miss Piggy Bicolor 40 cm",
     "category": "Rose",
@@ -22020,6 +21991,35 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7442,
+    "name": "Miss Piggy Coral 40 cm",
+    "category": "Rose",
+    "color": "Coral",
+    "variety": "Miss Piggy",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "miss-piggy-coral-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -22296,6 +22296,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7452,
+    "name": "Mondial White 40 cm",
+    "category": "Rose",
+    "color": "White",
+    "variety": "Mondial",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mondial-white-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7745,
     "name": "Mondial Cream 40 cm",
     "category": "Rose",
@@ -22322,35 +22351,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7452,
-    "name": "Mondial White 40 cm",
-    "category": "Rose",
-    "color": "White",
-    "variety": "Mondial",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "mondial-white-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -23879,6 +23879,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7502,
+    "name": "Phoenix Peach Pink 40 cm",
+    "category": "Rose",
+    "color": "Peach Pink",
+    "variety": "Phoenix",
+    "length": "40 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "phoenix-peach-pink-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7749,
     "name": "Phoenix Peach 40 cm",
     "category": "Rose",
@@ -23905,35 +23934,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7502,
-    "name": "Phoenix Peach Pink 40 cm",
-    "category": "Rose",
-    "color": "Peach Pink",
-    "variety": "Phoenix",
-    "length": "40 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "phoenix-peach-pink-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -24200,6 +24200,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7512,
+    "name": "Pink Floyd Purple 40 cm",
+    "category": "Rose",
+    "color": "Purple",
+    "variety": "Pink Floyd",
+    "length": "40 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "pink-floyd-purple-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7750,
     "name": "Pink Floyd Hot Pink 40 cm",
     "category": "Rose",
@@ -24226,35 +24255,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7512,
-    "name": "Pink Floyd Purple 40 cm",
-    "category": "Rose",
-    "color": "Purple",
-    "variety": "Pink Floyd",
-    "length": "40 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "pink-floyd-purple-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -24852,35 +24852,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7532,
-    "name": "Pomarosa Light Pink 40 cm",
-    "category": "Rose",
-    "color": "Light Pink",
-    "variety": "Pomarosa",
-    "length": "40 cm",
-    "price": 1.35,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "pomarosa-light-pink-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7752,
     "name": "Pomarosa Soft Pink 40 cm",
     "category": "Rose",
@@ -24902,6 +24873,35 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "pomarosa-soft-pink-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7532,
+    "name": "Pomarosa Light Pink 40 cm",
+    "category": "Rose",
+    "color": "Light Pink",
+    "variety": "Pomarosa",
+    "length": "40 cm",
+    "price": 1.35,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "pomarosa-light-pink-40-cm",
     "images": [],
     "tier": "T3",
     "has_photo": false,
@@ -25202,35 +25202,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7542,
-    "name": "Princess Crown Peach 40 cm",
-    "category": "Rose",
-    "color": "Peach",
-    "variety": "Princess Crown",
-    "length": "40 cm",
-    "price": 1.56,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "princess-crown-peach-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7754,
     "name": "Princess Crown Soft Pink 40 cm",
     "category": "Rose",
@@ -25257,6 +25228,35 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7542,
+    "name": "Princess Crown Peach 40 cm",
+    "category": "Rose",
+    "color": "Peach",
+    "variety": "Princess Crown",
+    "length": "40 cm",
+    "price": 1.56,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "princess-crown-peach-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -26472,6 +26472,35 @@ export const products: Product[] = [
     "available_from": "2026-03-06"
   },
   {
+    "id": 7582,
+    "name": "Shocking Blue Blue 40 cm",
+    "category": "Rose",
+    "color": "Blue",
+    "variety": "Shocking Blue",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "shocking-blue-blue-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7756,
     "name": "Shocking Blue Lavender 40 cm",
     "category": "Rose",
@@ -26498,35 +26527,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7582,
-    "name": "Shocking Blue Blue 40 cm",
-    "category": "Rose",
-    "color": "Blue",
-    "variety": "Shocking Blue",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "shocking-blue-blue-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -28352,6 +28352,35 @@ export const products: Product[] = [
     "available_from": null
   },
   {
+    "id": 7642,
+    "name": "Toffee Peach 40 cm",
+    "category": "Rose",
+    "color": "Peach",
+    "variety": "Toffee",
+    "length": "40 cm",
+    "price": 1.41,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "toffee-peach-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7758,
     "name": "Toffee Brown 40 cm",
     "category": "Rose",
@@ -28378,35 +28407,6 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7642,
-    "name": "Toffee Peach 40 cm",
-    "category": "Rose",
-    "color": "Peach",
-    "variety": "Toffee",
-    "length": "40 cm",
-    "price": 1.41,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "toffee-peach-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -28993,35 +28993,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7662,
-    "name": "Vicky Gardens Champagne 40 cm",
-    "category": "Rose",
-    "color": "Champagne",
-    "variety": "Vicky Gardens",
-    "length": "40 cm",
-    "price": 1.78,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 100,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Ecoroses",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "vicky-gardens-champagne-40-cm",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7759,
     "name": "Vicky Gardens Cream 40 cm",
     "category": "Rose",
@@ -29048,6 +29019,35 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7662,
+    "name": "Vicky Gardens Champagne 40 cm",
+    "category": "Rose",
+    "color": "Champagne",
+    "variety": "Vicky Gardens",
+    "length": "40 cm",
+    "price": 1.78,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "vicky-gardens-champagne-40-cm",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
     "total_stems": null,
     "contents_note": null,
     "available_from": null
@@ -29858,6 +29858,37 @@ export const products: Product[] = [
     "available_from": "2026-03-23"
   },
   {
+    "id": 7690,
+    "name": "Bon Bon Burgundy 55-60cm",
+    "category": "Scabiosa",
+    "color": "Burgundy",
+    "variety": "Bon Bon",
+    "length": "55-60 cm",
+    "price": 1.46,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bon-bon-burgundy-55-60cm",
+    "images": [
+      "/images/shop/other/scabiosa-merlet-bon-bon.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
     "id": 7689,
     "name": "Bon Bon Light Pink 55-60cm",
     "category": "Scabiosa",
@@ -29882,37 +29913,6 @@ export const products: Product[] = [
     "images": [
       "/images/shop/other/scabiosa-french-vanilla.png",
       "/images/shop/other/scabiosa-ube-bon-bon.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
-    "id": 7690,
-    "name": "Bon Bon Burgundy 55-60cm",
-    "category": "Scabiosa",
-    "color": "Burgundy",
-    "variety": "Bon Bon",
-    "length": "55-60 cm",
-    "price": 1.46,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 120,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bon-bon-burgundy-55-60cm",
-    "images": [
-      "/images/shop/other/scabiosa-merlet-bon-bon.png"
     ],
     "tier": "T3",
     "has_photo": true,
@@ -30716,35 +30716,6 @@ export const products: Product[] = [
     "available_from": null
   },
   {
-    "id": 7011,
-    "name": "XLarge Red 50",
-    "category": "Tropicals",
-    "color": "Red",
-    "variety": "Anthurium",
-    "length": "50 cm",
-    "price": 5.12,
-    "unit": "Stem",
-    "stems_per_bunch": 10,
-    "units_per_box": 40,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "xlarge-red-50",
-    "images": [],
-    "tier": "T3",
-    "has_photo": false,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": null
-  },
-  {
     "id": 7009,
     "name": "Large Red 50",
     "category": "Tropicals",
@@ -30766,6 +30737,35 @@ export const products: Product[] = [
     "is_featured": false,
     "display_order": 999,
     "slug": "large-red-50",
+    "images": [],
+    "tier": "T3",
+    "has_photo": false,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": null
+  },
+  {
+    "id": 7011,
+    "name": "XLarge Red 50",
+    "category": "Tropicals",
+    "color": "Red",
+    "variety": "Anthurium",
+    "length": "50 cm",
+    "price": 5.12,
+    "unit": "Stem",
+    "stems_per_bunch": 10,
+    "units_per_box": 40,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "xlarge-red-50",
     "images": [],
     "tier": "T3",
     "has_photo": false,
