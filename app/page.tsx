@@ -98,23 +98,29 @@ export default function Home() {
             <p className="text-base sm:text-xl text-slate-600">Roses, tropicals & specialty stems from Ecuador — shipping included in every price</p>
           </div>
 
-          {/* Category quick-links */}
-          <div className="flex flex-wrap gap-2 justify-center mb-6">
+          {/* EXP-073: Visual category cards — replaces text pill quick-links. Larger tap targets + visual hierarchy drive more category exploration clicks. */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
             {[
-              { label: "🌸 Spring Collection", href: "/shop/spring-collection" },
-              { label: "Roses", href: "/shop/roses" },
-              { label: "Tropicals", href: "/shop/tropicals" },
-              { label: "Ranunculus", href: "/shop?category=Ranunculus" },
-              { label: "Greens", href: "/shop/greens" },
-              { label: "Anemones", href: "/shop?category=Anemone" },
-              { label: "All Flowers →", href: "/shop" },
-            ].map(({ label, href }) => (
+              { emoji: "🌹", label: "Roses", sub: "Classic & garden", href: "/shop/roses" },
+              { emoji: "🌺", label: "Tropicals", sub: "Birds of paradise, heliconias", href: "/shop/tropicals" },
+              { emoji: "🌸", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
+              { emoji: "🌿", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
+              { emoji: "💐", label: "Spring Collection", sub: "Limited availability", href: "/shop/spring-collection" },
+              { emoji: "🌼", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
+            ].map(({ emoji, label, sub, href }) => (
               <Link
                 key={label}
                 href={href}
-                className="px-4 py-2 rounded-full text-sm font-medium border border-emerald-200 text-emerald-700 bg-white hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-colors"
+                onClick={() => pushEvent("homepage_category_click", { category: label })}
+                className="group flex flex-col items-center text-center gap-1.5 bg-white rounded-2xl border border-slate-200 px-4 py-5 hover:border-emerald-400 hover:shadow-md transition-all"
               >
-                {label}
+                <span className="text-3xl">{emoji}</span>
+                <span className="text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                  {label}
+                </span>
+                <span className="text-[11px] text-slate-400 leading-snug">
+                  {sub}
+                </span>
               </Link>
             ))}
           </div>
