@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 import QuoteCartWidget from "@/components/QuoteCartWidget";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
 import EmailPopup from "@/components/EmailPopup";
@@ -120,6 +121,7 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           <WhatsAppCTA />
           <EmailPopup />
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
