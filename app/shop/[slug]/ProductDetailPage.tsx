@@ -1070,7 +1070,7 @@ export default function ProductDetailPage({
 
       {/* EXP-024: Sticky mobile Add to Quote bar — visible on small screens when main button off-screen */}
       {showStickyBtn && isPriceAvailable && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-lg safe-area-inset-bottom">
+        <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-lg pb-safe">
           <div className="flex items-center gap-3">
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-slate-900 truncate">{displayName}</p>
