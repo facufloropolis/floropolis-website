@@ -31404,5 +31404,16 @@ export const PROMO_CODES = {
     expiry: "2026-12-31",
     active: true,
     first_order_only: true,
+    description: "10% off your first order",
+  },
+  // EXP-074 / Talin win-back sequence: 10% off for returning clients
+  COMEBACK10: {
+    discount_type: "percentage" as const,
+    discount_value: 10,
+    scope: "all" as const,
+    scope_filter: "",
+    expiry: "2026-12-31",
+    active: true,
+    description: "10% off your next order — welcome back",
   },
 } as const;

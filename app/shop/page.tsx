@@ -134,14 +134,20 @@ interface VarietyGroup {
 }
 
 // Returns true if a product is available to show based on tier + arrival_date rules.
-// T1/T2: arrival_date must be >= today+5. No date or too soon = HIDE.
+// T1/T2: arrival_date must be >= today+5 calendar days. No date or too soon = HIDE.
 // T3: arrival_date must be >= today+14 AND price > 0. No date or too soon = HIDE.
 function isAvailable(p: Product): boolean {
   if (!p.available_from) return false; // all tiers: no date = hide
   if (!p.price || p.price <= 0) return false; // all tiers: no valid price = hide
-  // Parse with T12:00:00 (noon UTC) so date-only strings aren't treated as UTC midnight,
-  // which can cause products to appear 1 UTC day short when business runs on Pacific time.
-  const daysUntil = Math.ceil((new Date(p.available_from + "T12:00:00").getTime() - Date.now()) / 86400000);
+  // Compare calendar days cleanly: pin BOTH dates to UTC noon so the comparison
+  // is stable all day regardless of user timezone or server time.
+  // Bug fixed: using Date.now() (moving target) + T12:00:00 (local time) caused
+  // near-boundary products to flicker on/off during the day (~7h window). Fix:
+  // anchor today to the local calendar date, compare at UTC noon.
+  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local date
+  const todayMs = new Date(todayStr + "T12:00:00Z").getTime();
+  const arrivalMs = new Date(p.available_from + "T12:00:00Z").getTime();
+  const daysUntil = Math.round((arrivalMs - todayMs) / 86400000);
   if (p.tier === "T3") return daysUntil >= 14;
   return daysUntil >= 5; // T1, T2
 }
