@@ -7,6 +7,10 @@ const JJ_EMAIL = process.env.JJ_EMAIL || "jjp@floropolis.com";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+// Startup validation — log errors immediately so Vercel logs catch misconfiguration
+if (!BREVO_API_KEY) console.error("[notify-sample-box] MISSING ENV: BREVO_API_KEY — team emails will NOT send");
+if (!SUPABASE_URL) console.error("[notify-sample-box] MISSING ENV: NEXT_PUBLIC_SUPABASE_URL — submissions will NOT be saved");
+
 interface SampleBoxPayload {
   name: string;
   company: string;
