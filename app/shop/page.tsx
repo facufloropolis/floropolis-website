@@ -12,7 +12,7 @@ import QuoteBar from "@/components/QuoteBar";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
-import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
+import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
 import { getEarliestDeliveryDate, formatDeliveryDate } from "@/lib/delivery-dates";
 
@@ -916,6 +916,36 @@ function ShopPageContent() {
           </div>
         </div>
       </div>
+
+      {/* EXP-064: "Don't see your variety?" callout — captures florists who browsed but didn't find what they needed */}
+      {sortedGroups.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 py-6 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-2xl bg-emerald-50 border border-emerald-200">
+            <div>
+              <p className="font-semibold text-slate-900 text-sm">Don&apos;t see the variety you&apos;re looking for?</p>
+              <p className="text-xs text-slate-600 mt-0.5">We source 270+ varieties farm-direct. Tell us what you need and we&apos;ll find it.</p>
+            </div>
+            <div className="flex gap-3 flex-shrink-0">
+              <Link
+                href="/quote"
+                className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                onClick={() => pushEvent("custom_request_click", { source: "shop_bottom" })}
+              >
+                Request Custom Order
+              </Link>
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'm looking for a specific flower variety and don't see it in the catalog.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 border border-emerald-300 text-emerald-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-emerald-50 transition-colors"
+                onClick={() => pushEvent("custom_request_whatsapp_click", { source: "shop_bottom" })}
+              >
+                Chat on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile filter drawer */}
       {mobileFiltersOpen && (
