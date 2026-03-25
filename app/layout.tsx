@@ -5,6 +5,7 @@ import Script from "next/script";
 import QuoteCartWidget from "@/components/QuoteCartWidget";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
 import EmailPopup from "@/components/EmailPopup";
+import { AuthProvider } from "@/lib/auth-context";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -113,10 +114,12 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
             title="GTM"
           />
         </noscript>
-        {children}
-        <QuoteCartWidget />
-        <WhatsAppCTA />
-        <EmailPopup />
+        <AuthProvider>
+          {children}
+          <QuoteCartWidget />
+          <WhatsAppCTA />
+          <EmailPopup />
+        </AuthProvider>
       </body>
     </html>
   );
