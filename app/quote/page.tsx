@@ -33,6 +33,7 @@ import {
 } from "@/lib/delivery-dates";
 
 import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { useAuth } from "@/lib/auth-context";
 
 function resolveImage(path: string): string {
   if (!path) return "/Floropolis-logo-only.png";
@@ -62,6 +63,8 @@ export default function QuotePage() {
   const [isExistingClient, setIsExistingClient] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const formStartedRef = useRef(false);
+  // EXP-060: Pre-fill form for logged-in users
+  const { user, profile } = useAuth();
 
   const sync = () => setItems(getCartItems());
 
@@ -71,6 +74,11 @@ export default function QuotePage() {
     window.addEventListener("quote-cart-updated", handler);
     return () => window.removeEventListener("quote-cart-updated", handler);
   }, []);
+
+  // EXP-060: Auto-check existing client for approved users
+  useEffect(() => {
+    if (profile?.status === "approved") setIsExistingClient(true);
+  }, [profile]);
 
   // EXP-057: Track quote page views with cart context
   useEffect(() => {
@@ -646,6 +654,7 @@ export default function QuotePage() {
                       required
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your name"
+                      defaultValue={user?.user_metadata?.full_name ?? ""}
                     />
                   </div>
                   <div>
@@ -657,6 +666,7 @@ export default function QuotePage() {
                       name="business_name"
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Your shop"
+                      defaultValue={profile?.business_name ?? ""}
                     />
                   </div>
                 </div>
@@ -672,6 +682,7 @@ export default function QuotePage() {
                       required
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="you@company.com"
+                      defaultValue={user?.email ?? ""}
                     />
                   </div>
                   <div>
@@ -684,6 +695,7 @@ export default function QuotePage() {
                       type="tel"
                       className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
                       placeholder="Speeds up confirmation"
+                      defaultValue={profile?.phone ?? ""}
                     />
                   </div>
                 </div>
