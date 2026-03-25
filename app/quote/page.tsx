@@ -56,6 +56,9 @@ export default function QuotePage() {
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [promoCode, setPromoCode] = useState("");
   const [promoOpen, setPromoOpen] = useState(false); // EXP-071: collapsed by default
+  // EXP-075: Standing order
+  const [standingOrder, setStandingOrder] = useState(false);
+  const [standingCadence, setStandingCadence] = useState<"weekly" | "monthly">("weekly");
   const [discount, setDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
   const [promoDescription, setPromoDescription] = useState("");
@@ -224,6 +227,8 @@ export default function QuotePage() {
       preferred_delivery_date: deliveryDates[0] || null,
       notes: (formData.get("notes") as string) || null,
       wants_call: formData.get("wants_call") === "on",
+      standing_order: standingOrder,
+      standing_order_cadence: standingOrder ? standingCadence : null,
       items,
       promo_code: promoCode || null,
       subtotal,
@@ -854,6 +859,60 @@ export default function QuotePage() {
                         : "Special requests, color preferences, standing order details..."
                     }
                   />
+                </div>
+
+                {/* EXP-075: Standing order option */}
+                <div
+                  onClick={() => setStandingOrder(!standingOrder)}
+                  className={`cursor-pointer rounded-xl border-2 p-4 transition-all ${
+                    standingOrder
+                      ? "border-emerald-500 bg-emerald-50"
+                      : "border-slate-200 bg-white hover:border-emerald-300"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                      standingOrder ? "border-emerald-500 bg-emerald-500" : "border-slate-300"
+                    }`}>
+                      {standingOrder && (
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-semibold ${standingOrder ? "text-emerald-800" : "text-slate-800"}`}>
+                        Make this a standing order
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Same order, locked price. Skip or cancel anytime — no fees.
+                      </p>
+                      {standingOrder && (
+                        <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+                          <p className="text-xs font-medium text-slate-700 mb-2">How often?</p>
+                          <div className="flex gap-2">
+                            {(["weekly", "monthly"] as const).map((c) => (
+                              <button
+                                key={c}
+                                type="button"
+                                onClick={() => setStandingCadence(c)}
+                                className={`flex-1 rounded-lg border py-2 text-xs font-semibold transition-colors ${
+                                  standingCadence === c
+                                    ? "border-emerald-500 bg-emerald-500 text-white"
+                                    : "border-slate-300 text-slate-700 hover:border-emerald-400"
+                                }`}
+                              >
+                                {c === "weekly" ? "Every week" : "Every month"}
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-[11px] text-emerald-700 mt-2 font-medium">
+                            We'll send you a reminder 10 days before each order — one click to confirm.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
