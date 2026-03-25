@@ -14,7 +14,8 @@ import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
-import { getEarliestDeliveryDate, formatDeliveryDate } from "@/lib/delivery-dates";
+import { getEarliestDeliveryDate, formatDeliveryDate, toISODate } from "@/lib/delivery-dates";
+import { addItem, type QuoteItem } from "@/lib/quote-cart";
 
 type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
 
@@ -126,6 +127,10 @@ interface VarietyGroup {
   slug: string; // slug of the representative product
   colorGroup: string;
   compareAtPrice: number | null; // market rate for strikethrough display
+  // EXP-070: for direct add-to-quote on single-variant cards
+  repUnitsPerBox: number;
+  repBoxType: string;
+  repStemLength: string | null;
 }
 
 // Returns true if a product is available to show based on tier + arrival_date rules.
@@ -205,6 +210,9 @@ function buildVarietyGroups(): VarietyGroup[] {
       slug: rep.slug,
       colorGroup: getColorGroup(rep.color),
       compareAtPrice: rep.compare_at_price ?? null,
+      repUnitsPerBox: rep.units_per_box || 0,
+      repBoxType: rep.box_type || "Standard",
+      repStemLength: rep.length ?? null,
     });
   }
   return result;
@@ -1045,8 +1053,10 @@ export default function ShopPage() {
   );
 }
 
+// EXP-070: Direct add-to-quote for single-variant cards (skip PDP trip)
 function VarietyCard({ group }: { group: VarietyGroup }) {
   const imgSrc = group.image || "/Floropolis-logo-only.png";
+  const [cardAdded, setCardAdded] = useState(false);
 
   const hasPriceRange = group.minPrice !== group.maxPrice;
   const displayPrice = group.is_on_deal && group.dealPrice != null
@@ -1055,88 +1065,140 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
 
   const earliestDate = getEarliestDeliveryDate(group.tier);
 
+  const handleDirectAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const item: QuoteItem = {
+      slug: group.slug,
+      name: group.name,
+      category: group.category,
+      vendor: "",
+      price: group.minPrice,
+      deal_price: group.is_on_deal && group.dealPrice != null ? group.dealPrice : undefined,
+      quantity: 1,
+      units_per_box: group.repUnitsPerBox,
+      box_type: group.repBoxType,
+      unit: group.unit || "Stem",
+      delivery_date: toISODate(earliestDate),
+      stem_length: group.repStemLength || undefined,
+    };
+    addItem(item);
+    pushEvent(CTA_EVENTS.add_to_quote, {
+      product_name: group.name,
+      product_category: group.category,
+      product_price: group.minPrice,
+      source: "shop_card",
+    });
+    setCardAdded(true);
+    setTimeout(() => setCardAdded(false), 2000);
+  };
+
   return (
-    <Link
-      href={`/shop/${group.slug}`}
-      className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col"
-      onClick={() => pushEvent(CTA_EVENTS.product_click, {
-        product_name: group.name,
-        product_category: group.category,
-        product_price: displayPrice,
-      })}
-    >
-      <div className="block aspect-square relative bg-slate-50 overflow-hidden">
-        <Image
-          src={imgSrc}
-          alt={group.name}
-          fill
-          className="object-contain group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          unoptimized
-        />
-        {group.bestseller && (
-          <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-            Bestseller
-          </span>
-        )}
-        {group.is_on_deal && group.deal_label && (
-          <span className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-            {group.deal_label}
-          </span>
-        )}
-      </div>
-      <div className="p-3 flex flex-col flex-1">
-        <h3 className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-emerald-600 transition-colors line-clamp-2">
-          {group.name}
-        </h3>
-        <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
-        <div className="mt-2 flex items-baseline gap-1.5">
-          {group.hasPriceIssue && group.minPrice === 0 ? (
-            <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
-              Price pending
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col relative">
+      <Link
+        href={`/shop/${group.slug}`}
+        className="flex flex-col flex-1"
+        onClick={() => pushEvent(CTA_EVENTS.product_click, {
+          product_name: group.name,
+          product_category: group.category,
+          product_price: displayPrice,
+        })}
+      >
+        <div className="block aspect-square relative bg-slate-50 overflow-hidden">
+          <Image
+            src={imgSrc}
+            alt={group.name}
+            fill
+            className="object-contain group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            unoptimized
+          />
+          {group.bestseller && (
+            <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+              Bestseller
             </span>
-          ) : (
-            <>
-              {group.compareAtPrice != null && group.compareAtPrice > displayPrice && (
-                <span className="text-xs text-slate-400 line-through">
-                  ${group.compareAtPrice.toFixed(2)}
-                </span>
-              )}
-              <span className="text-base font-bold text-emerald-600">
-                {hasPriceRange && !group.is_on_deal
-                  ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
-                  : `$${displayPrice.toFixed(2)}`}
-                <span className="text-xs font-normal text-slate-500">
-                  /{group.category === "Bouquets" ? "bouquet" : group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}
-                </span>
-              </span>
-            </>
+          )}
+          {group.is_on_deal && group.deal_label && (
+            <span className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+              {group.deal_label}
+            </span>
           )}
         </div>
-        {/* EXP-027: Shipping-included signal — key differentiator vs competitors */}
-        {!group.hasPriceIssue && group.minPrice > 0 && (
-          <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
-        )}
-        {/* EXP-033: Delivery date more prominent — decision signal for event florists */}
-        <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
-          {group.tier === "T1" || group.tier === "T2" ? (
-            <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-              In Stock
-            </span>
-          ) : (
-            <span className="text-amber-600 font-semibold">Pre-Order</span>
+        <div className="p-3 flex flex-col flex-1">
+          <h3 className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-emerald-600 transition-colors line-clamp-2">
+            {group.name}
+          </h3>
+          <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            {group.hasPriceIssue && group.minPrice === 0 ? (
+              <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
+                Price pending
+              </span>
+            ) : (
+              <>
+                {group.compareAtPrice != null && group.compareAtPrice > displayPrice && (
+                  <span className="text-xs text-slate-400 line-through">
+                    ${group.compareAtPrice.toFixed(2)}
+                  </span>
+                )}
+                <span className="text-base font-bold text-emerald-600">
+                  {hasPriceRange && !group.is_on_deal
+                    ? `$${group.minPrice.toFixed(2)}–$${group.maxPrice.toFixed(2)}`
+                    : `$${displayPrice.toFixed(2)}`}
+                  <span className="text-xs font-normal text-slate-500">
+                    /{group.category === "Bouquets" ? "bouquet" : group.unit === "Bunch" ? "bunch" : group.unit === "Box" ? "box" : "stem"}
+                  </span>
+                </span>
+              </>
+            )}
+          </div>
+          {/* EXP-027: Shipping-included signal */}
+          {!group.hasPriceIssue && group.minPrice > 0 && (
+            <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
           )}
-          <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
+          {/* EXP-033: Delivery date */}
+          <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
+            {group.tier === "T1" || group.tier === "T2" ? (
+              <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                In Stock
+              </span>
+            ) : (
+              <span className="text-amber-600 font-semibold">Pre-Order</span>
+            )}
+            <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
+            {group.variantCount > 1 && (
+              <span className="text-slate-400">· {group.variantCount} options</span>
+            )}
+          </p>
+          {/* Multi-variant: navigate to PDP */}
           {group.variantCount > 1 && (
-            <span className="text-slate-400">· {group.variantCount} options</span>
+            <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
+              Select Size →
+            </span>
           )}
-        </p>
-        {/* EXP-053/066: "Select Size →" for multi-variant, "Add to Quote →" for single-variant */}
-        <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
-          {group.variantCount > 1 ? "Select Size →" : "Add to Quote →"}
-        </span>
-      </div>
-    </Link>
+          {/* Single-variant but no price: navigate to PDP */}
+          {group.variantCount === 1 && (group.hasPriceIssue || group.minPrice === 0) && (
+            <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
+              View Details →
+            </span>
+          )}
+        </div>
+      </Link>
+      {/* EXP-070: Single-variant with price → direct Add to Quote (no PDP trip) */}
+      {group.variantCount === 1 && !group.hasPriceIssue && group.minPrice > 0 && (
+        <button
+          type="button"
+          onClick={handleDirectAdd}
+          className={`mx-3 mb-3 w-[calc(100%-1.5rem)] py-2 rounded-lg font-semibold text-xs transition-all text-center ${
+            cardAdded
+              ? "bg-emerald-700 text-white"
+              : "bg-emerald-600 text-white hover:bg-emerald-700"
+          }`}
+        >
+          {cardAdded ? "✓ Added!" : "Add to Quote →"}
+        </button>
+      )}
+    </div>
   );
 }
