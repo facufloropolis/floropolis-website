@@ -5,14 +5,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCartItems } from "@/lib/quote-cart";
-import { ShoppingCart, ArrowRight } from "lucide-react";
+import { getCartItems, getSubtotal } from "@/lib/quote-cart";
+import { ShoppingCart } from "lucide-react";
 import { pushEvent } from "@/lib/gtm";
 
 export default function QuoteBar() {
   const router = useRouter();
   const [itemCount, setItemCount] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [subtotal, setSubtotal] = useState(0);
 
   useEffect(() => {
     const update = () => {
@@ -20,6 +21,7 @@ export default function QuoteBar() {
       const count = items.reduce((sum, i) => sum + i.quantity, 0);
       setItemCount(count);
       setVisible(count > 0);
+      setSubtotal(getSubtotal());
     };
     update();
     window.addEventListener("quote-cart-updated", update);
@@ -51,7 +53,7 @@ export default function QuoteBar() {
           onClick={handleClick}
           className="flex items-center gap-1.5 bg-white text-emerald-700 font-bold text-sm px-4 py-1.5 rounded-lg hover:bg-emerald-50 transition-colors"
         >
-          Get My Free Quote <ArrowRight className="w-4 h-4" />
+          {subtotal > 0 ? `Request Quote ($${subtotal.toFixed(0)}) →` : "Get My Free Quote →"}
         </button>
       </div>
     </div>
