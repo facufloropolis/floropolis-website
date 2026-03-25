@@ -55,6 +55,7 @@ const formatDate = (iso?: string) => {
 export default function QuotePage() {
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [promoCode, setPromoCode] = useState("");
+  const [promoOpen, setPromoOpen] = useState(false); // EXP-071: collapsed by default
   const [discount, setDiscount] = useState(0);
   const [promoError, setPromoError] = useState("");
   const [promoDescription, setPromoDescription] = useState("");
@@ -506,25 +507,39 @@ export default function QuotePage() {
               </div>
             )}
 
-            {/* Promo + totals */}
+            {/* EXP-071: Promo + totals — promo code collapsed by default to reduce "searching for code" abandonment */}
             {items.length > 0 && (
               <div className="border border-slate-200 rounded-xl p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    placeholder="Promo code"
-                    className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  />
+                {/* Collapsed promo toggle */}
+                {!promoOpen && discount === 0 && (
                   <button
                     type="button"
-                    onClick={handleApplyPromo}
-                    className="px-4 py-2 rounded-lg border border-emerald-600 text-emerald-700 text-xs font-semibold hover:bg-emerald-50"
+                    onClick={() => setPromoOpen(true)}
+                    className="text-xs text-slate-500 hover:text-emerald-600 transition-colors"
                   >
-                    Apply
+                    Have a promo code? →
                   </button>
-                </div>
+                )}
+                {/* Expanded promo input */}
+                {(promoOpen || discount > 0) && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Promo code"
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                      autoFocus={promoOpen && discount === 0}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyPromo}
+                      className="px-4 py-2 rounded-lg border border-emerald-600 text-emerald-700 text-xs font-semibold hover:bg-emerald-50"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
                 {promoError && (
                   <p className="text-xs text-red-600">{promoError}</p>
                 )}
