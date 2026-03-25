@@ -107,7 +107,14 @@ async function main() {
   const rows = await fetchAll();
   console.log(`Total products fetched: ${rows.length}`);
 
-  const products = rows.map(toProduct);
+  // Filter: skip products with $0 price or missing vendor — they show "Price pending" which hurts conversion
+  // RACI: Job decides what to show, Alvar fixes the data, Rose provides pricing data to Alvar
+  const skipped = rows.filter(r => !r.price || Number(r.price) <= 0 || !r.vendor || r.vendor === 'Unknown');
+  if (skipped.length > 0) {
+    console.warn(`⚠️  Filtered ${skipped.length} products with $0 price or unknown vendor (hidden from site until fixed):`);
+    for (const r of skipped) console.log(`  🚫 [${r.tier}] "${r.name}" (ID: ${r.id}, price: ${r.price}, vendor: ${r.vendor})`);
+  }
+  const products = rows.filter(r => r.price && Number(r.price) > 0 && r.vendor && r.vendor !== 'Unknown').map(toProduct);
 
   // Count by tier
   const tierCounts = {};
