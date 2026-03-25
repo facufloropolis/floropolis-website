@@ -55,6 +55,11 @@ export const CTA_EVENTS = {
   quote_confirmed: "quote_confirmed",
   filter_change: "filter_change",
   product_click: "product_click",
+  // EXP-057: Quote funnel tracking
+  quote_page_viewed: "quote_page_viewed",
+  quote_form_started: "quote_form_started",
+  // EXP-056: WhatsApp quote path
+  quote_whatsapp_click: "quote_whatsapp_click",
 } as const;
 
 /** Delay (ms) before following external/mailto/tel links so GTM can send the hit before page unload. */
