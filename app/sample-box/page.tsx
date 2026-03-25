@@ -91,6 +91,23 @@ function SampleBoxContent() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
 
+  // EXP-069: Pre-fill from localStorage (shared key with /quote form — cross-form pre-fill)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("fp_quote_contact");
+      if (raw) {
+        const saved = JSON.parse(raw) as { name?: string; business?: string; email?: string; phone?: string };
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || saved.name || "",
+          email: prev.email || saved.email || "",
+          phone: prev.phone || saved.phone || "",
+          company: prev.company || saved.business || "",
+        }));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   // Pre-populate from product page navigation
   useEffect(() => {
     const product = searchParams.get("product");
@@ -111,6 +128,16 @@ function SampleBoxContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // EXP-069: Save contact info so quote form pre-fills for same visitor
+    try {
+      localStorage.setItem("fp_quote_contact", JSON.stringify({
+        name: formData.name,
+        business: formData.company,
+        email: formData.email,
+        phone: formData.phone,
+      }));
+    } catch { /* ignore */ }
 
     // Push to dataLayer so GTM Custom Event trigger fires (key conversion)
     pushEvent(CTA_EVENTS.sample_box_request, {
