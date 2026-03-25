@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 import { pushEvent } from '@/lib/gtm'
+import { useAuth } from '@/lib/auth-context'
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
 export default function EmailPopup() {
   const pathname = usePathname()
+  const { user } = useAuth()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -101,6 +103,9 @@ export default function EmailPopup() {
       setIsSubmitting(false)
     }
   }
+
+  // Don't show if logged in — they're already a client, we have their email
+  if (user) return null
 
   // Don't show on conversion pages or auth flows — user is already in a funnel
   const SUPPRESS_PATHS = ['/sample-box', '/quote', '/auth', '/account']
