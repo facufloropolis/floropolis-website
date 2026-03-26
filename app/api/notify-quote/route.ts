@@ -336,10 +336,14 @@ export async function POST(req: NextRequest) {
   try {
     const payload: QuotePayload = await req.json();
 
-    // 1. Save to Supabase
+    // 1. Save to Supabase — MUST succeed before anything else
     const { id: quoteId, error: dbError } = await saveToSupabase(payload);
     if (dbError) {
-      console.error("[Quote] DB save FAILED:", dbError, "— quote may be lost");
+      console.error("[Quote] DB save FAILED:", dbError, "— halting request, no email sent");
+      return NextResponse.json(
+        { success: false, error: "Failed to save your quote. Please try again." },
+        { status: 500 }
+      );
     }
 
     // 2. Send internal notification email via Brevo
