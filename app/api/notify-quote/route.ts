@@ -92,7 +92,7 @@ function formatItemsHtml(items: QuoteItem[]): string {
   </table>`;
 }
 
-// 1. Save to Supabase
+// 1. Save to Supabase — retries up to 3 times before giving up
 async function saveToSupabase(payload: QuotePayload): Promise<{ id: number | null; error: string | null }> {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     return { id: null, error: "Supabase not configured" };
@@ -120,48 +120,62 @@ async function saveToSupabase(payload: QuotePayload): Promise<{ id: number | nul
     source: "website",
   };
 
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/quote_requests`, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "return=headers-only",
-      },
-      body: JSON.stringify(body),
-    });
+  let lastError = "";
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/quote_requests`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=headers-only",
+        },
+        body: JSON.stringify(body),
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("[Supabase] Save error:", res.status, text);
-      return { id: null, error: text };
+      if (!res.ok) {
+        const text = await res.text();
+        lastError = text;
+        console.error(`[Supabase] Save error (attempt ${attempt}/3):`, res.status, text);
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 500 * attempt));
+        continue;
+      }
+
+      // Extract ID from Location header: /quote_requests?id=eq.21
+      const location = res.headers.get("location") || "";
+      const idMatch = location.match(/id=eq\.(\d+)/);
+      const id = idMatch ? parseInt(idMatch[1], 10) : null;
+      return { id, error: null };
+    } catch (err) {
+      lastError = String(err);
+      console.error(`[Supabase] Save exception (attempt ${attempt}/3):`, err);
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 500 * attempt));
     }
-
-    // Extract ID from Location header: /quote_requests?id=eq.21
-    const location = res.headers.get("location") || "";
-    const idMatch = location.match(/id=eq\.(\d+)/);
-    const id = idMatch ? parseInt(idMatch[1], 10) : null;
-    return { id, error: null };
-  } catch (err) {
-    console.error("[Supabase] Save exception:", err);
-    return { id: null, error: String(err) };
   }
+
+  return { id: null, error: lastError };
 }
 
 // 2. Send email via Brevo
-async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null): Promise<boolean> {
+async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null, dbFailed: boolean): Promise<boolean> {
   if (!BREVO_API_KEY) {
     console.error("[Brevo] MISSING BREVO_API_KEY — team notification email NOT sent for this quote");
     return false;
   }
 
   const itemsHtml = formatItemsHtml(payload.items);
-  const quoteIdLabel = quoteId ? `#${quoteId}` : "(pending)";
+  const quoteIdLabel = quoteId ? `#${quoteId}` : "(NO DB ID)";
+  const dbFailureBanner = dbFailed
+    ? `<div style="background:#dc2626;color:white;padding:14px 20px;font-size:15px;font-weight:bold;text-align:center;letter-spacing:0.5px">
+        ⚠️ DATABASE SAVE FAILED — ENTER THIS QUOTE MANUALLY IN SUPABASE
+      </div>`
+    : "";
 
   const htmlContent = `
     <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto">
-      <div style="background:#059669;color:white;padding:16px 24px;border-radius:8px 8px 0 0">
+      ${dbFailureBanner}
+      <div style="background:${dbFailed ? "#7f1d1d" : "#059669"};color:white;padding:16px 24px;border-radius:${dbFailed ? "0" : "8px 8px"} 0 0">
         <h1 style="margin:0;font-size:20px">🌸 New Quote Request ${quoteIdLabel}</h1>
       </div>
       <div style="padding:24px;background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px">
@@ -209,7 +223,7 @@ async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null): Pr
           { email: FACU_EMAIL, name: "Facu" },
           { email: JJ_EMAIL, name: "JJ" },
         ],
-        subject: `🌸 New Quote ${quoteIdLabel} — ${payload.business_name} — $${payload.total.toFixed(2)}`,
+        subject: `${dbFailed ? "⚠️ DB FAILED — " : ""}🌸 New Quote ${quoteIdLabel} — ${payload.business_name} — $${payload.total.toFixed(2)}`,
         htmlContent,
       }),
     });
@@ -336,18 +350,15 @@ export async function POST(req: NextRequest) {
   try {
     const payload: QuotePayload = await req.json();
 
-    // 1. Save to Supabase — MUST succeed before anything else
+    // 1. Save to Supabase — retries 3x; if all fail, continue anyway (client never blocked)
     const { id: quoteId, error: dbError } = await saveToSupabase(payload);
-    if (dbError) {
-      console.error("[Quote] DB save FAILED:", dbError, "— halting request, no email sent");
-      return NextResponse.json(
-        { success: false, error: "Failed to save your quote. Please try again." },
-        { status: 500 }
-      );
+    const dbFailed = !!dbError;
+    if (dbFailed) {
+      console.error("[Quote] DB save FAILED after 3 attempts:", dbError, "— sending flagged team email");
     }
 
-    // 2. Send internal notification email via Brevo
-    const emailSent = await sendBrevoEmail(payload, quoteId);
+    // 2. Send internal notification email via Brevo — always fires; banner if DB failed
+    const emailSent = await sendBrevoEmail(payload, quoteId, dbFailed);
     if (!emailSent) {
       console.error(`[Quote] Team email FAILED for #${quoteId} (${payload.business_name}) — manual follow-up required`);
       if (quoteId) flagQuoteNotificationFailure(quoteId, "Team email not sent — check BREVO_API_KEY");
