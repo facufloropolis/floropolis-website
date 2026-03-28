@@ -63,9 +63,14 @@ export default function QuoteBar() {
               {itemCount}
             </span>
           </div>
-          <span className="text-sm font-medium truncate">
-            {itemCount === 1 ? "1 variety in your quote" : `${itemCount} varieties in your quote`}
-          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold leading-tight truncate">
+              {subtotal > 0 ? `$${subtotal.toFixed(0)} ready to submit` : `${itemCount} ${itemCount === 1 ? "variety" : "varieties"} in cart`}
+            </p>
+            <p className="text-xs text-emerald-200 leading-tight">
+              {itemCount === 1 ? "1 item · complete your order" : `${itemCount} items · don't lose your cart`}
+            </p>
+          </div>
         </div>
         {/* EXP-068: Two paths — form or WhatsApp */}
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -83,7 +88,7 @@ export default function QuoteBar() {
             onClick={handleClick}
             className="flex items-center gap-1.5 bg-white text-emerald-700 font-bold text-sm px-4 py-1.5 rounded-lg hover:bg-emerald-50 transition-colors"
           >
-            {subtotal > 0 ? `Request Quote ($${subtotal.toFixed(0)}) →` : "Get My Free Quote →"}
+            {subtotal > 0 ? `Submit Quote →` : "Submit Quote →"}
           </button>
         </div>
       </div>

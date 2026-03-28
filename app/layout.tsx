@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import QuoteCartWidget from "@/components/QuoteCartWidget";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
 import EmailPopup from "@/components/EmailPopup";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 import { AuthProvider } from "@/lib/auth-context";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -120,6 +121,7 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           <QuoteCartWidget />
           <WhatsAppCTA />
           <EmailPopup />
+          <ExitIntentPopup />
         </AuthProvider>
         <Analytics />
       </body>

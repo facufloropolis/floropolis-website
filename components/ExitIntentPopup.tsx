@@ -1,18 +1,35 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Gift, Percent } from 'lucide-react'
+import { X, Gift, Percent, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { pushEvent, CTA_EVENTS } from '@/lib/gtm'
+import { getCartItems, getSubtotal } from '@/lib/quote-cart'
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
 export default function ExitIntentPopup() {
+  const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState('')
   const [selectedOption, setSelectedOption] = useState<'discount' | 'sample' | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
+  const [cartSubtotal, setCartSubtotal] = useState(0)
+
+  // Track cart state so exit popup knows whether to show cart abandonment or generic
+  useEffect(() => {
+    const updateCart = () => {
+      const items = getCartItems()
+      setCartCount(items.reduce((s, i) => s + i.quantity, 0))
+      setCartSubtotal(getSubtotal())
+    }
+    updateCart()
+    window.addEventListener('quote-cart-updated', updateCart)
+    return () => window.removeEventListener('quote-cart-updated', updateCart)
+  }, [])
 
   useEffect(() => {
     // Check if already shown or submitted - if so, don't set up listener at all
@@ -97,6 +114,54 @@ export default function ExitIntentPopup() {
   // Don't render if already submitted or dismissed
   if (!isVisible || localStorage.getItem('exitPopupSubmitted') === 'true') {
     return null
+  }
+
+  // EXP-A: Cart abandonment popup — shown instead of generic when cart has items
+  if (isVisible && cartCount > 0) {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl max-w-md w-full p-8 relative shadow-2xl">
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            aria-label="Close popup"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="text-center">
+            <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingCart className="w-7 h-7 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">
+              Don't lose your cart!
+            </h2>
+            <p className="text-slate-600 mb-1">
+              You have <strong>{cartCount} {cartCount === 1 ? 'variety' : 'varieties'}</strong> selected
+              {cartSubtotal > 0 && <> — estimated <strong>${cartSubtotal.toFixed(0)}</strong></>}.
+            </p>
+            <p className="text-slate-500 text-sm mb-6">
+              Submit your quote now — no payment required. We'll call you within 1 hour.
+            </p>
+            <button
+              onClick={() => {
+                pushEvent('exit_popup_cart_submit_click', { item_count: cartCount, subtotal: cartSubtotal })
+                handleClose()
+                router.push('/quote')
+              }}
+              className="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors text-lg mb-3"
+            >
+              Submit My Quote →
+            </button>
+            <button
+              onClick={handleClose}
+              className="w-full py-2 text-slate-500 text-sm hover:text-slate-700 transition-colors"
+            >
+              Keep browsing
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
