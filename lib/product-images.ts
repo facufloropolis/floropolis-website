@@ -216,8 +216,8 @@ const IMAGE_MAP: Record<string, string> = {
   "phi-esmeralda-green": "/images/shop/greens/phi-esmeralda-green.jpg",
   "esmeralda-green": "/images/shop/greens/phi-esmeralda-green.jpg",
   "curly-variegated-green": "/images/shop/greens/pandanus-curly-variegated-green.jpg",
-  "davalia-green": "/images/shop/greens/doll-green.png",            // fern family — closest available
-  "fern-davalia-green": "/images/shop/greens/doll-green.png",
+  "davalia-green": "/images/shop/greens/fern-davalia-green.png",
+  "fern-davalia-green": "/images/shop/greens/fern-davalia-green.png",
   "phi-xanadu-green": "/images/shop/greens/phi-xanadu-green.jpg",
   "xanadu-green": "/images/shop/greens/phi-xanadu-green.jpg",
   "phi-xantal-green": "/images/shop/greens/phi-xantal-green.png",
@@ -232,8 +232,8 @@ const IMAGE_MAP: Record<string, string> = {
   "lemon-green": "/images/shop/greens/croton-tip-lemon-drop-green.png", // lemon in name
   "white-green": "/images/shop/greens/dieffenbachia-white.jpg",         // white-variegated green
   "green-green": "/images/shop/greens/monstera-green.jpg",              // generic green
-  "willow-green": "/images/shop/greens/eucalyptus-silver-dollar-green.jpg", // closest stems
-  "other-greens-willow-green": "/images/shop/greens/eucalyptus-silver-dollar-green.jpg",
+  "willow-green": "/images/shop/greens/other-greens-willow-green.png",
+  "other-greens-willow-green": "/images/shop/greens/other-greens-willow-green.png",
 
   // ── Tropicals (8) ──
   "gingers-nicole-pink": "/images/shop/tropicals/gingers-nicole-pink.png",
@@ -246,11 +246,14 @@ const IMAGE_MAP: Record<string, string> = {
   "fingers-green": "/images/shop/tropicals/fingers-green.jpg",
   // Anthurium — after variety merge to "Anthurium", need direct color keys
   "anthurium-red": "/images/shop/tropicals/anthurium-large-10-12cm-red.png",
-  "anthurium-assorted": "/images/shop/tropicals/anthurium-assorted.png",
+  "anthurium-assorted": "/images/shop/tropicals/mf-anthurium-large-mix.jpg",
+  "anthurium-xl-mix": "/images/shop/tropicals/mf-anthurium-xl-mix.jpg",
+  "night-torch-red": "/images/shop/tropicals/mf-night-torch.jpg",
+  "shampoo-ginger-peach": "/images/shop/tropicals/mf-shampoo-ginger-peach.jpg",
   "anthurium-green": "/images/shop/tropicals/anthurium-green.png",
   // Coccinea + other tropicals
-  "coccinea-red": "/images/shop/tropicals/musa-coccinea-red.png",
-  "musa-mix-red": "/images/shop/tropicals/musa-coccinea-red.png",  // Musa Mix → coccinea (closest red musa)
+  "coccinea-red": "/images/shop/tropicals/mf-musa-coccinea.jpg",
+  "musa-mix-red": "/images/shop/tropicals/mf-musa-mix.jpg",
   "anana-lucidus-red": "/images/shop/tropicals/novelties-anana-torch-red.jpg", // Anana family
   "small-tropical-green": "/images/shop/tropicals/eucalyptus-doll-green.jpg",  // small green tropical
   "golden-fire-opal-red": "/images/shop/tropicals/heliconia-golden-fire-opal-red.png",
@@ -298,35 +301,47 @@ const IMAGE_MAP: Record<string, string> = {
 
   // ── AI Bouquets ──
   "bouquet-aforest": "/images/shop/bouquets/bouquet-aforest_11a115f409c6.png",
-  "bouquet-amazon": "/images/shop/bouquets/bouquet-amazon_d6eaa8149f7d.png",
+  "bouquet-amazon": "/images/shop/bouquets/mf-bouquet-amazon.jpg",
   "bouquet-aria": "/images/shop/bouquets/bouquet-aria_cb9620575382.png",
+  "bouquet-assorted-round-medium-parrot-50cm": "/images/shop/bouquets/mf-bouquet-parrot-medium.jpg",
+  "medium-parrot-50cm": "/images/shop/bouquets/mf-bouquet-parrot-medium.jpg",
   "bouquet-brushed": "/images/shop/bouquets/bouquet-brushed_c856915749c4.png",
-  "bouquet-confeti": "/images/shop/bouquets/bouquet-confeti_760de8d7c852.png",
-  "bouquet-confeti-orange": "/images/shop/bouquets/bouquet-confeti-orange_6e88e4f0b729.png",
-  "bouquet-confeti-orange-plus": "/images/shop/bouquets/bouquet-confeti-orange-plus_a79270452f09.png",
-  "bouquet-emerald": "/images/shop/bouquets/bouquet-emerald_ed73b462cc12.png",
-  "bouquet-forest": "/images/shop/bouquets/bouquet-forest_ead5b4568c54.png",
-  "bouquet-fuego": "/images/shop/bouquets/bouquet-fuego_0e3ecb9096b7.png",
-  "bouquet-fuego-plus": "/images/shop/bouquets/bouquet-fuego-plus_f7d240d38d54.png",
-  "bouquet-hanna-assorted": "/images/shop/bouquets/bouquet-hanna-assorted_eb134874f9be.png",
-  "bouquet-harmony": "/images/shop/bouquets/bouquet-harmony_659f39363700.png",
+  "bouquet-confeti": "/images/shop/bouquets/mf-bouquet-confeti.jpg",
+  "bouquet-confeti-orange": "/images/shop/bouquets/mf-bouquet-confeti-orange.jpg",
+  "bouquet-confeti-orange-plus": "/images/shop/bouquets/mf-bouquet-confeti-plus.jpg",
+  "bouquet-emerald": "/images/shop/bouquets/mf-bouquet-emerald.jpg",
+  "bouquet-forest": "/images/shop/bouquets/mf-bouquet-forest.jpg",
+  "bouquet-fuego": "/images/shop/bouquets/mf-bouquet-fuego.jpg",
+  "bouquet-fuego-plus": "/images/shop/bouquets/mf-bouquet-fuego-plus.jpg",
+  "bouquet-hanna-assorted": "/images/shop/bouquets/mf-bouquet-hanna.jpg",
+  "bouquet-harmony": "/images/shop/bouquets/mf-bouquet-harmony.jpg",
   "bouquet-jade": "/images/shop/bouquets/bouquet-jade_84aacf94aaa2.png",
   "bouquet-jungle-plus": "/images/shop/bouquets/bouquet-jungle-plus_306b20dd08c4.png",
-  "bouquet-lolipop-plus": "/images/shop/bouquets/bouquet-lolipop-plus_26e57c72e835.png",
-  "bouquet-lua-banana-pink-plus": "/images/shop/bouquets/bouquet-lua-banana-pink-plus_d956c287351b.png",
-  "bouquet-paradise": "/images/shop/bouquets/bouquet-paradise_346875b6f089.png",
-  "bouquet-rainbow": "/images/shop/bouquets/bouquet-rainbow_be2ae9aa066b.png",
+  "bouquet-lolipop-plus": "/images/shop/bouquets/mf-bouquet-lolipop-plus.jpg",
+  "bouquet-lua-banana-pink-plus": "/images/shop/bouquets/mf-bouquet-lua-banana-pink-plus.jpg",
+  "bouquet-paradise": "/images/shop/bouquets/mf-bouquet-paradise.jpg",
+  "bouquet-rainbow": "/images/shop/bouquets/mf-bouquet-rainbow.jpg",
+  // ── New MF real photos (2026-03-28) ──
+  "bouquet-rainforest-plus": "/images/shop/bouquets/mf-bouquet-rainforest-plus.jpg",
+  "bouquet-rainforest-pink": "/images/shop/bouquets/mf-bouquet-rainforest-pink.jpg",
+  "bouquet-parrot-plus": "/images/shop/bouquets/mf-bouquet-parrot-plus.jpg",
+  "bouquet-miracle": "/images/shop/bouquets/mf-bouquet-miracle.jpg",
+  "bouquet-lua-fuego-pink": "/images/shop/bouquets/mf-bouquet-lua-fuego-pink.jpg",
+  "bouquet-lua-pink-red": "/images/shop/bouquets/mf-bouquet-lua-pink-red.jpg",
+  "bouquet-amazon-greens": "/images/shop/bouquets/mf-bouquet-amazon-greens.jpg",
 
   // ── AI Combos / Mixed Boxes ──
-  "combo-capricho-box": "/images/shop/combos/combo-capricho-box_91bfc5ee3b0b.png",
-  "combo-escarlata-box": "/images/shop/combos/combo-escarlata-box_5083951b104e.png",
-  "combo-fiesta-box": "/images/shop/combos/combo-fiesta-box_e75c56fcc271.png",
-  "combo-fire-box": "/images/shop/combos/combo-fire-box_00b25b3572aa.png",
-  "combo-ginger-mix-box": "/images/shop/combos/combo-ginger-mix-box_b9b2c8a76d3c.png",
-  "green-amazon-foliage": "/images/shop/combos/green-amazon-foliage_f706655ed6ee.png",
-  "green-botanical": "/images/shop/combos/green-botanical_6ecc45f21231.png",
-  "green-greenery-foliage": "/images/shop/combos/green-greenery-foliage_fc1b977e8868.png",
-  "green-jungle-foliage": "/images/shop/combos/green-jungle-foliage_39f23e1d3d61.png",
+  "combo-capricho-box": "/images/shop/combos/mf-combo-capricho-box.jpg",
+  "combo-escarlata-box": "/images/shop/combos/mf-combo-escarlata-box.jpg",
+  "combo-fiesta-box": "/images/shop/combos/mf-combo-fiesta-box.jpg",
+  "combo-fire-box": "/images/shop/combos/mf-combo-fire-box.jpg",
+  "combo-ginger-mix-box": "/images/shop/combos/mf-combo-ginger-mix-box.jpg",
+  "green-amazon-foliage": "/images/shop/combos/mf-green-amazon.jpg",
+  "green-botanical": "/images/shop/combos/mf-green-botanical.jpg",
+  "green-greenery-foliage": "/images/shop/combos/mf-green-greenery.jpg",
+  "green-jungle-foliage": "/images/shop/combos/mf-green-jungle.jpg",
+  "combo-heliconia-mix-box": "/images/shop/combos/mf-combo-heliconia-mix-box.jpg",
+  "combo-tabasco-qb": "/images/shop/combos/mf-combo-tabasco-qb.jpg",
   "roses-assorted-cool-tones": "/images/shop/combos/roses-assorted-cool-tones_e117be2c3319.png",
   "roses-assorted-creams": "/images/shop/combos/roses-assorted-creams_a9067a47cbe2.png",
   "assorted-cream": "/images/shop/combos/roses-assorted-creams_a9067a47cbe2.png",
@@ -369,7 +384,11 @@ const IMAGE_MAP: Record<string, string> = {
   "amandine-assorted": "/images/shop/ranunculus/amandine-assorted.jpg",
   "amandine-brown": "/images/shop/ranunculus/amandine-brown.png",
   "amandine-cream": "/images/shop/ranunculus/amandine-cream.png",
+  "amandine-lavender": "/images/shop/ranunculus/amandine-lavender.png",           // Supabase 6893 — Cami 2026-03-26
+  "amandine-light-pink": "/images/shop/ranunculus/amandine-light-pink-30-35cm.png", // Supabase 7713 — Cami 2026-03-26
+  "amandine-light-pink-30-35cm": "/images/shop/ranunculus/amandine-light-pink-30-35cm.png",
   "amandine-orange": "/images/shop/ranunculus/amandine-orange.png",
+  "amandine-purple": "/images/shop/ranunculus/amandine-purple.png",               // Supabase 7715 — Cami 2026-03-26
   "amandine-salmon": "/images/shop/ranunculus/amandine-salmon.png",
   "pink-amandine-hot-pink": "/images/shop/ranunculus/pink-amandine-hot-pink.jpg",
   // ROSES
@@ -390,6 +409,8 @@ const IMAGE_MAP: Record<string, string> = {
   "heliconia-rostrata-red": "/images/shop/tropicals/heliconia-rostrata-red.png",
   "heliconia-sassy-red": "/images/shop/tropicals/heliconia-sassy-red.png",
   "novelty-tropicals-banana-fingers-green": "/images/shop/tropicals/novelty-tropicals-banana-fingers-green.png",
+  "tropical-mixes-iniziativa-assorted": "/images/shop/combos/mf-combo-iniziativa-box.jpg",
+  "tropical-mixes-iniziativa": "/images/shop/combos/mf-combo-iniziativa-box.jpg",
 
   // ── Cande batch 2026-03-23 — aliases + new keys ──
   // Anemone with "anemone-" prefix
@@ -413,14 +434,14 @@ const IMAGE_MAP: Record<string, string> = {
   "phi-pinnatifidum-green": "/images/shop/greens/phi-pinnatifidum-green.jpg",
   // Other flowers
   "bells-of-ireland-green": "/images/shop/other/bells-of-ireland-green.png",
-  "bouquet-combo-capricho-box_v1": "/images/shop/other/bouquet-combo-capricho-box_v1.png",
-  "bouquet-combo-escarlata-box_v1": "/images/shop/other/bouquet-combo-escarlata-box_v1.png",
-  "bouquet-combo-fire-box_v1": "/images/shop/other/bouquet-combo-fire-box_v1.png",
-  "bouquet-combo-heliconia-mix-box_v1": "/images/shop/other/bouquet-combo-heliconia-mix-box_v1.png",
-  "bouquet-combo-mini-fiesta-box_v1": "/images/shop/other/bouquet-combo-mini-fiesta-box_v1.png",
-  "bouquet-combo-mini-tabasco-box_v1": "/images/shop/other/bouquet-combo-mini-tabasco-box_v1.png",
-  "bouquet-combo-tabasco-box_v1": "/images/shop/other/bouquet-combo-tabasco-box_v1.png",
-  "bouquet-combo-tiki-limbo-box_v1": "/images/shop/other/bouquet-combo-tiki-limbo-box_v1.png",
+  "bouquet-combo-capricho-box_v1": "/images/shop/combos/mf-combo-capricho-box.jpg",
+  "bouquet-combo-escarlata-box_v1": "/images/shop/combos/mf-combo-escarlata-box.jpg",
+  "bouquet-combo-fire-box_v1": "/images/shop/combos/mf-combo-fire-box.jpg",
+  "bouquet-combo-heliconia-mix-box_v1": "/images/shop/combos/mf-combo-heliconia-mix-box.jpg",
+  "bouquet-combo-mini-fiesta-box_v1": "/images/shop/combos/mf-combo-mini-fiesta-box.jpg",
+  "bouquet-combo-mini-tabasco-box_v1": "/images/shop/combos/mf-combo-tabasco-box.jpg",
+  "bouquet-combo-tabasco-box_v1": "/images/shop/combos/mf-combo-tabasco-box.jpg",
+  "bouquet-combo-tiki-limbo-box_v1": "/images/shop/combos/mf-combo-tiki-limbo.jpg",
   "bouquet-flat-hanna-assorted_v1": "/images/shop/other/bouquet-flat-hanna-assorted_v1.png",
   "bouquet-green-aforest_v1": "/images/shop/other/bouquet-green-aforest_v1.png",
   "bouquet-green-assorted-amazon-foliage_v1": "/images/shop/other/bouquet-green-assorted-amazon-foliage_v1.png",
@@ -460,8 +481,8 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   Tropicals: "/images/shop/tropicals/hel-fire-opal-red.png",
   "Greens & Foliage": "/images/shop/greens/monstera-green.jpg",
   Greens: "/images/shop/greens/monstera-green.jpg",
-  Bouquets: "/images/shop/bouquets/bouquet-harmony_659f39363700.png",
-  "Mixed Boxes": "/images/shop/combos/combo-fiesta-box_e75c56fcc271.png",
+  Bouquets: "/images/shop/bouquets/mf-bouquet-harmony.jpg",
+  "Mixed Boxes": "/images/shop/combos/mf-combo-fiesta-box.jpg",
   Gypsophila: "/images/shop/other/cosmic.png",
   Scabiosa: "/images/shop/other/scabiosa-white-improved.png",
   Thistle: "/images/shop/other/blue-lagoon.png",
@@ -621,10 +642,10 @@ function getCandidateKeys(variety: string, color: string): string[] {
 
   // 17. Bouquet matching: "Round - Medium Confeti" → "bouquet-confeti"
   if (v.includes("confeti")) keys.push("bouquet-confeti");
-  if (v.includes("fuego")) keys.push("bouquet-fuego");
+  if (v.includes("fuego") && v.includes("plus")) keys.push("bouquet-fuego-plus");  else if (v.includes("fuego")) keys.push("bouquet-fuego");  if (v.includes("lua") && v.includes("fuego")) keys.push("bouquet-lua-fuego-pink");  else if (v.includes("lua") && v.includes("pink")) keys.push("bouquet-lua-pink-red");  else if (v.includes("lua") && v.includes("banana")) keys.push("bouquet-lua-banana-pink-plus");
   if (v.includes("amazon")) keys.push("bouquet-amazon");
   if (v.includes("brushed")) keys.push("bouquet-brushed");
-  if (v.includes("parrot")) keys.push("bouquet-aria");
+  if (v.includes("parrot")) keys.push("bouquet-assorted-round-medium-parrot-50cm", "bouquet-aria"); // real parrot image first
   if (v.includes("hanna")) keys.push("bouquet-hanna-assorted");
   if (v.includes("harmony")) keys.push("bouquet-harmony");
   if (v.includes("rainbow")) keys.push("bouquet-rainbow");
@@ -634,13 +655,21 @@ function getCandidateKeys(variety: string, color: string): string[] {
   if (v.includes("paradise")) keys.push("bouquet-paradise");
   if (v.includes("jade")) keys.push("bouquet-jade");
   if (v.includes("aforest") || v.includes("afforest")) keys.push("bouquet-aforest");
+  if (v.includes("rainforest") && v.includes("plus")) keys.push("bouquet-rainforest-plus");
+  else if (v.includes("rainforest")) keys.push("bouquet-rainforest-pink");
+  if (v.includes("miracle")) keys.push("bouquet-miracle");
+  if (v.includes("parrot") && v.includes("plus")) keys.push("bouquet-parrot-plus");
 
   // 18. Combo boxes: "Combo Box Fiesta" → "combo-fiesta-box"
   if (v.includes("combo-box-fiesta") || (v.includes("fiesta") && !v.includes("spirit"))) keys.push("combo-fiesta-box");
   if (v.includes("combo-box-fire") || (v.includes("fire") && v.includes("combo"))) keys.push("combo-fire-box");
   if (v.includes("combo-box-capricho") || v.includes("capricho")) keys.push("combo-capricho-box");
+  if (v.includes("heliconia") && v.includes("mix")) keys.push("combo-heliconia-mix-box");
   if (v.includes("escarlata")) keys.push("combo-escarlata-box");
-  if (v.includes("iniziativa") || v.includes("tabasco")) keys.push("combo-fire-box");
+  if (v.includes("iniziativa")) keys.push("tropical-mixes-iniziativa-assorted"); // real image — Cami 2026-03-26
+  if (v.includes("night-torch") || v.includes("night torch")) keys.push("night-torch-red");
+  if (v.includes("shampoo-ginger") || v.includes("shampoo ginger")) keys.push("shampoo-ginger-peach");
+  if (v.includes("tabasco")) keys.push("combo-tabasco-box_v1");
 
   // 19. Foliage combo boxes
   if (v.includes("foliage-amazon")) keys.push("green-amazon-foliage");
