@@ -11,6 +11,7 @@ export interface QuoteItem {
   unit: string;
   delivery_date?: string; // ISO date string YYYY-MM-DD
   stem_length?: string;
+  customization_note?: string;
 }
 
 const STORAGE_KEY = "floropolis_quote_cart";
