@@ -7,6 +7,8 @@ const WHATSAPP_NUMBER = "17864603229";
 const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "1702689983"; // Facu's chat ID
 
 // Validate required env vars at startup — errors visible in Vercel logs
 if (!BREVO_API_KEY) console.error("[notify-quote] MISSING ENV: BREVO_API_KEY — team emails will NOT send");
@@ -346,6 +348,50 @@ async function flagQuoteNotificationFailure(quoteId: number, reason: string): Pr
   }
 }
 
+
+// 4b. Send Telegram alert to Facu
+async function sendTelegramAlert(payload: QuotePayload, quoteId: number | null): Promise<void> {
+  if (!TELEGRAM_BOT_TOKEN) return;
+
+  const clientPhone = payload.phone?.replace(/\D/g, "") || "";
+  const itemLines = payload.items.slice(0, 5).map(item => {
+    const price = item.deal_price ?? item.price;
+    return `  · ${item.name} ×${item.quantity} ${item.box_type} — $${(price * item.quantity * (item.units_per_box || 1)).toFixed(0)}`;
+  }).join("\n");
+  const moreItems = payload.items.length > 5 ? `\n  · +${payload.items.length - 5} more` : "";
+
+  const text = [
+    `🌸 *New Quote${quoteId ? ` #${quoteId}` : ""}* — *$${payload.total.toFixed(0)}*`,
+    ``,
+    `👤 ${payload.contact_name} — ${payload.business_name}`,
+    payload.phone ? `📱 ${payload.phone}` : null,
+    `✉️ ${payload.email}`,
+    payload.shipping_state ? `📍 ${payload.shipping_city}, ${payload.shipping_state}` : null,
+    ``,
+    `🌹 ${payload.items.length} item${payload.items.length !== 1 ? "s" : ""}:`,
+    itemLines + moreItems,
+    ``,
+    payload.preferred_delivery_date ? `📅 Delivery: ${payload.preferred_delivery_date}` : null,
+    payload.notes ? `📝 ${payload.notes}` : null,
+    clientPhone ? `\n📲 [WhatsApp client](https://wa.me/${clientPhone})` : null,
+  ].filter(Boolean).join("\n");
+
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "Markdown",
+        disable_web_page_preview: true,
+      }),
+    });
+  } catch (err) {
+    console.error("[Telegram] Alert failed:", err);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const payload: QuotePayload = await req.json();
@@ -409,6 +455,9 @@ export async function POST(req: NextRequest) {
 
     const whatsappText = encodeURIComponent(`🌸 New Quote Request!\n\n${summary}`);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}`;
+
+    // 4b. Telegram alert — fire and forget, never blocks
+    sendTelegramAlert(payload, quoteId).catch(err => console.error("[Telegram] alert error:", err));
 
     // Log result
     console.log(`[Quote] #${quoteId ?? "NO_ID"} | db:${dbError ? "FAILED" : "OK"} | team_email:${emailSent ? "OK" : "FAILED"} | customer_email:${customerEmailSent ? "OK" : "FAILED"} | ${payload.business_name} | $${payload.total.toFixed(2)}`);
