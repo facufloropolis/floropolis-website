@@ -18,6 +18,12 @@ export default function ExitIntentPopup() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [cartSubtotal, setCartSubtotal] = useState(0)
+  const [alreadySubmitted, setAlreadySubmitted] = useState(false)
+
+  // Read localStorage on client only (safe from SSR)
+  useEffect(() => {
+    if (localStorage.getItem('exitPopupSubmitted') === 'true') setAlreadySubmitted(true)
+  }, [])
 
   // Track cart state so exit popup knows whether to show cart abandonment or generic
   useEffect(() => {
@@ -112,7 +118,7 @@ export default function ExitIntentPopup() {
   }
 
   // Don't render if already submitted or dismissed
-  if (!isVisible || localStorage.getItem('exitPopupSubmitted') === 'true') {
+  if (!isVisible || alreadySubmitted) {
     return null
   }
 
