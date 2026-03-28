@@ -5,6 +5,8 @@
 //       For now we show business_name, phone, status, created_at, user_id.
 //       To add email: create a Supabase function that joins auth.users — or use service role.
 
+export const dynamic = 'force-dynamic';
+
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Navigation from "@/components/Navigation";

@@ -1,3 +1,8 @@
+// Account page — v2 | 2026-03-24 | Job_PM
+// Added: profile display + inline edit (business name, address, instagram, phone)
+
+export const dynamic = 'force-dynamic';
+
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -5,6 +10,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import SignOutButton from "./SignOutButton";
+import ProfileForm from "./ProfileForm";
 
 export const metadata = {
   title: "My Account | Floropolis",
@@ -18,6 +24,12 @@ export default async function AccountPage() {
   if (!user) {
     redirect("/auth/login?next=/account");
   }
+
+  const { data: profile } = await supabase
+    .from("client_profiles")
+    .select("business_name, phone, address_line1, address_line2, city, state, zip, instagram, status, koronet_id")
+    .eq("user_id", user.id)
+    .single();
 
   return (
     <div className="min-h-screen bg-white">
@@ -33,6 +45,9 @@ export default async function AccountPage() {
           </div>
           <SignOutButton />
         </div>
+
+        {/* Profile info */}
+        {profile && <ProfileForm profile={profile} userId={user.id} />}
 
         {/* Quick actions */}
         <div className="grid sm:grid-cols-3 gap-4 mb-10">
