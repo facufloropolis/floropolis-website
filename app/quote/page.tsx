@@ -108,7 +108,7 @@ export default function QuotePage() {
     const lines = cartItems.map((item) => {
       const price = item.deal_price ?? item.price;
       const lineTotal = price * item.quantity * (item.units_per_box || 1);
-      return `- ${item.name} | ${item.quantity}x ${item.box_type} | $${price.toFixed(2)}/stem | $${lineTotal.toFixed(2)}${item.delivery_date ? ` | Del: ${item.delivery_date}` : ""}`;
+      return `- ${item.name} | ${item.quantity}x ${item.box_type} | $${price.toFixed(2)}/stem | $${lineTotal.toFixed(2)}${item.delivery_date ? ` | Del: ${item.delivery_date}` : ""}${item.customization_note ? ` | Note: ${item.customization_note}` : ""}`;
     });
     const sub = getSubtotal();
     const msg = [
@@ -265,7 +265,8 @@ export default function QuotePage() {
       });
       clearCart();
       const quoteId = data.quote_id ? `?id=${data.quote_id}` : "";
-      window.location.href = `/quote/confirmation${quoteId}`;
+      // Delay redirect 300ms so GTM can send the hit to GA4 before page unload
+      setTimeout(() => { window.location.href = `/quote/confirmation${quoteId}`; }, 300);
     } catch (err) {
       console.error(err);
       setError(
@@ -408,6 +409,11 @@ export default function QuotePage() {
                                 {item.units_per_box > 0 && ` · ${item.units_per_box.toLocaleString()} stems`}
                                 {item.stem_length && ` · ${item.stem_length}`}
                               </p>
+                              {item.customization_note && (
+                                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1 mt-1.5">
+                                  ✏️ Customization: {item.customization_note}
+                                </p>
+                              )}
                             </div>
                             <button
                               type="button"
@@ -882,10 +888,10 @@ export default function QuotePage() {
                     </div>
                     <div className="flex-1">
                       <p className={`text-sm font-semibold ${standingOrder ? "text-emerald-800" : "text-slate-800"}`}>
-                        Make this a standing order
+                        Set up a standing order — save 10%
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Same order, locked price. Skip or cancel anytime — no fees.
+                        You won&apos;t be charged now. 10 days before each delivery, we&apos;ll ask you to confirm. Commit to 12 months and save 10% on every order.
                       </p>
                       {standingOrder && (
                         <div className="mt-3" onClick={(e) => e.stopPropagation()}>
@@ -906,9 +912,10 @@ export default function QuotePage() {
                               </button>
                             ))}
                           </div>
-                          <p className="text-[11px] text-emerald-700 mt-2 font-medium">
-                            We'll send you a reminder 10 days before each order — one click to confirm.
-                          </p>
+                          <div className="mt-3 rounded-lg bg-emerald-50 border border-emerald-200 p-2.5">
+                            <p className="text-[11px] text-emerald-800 font-semibold">No payment today.</p>
+                            <p className="text-[11px] text-emerald-700 mt-0.5">We&apos;ll send a confirmation 10 days before each delivery. Once you confirm a 12-month schedule, your 10% discount locks in for every order.</p>
+                          </div>
                         </div>
                       )}
                     </div>
