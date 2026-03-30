@@ -30356,4 +30356,20 @@ export const PROMO_CODES = {
     active: true,
     first_order_only: true,
   },
+  COMEBACK10: {
+    discount_type: "percentage" as const,
+    discount_value: 10,
+    scope: "all" as const,
+    scope_filter: "",
+    expiry: "2026-12-31",
+    active: true,
+  },
+  MDY10: {
+    discount_type: "percentage" as const,
+    discount_value: 10,
+    scope: "all" as const,
+    scope_filter: "",
+    expiry: "2026-04-17",
+    active: true,
+  },
 } as const;
