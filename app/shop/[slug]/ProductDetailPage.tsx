@@ -319,6 +319,8 @@ export default function ProductDetailPage({
   const [justAdded, setJustAdded] = useState(false);
   // EXP-028: Box quantity selector — florists often need 2-5 boxes, reduce quote-page round-trip
   const [boxQty, setBoxQty] = useState(1);
+  // EXP-020: Per-item customization note for mixed/combo boxes
+  const [customizationNote, setCustomizationNote] = useState("");
 
   // Track product view on mount
   useEffect(() => {
@@ -408,6 +410,7 @@ export default function ProductDetailPage({
       unit: currentVariant.unit || "Stem",
       delivery_date: deliveryFrom || undefined,
       stem_length: selectedLength || undefined,
+      customization_note: customizationNote.trim() || undefined,
     };
     addItem(quoteItem);
     pushEvent(CTA_EVENTS.add_to_quote, {
@@ -707,32 +710,53 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {/* What's in this box — shown for Mixed Boxes and Assorted products */}
+            {/* EXP-020: What's in this box + customization note — shown for Mixed Boxes and combo products */}
             {(currentVariant.category === "Mixed Boxes" || currentVariant.color === "Assorted" || currentVariant.unit === "Box") && (
-              <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-2">
-                  What's in this box
-                </p>
-                {(currentVariant as { contents_note?: string }).contents_note ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {((currentVariant as { contents_note?: string }).contents_note ?? "").split(",").map((v) => (
-                      <span
-                        key={v.trim()}
-                        className="inline-block rounded-full bg-white border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-slate-700"
-                      >
-                        {v.trim()}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-amber-800">
-                    Curated mix — exact composition varies by season.
+              <>
+                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-2">
+                    What&apos;s in this box
                   </p>
-                )}
-                <p className="mt-2 text-xs text-amber-600">
-                  Want specific varieties? Add a note when you request your quote.
-                </p>
-              </div>
+                  {(currentVariant as { contents_note?: string }).contents_note ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {((currentVariant as { contents_note?: string }).contents_note ?? "").split(",").map((v) => (
+                        <span
+                          key={v.trim()}
+                          className="inline-block rounded-full bg-white border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-slate-700"
+                        >
+                          {v.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm font-medium text-amber-900">
+                        Seasonal curated mix
+                        {(currentVariant as { total_stems?: number }).total_stems
+                          ? ` · ~${(currentVariant as { total_stems?: number }).total_stems} stems`
+                          : ""}
+                      </p>
+                      <p className="text-xs text-amber-700 mt-1">
+                        Exact varieties change week to week based on what&apos;s at peak. Ask us below — we&apos;ll tell you what&apos;s in this week&apos;s box.
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="mb-5">
+                  <label htmlFor="customization-note" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
+                    Want to customize? <span className="font-normal text-slate-400 normal-case">(optional)</span>
+                  </label>
+                  <textarea
+                    id="customization-note"
+                    rows={2}
+                    value={customizationNote}
+                    onChange={(e) => setCustomizationNote(e.target.value)}
+                    placeholder="e.g. more heliconias, swap roses for ranunculus, no red tones — anything helps"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 resize-none"
+                  />
+                  <p className="mt-1 text-xs text-slate-400">We&apos;ll do our best to accommodate — we&apos;ll confirm when we review your quote.</p>
+                </div>
+              </>
             )}
 
             {/* Delivery date — smart chips grouped by week */}
