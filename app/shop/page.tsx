@@ -747,6 +747,42 @@ function ShopPageContent() {
           </div>
         )}
 
+        {/* EXP-074: MDY Phase 1 — Mother's Day banner on /shop. Remove after May 10. */}
+        {!searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
+          <div className="mb-8 rounded-2xl overflow-hidden border border-rose-200 bg-gradient-to-r from-rose-50 to-pink-50">
+            <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-rose-500 bg-rose-100 px-2 py-0.5 rounded-full">Mother&apos;s Day</span>
+                  <span className="text-xs text-rose-400 font-medium">Pre-order cutoff: April 25</span>
+                </div>
+                <h2 className="text-lg font-bold text-slate-900 leading-tight">
+                  Farm-direct flowers for Mother&apos;s Day — guaranteed May 10 delivery
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">Farm-direct from Ecuador · Delivery included in price</p>
+              </div>
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0 snap-x">
+                {[
+                  { name: "Ranunculus Pink Amandine", price: 1.23, search: "Pink Amandine" },
+                  { name: "Anemone FullStar Red", price: 1.23, search: "FullStar Red" },
+                  { name: "Delphinium Sky Waltz", price: 1.17, search: "Sky Waltz" },
+                ].map((p) => (
+                  <Link
+                    key={p.search}
+                    href={`/shop?search=${encodeURIComponent(p.search)}`}
+                    className="flex-none snap-start bg-white rounded-xl border border-rose-100 px-3 py-2 hover:border-rose-300 hover:shadow-sm transition-all text-center min-w-[130px]"
+                    onClick={() => pushEvent("mdy_featured_click", { product: p.name, source: "mdy_banner" })}
+                  >
+                    <p className="text-xs font-semibold text-slate-800 leading-tight line-clamp-2">{p.name}</p>
+                    <p className="text-sm font-bold text-emerald-600 mt-1">${p.price.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/stem</span></p>
+                    <p className="text-[10px] text-rose-500 mt-0.5">Order now →</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-8">
           {/* Sidebar: desktop */}
           <aside className="hidden lg:block w-52 flex-shrink-0">

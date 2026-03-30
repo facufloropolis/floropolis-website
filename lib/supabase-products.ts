@@ -29,6 +29,7 @@ export interface FloropolisInventoryRow {
   slug?: string | null;
   images?: unknown | null; // stored as jsonb; we coerce below
   whatsapp_message_template?: string | null;
+  price_override?: boolean | null;
 }
 
 export type BoxType = "QB" | "QB-M" | "HB" | "EB" | "EB-M" | "SB-M" | string;
