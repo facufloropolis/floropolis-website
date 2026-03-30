@@ -30330,46 +30330,4 @@ export const products: Product[] = [
   }
 ];
 
-export const PROMO_CODES = {
-  MAGIC10: {
-    discount_type: "percentage" as const,
-    discount_value: 10,
-    scope: "all" as const,
-    scope_filter: "",
-    expiry: "2026-06-30",
-    active: true,
-  },
-  SPRING15: {
-    discount_type: "percentage" as const,
-    discount_value: 15,
-    scope: "category" as const,
-    scope_filter: "Ranunculus,Anemone,Delphinium",
-    expiry: "2026-04-30",
-    active: true,
-  },
-  WELCOME10: {
-    discount_type: "percentage" as const,
-    discount_value: 10,
-    scope: "all" as const,
-    scope_filter: "",
-    expiry: "2026-12-31",
-    active: true,
-    first_order_only: true,
-  },
-  COMEBACK10: {
-    discount_type: "percentage" as const,
-    discount_value: 10,
-    scope: "all" as const,
-    scope_filter: "",
-    expiry: "2026-12-31",
-    active: true,
-  },
-  MDY10: {
-    discount_type: "percentage" as const,
-    discount_value: 10,
-    scope: "all" as const,
-    scope_filter: "",
-    expiry: "2026-04-17",
-    active: true,
-  },
-} as const;
+// PROMO_CODES moved to lib/data/promo-codes.ts (L-19: catalog regen was wiping this block)

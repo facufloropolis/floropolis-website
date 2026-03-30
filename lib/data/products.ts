@@ -2,14 +2,12 @@
 // Master dataset generated from Supabase via scripts/generate-products.mjs
 
 import type { Product as RawProduct } from "./floropolis_products";
-import {
-  products as rawProducts,
-  PROMO_CODES as RAW_PROMO_CODES,
-} from "./floropolis_products";
+import { products as rawProducts } from "./floropolis_products";
+import { PROMO_CODES } from "./promo-codes";
 
 export type Product = RawProduct & { compare_at_price?: number };
 
-export const PROMO_CODES = RAW_PROMO_CODES;
+export { PROMO_CODES };
 
 /**
  * Runtime discount: 10% off all assorted boxes and combos.
