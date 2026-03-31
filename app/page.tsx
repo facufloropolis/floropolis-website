@@ -105,7 +105,7 @@ export default function Home() {
               { emoji: "🌺", label: "Tropicals", sub: "Birds of paradise, heliconias", href: "/shop/tropicals" },
               { emoji: "🌸", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
               { emoji: "🌿", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
-              { emoji: "💐", label: "Spring Collection", sub: "Limited availability", href: "/shop/spring-collection" },
+              { emoji: "💝", label: "Mother's Day →", sub: "Order by April 25", href: "/mothers-day-2026" },  // EXP-105: MDY seasonal card — replaces Spring Collection (higher urgency, Apr 25 cutoff)
               { emoji: "🌼", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
             ].map(({ emoji, label, sub, href }) => (
               <Link
