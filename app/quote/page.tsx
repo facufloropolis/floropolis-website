@@ -288,6 +288,19 @@ export default function QuotePage() {
           Review Your Quote
         </h1>
 
+        {/* EXP-126: MDY seasonal nudge on quote page — florists building MDY orders need the April 25 deadline */}
+        {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+          <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-rose-700">💝 Building a Mother&apos;s Day order?</p>
+              <p className="text-xs text-rose-500 mt-0.5">Pre-order cutoff: April 25 · Guaranteed May 10 delivery · Delivery included in price.</p>
+            </div>
+            <a href="/mothers-day-2026" className="flex-shrink-0 text-xs font-bold text-rose-600 border border-rose-300 bg-white rounded-lg px-3 py-1.5 hover:bg-rose-50 transition-colors">
+              View MDY Collection →
+            </a>
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Left: Cart Summary (3 cols) */}
           <section className="lg:col-span-3 space-y-6">
@@ -590,79 +603,6 @@ export default function QuotePage() {
               </div>
             )}
 
-            {/* Product carousel — "You might also like" */}
-            {suggestedProducts.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    You might also want
-                  </h3>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => scrollCarousel("left")}
-                      className="p-1.5 rounded-lg border border-slate-300 hover:bg-slate-50"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => scrollCarousel("right")}
-                      className="p-1.5 rounded-lg border border-slate-300 hover:bg-slate-50"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <div
-                  ref={carouselRef}
-                  className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
-                >
-                  {suggestedProducts.map((p) => {
-                    const dbImg = p.images?.[0];
-                    const img = dbImg ? resolveImage(dbImg) : getProductImage(p.variety, p.color, p.category);
-                    const price = p.deal_price ?? p.price;
-                    return (
-                      <div
-                        key={p.slug}
-                        className="flex-shrink-0 w-36 border border-slate-200 rounded-xl overflow-hidden bg-white"
-                      >
-                        <div className="aspect-square relative bg-slate-50">
-                          <Image
-                            src={img || "/Floropolis-logo-only.png"}
-                            alt={p.name}
-                            fill
-                            className="object-contain"
-                            sizes="144px"
-                            unoptimized={img.startsWith("http")}
-                          />
-                        </div>
-                        <div className="p-2">
-                          <p className="text-xs font-semibold text-slate-900 line-clamp-1">
-                            {p.variety} {p.color}
-                          </p>
-                          <p className="text-xs text-emerald-600 font-bold">
-                            ${price.toFixed(2)}/stem
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleQuickAdd(p)}
-                            className="mt-1.5 w-full flex items-center justify-center gap-1 rounded-lg bg-emerald-600 text-white text-[11px] font-semibold py-1.5 hover:bg-emerald-700"
-                          >
-                            <Plus className="w-3 h-3" />
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <style jsx>{`
-                  .scrollbar-hide::-webkit-scrollbar { display: none; }
-                  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-                `}</style>
-              </div>
-            )}
           </section>
 
           {/* Right: Form (2 cols) */}
@@ -1038,6 +978,81 @@ export default function QuotePage() {
               </div>
             </div>
           </section>
+        </div>
+        {/* EXP-125: Upsell carousel moved below form — form is now first on mobile */}
+        <div className="mt-8 max-w-7xl mx-auto px-4 pb-8">
+          {suggestedProducts.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-slate-900">
+                  You might also want
+                </h3>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel("left")}
+                    className="p-1.5 rounded-lg border border-slate-300 hover:bg-slate-50"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel("right")}
+                    className="p-1.5 rounded-lg border border-slate-300 hover:bg-slate-50"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              <div
+                ref={carouselRef}
+                className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
+              >
+                {suggestedProducts.map((p) => {
+                  const dbImg = p.images?.[0];
+                  const img = dbImg ? resolveImage(dbImg) : getProductImage(p.variety, p.color, p.category);
+                  const price = p.deal_price ?? p.price;
+                  return (
+                    <div
+                      key={p.slug}
+                      className="flex-shrink-0 w-36 border border-slate-200 rounded-xl overflow-hidden bg-white"
+                    >
+                      <div className="aspect-square relative bg-slate-50">
+                        <Image
+                          src={img || "/Floropolis-logo-only.png"}
+                          alt={p.name}
+                          fill
+                          className="object-contain"
+                          sizes="144px"
+                          unoptimized={img.startsWith("http")}
+                        />
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs font-semibold text-slate-900 line-clamp-1">
+                          {p.variety} {p.color}
+                        </p>
+                        <p className="text-xs text-emerald-600 font-bold">
+                          ${price.toFixed(2)}/stem
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickAdd(p)}
+                          className="mt-1.5 w-full flex items-center justify-center gap-1 rounded-lg bg-emerald-600 text-white text-[11px] font-semibold py-1.5 hover:bg-emerald-700"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <style jsx>{`
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+              `}</style>
+            </div>
+          )}
         </div>
       </main>
 
