@@ -51,7 +51,7 @@ const TRUST_SIGNALS = [
   },
   {
     icon: "📅",
-    title: "Pre-order cutoff: April 25 for May 10 delivery",
+    title: "Pre-order cutoff: May 4 for May 10 delivery",
     detail: "Order ahead to lock in availability for Mother's Day.",
   },
 ];
@@ -63,9 +63,9 @@ export default function MothersDayPage() {
     pushEvent("mdy_lp_view", { page: "/mothers-day-2026" });
   }, []);
 
-  // EXP-104: Live countdown to April 25 cutoff
+  // EXP-104: Live countdown to May 4 cutoff
   useEffect(() => {
-    const CUTOFF = new Date("2026-04-25T23:59:59-04:00").getTime();
+    const CUTOFF = new Date("2026-05-04T23:59:59-04:00").getTime();
     const update = () => {
       const diff = CUTOFF - Date.now();
       if (diff <= 0) { setCountdown(""); return; }
@@ -96,7 +96,7 @@ export default function MothersDayPage() {
               <span className="text-rose-500"> — Farm-Direct</span>
             </h1>
             <p className="text-lg text-slate-600 mb-8 max-w-xl mx-auto">
-              Order by April 25 for guaranteed May 10 delivery. Delivery included in price.
+              Order by May 4 for guaranteed May 10 delivery. Delivery included in price.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
@@ -115,7 +115,7 @@ export default function MothersDayPage() {
               </Link>
             </div>
             <p className="mt-5 text-sm text-rose-500 font-medium">
-              ⏰ Pre-order cutoff: April 25, 2026 · Mother&apos;s Day: May 10, 2026
+              ⏰ Pre-order cutoff: May 4, 2026 · Mother&apos;s Day: May 10, 2026
               {countdown && <span className="ml-2 font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">— {countdown}</span>}
             </p>
           </div>
@@ -127,7 +127,7 @@ export default function MothersDayPage() {
             Mother&apos;s Day Collection
           </h2>
           <p className="text-slate-500 text-center mb-10 text-sm">
-            Farm-verified pricing · Delivery included · Order before April 25
+            Farm-verified pricing · Delivery included · Order before May 4
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -214,7 +214,7 @@ export default function MothersDayPage() {
             Request a Quote
           </Link>
           <p className="mt-4 text-xs text-slate-400">
-            Pre-order cutoff: April 25 · Delivery: May 8–10 · No payment at quote stage
+            Pre-order cutoff: May 4 · Delivery: May 8–10 · No payment at quote stage
           </p>
           {/* EXP-098: WA fallback — MDY page is high-stakes, capture chat-preferred visitors */}
           <p className="mt-3 text-sm text-slate-500">

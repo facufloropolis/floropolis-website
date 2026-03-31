@@ -156,8 +156,8 @@ export default function Navigation() {
             <Link href="/about" className="text-slate-700 hover:text-emerald-600 transition-colors font-medium">
               About
             </Link>
-            {/* EXP-129: MDY seasonal nav link — visible to every visitor before April 25 */}
-            {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+            {/* EXP-129: MDY seasonal nav link — visible to every visitor before May 4 */}
+            {new Date() < new Date("2026-05-04T23:59:59-04:00") && (
               <Link href="/mothers-day-2026" className="text-rose-600 hover:text-rose-700 transition-colors font-semibold whitespace-nowrap">
                 💝 Mother&apos;s Day
               </Link>
@@ -224,13 +224,13 @@ export default function Navigation() {
               Free Sample Box
             </Link>
             {/* EXP-129: MDY seasonal mobile nav link */}
-            {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+            {new Date() < new Date("2026-05-04T23:59:59-04:00") && (
               <Link
                 href="/mothers-day-2026"
                 className="block px-4 py-2 text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors rounded-lg font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                💝 Mother&apos;s Day — Order by April 25
+                💝 Mother&apos;s Day — Order by May 4
               </Link>
             )}
             <Link

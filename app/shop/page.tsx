@@ -765,7 +765,7 @@ function ShopPageContent() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-bold uppercase tracking-wider text-rose-500 bg-rose-100 px-2 py-0.5 rounded-full">Mother&apos;s Day</span>
-                  <span className="text-xs text-rose-400 font-medium">Pre-order cutoff: April 25</span>
+                  <span className="text-xs text-rose-400 font-medium">Pre-order cutoff: May 4</span>
                 </div>
                 <h2 className="text-lg font-bold text-slate-900 leading-tight">
                   Farm-direct flowers for Mother&apos;s Day — guaranteed May 10 delivery
@@ -797,7 +797,7 @@ function ShopPageContent() {
                   onClick={() => pushEvent("mdy_featured_click", { product: "banner_view_all", source: "mdy_banner" })}
                   className="text-xs font-semibold text-rose-500 hover:text-rose-700 hover:underline"
                 >
-                  View Mother&apos;s Day collection — order by April 25 →
+                  View Mother&apos;s Day collection — order by May 4 →
                 </Link>
               </div>
             </div>

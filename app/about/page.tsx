@@ -250,7 +250,7 @@ export default function About() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-4">Ready to make the switch?</h2>
           {/* EXP-120: MDY seasonal primary CTA — consistent with contact/how-it-works/homepage */}
-          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: April 25 — guaranteed May 10 delivery</p>
+          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: May 4 — guaranteed May 10 delivery</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/mothers-day-2026"

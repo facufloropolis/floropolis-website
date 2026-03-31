@@ -288,12 +288,12 @@ export default function QuotePage() {
           Review Your Quote
         </h1>
 
-        {/* EXP-126: MDY seasonal nudge on quote page — florists building MDY orders need the April 25 deadline */}
-        {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+        {/* EXP-126: MDY seasonal nudge on quote page — florists building MDY orders need the May 4 deadline */}
+        {new Date() < new Date("2026-05-04T23:59:59-04:00") && (
           <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex-1">
               <p className="text-sm font-semibold text-rose-700">💝 Building a Mother&apos;s Day order?</p>
-              <p className="text-xs text-rose-500 mt-0.5">Pre-order cutoff: April 25 · Guaranteed May 10 delivery · Delivery included in price.</p>
+              <p className="text-xs text-rose-500 mt-0.5">Pre-order cutoff: May 4 · Guaranteed May 10 delivery · Delivery included in price.</p>
             </div>
             <a href="/mothers-day-2026" className="flex-shrink-0 text-xs font-bold text-rose-600 border border-rose-300 bg-white rounded-lg px-3 py-1.5 hover:bg-rose-50 transition-colors">
               View MDY Collection →

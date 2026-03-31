@@ -35,7 +35,7 @@ const TRUST_POINTS = [
   { icon: Truck, text: "Delivery included in every price — no hidden fees" },
   { icon: Leaf, text: "Cayambe Valley, Ecuador — 3,100m altitude. 7-10 day vase life." },
   { icon: Package, text: "No minimums — order exactly what you need" },
-  { icon: Clock, text: "Mother's Day stock available — order cutoff April 25" },
+  { icon: Clock, text: "Mother's Day stock available — order cutoff May 4" },
 ];
 
 export default function WholesaleRanunculus() {
@@ -150,7 +150,7 @@ export default function WholesaleRanunculus() {
       <section className="py-8 px-4 bg-amber-50 border-y border-amber-200">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 mb-2">Mother's Day — May 11</p>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Order by April 25 for Guaranteed May Arrival</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Order by May 4 for Guaranteed May Arrival</h2>
           <p className="text-slate-600 text-sm mb-4 max-w-xl mx-auto">
             Ranunculus is the #1 spring wedding and Mother's Day flower. We have strong MDY allocation. Reserve yours before our cutoff.
           </p>

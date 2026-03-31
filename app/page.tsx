@@ -125,7 +125,7 @@ export default function Home() {
               { emoji: "🌺", label: "Tropicals", sub: "Birds of paradise, heliconias", href: "/shop/tropicals" },
               { emoji: "🌸", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
               { emoji: "🌿", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
-              { emoji: "💝", label: "Mother's Day →", sub: "Order by April 25", href: "/mothers-day-2026" },  // EXP-105: MDY seasonal card — replaces Spring Collection (higher urgency, Apr 25 cutoff)
+              { emoji: "💝", label: "Mother's Day →", sub: "Order by May 4", href: "/mothers-day-2026" },  // EXP-105: MDY seasonal card — replaces Spring Collection (higher urgency, May 4 cutoff)
               { emoji: "🌼", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
             ].map(({ emoji, label, sub, href }) => (
               <Link
@@ -577,7 +577,7 @@ export default function Home() {
             Ready to Try Farm-Direct?
           </h2>
           {/* EXP-115: MDY seasonal primary CTA on homepage final section — April urgency */}
-          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: April 25 — guaranteed May 10 delivery</p>
+          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: May 4 — guaranteed May 10 delivery</p>
           <p className="text-base sm:text-xl text-emerald-100 mb-4 sm:mb-6 max-w-2xl mx-auto">
             Get a free sample box and see the quality difference for yourself. No obligation.
           </p>

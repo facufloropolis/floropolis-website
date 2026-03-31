@@ -74,7 +74,7 @@ export default function WholesaleAnemone() {
             </div>
           </div>
           <p className="text-xs text-amber-700 font-medium mb-6">
-            PetalJet's Mother's Day anemone allocation closed. We still have stock. Order by April 25.
+            PetalJet's Mother's Day anemone allocation closed. We still have stock. Order by May 4.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={SHOP_URL} className="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold text-base hover:bg-emerald-700 transition-colors">
@@ -153,11 +153,11 @@ export default function WholesaleAnemone() {
       <section className="py-8 px-4 bg-amber-50 border-y border-amber-200">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 mb-2">Mother's Day — May 11</p>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">True Blue for Mother's Day — Order by April 25</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">True Blue for Mother's Day — Order by May 4</h2>
           <p className="text-slate-600 text-sm mb-2 max-w-xl mx-auto">
             Blue anemone is one of the few true blues available for Mother's Day bouquets. Most florists can't find it. PetalJet's MDY allocation closed. We have stock.
           </p>
-          <p className="text-slate-500 text-xs mb-4">Strong stock available now — order cutoff April 25 for guaranteed May 11 arrival.</p>
+          <p className="text-slate-500 text-xs mb-4">Strong stock available now — order cutoff May 4 for guaranteed May 11 arrival.</p>
           <Link href={MDY_URL} className="inline-flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-amber-700 transition-colors">
             Reserve MDY Anemone →
           </Link>

@@ -6,14 +6,14 @@ import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 /**
  * Site-wide banner: EXP-107 — MDY seasonal banner until May 10, then reverts to sample box.
- * April 25 pre-order cutoff is high urgency. Show MDY > sample box while cutoff is active.
+ * May 4 pre-order cutoff is high urgency. Show MDY > sample box while cutoff is active.
  */
 export default function TopBanner() {
   const [timeLeft, setTimeLeft] = useState("");
 
-  // EXP-107: Countdown to April 25 MDY pre-order cutoff
+  // EXP-107: Countdown to May 4 MDY pre-order cutoff
   useEffect(() => {
-    const CUTOFF = new Date("2026-04-25T23:59:59-04:00").getTime();
+    const CUTOFF = new Date("2026-05-04T23:59:59-04:00").getTime();
     function update() {
       const diff = CUTOFF - Date.now();
       if (diff <= 0) { setTimeLeft(""); return; }
@@ -27,8 +27,8 @@ export default function TopBanner() {
     return () => clearInterval(id);
   }, []);
 
-  // After April 25 cutoff, show sample box banner instead
-  const pastCutoff = new Date() > new Date("2026-04-25T23:59:59-04:00");
+  // After May 4 cutoff, show sample box banner instead
+  const pastCutoff = new Date() > new Date("2026-05-04T23:59:59-04:00");
 
   if (pastCutoff) {
     return (
@@ -57,7 +57,7 @@ export default function TopBanner() {
       <div className="relative z-10 flex items-center justify-center gap-x-2 px-3">
         {/* Mobile */}
         <span className="sm:hidden truncate">
-          💐 Mother&apos;s Day — Order by April 25, ships May 10{" "}
+          💐 Mother&apos;s Day — Order by May 4, ships May 10{" "}
           <Link
             href="/mothers-day-2026"
             className="underline font-bold"

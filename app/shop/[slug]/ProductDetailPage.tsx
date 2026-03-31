@@ -949,11 +949,11 @@ export default function ProductDetailPage({
         )}
 
         {/* EXP-132: MDY callout for relevant categories — ranunculus/anemone/delphinium/rose are MDY stars */}
-        {["Ranunculus", "Anemone", "Delphinium", "Rose"].includes(product.category) && new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+        {["Ranunculus", "Anemone", "Delphinium", "Rose"].includes(product.category) && new Date() < new Date("2026-05-04T23:59:59-04:00") && (
           <div className="mt-8 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex-1">
               <p className="text-sm font-semibold text-rose-700">💝 {product.category} is a Mother&apos;s Day favorite</p>
-              <p className="text-xs text-rose-500 mt-0.5">Pre-order by April 25 for guaranteed May 10 delivery. Farm-direct pricing, shipping included.</p>
+              <p className="text-xs text-rose-500 mt-0.5">Pre-order by May 4 for guaranteed May 10 delivery. Farm-direct pricing, shipping included.</p>
             </div>
             <a href="/mothers-day-2026" className="flex-shrink-0 text-xs font-bold text-rose-600 border border-rose-300 bg-white rounded-lg px-3 py-1.5 hover:bg-rose-50 transition-colors whitespace-nowrap">
               View MDY Collection →

@@ -164,9 +164,9 @@ export default function WholesaleDelphiniums() {
       <section className="py-8 px-4 bg-amber-50 border-y border-amber-200">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 mb-2">Mother&apos;s Day — May 10</p>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Order by April 25 for Guaranteed May Delivery</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Order by May 4 for Guaranteed May Delivery</h2>
           <p className="text-slate-600 text-sm mb-4 max-w-xl mx-auto">
-            Delphiniums are a featured Mother&apos;s Day variety. Strong MDY allocation — reserve yours before our April 25 cutoff.
+            Delphiniums are a featured Mother&apos;s Day variety. Strong MDY allocation — reserve yours before our May 4 cutoff.
           </p>
           <a href="/mothers-day-2026" className="inline-flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-amber-700 transition-colors">
             View Mother&apos;s Day Collection →

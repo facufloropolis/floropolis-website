@@ -82,10 +82,10 @@ function ConfirmationContent() {
       </div>
 
       {/* EXP-127: MDY upsell on confirmation page — florists who just submitted a quote for April may want MDY flowers */}
-      {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+      {new Date() < new Date("2026-05-04T23:59:59-04:00") && (
         <div className="mt-8 max-w-md mx-auto rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-center">
           <p className="text-sm font-semibold text-rose-700">💝 Planning for Mother&apos;s Day?</p>
-          <p className="text-xs text-rose-500 mt-0.5">Pre-order cutoff is April 25 — add ranunculus, anemone &amp; delphiniums before spots fill.</p>
+          <p className="text-xs text-rose-500 mt-0.5">Pre-order cutoff is May 4 — add ranunculus, anemone &amp; delphiniums before spots fill.</p>
           <a href="/mothers-day-2026" className="inline-block mt-2 text-xs font-bold text-rose-600 underline hover:no-underline">Browse Mother&apos;s Day Collection →</a>
         </div>
       )}

@@ -115,7 +115,7 @@ export default function Contact() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-4">Ready to Start?</h2>
           {/* EXP-110: MDY CTA on contact page — seasonal urgency drives faster conversion */}
-          <p className="text-emerald-100 mb-4 text-sm">💐 Mother&apos;s Day pre-order cutoff: April 25 — order now for guaranteed May 10 delivery</p>
+          <p className="text-emerald-100 mb-4 text-sm">💐 Mother&apos;s Day pre-order cutoff: May 4 — order now for guaranteed May 10 delivery</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/mothers-day-2026" className="bg-white text-rose-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-rose-50 transition-all" onClick={() => pushEvent("mdy_banner_click", { cta_location: "contact_page" })}>
               Shop Mother&apos;s Day →

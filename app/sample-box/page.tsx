@@ -262,7 +262,7 @@ function SampleBoxContent() {
               className="bg-rose-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-rose-700 transition-all inline-flex items-center justify-center gap-2"
               onClick={() => pushEvent("mdy_banner_click", { cta_location: "sample_box_success" })}
             >
-              💝 Shop Mother&apos;s Day — Order by April 25
+              💝 Shop Mother&apos;s Day — Order by May 4
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link

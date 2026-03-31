@@ -78,7 +78,7 @@ export default function SpringCollectionPage() {
         {/* EXP-109: MDY cross-link — ranunculus + anemone are also MDY featured products */}
         <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-center">
           <p className="text-sm font-semibold text-rose-700">💝 Planning for Mother&apos;s Day?</p>
-          <p className="text-xs text-rose-500 mt-0.5">These spring varieties are featured in our Mother&apos;s Day collection — order by April 25 for guaranteed May 10 delivery.</p>
+          <p className="text-xs text-rose-500 mt-0.5">These spring varieties are featured in our Mother&apos;s Day collection — order by May 4 for guaranteed May 10 delivery.</p>
           <a href="/mothers-day-2026" className="inline-block mt-2 text-xs font-bold text-rose-600 underline hover:no-underline">View Mother&apos;s Day collection →</a>
         </div>
         <div className="text-center border-t border-slate-200 pt-10 mb-12">
