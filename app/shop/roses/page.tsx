@@ -147,11 +147,7 @@ export default function ShopRosesPage() {
               <p className="text-slate-600 text-sm">Re-cut stems at a 45° angle immediately on arrival, remove foliage below the waterline, and use clean buckets with floral preservative. You should expect 14-16 days consistently with proper conditioning.</p>
             </div>
           </div>
-          <div className="mt-8 text-center">
-            <Link href="/blog/wholesale-roses-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
-              Read our complete wholesale roses guide &rarr;
-            </Link>
-            {/* EXP-103: WA escape on roses page */}
+          {/* EXP-103: WA escape on roses page */}
             <p className="mt-4 text-slate-500 text-sm">
               Have a specific variety in mind?{" "}
               <a

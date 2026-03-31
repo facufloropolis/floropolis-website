@@ -124,11 +124,7 @@ export default function ShopTropicalsPage() {
               <p className="text-slate-600 text-sm">Most tropicals prefer warm water (room temperature, not cold). Re-cut stems at an angle, keep in a cool spot (not refrigerator), and avoid direct drafts. Do NOT refrigerate heliconias — they&apos;ll blacken overnight.</p>
             </div>
           </div>
-          <div className="mt-8 text-center">
-            <Link href="/blog/tropical-flower-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
-              Read our complete tropical flower guide &rarr;
-            </Link>
-          </div>
+
         </section>
       </main>
 

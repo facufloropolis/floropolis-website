@@ -335,10 +335,6 @@ export default function WholesaleDelphiniums() {
             How It Works
           </Link>
           <span className="text-slate-200">|</span>
-          <Link href="/blog/delphinium-care-prevent-petal-drop" className="text-slate-500 hover:text-emerald-600">
-            Delphinium Care Guide
-          </Link>
-          <span className="text-slate-200">|</span>
           <Link href="/contact" className="text-slate-500 hover:text-emerald-600">
             Questions? Contact Us
           </Link>

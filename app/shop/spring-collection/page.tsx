@@ -129,14 +129,7 @@ export default function SpringCollectionPage() {
               <p className="text-slate-600 text-sm">Most wholesalers don't carry varieties like molucella, scabiosa, or specialty larkspur because they're harder to source reliably. Our direct farm relationships in Ecuador give us access to varieties traditional distributors can't offer consistently.</p>
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm">
-            <Link href="/blog/ranunculus-season-guide-florists" className="text-emerald-600 font-semibold hover:underline">
-              Ranunculus buying guide &rarr;
-            </Link>
-            <Link href="/blog/anemone-care-guide-florists" className="text-emerald-600 font-semibold hover:underline">
-              Anemone care guide &rarr;
-            </Link>
-          </div>
+
         </section>
       </main>
 

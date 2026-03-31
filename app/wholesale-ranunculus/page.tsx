@@ -251,8 +251,6 @@ export default function WholesaleRanunculus() {
           <span className="text-slate-200">|</span>
           <Link href="/shop" className="text-slate-500 hover:text-emerald-600">Browse Full Catalog</Link>
           <span className="text-slate-200">|</span>
-          <Link href="/blog/ranunculus-season-guide-florists" className="text-slate-500 hover:text-emerald-600">Ranunculus Buying Guide</Link>
-          <span className="text-slate-200">|</span>
           <Link href="/contact" className="text-slate-500 hover:text-emerald-600">Questions? Contact Us</Link>
         </div>
       </section>

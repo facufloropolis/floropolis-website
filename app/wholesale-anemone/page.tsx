@@ -252,8 +252,6 @@ export default function WholesaleAnemone() {
           <span className="text-slate-200">|</span>
           <Link href="/shop" className="text-slate-500 hover:text-emerald-600">Browse Full Catalog</Link>
           <span className="text-slate-200">|</span>
-          <Link href="/blog/anemone-care-guide-florists" className="text-slate-500 hover:text-emerald-600">Anemone Care Guide</Link>
-          <span className="text-slate-200">|</span>
           <Link href="/contact" className="text-slate-500 hover:text-emerald-600">Questions? Contact Us</Link>
         </div>
       </section>
