@@ -790,6 +790,16 @@ function ShopPageContent() {
                   </Link>
                 ))}
               </div>
+              <div className="px-5 pb-3 pt-0">
+                {/* EXP-106: MDY banner → dedicated page link — drives traffic to higher-converting MDY page */}
+                <Link
+                  href="/mothers-day-2026"
+                  onClick={() => pushEvent("mdy_featured_click", { product: "banner_view_all", source: "mdy_banner" })}
+                  className="text-xs font-semibold text-rose-500 hover:text-rose-700 hover:underline"
+                >
+                  View Mother&apos;s Day collection — order by April 25 →
+                </Link>
+              </div>
             </div>
           </div>
         )}
