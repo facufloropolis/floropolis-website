@@ -255,13 +255,21 @@ function SampleBoxContent() {
           </div>
 
           {/* EXP-041: Post-submission CTAs — capture momentum with catalog + quote nudge */}
+          {/* EXP-118: MDY primary CTA in sample-box success — high-intent leads planning MDY */}
           <div className="flex flex-col gap-3 mb-6">
             <Link
+              href="/mothers-day-2026"
+              className="bg-rose-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-rose-700 transition-all inline-flex items-center justify-center gap-2"
+              onClick={() => pushEvent("mdy_banner_click", { cta_location: "sample_box_success" })}
+            >
+              💝 Shop Mother&apos;s Day — Order by April 25
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
               href="/shop"
-              className="bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2"
+              className="bg-emerald-600 text-white px-8 py-3.5 rounded-lg font-semibold hover:bg-emerald-700 transition-all inline-flex items-center justify-center gap-2 text-sm"
             >
               Browse the Full Catalog
-              <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               href="/quote"
