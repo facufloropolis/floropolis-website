@@ -20,8 +20,7 @@ export const metadata: Metadata = {
 
 const SHOP_URL =
   "/shop?category=Anemone&utm_source=seo&utm_medium=organic&utm_campaign=wholesale-anemone";
-const MDY_URL =
-  "/contact?utm_source=seo&utm_medium=organic&utm_campaign=wholesale-anemone-mdy";
+const MDY_URL = "/mothers-day-2026"; // EXP-112: Updated from /contact to dedicated MDY page
 
 const GALLERY_IMAGES = [
   { src: "/images/shop/anemone/anemones-blue.png", alt: "wholesale anemone blue mariane farm-direct ecuador", label: "Blue Mariane" },

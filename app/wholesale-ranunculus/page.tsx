@@ -20,8 +20,7 @@ export const metadata: Metadata = {
 
 const SHOP_URL =
   "/shop?category=Ranunculus&utm_source=seo&utm_medium=organic&utm_campaign=wholesale-ranunculus";
-const MDY_URL =
-  "/contact?utm_source=seo&utm_medium=organic&utm_campaign=wholesale-ranunculus-mdy";
+const MDY_URL = "/mothers-day-2026"; // EXP-112: Updated from /contact to dedicated MDY page
 
 const GALLERY_IMAGES = [
   { src: "/images/shop/ranunculus/pink.png", alt: "wholesale ranunculus pink amandine farm-direct ecuador", label: "Pink Amandine" },
