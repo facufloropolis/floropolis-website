@@ -62,7 +62,7 @@ export default function Contact() {
               <a href="tel:+17869308463" className="text-emerald-600 hover:text-emerald-700 font-medium" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.contact_call_click)}>
                 +1 (786) 930-8463
               </a>
-              <p className="text-sm text-slate-500 mt-2">Mon-Fri, 9am-5pm EST</p>
+              <p className="text-sm text-slate-500 mt-2">Mon–Fri, 8 AM – 6 PM ET</p>
             </div>
           </div>
         </div>
