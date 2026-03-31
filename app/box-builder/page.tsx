@@ -24,41 +24,6 @@ const BOX_TARGETS = [
   { label: "Full Box",    stems: 600, color: "text-emerald-600" },
 ];
 
-// CSS color approximations for swatches
-const COLOR_CSS: Record<string, string> = {
-  "Cream":        "#FFF8DC",
-  "White":        "#FFFFFF",
-  "Red":          "#DC2626",
-  "Dark Red":     "#7F1D1D",
-  "Burgundy":     "#800020",
-  "Pink":         "#EC4899",
-  "Hot Pink":     "#FF1493",
-  "Dark Pink":    "#BE185D",
-  "Light Pink":   "#FFC0CB",
-  "Soft Pink":    "#FFB6C1",
-  "Peach":        "#FFCBA4",
-  "Light Peach":  "#FFDAB9",
-  "Peach Pink":   "#FFB7A0",
-  "Coral":        "#FF7F50",
-  "Salmon":       "#FA8072",
-  "Orange":       "#F97316",
-  "Yellow":       "#EAB308",
-  "Champagne":    "#F7D9A0",
-  "Beige":        "#F5F0DC",
-  "Lavender":     "#B57EDC",
-  "Purple":       "#7C3AED",
-  "Pink Lavender":"#D8B4FE",
-  "Blue":         "#3B82F6",
-  "Light Blue":   "#93C5FD",
-  "Dark Blue":    "#1E3A8A",
-  "Green":        "#22C55E",
-  "Light Green":  "#86EFAC",
-  "Fuchsia":      "#DB2777",
-  "Brown":        "#78350F",
-  "Bicolor":      "linear-gradient(135deg, #FFC0CB 50%, #FFFFFF 50%)",
-  "Rainbow":      "linear-gradient(90deg, red, orange, yellow, green, blue, violet)",
-  "Assorted":     "linear-gradient(135deg, #FFC0CB, #FFCBA4, #FFF8DC)",
-};
 
 function nearestTarget(total: number) {
   return BOX_TARGETS.find((t) => total < t.stems) ?? BOX_TARGETS[BOX_TARGETS.length - 1];
@@ -69,29 +34,6 @@ function bunchSize(p: Product): number {
   return spb && spb >= 5 ? spb : 25;
 }
 
-function AvailabilityBadge({ p, deliveryDate }: { p: Product; deliveryDate: string }) {
-  if (!deliveryDate) return null;
-  if (!p.available_from) {
-    return (
-      <span className="text-[10px] bg-amber-50 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
-        ⚠ Check
-      </span>
-    );
-  }
-  if (p.available_from <= deliveryDate) {
-    return (
-      <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
-        ✓ Available
-      </span>
-    );
-  }
-  const fromDate = new Date(p.available_from + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return (
-    <span className="text-[10px] bg-slate-50 text-slate-500 border border-slate-200 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
-      From {fromDate}
-    </span>
-  );
-}
 
 export default function BoxBuilderPage() {
   const router = useRouter();
@@ -174,14 +116,6 @@ export default function BoxBuilderPage() {
   const blendedPrice = totalStems > 0 ? totalPrice / totalStems : 0;
   const nextTarget = nearestTarget(totalStems);
   const progressPct = totalStems === 0 ? 0 : Math.min(100, (totalStems / nextTarget.stems) * 100);
-
-  function toggleColor(color: string) {
-    setSelectedColors((prev) => {
-      const next = new Set(prev);
-      if (next.has(color)) next.delete(color); else next.add(color);
-      return next;
-    });
-  }
 
   function switchVendor(v: string) {
     setVendor(v);
@@ -267,39 +201,28 @@ export default function BoxBuilderPage() {
               {/* Color filter */}
               {vendorColors.length > 0 && (
                 <div>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Color</p>
-                    {selectedColors.size > 0 && (
-                      <button onClick={() => setSelectedColors(new Set())} className="text-[10px] text-emerald-600 hover:text-emerald-700 font-semibold">
-                        Clear
-                      </button>
-                    )}
+                  <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2.5">Color</p>
+                  <div className="relative">
+                    <select
+                      value={selectedColors.size === 1 ? Array.from(selectedColors)[0] : "All"}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSelectedColors(val === "All" ? new Set() : new Set([val]));
+                      }}
+                      className="w-full appearance-none text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-2 pr-6 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+                    >
+                      <option value="All">All colors</option>
+                      {vendorColors.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
                   </div>
-                  <div className="space-y-1">
-                    {vendorColors.map((color) => {
-                      const active = selectedColors.has(color);
-                      const cssColor = COLOR_CSS[color];
-                      const isGradient = cssColor?.startsWith("linear-gradient");
-                      return (
-                        <button
-                          key={color}
-                          onClick={() => toggleColor(color)}
-                          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium transition-all text-left ${
-                            active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"
-                          }`}
-                        >
-                          <span
-                            className="w-4 h-4 rounded-full flex-shrink-0 border border-slate-200"
-                            style={isGradient
-                              ? { background: cssColor }
-                              : { backgroundColor: cssColor || "#e2e8f0" }
-                            }
-                          />
-                          {color}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {selectedColors.size > 0 && (
+                    <button onClick={() => setSelectedColors(new Set())} className="text-[10px] text-emerald-600 hover:text-emerald-700 font-semibold mt-1.5">
+                      Show all
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -350,46 +273,17 @@ export default function BoxBuilderPage() {
                 )}
               </div>
 
-              {/* Mobile: horizontal color scroll */}
-              {vendorColors.length > 0 && (
-                <div className="lg:hidden flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-                  {vendorColors.map((color) => {
-                    const active = selectedColors.has(color);
-                    const cssColor = COLOR_CSS[color];
-                    const isGradient = cssColor?.startsWith("linear-gradient");
-                    return (
-                      <button
-                        key={color}
-                        onClick={() => toggleColor(color)}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium whitespace-nowrap flex-shrink-0 transition-all ${
-                          active ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-600"
-                        }`}
-                      >
-                        <span
-                          className="w-3 h-3 rounded-full flex-shrink-0 border border-slate-200"
-                          style={isGradient
-                            ? { background: cssColor }
-                            : { backgroundColor: cssColor || "#e2e8f0" }
-                          }
-                        />
-                        {color}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Active filter pills */}
+              {/* Active filter summary */}
               {(selectedColors.size > 0 || selectedVariety !== "All") && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  {Array.from(selectedColors).map((c) => (
-                    <span key={c} className="flex items-center gap-1 text-xs bg-slate-900 text-white px-2 py-0.5 rounded-full">
-                      {c}
-                      <button onClick={() => toggleColor(c)} className="ml-0.5 opacity-70 hover:opacity-100">
+                  {selectedColors.size > 0 && (
+                    <span className="flex items-center gap-1 text-xs bg-slate-900 text-white px-2 py-0.5 rounded-full">
+                      {Array.from(selectedColors)[0]}
+                      <button onClick={() => setSelectedColors(new Set())} className="ml-0.5 opacity-70 hover:opacity-100">
                         <X className="w-2.5 h-2.5" />
                       </button>
                     </span>
-                  ))}
+                  )}
                   {selectedVariety !== "All" && (
                     <span className="flex items-center gap-1 text-xs bg-violet-600 text-white px-2 py-0.5 rounded-full">
                       {selectedVariety}
@@ -426,11 +320,6 @@ export default function BoxBuilderPage() {
                         </p>
                         <p className="text-[10px] text-slate-400">${((p.deal_price ?? p.price) * bunch).toFixed(2)}/bunch</p>
                       </div>
-                    </div>
-
-                    {/* Availability badge */}
-                    <div className="mb-3">
-                      <AvailabilityBadge p={p} deliveryDate={deliveryDate} />
                     </div>
 
                     <div className="flex items-center justify-between">
