@@ -4,7 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
-import { getBlogPost, getBlogContent, getAllBlogSlugs } from "@/lib/data/blog-posts";
+import { getBlogPost, getBlogContent, getAllBlogSlugs, blogPosts } from "@/lib/data/blog-posts";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -41,6 +41,11 @@ export default async function BlogPostPage({
   if (!post) notFound();
 
   const content = getBlogContent(slug);
+
+  // Related posts: same category first, then fill with others (exclude current)
+  const sameCat = blogPosts.filter((p) => p.slug !== slug && p.category === post.category);
+  const others = blogPosts.filter((p) => p.slug !== slug && p.category !== post.category);
+  const related = [...sameCat, ...others].slice(0, 3);
 
   return (
     <div className="min-h-screen bg-white">
@@ -107,6 +112,28 @@ export default async function BlogPostPage({
             </Link>
           </div>
         </div>
+
+        {/* Related posts */}
+        {related.length > 0 && (
+          <div className="mt-12">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">More florist guides</h3>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {related.map((r) => (
+                <Link
+                  key={r.slug}
+                  href={`/blog/${r.slug}`}
+                  className="group rounded-xl border border-slate-200 p-4 hover:border-emerald-300 hover:shadow-md transition-all"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-600 mb-1 block">{r.category}</span>
+                  <p className="text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                    {r.title}
+                  </p>
+                  <span className="text-xs text-slate-400 mt-1 block">{r.readingTime}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back link */}
         <div className="mt-8 text-center">
