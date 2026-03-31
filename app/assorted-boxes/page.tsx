@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { products } from "@/lib/data/products";
 import { addItem } from "@/lib/quote-cart";
-import { getEarliestDeliveryDate, toISODate } from "@/lib/delivery-dates";
+import { getEarliestDeliveryDate, getDeliveryDates, formatDeliveryDate, toISODate } from "@/lib/delivery-dates";
 import { pushEvent } from "@/lib/gtm";
 
 const VENDOR_SECTIONS = [
@@ -119,6 +119,15 @@ export default function AssortedBoxesPage() {
   const [selections, setSelections] = useState<Record<string, number>>({});
   const [sent, setSent] = useState(false);
 
+  const deliveryDates = useMemo(() => {
+    const earliest = getEarliestDeliveryDate("T2");
+    return getDeliveryDates(earliest, 8);
+  }, []);
+  const [deliveryDate, setDeliveryDate] = useState<string>(() =>
+    deliveryDates[0] ? toISODate(deliveryDates[0]) : ""
+  );
+  const [dateExpanded, setDateExpanded] = useState(false);
+
   const productsByVendor = useMemo(() => {
     const map: Record<string, ProductType[]> = {};
     for (const v of VENDOR_SECTIONS) map[v.id] = [];
@@ -168,7 +177,6 @@ export default function AssortedBoxesPage() {
   const blendedPrice = totalStems > 0 ? totalPrice / totalStems : 0;
 
   function sendToQuote() {
-    const deliveryDate = toISODate(getEarliestDeliveryDate("T2"));
     for (const item of selectedItems) {
       addItem({
         slug: item.slug,
@@ -207,22 +215,59 @@ export default function AssortedBoxesPage() {
         {/* Sticky summary bar */}
         {totalStems > 0 && (
           <div className="sticky top-4 z-20 mb-6">
-            <div className="bg-slate-900 text-white rounded-2xl px-5 py-3 flex items-center justify-between shadow-lg gap-4">
-              <div className="flex items-center gap-4">
-                <div>
-                  <p className="text-xl font-bold text-emerald-400">${blendedPrice.toFixed(2)}<span className="text-sm font-normal text-slate-400">/stem</span></p>
-                  <p className="text-xs text-slate-400">blended avg</p>
+            <div className="bg-slate-900 text-white rounded-2xl px-5 py-3 shadow-lg">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div>
+                    <p className="text-xl font-bold text-emerald-400">${blendedPrice.toFixed(2)}<span className="text-sm font-normal text-slate-400">/stem</span></p>
+                    <p className="text-xs text-slate-400">blended avg</p>
+                  </div>
+                  <div className="border-l border-slate-700 pl-4">
+                    <p className="text-sm font-bold">${totalPrice.toFixed(2)}</p>
+                    <p className="text-xs text-slate-400">{totalStems} stems · {selectedItems.length} variet{selectedItems.length > 1 ? "ies" : "y"}</p>
+                  </div>
                 </div>
-                <div className="border-l border-slate-700 pl-4">
-                  <p className="text-sm font-bold">${totalPrice.toFixed(2)}</p>
-                  <p className="text-xs text-slate-400">{totalStems} stems · {selectedItems.length} variet{selectedItems.length > 1 ? "ies" : "y"}</p>
-                </div>
+                <button onClick={sendToQuote} disabled={sent}
+                  className="bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-2 flex-shrink-0">
+                  <ShoppingCart className="w-4 h-4" />
+                  {sent ? "Adding…" : "Request Quote →"}
+                </button>
               </div>
-              <button onClick={sendToQuote} disabled={sent}
-                className="bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-2 flex-shrink-0">
-                <ShoppingCart className="w-4 h-4" />
-                {sent ? "Adding…" : "Request Quote →"}
-              </button>
+              {/* Delivery date — inline in sticky bar */}
+              <div className="mt-2 pt-2 border-t border-slate-700">
+                {!dateExpanded ? (
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-slate-400">
+                      Delivery: <span className="text-white font-medium">
+                        {deliveryDate
+                          ? new Date(deliveryDate + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+                          : "Select date"}
+                      </span>
+                    </p>
+                    <button onClick={() => setDateExpanded(true)} className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold">
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex flex-wrap gap-1.5 mb-1.5">
+                      {deliveryDates.slice(0, 12).map((d) => {
+                        const iso = toISODate(d);
+                        const isSelected = deliveryDate === iso;
+                        return (
+                          <button key={iso} onClick={() => { setDeliveryDate(iso); setDateExpanded(false); }}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                              isSelected ? "bg-emerald-500 text-white" : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                            }`}>
+                            {formatDeliveryDate(d)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button onClick={() => setDateExpanded(false)} className="text-xs text-slate-500 hover:text-slate-400">Collapse ↑</button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
