@@ -774,13 +774,13 @@ function ShopPageContent() {
               </div>
               <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0 snap-x">
                 {[
-                  { name: "Ranunculus Pink Amandine", price: 1.23, search: "Pink Amandine" },
-                  { name: "Anemone FullStar Red", price: 1.23, search: "FullStar Red" },
-                  { name: "Delphinium Sky Waltz", price: 1.17, search: "Sky Waltz" },
+                  { name: "Ranunculus Pink Amandine", price: 1.23, slug: "pink-amandine-hot-pink" },
+                  { name: "Anemone FullStar Red", price: 1.23, slug: "fullstar-red-35cm" },
+                  { name: "Delphinium Sky Waltz", price: 1.17, slug: "delphinium-light-blue-sky-waltz-60cm" },
                 ].map((p) => (
                   <Link
-                    key={p.search}
-                    href={`/shop?q=${encodeURIComponent(p.search)}`}
+                    key={p.slug}
+                    href={`/shop/${p.slug}`}
                     className="flex-none snap-start bg-white rounded-xl border border-rose-100 px-3 py-2 hover:border-rose-300 hover:shadow-sm transition-all text-center min-w-[130px]"
                     onClick={() => pushEvent("mdy_featured_click", { product: p.name, source: "mdy_banner" })}
                   >
