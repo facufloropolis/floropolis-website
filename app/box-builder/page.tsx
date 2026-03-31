@@ -24,7 +24,6 @@ const BOX_TARGETS = [
   { label: "Full Box",    stems: 600, color: "text-emerald-600" },
 ];
 
-
 function nearestTarget(total: number) {
   return BOX_TARGETS.find((t) => total < t.stems) ?? BOX_TARGETS[BOX_TARGETS.length - 1];
 }
@@ -34,14 +33,17 @@ function bunchSize(p: Product): number {
   return spb && spb >= 5 ? spb : 25;
 }
 
+function parseCm(len: string | null): number {
+  return parseInt(len?.match(/(\d+)/)?.[1] ?? "999");
+}
 
 export default function BoxBuilderPage() {
   const router = useRouter();
   const [vendor, setVendor] = useState("Ecoroses");
   const [search, setSearch] = useState("");
-  const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set());
+  const [selectedColor, setSelectedColor] = useState("All");
   const [selectedVariety, setSelectedVariety] = useState("All");
-  // slug → stems (step = 1 bunch)
+  const [selectedLength, setSelectedLength] = useState("All");
   const [selections, setSelections] = useState<Record<string, number>>({});
   const [added, setAdded] = useState(false);
 
@@ -66,18 +68,22 @@ export default function BoxBuilderPage() {
     return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [vendor]);
 
-  // Unique colors for this vendor
   const vendorColors = useMemo(() => {
-    const cols = new Set<string>();
-    for (const p of vendorProducts) if (p.color) cols.add(p.color);
-    return Array.from(cols).sort();
+    const s = new Set<string>();
+    for (const p of vendorProducts) if (p.color) s.add(p.color);
+    return Array.from(s).sort();
   }, [vendorProducts]);
 
-  // Unique varieties for this vendor
   const vendorVarieties = useMemo(() => {
-    const vars = new Set<string>();
-    for (const p of vendorProducts) if (p.variety) vars.add(p.variety);
-    return ["All", ...Array.from(vars).sort()];
+    const s = new Set<string>();
+    for (const p of vendorProducts) if (p.variety) s.add(p.variety);
+    return Array.from(s).sort();
+  }, [vendorProducts]);
+
+  const vendorLengths = useMemo(() => {
+    const s = new Set<string>();
+    for (const p of vendorProducts) if (p.length) s.add(p.length);
+    return Array.from(s).sort((a, b) => parseCm(a) - parseCm(b));
   }, [vendorProducts]);
 
   const filteredProducts = useMemo(() => {
@@ -91,14 +97,11 @@ export default function BoxBuilderPage() {
           p.variety?.toLowerCase().includes(q)
       );
     }
-    if (selectedColors.size > 0) {
-      list = list.filter((p) => p.color && selectedColors.has(p.color));
-    }
-    if (selectedVariety !== "All") {
-      list = list.filter((p) => p.variety === selectedVariety);
-    }
+    if (selectedColor !== "All") list = list.filter((p) => p.color === selectedColor);
+    if (selectedVariety !== "All") list = list.filter((p) => p.variety === selectedVariety);
+    if (selectedLength !== "All") list = list.filter((p) => p.length === selectedLength);
     return list;
-  }, [vendorProducts, search, selectedColors, selectedVariety]);
+  }, [vendorProducts, search, selectedColor, selectedVariety, selectedLength]);
 
   const selectedItems = useMemo(() =>
     Object.entries(selections)
@@ -117,12 +120,19 @@ export default function BoxBuilderPage() {
   const nextTarget = nearestTarget(totalStems);
   const progressPct = totalStems === 0 ? 0 : Math.min(100, (totalStems / nextTarget.stems) * 100);
 
+  const activeFilters = [
+    selectedColor !== "All" && { label: selectedColor, clear: () => setSelectedColor("All") },
+    selectedVariety !== "All" && { label: selectedVariety, clear: () => setSelectedVariety("All") },
+    selectedLength !== "All" && { label: selectedLength, clear: () => setSelectedLength("All") },
+  ].filter(Boolean) as { label: string; clear: () => void }[];
+
   function switchVendor(v: string) {
     setVendor(v);
     setSelections({});
     setSearch("");
-    setSelectedColors(new Set());
+    setSelectedColor("All");
     setSelectedVariety("All");
+    setSelectedLength("All");
   }
 
   function adjust(p: Product, delta: number) {
@@ -186,119 +196,119 @@ export default function BoxBuilderPage() {
                 vendor === v.id ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-slate-400"
               }`}>
               {v.label}
-              <span className={`ml-1.5 text-xs ${vendor === v.id ? "text-slate-400" : "text-slate-400"}`}>{v.subtitle}</span>
+              <span className="ml-1.5 text-xs text-slate-400">{v.subtitle}</span>
             </button>
           ))}
         </div>
 
-        {/* 3-column layout: colors | products | sidebar */}
         <div className="flex gap-5">
-
-          {/* Left: Color + Variety filter */}
-          <div className="hidden lg:flex flex-col gap-5 w-44 flex-shrink-0">
-            <div className="sticky top-24 space-y-5">
-
-              {/* Color filter */}
-              {vendorColors.length > 0 && (
-                <div>
-                  <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2.5">Color</p>
-                  <div className="relative">
-                    <select
-                      value={selectedColors.size === 1 ? Array.from(selectedColors)[0] : "All"}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setSelectedColors(val === "All" ? new Set() : new Set([val]));
-                      }}
-                      className="w-full appearance-none text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-2 pr-6 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
-                    >
-                      <option value="All">All colors</option>
-                      {vendorColors.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
-                  </div>
-                  {selectedColors.size > 0 && (
-                    <button onClick={() => setSelectedColors(new Set())} className="text-[10px] text-emerald-600 hover:text-emerald-700 font-semibold mt-1.5">
-                      Show all
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Variety filter */}
-              {vendorVarieties.length > 2 && (
-                <div>
-                  <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2.5">Variety</p>
-                  <div className="relative">
-                    <select
-                      value={selectedVariety}
-                      onChange={(e) => setSelectedVariety(e.target.value)}
-                      className="w-full appearance-none text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-2 pr-6 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
-                    >
-                      {vendorVarieties.map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
-                  </div>
-                  {selectedVariety !== "All" && (
-                    <button onClick={() => setSelectedVariety("All")} className="text-[10px] text-emerald-600 hover:text-emerald-700 font-semibold mt-1.5">
-                      Show all
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Center: search + product grid */}
+          {/* Center: filters + grid */}
           <div className="flex-1 min-w-0">
 
-            {/* Search + mobile color chips */}
-            <div className="mb-4 space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder={`Search ${vendor} varieties…`}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full sm:w-80 pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 bg-white text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
-                />
-                {search && (
-                  <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                    <X className="w-3.5 h-3.5" />
+            {/* Filter row — always visible */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-4">
+              <div className="flex flex-wrap gap-3 items-end">
+                {/* Search */}
+                <div className="flex-1 min-w-[160px]">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">Search</p>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Name, color, variety…"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="w-full pl-8 pr-7 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent focus:bg-white"
+                    />
+                    {search && (
+                      <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Color */}
+                {vendorColors.length > 0 && (
+                  <div className="min-w-[130px]">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">Color</p>
+                    <div className="relative">
+                      <select
+                        value={selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
+                        className="w-full appearance-none text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-7 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white cursor-pointer"
+                      >
+                        <option value="All">All colors</option>
+                        {vendorColors.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Variety */}
+                {vendorVarieties.length > 1 && (
+                  <div className="min-w-[160px]">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">Variety</p>
+                    <div className="relative">
+                      <select
+                        value={selectedVariety}
+                        onChange={(e) => setSelectedVariety(e.target.value)}
+                        className="w-full appearance-none text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-7 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white cursor-pointer"
+                      >
+                        <option value="All">All varieties</option>
+                        {vendorVarieties.map((v) => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Length */}
+                {vendorLengths.length > 0 && (
+                  <div className="min-w-[120px]">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">Length</p>
+                    <div className="relative">
+                      <select
+                        value={selectedLength}
+                        onChange={(e) => setSelectedLength(e.target.value)}
+                        className="w-full appearance-none text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-7 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white cursor-pointer"
+                      >
+                        <option value="All">All lengths</option>
+                        {vendorLengths.map((l) => <option key={l} value={l}>{l}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Clear all */}
+                {activeFilters.length > 0 && (
+                  <button
+                    onClick={() => { setSelectedColor("All"); setSelectedVariety("All"); setSelectedLength("All"); setSearch(""); }}
+                    className="text-xs text-slate-400 hover:text-red-500 font-medium whitespace-nowrap pb-2"
+                  >
+                    Clear all
                   </button>
                 )}
               </div>
 
-              {/* Active filter summary */}
-              {(selectedColors.size > 0 || selectedVariety !== "All") && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {selectedColors.size > 0 && (
-                    <span className="flex items-center gap-1 text-xs bg-slate-900 text-white px-2 py-0.5 rounded-full">
-                      {Array.from(selectedColors)[0]}
-                      <button onClick={() => setSelectedColors(new Set())} className="ml-0.5 opacity-70 hover:opacity-100">
-                        <X className="w-2.5 h-2.5" />
-                      </button>
+              {/* Active filter pills + count */}
+              {(activeFilters.length > 0 || search) && (
+                <div className="flex items-center gap-1.5 flex-wrap mt-3 pt-3 border-t border-slate-100">
+                  {activeFilters.map(({ label, clear }) => (
+                    <span key={label} className="flex items-center gap-1 text-xs bg-slate-900 text-white px-2 py-0.5 rounded-full">
+                      {label}
+                      <button onClick={clear} className="ml-0.5 opacity-60 hover:opacity-100"><X className="w-2.5 h-2.5" /></button>
                     </span>
-                  )}
-                  {selectedVariety !== "All" && (
-                    <span className="flex items-center gap-1 text-xs bg-violet-600 text-white px-2 py-0.5 rounded-full">
-                      {selectedVariety}
-                      <button onClick={() => setSelectedVariety("All")} className="ml-0.5 opacity-70 hover:opacity-100">
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                    </span>
-                  )}
-                  <span className="text-xs text-slate-400">{filteredProducts.length} shown</span>
+                  ))}
+                  <span className="text-xs text-slate-400 ml-1">{filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}</span>
                 </div>
               )}
             </div>
 
             {filteredProducts.length === 0 && (
-              <p className="text-sm text-slate-400 py-8 text-center">No varieties match the current filter</p>
+              <p className="text-sm text-slate-400 py-8 text-center">No products match the current filter</p>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
               {filteredProducts.map((p) => {
@@ -309,10 +319,12 @@ export default function BoxBuilderPage() {
                 const linePrice = (p.deal_price ?? p.price) * stems;
                 return (
                   <div key={p.slug} className={`bg-white rounded-xl border p-4 transition-all ${selected ? "border-emerald-400 shadow-sm ring-1 ring-emerald-200" : "border-slate-200"}`}>
-                    <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-start justify-between gap-2 mb-3">
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-slate-900 text-sm leading-tight line-clamp-2">{p.name}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{p.color} · {bunch} stems/bunch</p>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {p.color}{p.length ? ` · ${p.length}` : ""} · {bunch} stems/bunch
+                        </p>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-sm font-bold text-emerald-600">
@@ -357,7 +369,6 @@ export default function BoxBuilderPage() {
                 Box Summary
               </h2>
 
-              {/* Live blended price — prominent */}
               {totalStems > 0 && (
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-4 text-center">
                   <p className="text-2xl font-bold text-emerald-700">${blendedPrice.toFixed(2)}<span className="text-sm font-normal text-emerald-500">/stem</span></p>
@@ -376,7 +387,7 @@ export default function BoxBuilderPage() {
                   <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
                 </div>
                 {totalStems > 0 && totalStems < nextTarget.stems && (
-                  <p className="text-[11px] text-slate-400 mt-1">{nextTarget.stems - totalStems} more stems to reach {nextTarget.label.toLowerCase()}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">{nextTarget.stems - totalStems} more to reach {nextTarget.label.toLowerCase()}</p>
                 )}
               </div>
 
@@ -406,7 +417,7 @@ export default function BoxBuilderPage() {
                 </ul>
               )}
 
-              {/* Delivery date selector */}
+              {/* Delivery date */}
               <div className="mb-4">
                 <p className="text-xs font-semibold text-slate-600 mb-2">Delivery Date</p>
                 {!dateExpanded ? (
@@ -430,15 +441,10 @@ export default function BoxBuilderPage() {
                         const iso = toISODate(d);
                         const isSelected = deliveryDate === iso;
                         return (
-                          <button
-                            key={iso}
-                            onClick={() => { setDeliveryDate(iso); setDateExpanded(false); }}
+                          <button key={iso} onClick={() => { setDeliveryDate(iso); setDateExpanded(false); }}
                             className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
-                              isSelected
-                                ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                                : "border-slate-200 text-slate-600 hover:border-emerald-400 bg-white"
-                            }`}
-                          >
+                              isSelected ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-slate-200 text-slate-600 hover:border-emerald-400 bg-white"
+                            }`}>
                             {formatDeliveryDate(d)}
                           </button>
                         );
