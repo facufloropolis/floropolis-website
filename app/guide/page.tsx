@@ -155,6 +155,20 @@ export default function GuidePage() {
                 <p className="text-xs text-slate-400 text-center">
                   No spam. Just the guide. You can unsubscribe any time.
                 </p>
+                {/* EXP-123: WA escape on guide page */}
+                <p className="text-xs text-slate-400 text-center mt-2">
+                  Or{" "}
+                  <a
+                    href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20learn%20about%20farm-direct%20wholesale%20flowers."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => pushEvent("whatsapp_click", { cta_location: "guide_form" })}
+                    className="text-emerald-600 font-semibold hover:underline"
+                  >
+                    chat with us on WhatsApp
+                  </a>
+                  {" "}instead.
+                </p>
               </form>
             </>
           )}
