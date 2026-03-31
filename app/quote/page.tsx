@@ -379,6 +379,19 @@ export default function QuotePage() {
                   <p>2. Come back here to review items and set delivery dates</p>
                   <p>3. Fill in your details and submit — we confirm within 1 hour (Mon–Fri)</p>
                 </div>
+                {/* EXP-102: WA escape on empty quote — captures visitors stuck at this step */}
+                <p className="text-center text-sm text-slate-500">
+                  Not sure what to order?{" "}
+                  <a
+                    href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20help%20putting%20together%20a%20wholesale%20flower%20order."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => pushEvent("whatsapp_click", { cta_location: "quote_empty_state" })}
+                    className="text-emerald-600 font-semibold hover:underline"
+                  >
+                    Chat with us on WhatsApp →
+                  </a>
+                </p>
               </div>
             ) : (
               <div className="space-y-5">
