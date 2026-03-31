@@ -22,7 +22,6 @@ import {
   toISODate,
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
-import { COMBO_BOX_CONTENTS } from "@/lib/data/combo-box-contents";
 
 type Props = {
   product: Product;
@@ -366,11 +365,8 @@ export default function ProductDetailPage({
     return cheapestVariant;
   }, [variants, selectedLength, selectedBoxType, cheapestVariant]);
 
-  // EXP-020: contents note from static catalogue lookup (survives generate-products re-runs)
-  const contentsNote =
-    COMBO_BOX_CONTENTS[product.slug] ??
-    (currentVariant as { contents_note?: string }).contents_note ??
-    null;
+  // EXP-020: contents note — sourced from Supabase (contents_note column in floropolis_inventory)
+  const contentsNote = (currentVariant as { contents_note?: string }).contents_note ?? null;
 
   const unitLabel =
     currentVariant.unit === "Bunch" ? "bunch"
