@@ -931,6 +931,7 @@ export default function ProductDetailPage({
           <AssortedMixBuilder
             vendor={product.vendor}
             deliveryDate={deliveryFrom || toISODate(earliestDelivery)}
+            initialColor={product.color ?? undefined}
             onSent={() => setJustAdded(true)}
           />
         )}
