@@ -18,14 +18,8 @@ const VENDORS = [
   { id: "Flodecol",      label: "Flodecol",        subtitle: "Seasonal & Gypsophila" },
 ];
 
-const BOX_TARGETS = [
-  { label: "Quarter Box", stems: 150, color: "text-amber-600" },
-  { label: "Half Box",    stems: 300, color: "text-blue-600" },
-  { label: "Full Box",    stems: 600, color: "text-emerald-600" },
-];
-
-function nearestTarget(total: number) {
-  return BOX_TARGETS.find((t) => total < t.stems) ?? BOX_TARGETS[BOX_TARGETS.length - 1];
+function nearestTarget(total: number, targets: { label: string; stems: number; color: string }[]) {
+  return targets.find((t) => total < t.stems) ?? targets[targets.length - 1];
 }
 
 function bunchSize(p: Product): number {
@@ -80,6 +74,26 @@ export default function BoxBuilderPage() {
     return Array.from(s).sort();
   }, [vendorProducts]);
 
+  // Dynamic box targets from vendor's most common QB size
+  const boxTargets = useMemo(() => {
+    const qbCounts = new Map<number, number>();
+    for (const p of vendorProducts) {
+      if (p.box_type?.includes("QB") && p.units_per_box > 0) {
+        qbCounts.set(p.units_per_box, (qbCounts.get(p.units_per_box) ?? 0) + 1);
+      }
+    }
+    let qbSize = 100; // fallback
+    let maxCount = 0;
+    for (const [size, count] of qbCounts) {
+      if (count > maxCount) { maxCount = count; qbSize = size; }
+    }
+    return [
+      { label: `QB (${qbSize} stems)`,     stems: qbSize,     color: "text-amber-600" },
+      { label: `HB (${qbSize * 2} stems)`, stems: qbSize * 2, color: "text-blue-600" },
+      { label: `FB (${qbSize * 4} stems)`, stems: qbSize * 4, color: "text-emerald-600" },
+    ];
+  }, [vendorProducts]);
+
   const vendorLengths = useMemo(() => {
     const s = new Set<string>();
     for (const p of vendorProducts) if (p.length) s.add(p.length);
@@ -117,7 +131,7 @@ export default function BoxBuilderPage() {
   const totalStems = selectedItems.reduce((s, i) => s + i.stems, 0);
   const totalPrice = selectedItems.reduce((s, i) => s + i.lineTotal, 0);
   const blendedPrice = totalStems > 0 ? totalPrice / totalStems : 0;
-  const nextTarget = nearestTarget(totalStems);
+  const nextTarget = nearestTarget(totalStems, boxTargets);
   const progressPct = totalStems === 0 ? 0 : Math.min(100, (totalStems / nextTarget.stems) * 100);
 
   const activeFilters = [
@@ -377,18 +391,25 @@ export default function BoxBuilderPage() {
                 </div>
               )}
 
-              {/* Progress bar */}
+              {/* Box size guide — informational only, not a blocker */}
               <div className="mb-4">
-                <div className="flex justify-between text-xs text-slate-500 mb-1">
-                  <span>{totalStems} stems</span>
-                  <span className={nextTarget.color}>{nextTarget.label} = {nextTarget.stems}</span>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-slate-500">{totalStems} stems selected</span>
+                  <span className={`font-medium ${nextTarget.color}`}>Next: {nextTarget.label}</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
                 </div>
-                {totalStems > 0 && totalStems < nextTarget.stems && (
-                  <p className="text-[11px] text-slate-400 mt-1">{nextTarget.stems - totalStems} more to reach {nextTarget.label.toLowerCase()}</p>
-                )}
+                <div className="flex gap-2 mt-2">
+                  {boxTargets.map((t) => (
+                    <div key={t.label} className={`flex-1 text-center text-[10px] font-medium rounded-lg py-1 ${
+                      totalStems >= t.stems ? "bg-emerald-50 text-emerald-700" : "bg-slate-50 text-slate-400"
+                    }`}>
+                      {t.label}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1.5 text-center">You can send at any quantity ↓</p>
               </div>
 
               {/* Selected items */}
