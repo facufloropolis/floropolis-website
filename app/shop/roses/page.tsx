@@ -114,7 +114,7 @@ export default function ShopRosesPage() {
             </div>
           </div>
           <div className="mt-8 text-center">
-            <Link href="/blog/wholesale-roses-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
+            <Link href="/shop?category=Rose" className="text-emerald-600 font-semibold hover:underline text-sm">
               Read our complete wholesale roses guide &rarr;
             </Link>
             {/* EXP-103: WA escape on roses page */}

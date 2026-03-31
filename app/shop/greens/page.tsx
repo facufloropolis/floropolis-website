@@ -119,7 +119,7 @@ export default function ShopGreensPage() {
             </div>
           </div>
           <div className="mt-8 text-center">
-            <Link href="/blog/wholesale-greenery-foliage-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
+            <Link href="/shop?category=Greens+%26+Foliage" className="text-emerald-600 font-semibold hover:underline text-sm">
               Read our complete wholesale greenery guide &rarr;
             </Link>
           </div>

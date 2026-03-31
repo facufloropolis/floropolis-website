@@ -92,10 +92,10 @@ export default function SpringCollectionPage() {
             </div>
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm">
-            <Link href="/blog/ranunculus-season-guide-florists" className="text-emerald-600 font-semibold hover:underline">
+            <Link href="/shop?category=Ranunculus" className="text-emerald-600 font-semibold hover:underline">
               Ranunculus buying guide &rarr;
             </Link>
-            <Link href="/blog/anemone-care-guide-florists" className="text-emerald-600 font-semibold hover:underline">
+            <Link href="/shop?category=Anemone" className="text-emerald-600 font-semibold hover:underline">
               Anemone care guide &rarr;
             </Link>
           </div>

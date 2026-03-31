@@ -125,7 +125,7 @@ export default function ShopTropicalsPage() {
             </div>
           </div>
           <div className="mt-8 text-center">
-            <Link href="/blog/tropical-flower-guide-florists" className="text-emerald-600 font-semibold hover:underline text-sm">
+            <Link href="/shop?category=Tropicals" className="text-emerald-600 font-semibold hover:underline text-sm">
               Read our complete tropical flower guide &rarr;
             </Link>
           </div>
