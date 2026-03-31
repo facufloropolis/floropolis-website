@@ -505,6 +505,51 @@ export default function Home() {
         </div>
       </section>
 
+      {/* EXP-085: FAQ — addresses top B2B florist objections before final CTA */}
+      <section className="py-10 px-6 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-8">
+            Common Questions
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: "Is there a minimum order?",
+                a: "No minimum — order 1 box or 100. We ship to florists of all sizes, from independent studios to event companies."
+              },
+              {
+                q: "How fresh will the flowers be?",
+                a: "Cut to order within 24 hours of shipping, direct from Ecuador. No middlemen. Flowers arrive 5–7 days fresher than wholesale market alternatives."
+              },
+              {
+                q: "What if a variety isn't available?",
+                a: "We confirm availability within 1 hour (Mon–Fri, 8–6 ET) before any payment. If something is out, we'll offer alternatives or cancel at no charge."
+              },
+              {
+                q: "Do I need to pay upfront?",
+                a: "No. Submit a quote request (free), we confirm availability and pricing, then you decide. Payment only happens once you approve the final order."
+              },
+              {
+                q: "What if the flowers don't arrive fresh?",
+                a: "We have a 7-day freshness guarantee. If there's a quality issue, message us on WhatsApp with a photo — we'll make it right."
+              },
+              {
+                q: "Can I mix varieties in one order?",
+                a: "Yes — each item in your quote can be a different variety, box type, or delivery date. Your cart can hold as many varieties as you need."
+              },
+            ].map(({ q, a }, i) => (
+              <details key={i} className="group border border-slate-200 rounded-xl overflow-hidden">
+                <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none hover:bg-slate-50 transition-colors">
+                  <span className="font-semibold text-slate-900 text-sm sm:text-base">{q}</span>
+                  <span className="text-slate-400 group-open:rotate-180 transition-transform flex-shrink-0 text-lg">▾</span>
+                </summary>
+                <div className="px-5 pb-4 text-sm text-slate-600 leading-relaxed">{a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-10 px-6 bg-gradient-to-br from-emerald-600 to-green-600">
         <div className="max-w-4xl mx-auto text-center">
