@@ -655,9 +655,15 @@ export default function QuotePage() {
           {/* Right: Form (2 cols) */}
           <section className="lg:col-span-2">
             <div className="sticky top-24 bg-slate-50 rounded-2xl border border-slate-200 p-6">
-              <h2 className="text-lg font-bold text-slate-900 mb-1">
-                Your Details
-              </h2>
+              <div className="flex items-center justify-between mb-1">
+                <h2 className="text-lg font-bold text-slate-900">
+                  Your Details
+                </h2>
+                {/* EXP-091: No payment signal — key objection crusher at form entry */}
+                <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-2 py-0.5 rounded-full">
+                  Free quote
+                </span>
+              </div>
               {/* EXP-052: Reduce commitment anxiety — "quote request" framing vs "order confirmation" */}
               <p className="text-xs text-slate-500 mb-4">
                 No commitment. We'll respond with availability &amp; final pricing within 1 hour (Mon–Fri, 8–6 ET).
