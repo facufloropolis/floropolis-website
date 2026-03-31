@@ -1,6 +1,11 @@
 "use client";
+// WhatsAppWidget — EXP-084 | 2026-03-31 | Job_PM
+// Hides when cart has items (QuoteBar already has WA built in — prevents overlap + redundancy)
 
+import { useEffect, useState } from "react";
 import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { getItemCount } from "@/lib/quote-cart";
+import { pushEvent } from "@/lib/gtm";
 
 type Props = {
   /** Pre-filled message text. If omitted, uses a generic greeting. */
@@ -8,6 +13,18 @@ type Props = {
 };
 
 export default function WhatsAppWidget({ message }: Props) {
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const update = () => setCartCount(getItemCount());
+    update();
+    window.addEventListener("quote-cart-updated", update);
+    return () => window.removeEventListener("quote-cart-updated", update);
+  }, []);
+
+  // EXP-084: Hide when QuoteBar is active — QuoteBar already has WA, prevents overlap
+  if (cartCount > 0) return null;
+
   const text = encodeURIComponent(
     message ?? "Hi! I'm interested in ordering from Floropolis."
   );
@@ -19,6 +36,7 @@ export default function WhatsAppWidget({ message }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
+      onClick={() => pushEvent("whatsapp_widget_click", {})}
       className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white pl-4 pr-5 py-3 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all group"
     >
       <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">

@@ -74,8 +74,8 @@ export default function Home() {
               <div className="text-xs sm:text-sm text-slate-600">direct from farm</div>
             </div>
             <div className="text-center">
-              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">Best Value</div>
-              <div className="text-xs sm:text-sm text-slate-600">by eliminating middlemen</div>
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">From $0.60/stem</div>
+              <div className="text-xs sm:text-sm text-slate-600">shipping always included</div>
             </div>
             <div className="text-center">
               <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">4-Day Delivery</div>
@@ -162,7 +162,7 @@ export default function Home() {
                   {displayPrice > 0 && (
                     <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
                   )}
-                  <span className="text-xs md:text-sm text-emerald-600 font-medium mt-1 inline-block md:opacity-0 md:group-hover:opacity-100 transition-opacity">View Options →</span>
+                  <span className="text-xs md:text-sm text-emerald-600 font-medium mt-1 inline-block">View Options →</span>
                 </Link>
               );
             })}
@@ -174,7 +174,7 @@ export default function Home() {
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-bold rounded-lg shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "promo_section" })}
             >
-              Shop Flowers Collection
+              Browse All 270+ Varieties →
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -188,7 +188,7 @@ export default function Home() {
             <span className="text-2xl hidden sm:block">📦</span>
             <div>
               <p className="text-white font-semibold text-sm sm:text-base">Not ready to commit? Try a free sample box first.</p>
-              <p className="text-emerald-200 text-xs sm:text-sm">No credit card · Free shipping · 11 florists already tried it this week</p>
+              <p className="text-emerald-200 text-xs sm:text-sm">No credit card · Free shipping · Real farm-direct quality — judge for yourself</p>
             </div>
           </div>
           <Link
@@ -244,35 +244,35 @@ export default function Home() {
             <p className="text-base sm:text-xl text-slate-600">Farm-direct from Ecuador to your door in 4 days</p>
           </div>
           
+          {/* EXP-083: Added "Submit Quote — We Confirm in 1 Hour" step to show low-risk process */}
           <div className="grid md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
-              {/* EXP-037: "Browse & Quote" — accurate to actual process (no direct order) */}
               <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Add to Quote</h3>
-              <p className="text-slate-600 text-sm">Browse 270+ varieties with transparent pricing</p>
+              <p className="text-slate-600 text-sm">270+ varieties, per-stem pricing — no login</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">2</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Farm Picks Fresh</h3>
-              <p className="text-slate-600 text-sm">Cut and packed within 24 hours</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Submit — We Confirm in 1 Hour</h3>
+              <p className="text-slate-600 text-sm">No commitment. We confirm availability & pricing, Mon–Fri 8–6 ET</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">3</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Direct Flight</h3>
-              <p className="text-slate-600 text-sm">Shipped via Miami, climate-controlled</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Farm Picks & Ships</h3>
+              <p className="text-slate-600 text-sm">Cut-to-order, climate-controlled via Miami</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">4</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Delivered Fresh</h3>
-              <p className="text-slate-600 text-sm">Farm to your door in 4 days</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Delivered Fresh in 4 Days</h3>
+              <p className="text-slate-600 text-sm">Farm-direct to your door</p>
             </div>
           </div>
         </div>

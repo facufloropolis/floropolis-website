@@ -16,6 +16,7 @@ export { PROMO_CODES };
 function isAssortedOrCombo(p: RawProduct): boolean {
   return (
     p.color?.toLowerCase().includes("assorted") ||
+    p.variety?.toLowerCase() === "assorted" ||
     p.variety?.toLowerCase().includes("combo box") ||
     p.category === "Mixed Boxes"
   );

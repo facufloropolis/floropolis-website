@@ -776,6 +776,22 @@ export default function ProductDetailPage({
               />
             </div>
 
+            {/* EXP-079: Order urgency — shows cutoff + no minimum to drive immediate action */}
+            {isPriceAvailable && bestTier !== "T3" && (
+              <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                  Order by noon PST for fastest delivery
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-emerald-600 font-semibold">✓</span> No minimum order
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-emerald-600 font-semibold">✓</span> Shipping included
+                </span>
+              </div>
+            )}
+
             {/* EXP-028: Box quantity selector — reduces quote-page round-trip for multi-box orders */}
             {isPriceAvailable && (
               <div className="mb-4 flex items-center gap-3">
@@ -914,7 +930,7 @@ export default function ProductDetailPage({
                   <span className="font-semibold text-slate-700">5.0</span>
                 </div>
                 <span className="text-slate-300">|</span>
-                <span>Trusted by 60+ florists</span>
+                <span>No minimum order</span>
                 <span className="text-slate-300">|</span>
                 <span>Farm-direct freshness</span>
               </div>

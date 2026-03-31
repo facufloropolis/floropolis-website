@@ -214,7 +214,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       hasPriceIssue,
       variantCount: variants.length,
       slug: rep.slug,
-      colorGroup: getColorGroup(rep.color),
+      colorGroup: rep.variety?.toLowerCase() === "assorted" ? "Mixed" : getColorGroup(rep.color),
       compareAtPrice: rep.compare_at_price ?? null,
       repUnitsPerBox: rep.units_per_box || 0,
       repBoxType: rep.box_type || "Standard",
@@ -681,6 +681,17 @@ function ShopPageContent() {
         {/* Sample box CTA — hidden on mobile (TopBanner already shows it) */}
         <div className="hidden sm:block">
           <SampleBoxCTA />
+        </div>
+
+        {/* EXP-078: Key differentiators bar — shows No minimum, shipping, no login above the fold for new visitors */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-5 px-1 text-xs text-slate-600">
+          <span className="flex items-center gap-1"><span className="text-emerald-500 font-bold">✓</span> No minimum order</span>
+          <span className="text-slate-300 hidden sm:inline">·</span>
+          <span className="flex items-center gap-1"><span className="text-emerald-500 font-bold">✓</span> Shipping included in price</span>
+          <span className="text-slate-300 hidden sm:inline">·</span>
+          <span className="flex items-center gap-1"><span className="text-emerald-500 font-bold">✓</span> No login required</span>
+          <span className="text-slate-300 hidden sm:inline">·</span>
+          <span className="flex items-center gap-1"><span className="text-emerald-500 font-bold">✓</span> 1hr response Mon–Fri</span>
         </div>
 
         {/* Popular Right Now — curated bestsellers. EXP-026: hidden on small mobile (products below fold) */}
