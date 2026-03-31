@@ -249,19 +249,22 @@ export default function About() {
       <section className="py-12 px-4 bg-emerald-600">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-4">Ready to make the switch?</h2>
+          {/* EXP-120: MDY seasonal primary CTA — consistent with contact/how-it-works/homepage */}
+          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: April 25 — guaranteed May 10 delivery</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/sample-box"
-              className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all"
-              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "about" })}
+              href="/mothers-day-2026"
+              className="bg-white text-rose-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-rose-50 transition-all"
+              onClick={() => pushEvent("mdy_banner_click", { cta_location: "about" })}
             >
-              Get free sample box
+              Shop Mother&apos;s Day →
             </Link>
             <Link
-              href="/shop"
+              href="/sample-box"
               className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all"
+              onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "about" })}
             >
-              Shop now
+              Get Free Sample Box
             </Link>
           </div>
           {/* EXP-094: WA fallback on about final CTA — consistent with homepage/how-it-works */}
