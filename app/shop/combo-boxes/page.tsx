@@ -96,6 +96,15 @@ export default function ShopComboBoxesPage() {
           </p>
         </section>
 
+        {/* EXP-137: MDY callout on combo-boxes — mixed bouquets are popular MDY event orders */}
+        {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+          <div className="mb-8 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-center">
+            <p className="text-sm font-semibold text-rose-700">&#x1F497; Ordering combo boxes for Mother&apos;s Day?</p>
+            <p className="text-xs text-rose-500 mt-0.5">Pre-order by April 25 for guaranteed May 10 delivery. Farm-direct pricing, delivery included.</p>
+            <a href="/mothers-day-2026" className="inline-block mt-2 text-xs font-bold text-rose-600 underline hover:no-underline">View Mother&apos;s Day Collection &#x2192;</a>
+          </div>
+        )}
+
         {/* Comparison table */}
         <section className="mb-16 overflow-x-auto">
           <table className="w-full min-w-[640px] border border-slate-200 rounded-xl overflow-hidden shadow-sm">
