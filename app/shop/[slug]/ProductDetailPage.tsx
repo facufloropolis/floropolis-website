@@ -22,6 +22,7 @@ import {
   toISODate,
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
+import { COMBO_BOX_CONTENTS } from "@/lib/data/combo-box-contents";
 
 type Props = {
   product: Product;
@@ -364,6 +365,12 @@ export default function ProductDetailPage({
     if (lengthMatch) return lengthMatch;
     return cheapestVariant;
   }, [variants, selectedLength, selectedBoxType, cheapestVariant]);
+
+  // EXP-020: contents note from static catalogue lookup (survives generate-products re-runs)
+  const contentsNote =
+    COMBO_BOX_CONTENTS[product.slug] ??
+    (currentVariant as { contents_note?: string }).contents_note ??
+    null;
 
   const unitLabel =
     currentVariant.unit === "Bunch" ? "bunch"
@@ -718,9 +725,9 @@ export default function ProductDetailPage({
                   <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-2">
                     What&apos;s in this box
                   </p>
-                  {(currentVariant as { contents_note?: string }).contents_note ? (
+                  {contentsNote ? (
                     <div className="flex flex-wrap gap-1.5">
-                      {((currentVariant as { contents_note?: string }).contents_note ?? "").split(",").map((v) => (
+                      {contentsNote!.split(",").map((v) => (
                         <span
                           key={v.trim()}
                           className="inline-block rounded-full bg-white border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-slate-700"

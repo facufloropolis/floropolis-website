@@ -34,7 +34,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "tabasco",
     name: "Tabasco",
-    contents: "Roses, tropicals & greens — assorted mixed box",
+    contents: "Heliconias, gingers, musa & tropical foliage",
     stemCount: 113,
     totalPrice: 68,
     pricePerStem: 0.6,
@@ -45,7 +45,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "mini-fiesta",
     name: "Mini Fiesta",
-    contents: "Small mixed flowers + foliage — perfect starter",
+    contents: "Heliconias, gingers, musa & tropical foliage",
     stemCount: 50,
     totalPrice: 38,
     pricePerStem: 0.76,
@@ -55,7 +55,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "mini-tabasco",
     name: "Mini Tabasco",
-    contents: "Roses, tropicals & greens — compact mix",
+    contents: "Heliconias, gingers & tropical foliage",
     stemCount: 66,
     totalPrice: 52,
     pricePerStem: 0.79,
@@ -65,7 +65,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "fire",
     name: "Fire",
-    contents: "Bold tropical & rose mix — event-ready",
+    contents: "Heliconias, gingers & tropical foliage",
     stemCount: 51,
     totalPrice: 42,
     pricePerStem: 0.82,
@@ -75,7 +75,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "tiki-limbo-large",
     name: "Tiki Limbo Large",
-    contents: "Large tropical & flower assortment — high volume",
+    contents: "Heliconias, gingers, tropical flowers & greens",
     stemCount: 180,
     totalPrice: 175,
     pricePerStem: 0.97,
@@ -85,7 +85,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "capricho",
     name: "Capricho",
-    contents: "Rose-focused mixed box",
+    contents: "Hanging heliconias, banana fingers & tropical greens",
     stemCount: 41,
     totalPrice: 42,
     pricePerStem: 1.02,
@@ -95,7 +95,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "escarlata",
     name: "Escarlata",
-    contents: "Rose-focused mixed box",
+    contents: "Gingers, heliconias & tropical greens",
     stemCount: 41,
     totalPrice: 42,
     pricePerStem: 1.02,
@@ -105,7 +105,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "iniziativa",
     name: "Iniziativa",
-    contents: "Rose-focused mixed box",
+    contents: "Tropical heliconias & foliage",
     stemCount: 41,
     totalPrice: 42,
     pricePerStem: 1.02,
@@ -115,7 +115,7 @@ export const COMBO_BOXES: ComboBox[] = [
   {
     id: "ginger-mix",
     name: "Ginger Mix",
-    contents: "Assorted gingers — 24 stems tropical",
+    contents: "King Plus Red, King Nicole, Torch Red & Pink — pure gingers, no greens",
     stemCount: 24,
     totalPrice: 56,
     pricePerStem: 2.33,
