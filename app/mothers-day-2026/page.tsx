@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -53,8 +53,26 @@ const TRUST_SIGNALS = [
 ];
 
 export default function MothersDayPage() {
+  const [countdown, setCountdown] = useState("");
+
   useEffect(() => {
     pushEvent("mdy_lp_view", { page: "/mothers-day-2026" });
+  }, []);
+
+  // EXP-104: Live countdown to April 25 cutoff
+  useEffect(() => {
+    const CUTOFF = new Date("2026-04-25T23:59:59-04:00").getTime();
+    const update = () => {
+      const diff = CUTOFF - Date.now();
+      if (diff <= 0) { setCountdown(""); return; }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      setCountdown(d > 0 ? `${d}d ${h}h ${m}m left` : `${h}h ${m}m left`);
+    };
+    update();
+    const id = setInterval(update, 60000);
+    return () => clearInterval(id);
   }, []);
 
   return (
@@ -94,6 +112,7 @@ export default function MothersDayPage() {
             </div>
             <p className="mt-5 text-sm text-rose-500 font-medium">
               ⏰ Pre-order cutoff: April 25, 2026 · Mother&apos;s Day: May 10, 2026
+              {countdown && <span className="ml-2 font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">— {countdown}</span>}
             </p>
           </div>
         </section>
