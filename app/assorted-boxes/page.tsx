@@ -305,10 +305,22 @@ export default function AssortedBoxesPage() {
         <div className="mt-4 bg-white rounded-2xl border border-slate-200 p-6 text-center">
           <h3 className="text-lg font-bold text-slate-900 mb-2">Need a fully custom mix?</h3>
           <p className="text-sm text-slate-500 mb-4">Use our Box Builder to choose any variety from a vendor — not just assorted products.</p>
-          <Link href="/box-builder"
-            className="inline-flex items-center gap-2 bg-violet-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-violet-700 transition-colors">
-            Open Box Builder →
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Link href="/box-builder"
+              className="inline-flex items-center gap-2 bg-violet-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-violet-700 transition-colors">
+              Open Box Builder →
+            </Link>
+            {/* EXP-121: WA escape on assorted-boxes page */}
+            <a
+              href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20help%20putting%20together%20an%20assorted%20flower%20order."
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => pushEvent("whatsapp_click", { cta_location: "assorted_boxes_cta" })}
+              className="text-sm text-emerald-600 font-semibold hover:underline"
+            >
+              Chat with us on WhatsApp →
+            </a>
+          </div>
         </div>
       </main>
       <Footer />
