@@ -220,9 +220,9 @@ function SampleBoxContent() {
             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
               <CheckCircle2 className="w-10 h-10 text-emerald-600" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-3">You&apos;re on the list!</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-3">Request Received!</h1>
             <p className="text-lg text-slate-600">
-              We&apos;ll confirm by email within 24 hours and ship your sample box in 2–3 days.
+              We&apos;ll confirm by email within 24 hours and ship your sample box within 2–3 business days.
             </p>
           </div>
 
@@ -317,9 +317,9 @@ function SampleBoxContent() {
               <div className="bg-emerald-50 border-l-4 border-emerald-400 p-4 mb-6 rounded-r-lg">
                 <p className="text-emerald-900 font-semibold flex items-center gap-2">
                   <span className="text-xl">📦</span>
-                  Ships within 48 hours of confirmation
+                  Ships within 2–3 business days of confirmation
                 </p>
-                <p className="text-sm text-emerald-700 mt-1">We review every request and confirm by email within 24 hours.</p>
+                <p className="text-sm text-emerald-700 mt-1">We review every request and confirm by email within 24 hours. Then we ship.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -512,7 +512,7 @@ function SampleBoxContent() {
                 </div>
 
                 <p className="text-center text-sm text-slate-500">
-                  🌿 Join 11 florists who&apos;ve already tried our sample boxes
+                  🌿 Florists across the US trust Floropolis for farm-direct quality
                 </p>
 
                 <button
@@ -523,6 +523,20 @@ function SampleBoxContent() {
                   {isSubmitting ? 'Submitting...' : 'Request Free Sample Box'}
                   <Package className="w-5 h-5" />
                 </button>
+
+                {/* EXP-087: WA escape hatch — for florists who bail on forms */}
+                <div className="text-center pt-1">
+                  <span className="text-xs text-slate-400">Prefer to chat first? </span>
+                  <a
+                    href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20request%20a%20free%20sample%20box."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-[#128C2E] font-semibold hover:underline"
+                    onClick={() => pushEvent('whatsapp_click', { cta_location: 'sample_box_escape_hatch' })}
+                  >
+                    Message us on WhatsApp →
+                  </a>
+                </div>
               </form>
             </div>
 
