@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
@@ -14,7 +15,8 @@ const MDY_PRODUCTS = [
     price: 1.23,
     search: "Pink Amandine",
     category: "Ranunculus",
-    emoji: "🌸",
+    slug: "pink-amandine-hot-pink",
+    image: "/images/shop/ranunculus/pink-amandine-hot-pink.jpg",
   },
   {
     name: "Anemone FullStar Red",
@@ -22,7 +24,8 @@ const MDY_PRODUCTS = [
     price: 1.23,
     search: "FullStar Red",
     category: "Anemone",
-    emoji: "🌺",
+    slug: "fullstar-red-35cm",
+    image: "/images/shop/anemone/anemone-full-star-red.png",
   },
   {
     name: "Delphinium Sky Waltz",
@@ -30,7 +33,8 @@ const MDY_PRODUCTS = [
     price: 1.17,
     search: "Sky Waltz",
     category: "Delphinium",
-    emoji: "💜",
+    slug: "delphinium-light-blue-sky-waltz-60cm",
+    image: "/images/shop/delphinium/blue-sky-waltz-light-blue.png",
   },
 ];
 
@@ -134,8 +138,15 @@ export default function MothersDayPage() {
                 className="group rounded-2xl border border-rose-100 bg-white hover:border-rose-300 hover:shadow-lg transition-all overflow-hidden"
                 onClick={() => pushEvent("mdy_lp_cta_click", { cta: "product_card", product: p.name, page: "/mothers-day-2026" })}
               >
-                <div className="aspect-square bg-gradient-to-br from-rose-50 to-pink-50 flex items-center justify-center text-7xl">
-                  {p.emoji}
+                {/* EXP-130: Real product photos replace emoji */}
+                <div className="aspect-square relative bg-gradient-to-br from-rose-50 to-pink-50 overflow-hidden">
+                  <Image
+                    src={p.image}
+                    alt={p.name}
+                    fill
+                    className="object-contain hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                  />
                 </div>
                 <div className="p-5">
                   <p className="text-xs text-rose-400 font-semibold uppercase tracking-wide mb-1">{p.category}</p>
