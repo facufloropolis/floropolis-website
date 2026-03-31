@@ -202,6 +202,19 @@ export default function BoxBuilderPage() {
           <Link href="/shop" className="text-sm text-slate-400 hover:text-slate-600">← Back to shop</Link>
         </div>
 
+        {/* EXP-135: MDY callout on box-builder — florists building custom boxes for MDY events */}
+        {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+          <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-rose-700">💝 Building a Mother&apos;s Day order?</p>
+              <p className="text-xs text-rose-500 mt-0.5">Pre-order cutoff: April 25 · Guaranteed May 10 delivery · Roses, ranunculus &amp; anemone are MDY favorites.</p>
+            </div>
+            <a href="/mothers-day-2026" className="flex-shrink-0 text-xs font-bold text-rose-600 border border-rose-300 bg-white rounded-lg px-3 py-1.5 hover:bg-rose-50 transition-colors">
+              View MDY Collection →
+            </a>
+          </div>
+        )}
+
         {/* Vendor tabs */}
         <div className="flex flex-wrap gap-2 mb-5">
           {VENDORS.map((v) => (
