@@ -49,7 +49,20 @@ export default async function BlogPostPage({
   const others = blogPosts.filter((p) => p.slug !== slug && p.category !== post.category);
   const related = [...sameCat, ...others].slice(0, 3);
 
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.metaDescription,
+    datePublished: post.date,
+    author: { "@type": "Organization", name: "Floropolis" },
+    publisher: { "@type": "Organization", name: "Floropolis", url: "https://www.floropolis.com" },
+    url: `https://www.floropolis.com/blog/${slug}`,
+  };
+
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
@@ -160,5 +173,6 @@ export default async function BlogPostPage({
 
       <Footer />
     </div>
+    </>
   );
 }
