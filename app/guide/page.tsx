@@ -63,19 +63,21 @@ export default function GuidePage() {
               <p className="text-slate-600 mb-6">
                 Your guide is coming — we'll email it to you as soon as it's ready.
               </p>
+              {/* EXP-117: MDY CTA in guide success state — most urgent conversion for April leads */}
               <div className="flex flex-col gap-3 max-w-xs mx-auto">
                 <Link
-                  href="/shop"
-                  className="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3.5 rounded-lg font-bold hover:bg-emerald-700 transition-colors text-sm"
+                  href="/mothers-day-2026"
+                  className="inline-flex items-center justify-center gap-2 bg-rose-600 text-white px-6 py-3.5 rounded-lg font-bold hover:bg-rose-700 transition-colors text-sm"
+                  onClick={() => pushEvent("mdy_banner_click", { cta_location: "guide_success" })}
                 >
-                  Browse the Catalog
+                  Shop Mother&apos;s Day →
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  href="/sample-box"
+                  href="/shop"
                   className="inline-flex items-center justify-center gap-2 border border-slate-300 text-slate-600 px-6 py-3.5 rounded-lg font-semibold hover:bg-slate-50 transition-colors text-sm"
                 >
-                  Try a Free Sample Box
+                  Browse Full Catalog
                 </Link>
               </div>
             </div>
