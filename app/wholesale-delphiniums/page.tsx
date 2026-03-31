@@ -291,6 +291,18 @@ export default function WholesaleDelphiniums() {
               Request a quote
             </Link>
           </div>
+          {/* EXP-101: WA escape hatch */}
+          <p className="mt-5 text-emerald-200 text-sm">
+            Prefer to chat first?{" "}
+            <a
+              href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20wholesale%20delphiniums%20from%20Floropolis."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white font-semibold underline hover:no-underline"
+            >
+              Message us on WhatsApp →
+            </a>
+          </p>
         </div>
       </section>
 

@@ -227,7 +227,18 @@ export default function WholesaleRanunculus() {
             <Link href="/quote" className="inline-flex items-center justify-center gap-2 border border-emerald-400 text-white px-8 py-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors">
               Request a quote
             </Link>
-          </div>
+          </div>          {/* EXP-099/100/101: WA escape hatch — server component, no onClick tracking */}
+          <p className="mt-5 text-emerald-200 text-sm">
+            Prefer to chat first?{" "}
+            <a
+              href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20wholesale%20ranunculus%20from%20Floropolis."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white font-semibold underline hover:no-underline"
+            >
+              Message us on WhatsApp →
+            </a>
+          </p>
         </div>
       </section>
 

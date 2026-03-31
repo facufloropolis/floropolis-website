@@ -186,6 +186,19 @@ export default function MothersDayPage() {
           <p className="mt-4 text-xs text-slate-400">
             Pre-order cutoff: April 25 · Delivery: May 8–10 · No payment at quote stage
           </p>
+          {/* EXP-098: WA fallback — MDY page is high-stakes, capture chat-preferred visitors */}
+          <p className="mt-3 text-sm text-slate-500">
+            Prefer to chat?{" "}
+            <a
+              href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20order%20flowers%20for%20Mother%27s%20Day%20from%20Floropolis."
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => pushEvent("whatsapp_click", { cta_location: "mothers_day_final_cta" })}
+              className="text-emerald-600 font-semibold hover:underline"
+            >
+              Message us on WhatsApp →
+            </a>
+          </p>
         </section>
       </main>
 
