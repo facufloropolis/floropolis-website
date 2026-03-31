@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import QuoteBar from "@/components/QuoteBar";
 import TopBanner from "@/components/TopBanner";
 import { ShoppingCart, Check, Package } from "lucide-react";
+import AssortedMixBuilder from "@/components/AssortedMixBuilder";
 import type { Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
@@ -917,6 +918,15 @@ export default function ProductDetailPage({
             </div>
           </div>
         </div>
+
+        {/* EXP-077: Assorted Mix Builder — shown on assorted PDPs so buyers can specify exact varieties + lengths */}
+        {(product.variety?.toLowerCase() === "assorted" || product.color?.toLowerCase().includes("assorted")) && product.vendor && (
+          <AssortedMixBuilder
+            vendor={product.vendor}
+            deliveryDate={deliveryFrom || toISODate(earliestDelivery)}
+            onSent={() => setJustAdded(true)}
+          />
+        )}
 
         {/* Combined cross-sell section: bundles + related */}
         {(bundles.length > 0 || relatedSorted.length > 0) && (
