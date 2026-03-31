@@ -7,7 +7,7 @@ target_keywords: ["mothers day wholesale flowers", "mothers day flowers bulk", "
 estimated_search_volume: "2K+ monthly (peaks April-May)"
 publish_date: "2026-04-01 (6 weeks before Mother's Day)"
 category: "seasonal"
-internal_links: ["/shop/roses", "/shop", "/sample-box", "/blog/wholesale-roses-guide-florists"]
+internal_links: ["/mothers-day-2026", "/shop/roses", "/shop", "/sample-box", "/blog/wholesale-roses-guide-florists"]
 schema: "Article"
 ---
 
@@ -104,7 +104,7 @@ Take your average weekly flower revenue, multiply by 3-5x. That's your Mother's 
 
 All prices above are real — verified farm-direct wholesale pricing. No minimums. Free delivery in ~4 days.
 
-**[Browse Mother's Day Inventory →]** (/shop)
+**[Browse Mother's Day Inventory →]** (/mothers-day-2026)
 
 **[Request a Sample Box First →]** (/sample-box) — try the quality before you commit your biggest order of the year.
 
