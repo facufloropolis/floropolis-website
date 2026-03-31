@@ -9,8 +9,33 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { SPRING_PRODUCTS, getSpringCheckoutUrl, type SpringProduct } from "@/lib/shop-spring";
 
+
+const SPRING_FAQ_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "When is ranunculus season?",
+      acceptedAnswer: { "@type": "Answer", text: "Ranunculus peak season runs January through May. We source directly from Ecuador farms that grow Amandine varieties — the most sought-after commercial ranunculus — giving you access even outside peak months." },
+    },
+    {
+      "@type": "Question",
+      name: "Do you carry anemones year-round?",
+      acceptedAnswer: { "@type": "Answer", text: "Anemones are available from October through May from our Ecuador partners. We carry 17 varieties including single and double forms in white, black, lavender, and bold bi-colors." },
+    },
+    {
+      "@type": "Question",
+      name: "What makes your spring flowers exclusive?",
+      acceptedAnswer: { "@type": "Answer", text: "Most wholesalers don't carry varieties like molucella, scabiosa, or specialty larkspur because they're harder to source reliably. Our direct farm relationships in Ecuador give us access to varieties traditional distributors can't offer consistently." },
+    },
+  ],
+};
+
 export default function SpringCollectionPage() {
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SPRING_FAQ_LD) }} />
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
@@ -117,6 +142,7 @@ export default function SpringCollectionPage() {
 
       <Footer />
     </div>
+    </>
   );
 }
 

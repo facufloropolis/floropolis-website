@@ -33,11 +33,36 @@ const TIER_LABELS: Record<RoseTier, { title: string; subtitle: string }> = {
   },
 };
 
+
+const ROSES_FAQ_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What's the minimum order for wholesale roses?",
+      acceptedAnswer: { "@type": "Answer", text: "No minimum order. Rose boxes come in 25-stem bunches — you can order 1 bunch of any variety. Mix as many varieties as you'd like in a single quote." },
+    },
+    {
+      "@type": "Question",
+      name: "Do you carry garden roses?",
+      acceptedAnswer: { "@type": "Answer", text: "Yes. We carry Quicksand, Free Spirit, Antonia Garden, and several other garden-style roses with open, lush blooms. Check current availability in the shop — selection varies by season." },
+    },
+    {
+      "@type": "Question",
+      name: "How do I get the best vase life from Ecuador roses?",
+      acceptedAnswer: { "@type": "Answer", text: "Re-cut stems at a 45° angle immediately on arrival, remove foliage below the waterline, and use clean buckets with floral preservative. You should expect 14-16 days consistently with proper conditioning." },
+    },
+  ],
+};
+
 export default function ShopRosesPage() {
   const { value, popular, premium, assorted } = getRosesByTier();
   const varietyCount = value.length + popular.length + premium.length + assorted.length;
 
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ROSES_FAQ_LD) }} />
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
@@ -145,6 +170,7 @@ export default function ShopRosesPage() {
 
       <Footer />
     </div>
+    </>
   );
 }
 
