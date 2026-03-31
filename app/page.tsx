@@ -556,22 +556,25 @@ export default function Home() {
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
             Ready to Try Farm-Direct?
           </h2>
+          {/* EXP-115: MDY seasonal primary CTA on homepage final section — April urgency */}
+          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: April 25 — guaranteed May 10 delivery</p>
           <p className="text-base sm:text-xl text-emerald-100 mb-4 sm:mb-6 max-w-2xl mx-auto">
             Get a free sample box and see the quality difference for yourself. No obligation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
+              href="/mothers-day-2026"
+              className="bg-white text-rose-600 px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-rose-50 hover:scale-105 transition-all shadow-lg"
+              onClick={() => pushEvent("mdy_banner_click", { cta_location: "homepage_final" })}
+            >
+              Shop Mother&apos;s Day →
+            </Link>
+            <Link
               href="/sample-box"
-              className="bg-white text-emerald-600 px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg"
+              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all"
               onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "green_banner" })}
             >
               Get Free Sample Box
-            </Link>
-            <Link
-              href="/shop"
-              className="border-2 border-white text-white px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-white/10 hover:scale-105 transition-all"
-            >
-              Shop Now
             </Link>
           </div>
           {/* EXP-092: WA fallback on final CTA — captures engaged users who prefer chat over forms */}
