@@ -7,6 +7,8 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { getBlogPost, getBlogContent, getAllBlogSlugs, blogPosts } from "@/lib/data/blog-posts";
 import type { Metadata } from "next";
 
+const MDY_CATEGORIES = ["Rose", "Ranunculus", "Anemone", "Delphinium", "Mothers Day", "Garden Rose", "Peony"];
+
 export async function generateStaticParams() {
   return getAllBlogSlugs().map((slug) => ({ slug }));
 }
@@ -90,6 +92,19 @@ export default async function BlogPostPage({
 
         {/* Article body */}
         <MarkdownRenderer content={content} />
+
+        {/* MDY callout — relevant categories only, before April 25 */}
+        {MDY_CATEGORIES.includes(post.category) && new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+          <div className="mt-10 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-rose-700">&#x1F497; Planning a Mother&apos;s Day order?</p>
+              <p className="text-xs text-rose-500 mt-0.5">{post.category} is a Mother&apos;s Day favorite. Pre-order by April 25 for guaranteed May 10 delivery. Farm-direct pricing, delivery included.</p>
+            </div>
+            <Link href="/mothers-day-2026" className="flex-shrink-0 text-xs font-bold text-rose-600 border border-rose-300 bg-white rounded-lg px-3 py-1.5 hover:bg-rose-50 transition-colors whitespace-nowrap">
+              View MDY Collection &#x2192;
+            </Link>
+          </div>
+        )}
 
         {/* Bottom CTA */}
         <div className="mt-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 px-6 py-8 text-white text-center">
