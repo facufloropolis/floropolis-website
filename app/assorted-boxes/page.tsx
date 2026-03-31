@@ -208,9 +208,18 @@ export default function AssortedBoxesPage() {
           <span className="text-sm text-slate-600 font-medium">Assorted Boxes</span>
         </div>
         <h1 className="text-3xl font-bold text-slate-900 mb-2">Assorted Boxes</h1>
-        <p className="text-slate-500 max-w-2xl mb-8">
+        <p className="text-slate-500 max-w-2xl mb-4">
           Pre-sorted boxes from our farm partners. Use +/− to choose exactly how many stems of each variety. Price updates live as you build.
         </p>
+
+        {/* EXP-134: MDY callout on assorted-boxes — assorted roses/bouquets are common MDY event orders */}
+        {new Date() < new Date("2026-04-25T23:59:59-04:00") && (
+          <div className="mb-8 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-center">
+            <p className="text-sm font-semibold text-rose-700">💝 Building a Mother&apos;s Day order?</p>
+            <p className="text-xs text-rose-500 mt-0.5">Assorted rose boxes are a popular choice for Mother&apos;s Day events. Pre-order by April 25 for guaranteed May 10 delivery.</p>
+            <a href="/mothers-day-2026" className="inline-block mt-2 text-xs font-bold text-rose-600 underline hover:no-underline">View Mother&apos;s Day Collection →</a>
+          </div>
+        )}
 
         {/* Sticky summary bar */}
         {totalStems > 0 && (
