@@ -617,6 +617,13 @@ export default function QuotePage() {
                   Free quote
                 </span>
               </div>
+              {/* EXP-131: Show cart total in form header — visible on mobile when cart is scrolled above */}
+              {items.length > 0 && total > 0 && (
+                <p className="text-xs text-slate-500 mb-1">
+                  <span className="font-semibold text-emerald-700">${total.toFixed(2)}</span>
+                  {" "}est. total · {items.length} {items.length === 1 ? "variety" : "varieties"} · shipping included
+                </p>
+              )}
               {/* EXP-052: Reduce commitment anxiety — "quote request" framing vs "order confirmation" */}
               <p className="text-xs text-slate-500 mb-4">
                 No commitment. We'll respond with availability &amp; final pricing within 1 hour (Mon–Fri, 8–6 ET).
