@@ -13,7 +13,27 @@ import { getProductImage } from "@/lib/product-images";
 export default function Home() {
   const featured = getFeaturedProducts(4);
 
+  const orgLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Floropolis",
+    url: "https://www.floropolis.com",
+    description: "Farm-direct wholesale flowers from Ecuador. 270+ varieties, transparent pricing, no minimum order. Delivery included.",
+    sameAs: [
+      "https://www.instagram.com/floropolisdirect",
+      "https://www.tiktok.com/@floropolisdirect",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "sales",
+      email: "orders@floropolis.com",
+      availableLanguage: "English",
+    },
+  };
+
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }} />
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
@@ -595,5 +615,6 @@ export default function Home() {
 
       <Footer />
     </div>
+    </>
   );
 }
