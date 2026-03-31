@@ -780,7 +780,7 @@ function ShopPageContent() {
                 ].map((p) => (
                   <Link
                     key={p.search}
-                    href={`/shop?search=${encodeURIComponent(p.search)}`}
+                    href={`/shop?q=${encodeURIComponent(p.search)}`}
                     className="flex-none snap-start bg-white rounded-xl border border-rose-100 px-3 py-2 hover:border-rose-300 hover:shadow-sm transition-all text-center min-w-[130px]"
                     onClick={() => pushEvent("mdy_featured_click", { product: p.name, source: "mdy_banner" })}
                   >
