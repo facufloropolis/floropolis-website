@@ -104,7 +104,7 @@ export default function ShopTropicalsPage() {
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for heliconias?</h3>
-              <p className="text-slate-600 text-sm">Minimum is typically 5 stems for tropicals, depending on variety. Heliconias are sold by the stem due to their size and value. Contact us for volume pricing for event work.</p>
+              <p className="text-slate-600 text-sm">No minimum order. Tropical flowers are sold by the stem — order as few as 1 stem of any variety. Submit a quote and we confirm availability and pricing within 1 hour.</p>
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">How do I condition tropical flowers?</h3>

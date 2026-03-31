@@ -102,7 +102,7 @@ export default function ShopRosesPage() {
           <div className="space-y-5">
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for wholesale roses?</h3>
-              <p className="text-slate-600 text-sm">Our minimum order is 25 stems per variety. You can combine multiple varieties in a single order to meet volume requirements.</p>
+              <p className="text-slate-600 text-sm">No minimum order. Rose boxes come in 25-stem bunches — you can order 1 bunch of any variety. Mix as many varieties as you&apos;d like in a single quote.</p>
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">Do you carry garden roses?</h3>

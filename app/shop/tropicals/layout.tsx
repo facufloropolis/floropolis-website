@@ -33,7 +33,7 @@ const faqLd = {
       name: "What's the minimum order for heliconias?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Minimum is typically 5 stems for tropicals, depending on variety. Heliconias are sold by the stem due to their size and value. Contact us for volume pricing for event work.",
+        text: "No minimum order. Tropical flowers are sold by the stem — heliconias, gingers, birds of paradise, and anthuriums can be ordered in any quantity, starting from 1 stem. No commitment required: submit a quote and we confirm availability within 1 hour.",
       },
     },
     {

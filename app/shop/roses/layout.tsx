@@ -25,7 +25,7 @@ const faqLd = {
       name: "What's the minimum order for wholesale roses?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Our minimum order is 25 stems per variety. You can combine multiple varieties in a single order to meet volume requirements.",
+        text: "No minimum order. Rose boxes come in 25-stem bunches — you can order as few as 1 bunch of any variety, with no minimum total.",
       },
     },
     {

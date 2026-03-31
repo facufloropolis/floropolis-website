@@ -98,7 +98,7 @@ export default function ShopGreensPage() {
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">What&apos;s the minimum order for greens?</h3>
-              <p className="text-slate-600 text-sm">Minimums vary by variety — typically 10-15 stems for foliage bunches. Contact us for custom bunching or volume pricing.</p>
+              <p className="text-slate-600 text-sm">No minimum order. Greens are sold by the bunch (typically 10–25 stems each depending on variety). Order as few as 1 bunch — mix freely with other varieties in a single quote.</p>
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">How long does your greenery last?</h3>

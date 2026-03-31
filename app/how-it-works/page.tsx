@@ -34,8 +34,8 @@ export default function HowItWorks() {
                 <Search className="w-10 h-10 text-emerald-600" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-600 rounded-full text-white font-bold flex items-center justify-center">1</div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Browse & Order</h3>
-              <p className="text-slate-600">Shop our real-time inventory online. See exactly what's available at our partner farms.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Browse & Add to Quote</h3>
+              <p className="text-slate-600">270+ varieties with transparent per-stem pricing. No login required to see prices.</p>
             </div>
 
             <div className="text-center">
@@ -43,8 +43,8 @@ export default function HowItWorks() {
                 <Package className="w-10 h-10 text-emerald-600" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-600 rounded-full text-white font-bold flex items-center justify-center">2</div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Farm Picks Fresh</h3>
-              <p className="text-slate-600">Flowers are cut to order and packed within 24 hours of your purchase.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Submit — We Confirm in 1 Hour</h3>
+              <p className="text-slate-600">No commitment. We verify availability and confirm pricing Mon–Fri, 8–6 ET. No payment yet.</p>
             </div>
 
             <div className="text-center">
@@ -52,8 +52,8 @@ export default function HowItWorks() {
                 <Plane className="w-10 h-10 text-emerald-600" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-600 rounded-full text-white font-bold flex items-center justify-center">3</div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Direct Flight</h3>
-              <p className="text-slate-600">Climate-controlled cargo flies direct from Ecuador to Miami.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Farm Picks & Ships</h3>
+              <p className="text-slate-600">Flowers are cut to order within 24 hours, climate-controlled direct flight from Ecuador.</p>
             </div>
 
             <div className="text-center">
@@ -61,8 +61,8 @@ export default function HowItWorks() {
                 <Truck className="w-10 h-10 text-emerald-600" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-600 rounded-full text-white font-bold flex items-center justify-center">4</div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Delivered Fresh</h3>
-              <p className="text-slate-600">FedEx delivery to your door. Farm-to-door in 4 days.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Delivered Fresh in 4 Days</h3>
+              <p className="text-slate-600">FedEx to your door. Farm-to-door in 4 days — 5–7 days fresher than wholesale market.</p>
             </div>
           </div>
         </div>
