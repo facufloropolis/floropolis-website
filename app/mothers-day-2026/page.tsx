@@ -134,7 +134,7 @@ export default function MothersDayPage() {
             {MDY_PRODUCTS.map((p) => (
               <Link
                 key={p.search}
-                href={`/shop?q=${encodeURIComponent(p.search)}`}
+                href={`/shop/${p.slug}`}
                 className="group rounded-2xl border border-rose-100 bg-white hover:border-rose-300 hover:shadow-lg transition-all overflow-hidden"
                 onClick={() => pushEvent("mdy_lp_cta_click", { cta: "product_card", product: p.name, page: "/mothers-day-2026" })}
               >
