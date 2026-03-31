@@ -1,0 +1,122 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import TopBanner from "@/components/TopBanner";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { getBlogPost, getBlogContent, getAllBlogSlugs } from "@/lib/data/blog-posts";
+import type { Metadata } from "next";
+
+export async function generateStaticParams() {
+  return getAllBlogSlugs().map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getBlogPost(slug);
+  if (!post) return {};
+  return {
+    title: post.metaTitle,
+    description: post.metaDescription,
+    openGraph: {
+      title: post.metaTitle,
+      description: post.metaDescription,
+      type: "article",
+      publishedTime: post.date,
+    },
+  };
+}
+
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = getBlogPost(slug);
+  if (!post) notFound();
+
+  const content = getBlogContent(slug);
+
+  return (
+    <div className="min-h-screen bg-white">
+      <TopBanner />
+      <Navigation />
+
+      <main className="max-w-3xl mx-auto px-4 py-10">
+        {/* Breadcrumb */}
+        <nav className="mb-6 text-sm text-slate-500 flex items-center gap-2">
+          <Link href="/blog" className="hover:text-emerald-600">Guides</Link>
+          <span>/</span>
+          <span className="text-slate-700 truncate">{post.title}</span>
+        </nav>
+
+        {/* Header */}
+        <header className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">
+              {post.category}
+            </span>
+            <span className="text-xs text-slate-400">{post.readingTime}</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-3">
+            {post.title}
+          </h1>
+          <p className="text-lg text-slate-600">{post.metaDescription}</p>
+        </header>
+
+        {/* Inline CTA — above content */}
+        <div className="mb-8 rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-slate-800">Source {post.category} direct from Ecuador farms</p>
+            <p className="text-xs text-slate-500 mt-0.5">Transparent per-stem pricing · No minimum order · Shipping included</p>
+          </div>
+          <Link
+            href={post.shopLink}
+            className="flex-shrink-0 bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors whitespace-nowrap"
+          >
+            {post.shopLinkLabel} &#x2192;
+          </Link>
+        </div>
+
+        {/* Article body */}
+        <MarkdownRenderer content={content} />
+
+        {/* Bottom CTA */}
+        <div className="mt-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 px-6 py-8 text-white text-center">
+          <h2 className="text-2xl font-bold mb-2">Ready to order {post.category.toLowerCase()}?</h2>
+          <p className="text-emerald-100 mb-5 text-sm max-w-md mx-auto">
+            Farm-direct from Ecuador. Transparent pricing, delivery included, no minimum order.
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link
+              href={post.shopLink}
+              className="bg-white text-emerald-700 font-bold px-6 py-3 rounded-lg hover:bg-emerald-50 transition-colors"
+            >
+              {post.shopLinkLabel} &#x2192;
+            </Link>
+            <Link
+              href="/sample-box"
+              className="border-2 border-white text-white font-bold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Try Free Sample Box
+            </Link>
+          </div>
+        </div>
+
+        {/* Back link */}
+        <div className="mt-8 text-center">
+          <Link href="/blog" className="text-sm text-slate-500 hover:text-emerald-600">
+            &#x2190; All florist guides
+          </Link>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

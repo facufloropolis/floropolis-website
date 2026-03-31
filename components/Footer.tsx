@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="py-16 px-4 bg-slate-900 text-white">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-12 mb-12">
+        <div className="grid md:grid-cols-5 gap-8 mb-12">
           <div>
             <p className="text-slate-400 leading-relaxed mb-4">Premium wholesale flowers direct from Ecuador & Colombia farms. Farm-direct quality, 5-7 days fresher.</p>
           </div>
@@ -28,6 +28,16 @@ export default function Footer() {
               <li><Link href="/shop/combo-boxes" className="hover:text-emerald-400 transition-colors duration-200">Combo Boxes</Link></li>
               <li><Link href="/sample-box" className="hover:text-emerald-400 transition-colors duration-200">Free Sample Box</Link></li>
               <li><Link href="/quote" className="hover:text-emerald-400 transition-colors duration-200">Get a Quote</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-4 text-lg">Resources</h4>
+            <ul className="space-y-3 text-slate-400">
+              <li><a href="/blog" className="hover:text-emerald-400 transition-colors duration-200">Florist Guides</a></li>
+              <li><a href="/blog/anemone-care-guide-florists" className="hover:text-emerald-400 transition-colors duration-200">Anemone Care Guide</a></li>
+              <li><a href="/blog/ranunculus-season-guide-florists" className="hover:text-emerald-400 transition-colors duration-200">Ranunculus Buying Guide</a></li>
+              <li><a href="/blog/wholesale-roses-buying-guide-florists" className="hover:text-emerald-400 transition-colors duration-200">Wholesale Roses Guide</a></li>
+              <li><a href="/guide" className="hover:text-emerald-400 transition-colors duration-200">Wholesale Buying Guide</a></li>
             </ul>
           </div>
           <div>
