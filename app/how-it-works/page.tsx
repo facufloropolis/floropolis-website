@@ -162,13 +162,14 @@ export default function HowItWorks() {
       <section className="py-20 px-4 bg-emerald-600">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">Ready to Try It?</h2>
-          <p className="text-xl text-emerald-100 mb-8">Get a free sample box and see the quality difference yourself.</p>
+          {/* EXP-111: MDY seasonal primary CTA during April */}
+          <p className="text-emerald-100 mb-4 text-sm">💐 Mother&apos;s Day pre-order cutoff: April 25 — order now for guaranteed May 10 delivery</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sample-box" className="bg-white text-emerald-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-emerald-50 transition-all" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "how_it_works" })}>
-              Get Free Sample Box
+            <Link href="/mothers-day-2026" className="bg-white text-rose-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-rose-50 transition-all" onClick={() => pushEvent("mdy_banner_click", { cta_location: "how_it_works" })}>
+              Shop Mother&apos;s Day →
             </Link>
-            <Link href="/shop" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all">
-              Shop Now
+            <Link href="/sample-box" className="border-2 border-white text-white px-10 py-5 rounded-lg text-lg font-bold hover:bg-white/10 transition-all" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "how_it_works" })}>
+              Get Free Sample Box
             </Link>
           </div>
           {/* EXP-093: WA fallback — consistent with homepage final CTA */}
