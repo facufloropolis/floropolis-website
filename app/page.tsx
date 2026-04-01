@@ -118,29 +118,37 @@ export default function Home() {
             <p className="text-base sm:text-xl text-slate-600">Roses, tropicals & specialty stems from Ecuador — shipping included in every price</p>
           </div>
 
-          {/* EXP-073: Visual category cards — replaces text pill quick-links. Larger tap targets + visual hierarchy drive more category exploration clicks. */}
+          {/* EXP-073: Visual category cards — product photos, no emojis */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
             {[
-              { emoji: "🌹", label: "Roses", sub: "Classic & garden", href: "/shop/roses" },
-              { emoji: "🌺", label: "Tropicals", sub: "Birds of paradise, heliconias", href: "/shop/tropicals" },
-              { emoji: "🌸", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
-              { emoji: "🌿", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
-              { emoji: "💝", label: "Mother's Day →", sub: "Order by May 4", href: "/mothers-day-2026" },  // EXP-105: MDY seasonal card — replaces Spring Collection (higher urgency, May 4 cutoff)
-              { emoji: "🌼", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
-            ].map(({ emoji, label, sub, href }) => (
+              { img: "/images/shop/roses/lola-hot-pink.png", label: "Roses", sub: "Classic & garden", href: "/shop/roses" },
+              { img: "/images/shop/novelties/anana-torch-red.jpg", label: "Tropicals", sub: "Birds of paradise, heliconias", href: "/shop/tropicals" },
+              { img: "/images/shop/ranunculus/amandine-pink.png", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
+              { img: "/images/shop/shop-all-greens.jpg", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
+              { img: "/images/shop/anemone/anemones-pink.jpg", label: "Mother's Day →", sub: "Order by May 4", href: "/mothers-day-2026" },
+              { img: "/images/shop/Summer-Flowers-Valentines.png", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
+            ].map(({ img, label, sub, href }) => (
               <Link
                 key={label}
                 href={href}
                 onClick={() => pushEvent("homepage_category_click", { category: label })}
-                className="group flex flex-col items-center text-center gap-1.5 bg-white rounded-2xl border border-slate-200 px-4 py-5 hover:border-emerald-400 hover:shadow-md transition-all"
+                className="group flex flex-col items-center text-center gap-1.5 bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-emerald-400 hover:shadow-md transition-all"
               >
-                <span className="text-3xl">{emoji}</span>
-                <span className="text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
-                  {label}
-                </span>
-                <span className="text-[11px] text-slate-400 leading-snug">
-                  {sub}
-                </span>
+                <div className="w-full h-24 overflow-hidden">
+                  <img
+                    src={img}
+                    alt={label}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="px-3 pb-3 pt-1">
+                  <span className="block text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                    {label}
+                  </span>
+                  <span className="block text-[11px] text-slate-400 leading-snug">
+                    {sub}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
