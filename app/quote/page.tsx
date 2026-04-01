@@ -68,6 +68,7 @@ export default function QuotePage() {
   const [showShipping, setShowShipping] = useState(false); // EXP-082: collapsed by default
   const carouselRef = useRef<HTMLDivElement>(null);
   const formStartedRef = useRef(false);
+  const [lastQuote, setLastQuote] = useState<{ contact_name: string; phone: string | null; items: QuoteItem[]; total: number } | null>(null);
   // EXP-060: Pre-fill form for logged-in users
   const { user, profile } = useAuth();
 
@@ -83,6 +84,29 @@ export default function QuotePage() {
   const sync = () => setItems(getCartItems());
 
   useEffect(() => {
+    // Load shared cart from ?cart= URL param
+    const params = new URLSearchParams(window.location.search);
+    const cartParam = params.get("cart");
+    if (cartParam) {
+      try {
+        const decoded = JSON.parse(atob(cartParam)) as QuoteItem[];
+        if (Array.isArray(decoded) && decoded.length > 0) {
+          decoded.forEach(item => addItem(item));
+          params.delete("cart");
+          const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
+          window.history.replaceState({}, "", newUrl);
+        }
+      } catch { /* ignore invalid cart params */ }
+    }
+    // Load last submitted quote for reorder banner
+    try {
+      const raw = localStorage.getItem("fp_last_submitted_quote");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const daysSince = (Date.now() - new Date(parsed.submitted_at).getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSince < 30 && parsed.items?.length > 0) setLastQuote(parsed);
+      }
+    } catch { /* ignore */ }
     sync();
     const handler = () => sync();
     window.addEventListener("quote-cart-updated", handler);
@@ -258,6 +282,15 @@ export default function QuotePage() {
           email: payload.email,
           phone: payload.phone ?? "",
         }));
+        // Save full quote for confirmation page personalization + reorder feature
+        localStorage.setItem("fp_last_submitted_quote", JSON.stringify({
+          contact_name: payload.contact_name,
+          phone: payload.phone,
+          items,
+          total,
+          delivery_dates: deliveryDates,
+          submitted_at: new Date().toISOString(),
+        }));
       } catch { /* ignore storage errors */ }
       pushEvent(CTA_EVENTS.submit_quote, {
         item_count: items.length,
@@ -322,6 +355,28 @@ export default function QuotePage() {
 
             {items.length === 0 ? (
               <div className="py-10 space-y-6">
+                {lastQuote && (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-bold text-emerald-800">Reorder your last cart?</p>
+                      <button type="button" onClick={() => setLastQuote(null)} className="text-xs text-slate-400 hover:text-slate-600">Dismiss</button>
+                    </div>
+                    <div className="space-y-1">
+                      {lastQuote.items.slice(0, 3).map((item) => (
+                        <p key={item.slug} className="text-xs text-emerald-700">{item.name} — {item.quantity}× {item.box_type}</p>
+                      ))}
+                      {lastQuote.items.length > 3 && <p className="text-xs text-emerald-500">+{lastQuote.items.length - 3} more items</p>}
+                    </div>
+                    <p className="text-xs text-slate-500">Last order total: ${lastQuote.total.toFixed(2)}</p>
+                    <button
+                      type="button"
+                      onClick={() => { lastQuote.items.forEach(item => addItem(item)); sync(); setLastQuote(null); }}
+                      className="w-full rounded-lg bg-emerald-600 text-white text-xs font-bold py-2.5 hover:bg-emerald-700 transition-colors"
+                    >
+                      Restore Cart — {lastQuote.items.length} {lastQuote.items.length === 1 ? "item" : "items"}
+                    </button>
+                  </div>
+                )}
                 <div className="text-center">
                   <p className="text-lg font-semibold text-slate-700 mb-1">Your quote is empty</p>
                   <p className="text-sm text-slate-500 mb-4">Add products below or browse the full catalog.</p>
@@ -697,17 +752,18 @@ export default function QuotePage() {
                     />
                   </div>
                   <div>
-                    {/* EXP-035: Phone optional — reduces friction for new clients */}
                     <label className="block text-slate-700 mb-1 text-xs font-medium">
-                      Phone <span className="text-slate-400 font-normal">(optional)</span>
+                      Phone *
                     </label>
                     <input
                       name="phone"
                       type="tel"
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
-                      placeholder="Speeds up confirmation"
+                      required
+                      className="w-full rounded-lg border border-emerald-300 bg-emerald-50/40 px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                      placeholder="For WhatsApp or SMS confirmation"
                       defaultValue={profile?.phone ?? savedContact?.phone ?? ""}
                     />
+                    <p className="text-xs text-emerald-600 mt-1">We'll confirm your order via WhatsApp or SMS.</p>
                   </div>
                 </div>
 
