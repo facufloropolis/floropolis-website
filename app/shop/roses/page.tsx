@@ -160,7 +160,6 @@ export default function ShopRosesPage() {
                 Ask us on WhatsApp →
               </a>
             </p>
-          </div>
         </section>
       </main>
 
