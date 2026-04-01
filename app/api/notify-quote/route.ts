@@ -160,10 +160,10 @@ async function saveToSupabase(payload: QuotePayload): Promise<{ id: number | nul
 }
 
 // 2. Send email via Brevo
-async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null, dbFailed: boolean): Promise<boolean> {
+async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null, dbFailed: boolean): Promise<{ ok: boolean; detail?: string }> {
   if (!BREVO_API_KEY) {
     console.error("[Brevo] MISSING BREVO_API_KEY — team notification email NOT sent for this quote");
-    return false;
+    return { ok: false, detail: "BREVO_API_KEY missing in env" };
   }
 
   const itemsHtml = formatItemsHtml(payload.items);
@@ -233,12 +233,12 @@ async function sendBrevoEmail(payload: QuotePayload, quoteId: number | null, dbF
     if (!res.ok) {
       const text = await res.text();
       console.error("[Brevo] Email error:", res.status, text);
-      return false;
+      return { ok: false, detail: `Brevo HTTP ${res.status}: ${text.slice(0, 200)}` };
     }
-    return true;
+    return { ok: true };
   } catch (err) {
     console.error("[Brevo] Email exception:", err);
-    return false;
+    return { ok: false, detail: String(err) };
   }
 }
 
@@ -404,10 +404,10 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Send internal notification email via Brevo — always fires; banner if DB failed
-    const emailSent = await sendBrevoEmail(payload, quoteId, dbFailed);
+    const { ok: emailSent, detail: emailErrorDetail } = await sendBrevoEmail(payload, quoteId, dbFailed);
     if (!emailSent) {
-      console.error(`[Quote] Team email FAILED for #${quoteId} (${payload.business_name}) — manual follow-up required`);
-      if (quoteId) flagQuoteNotificationFailure(quoteId, "Team email not sent — check BREVO_API_KEY");
+      console.error(`[Quote] Team email FAILED for #${quoteId} (${payload.business_name}) — ${emailErrorDetail}`);
+      if (quoteId) flagQuoteNotificationFailure(quoteId, `Team email not sent: ${emailErrorDetail ?? "unknown"}`);
     }
 
     // 2b. Append to Google Sheet (Tab 1: Quote Requests) — non-blocking

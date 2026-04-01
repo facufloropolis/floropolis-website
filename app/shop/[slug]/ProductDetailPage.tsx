@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import QuoteBar from "@/components/QuoteBar";
 import TopBanner from "@/components/TopBanner";
 import { ShoppingCart, Check, Package } from "lucide-react";
 import AssortedMixBuilder from "@/components/AssortedMixBuilder";
@@ -22,6 +21,7 @@ import {
   toISODate,
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
+import { getCareInstructions } from "@/lib/care-instructions";
 
 type Props = {
   product: Product;
@@ -1137,6 +1137,31 @@ export default function ProductDetailPage({
               </div>
             </div>
           </div>
+
+          {/* EXP-138: Care instructions — vase life + handling steps per category */}
+          {(() => {
+            const care = getCareInstructions(product.category);
+            if (!care) return null;
+            return (
+              <div className="mt-8 pt-8 border-t border-slate-100">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">
+                  Care Instructions
+                  <span className="ml-2 text-sm font-normal text-emerald-600">Vase life: {care.vaseLife}</span>
+                </h3>
+                <ol className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {care.steps.map((step, i) => (
+                    <li key={i} className="flex items-start gap-3 bg-slate-50 rounded-xl p-3">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
+                      <p className="text-sm text-slate-700">{step}</p>
+                    </li>
+                  ))}
+                </ol>
+                {care.tip && (
+                  <p className="mt-3 text-xs text-slate-500 italic">{care.tip}</p>
+                )}
+              </div>
+            );
+          })()}
         </section>
       </main>
 
@@ -1168,7 +1193,6 @@ export default function ProductDetailPage({
         </div>
       )}
 
-      <QuoteBar />
       <Footer />
     </div>
   );

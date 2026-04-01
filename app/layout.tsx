@@ -4,6 +4,7 @@ import "./globals.css";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import QuoteCartWidget from "@/components/QuoteCartWidget";
+import QuoteBar from "@/components/QuoteBar";
 import WhatsAppCTA from "@/components/WhatsAppCTA";
 import EmailPopup from "@/components/EmailPopup";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
@@ -119,6 +120,7 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         <AuthProvider>
           {children}
           <QuoteCartWidget />
+          <QuoteBar />
           <WhatsAppCTA />
           <EmailPopup />
           <ExitIntentPopup />
