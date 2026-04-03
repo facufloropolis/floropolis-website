@@ -10,12 +10,12 @@ import { pushEvent } from "@/lib/gtm";
 
 const MDY_PRODUCTS = [
   {
-    name: "Ranunculus Pink Amandine",
+    name: "Ranunculus Amandine Hot Pink",
     description: "Soft layered petals · Ecuador farm-direct",
     price: 1.23,
-    search: "Pink Amandine",
+    search: "Amandine Hot Pink",
     category: "Ranunculus",
-    slug: "pink-amandine-hot-pink",
+    slug: "amandine-hot-pink-30-35cm",
     image: "/images/shop/ranunculus/pink-amandine-hot-pink.jpg",
   },
   {
