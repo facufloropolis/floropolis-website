@@ -10,13 +10,13 @@ import { pushEvent } from "@/lib/gtm";
 
 const MDY_PRODUCTS = [
   {
-    name: "Ranunculus Amandine Hot Pink",
-    description: "Soft layered petals · Ecuador farm-direct",
-    price: 1.23,
-    search: "Amandine Hot Pink",
-    category: "Ranunculus",
-    slug: "amandine-hot-pink-30-35cm",
-    image: "/images/shop/ranunculus/pink-amandine-hot-pink.jpg",
+    name: "Sky Waltz Light Blue 70CM",
+    description: "Tall elegant spikes · Farm-direct Ecuador",
+    price: 1.10,
+    search: "Sky Waltz 70CM",
+    category: "Delphinium",
+    slug: "sky-waltz-light-blue-70cm",
+    image: "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634686.png",
   },
   {
     name: "Anemone FullStar Red",
@@ -28,10 +28,10 @@ const MDY_PRODUCTS = [
     image: "/images/shop/anemone/anemone-full-star-red.png",
   },
   {
-    name: "Delphinium Sky Waltz",
+    name: "Delphinium Sky Waltz 60CM",
     description: "Tall elegant spikes · Perfect for arrangements",
-    price: 1.17,
-    search: "Sky Waltz",
+    price: 1.08,
+    search: "Sky Waltz 60CM",
     category: "Delphinium",
     slug: "delphinium-light-blue-sky-waltz-60cm",
     image: "/images/shop/delphinium/blue-sky-waltz-light-blue.png",
