@@ -7,8 +7,8 @@
  * Output: /Users/facu/Desktop/floropolis_products.ts
  */
 
-import { readFileSync, writeFileSync } from "fs";
-import { resolve, dirname } from "path";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
+import { resolve, dirname, basename, join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -151,6 +151,85 @@ async function main() {
   if (issues.zeroPrice.length > 0) {
     console.warn(`⚠️  ${issues.zeroPrice.length} product(s) have $0 price — these will show "Price pending" on the site.`);
   }
+
+  // === IMAGE VALIDATION — catches broken paths before they reach production ===
+  const publicDir = resolve(__dirname, "../public");
+  const brokenImages = [];
+  const autoFixed = [];
+
+  // Build index of all images on disk for fuzzy matching
+  function indexImages(dir, prefix = "") {
+    const entries = [];
+    try {
+      for (const f of readdirSync(dir, { withFileTypes: true })) {
+        const rel = prefix ? `${prefix}/${f.name}` : f.name;
+        if (f.isDirectory()) entries.push(...indexImages(join(dir, f.name), rel));
+        else entries.push(rel);
+      }
+    } catch {}
+    return entries;
+  }
+  const allImages = indexImages(resolve(publicDir, "images/shop"));
+
+  // Normalize a filename for fuzzy matching: lowercase, strip extensions, collapse separators
+  function normalize(filename) {
+    return basename(filename).replace(/\.\w+$/, "").toLowerCase().replace(/[-_]+/g, " ").split(" ").sort().join(" ");
+  }
+
+  // Build normalized lookup
+  const normalizedMap = new Map();
+  for (const img of allImages) {
+    normalizedMap.set(normalize(img), `/images/shop/${img}`);
+  }
+
+  for (const p of products) {
+    if (!p.images || p.images.length === 0) continue;
+    const validatedImages = [];
+    for (const imgPath of p.images) {
+      // Skip external URLs (CDN links etc)
+      if (imgPath.startsWith("http")) { validatedImages.push(imgPath); continue; }
+
+      const fullPath = resolve(publicDir, imgPath.replace(/^\//, ""));
+      if (existsSync(fullPath)) {
+        validatedImages.push(imgPath);
+      } else {
+        // Try fuzzy match
+        const norm = normalize(imgPath);
+        const match = normalizedMap.get(norm);
+        if (match && existsSync(resolve(publicDir, match.replace(/^\//, "")))) {
+          autoFixed.push({ id: p.id, name: p.name, was: imgPath, now: match });
+          validatedImages.push(match);
+        } else {
+          brokenImages.push({ id: p.id, name: p.name, vendor: p.vendor, path: imgPath });
+          // Strip the broken image so product shows placeholder instead of broken img
+          // (has_photo will be recalculated below)
+        }
+      }
+    }
+    p.images = validatedImages;
+    p.has_photo = validatedImages.length > 0;
+  }
+
+  if (autoFixed.length > 0) {
+    console.log(`\n=== IMAGE AUTO-FIX (${autoFixed.length} resolved) ===`);
+    for (const f of autoFixed) console.log(`  -> [${f.id}] "${f.name}": ${f.was} => ${f.now}`);
+  }
+
+  if (brokenImages.length > 0) {
+    console.error(`\n=== BROKEN IMAGES (${brokenImages.length} unresolvable) ===`);
+    for (const b of brokenImages) console.error(`  !! [${b.id}] "${b.name}" (${b.vendor}): ${b.path} — FILE NOT FOUND`);
+    console.error(`\nThese products will render WITHOUT an image until Supabase is fixed.`);
+    console.error(`To fix: update the images column in floropolis_inventory with a path that exists in public/images/shop/\n`);
+  }
+
+  const photoCounts = { with: products.filter(p => p.has_photo).length, without: products.filter(p => !p.has_photo).length };
+  console.log(`\n=== IMAGE REPORT ===`);
+  console.log(`Products with verified images: ${photoCounts.with}`);
+  console.log(`Products without images: ${photoCounts.without}`);
+  if (autoFixed.length) console.log(`Auto-fixed paths: ${autoFixed.length}`);
+  if (brokenImages.length) console.log(`Broken (stripped): ${brokenImages.length}`);
+  console.log(`=== END IMAGE REPORT ===\n`);
+
 
   const ts = `/**
  * Auto-generated product catalog from Supabase floropolis_inventory.
