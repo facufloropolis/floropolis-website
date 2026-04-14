@@ -1076,6 +1076,15 @@ export default function ProductDetailPage({
               {currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
                 <p className="text-sm text-slate-500 mt-3">
                   Packed {currentVariant.stems_per_bunch} stems per bunch · {currentVariant.units_per_box} {currentVariant.unit === "Bunch" ? "bunches" : "units"} per {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type || "box"}
+                  {currentVariant.unit !== "Box" && currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
+                    <> · <span className="font-semibold text-slate-700">{(currentVariant.stems_per_bunch * currentVariant.units_per_box).toLocaleString()} stems total</span></>
+                  )}
+                </p>
+              )}
+              {/* Origin country — enhances vendor context for D1 PDP completeness */}
+              {product.vendor && (
+                <p className="text-sm text-slate-500 mt-2">
+                  Grown in <span className="font-semibold text-slate-700">Ecuador</span> · Farm-direct cold chain
                 </p>
               )}
             </div>
