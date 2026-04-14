@@ -1,6 +1,6 @@
 /**
  * Auto-generated product catalog from Supabase floropolis_inventory.
- * Generated: 2026-04-14T20:56:58.758Z
+ * Generated: 2026-04-14T21:29:12.784Z
  * Total products: 1004
  * Tiers: {"T1":46,"T2":119,"T3":839}
  *
@@ -4597,7 +4597,7 @@ export const products: Product[] = [
     "category": "Tropicals",
     "color": "Red",
     "variety": "Anthurium",
-    "length": null,
+    "length": "12-14 cm",
     "price": 5.12,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -4628,7 +4628,7 @@ export const products: Product[] = [
     "category": "Tropicals",
     "color": "Assorted",
     "variety": "Anthurium",
-    "length": null,
+    "length": "10-12 cm",
     "price": 4.1,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -4659,7 +4659,7 @@ export const products: Product[] = [
     "category": "Tropicals",
     "color": "Assorted",
     "variety": "Anthurium",
-    "length": null,
+    "length": "12-14 cm",
     "price": 5.12,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -4690,7 +4690,7 @@ export const products: Product[] = [
     "category": "Tropicals",
     "color": "Red",
     "variety": "Anthurium",
-    "length": null,
+    "length": "10-12 cm",
     "price": 4.1,
     "unit": "Stem",
     "stems_per_bunch": 10,
@@ -5426,7 +5426,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6678,
@@ -5457,7 +5457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-04"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6676,
@@ -5488,7 +5488,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6782,
@@ -5519,7 +5519,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-05"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6786,
@@ -5581,7 +5581,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-03-30"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6783,
@@ -5612,7 +5612,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-10"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6784,
@@ -5643,7 +5643,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-16"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6787,
@@ -6635,7 +6635,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6696,
@@ -6666,7 +6666,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7012,
@@ -6914,7 +6914,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6680,
@@ -7005,7 +7005,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": null
+    "available_from": "2026-04-29"
   },
   {
     "id": 7807,
@@ -7344,7 +7344,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": null
+    "available_from": "2026-04-29"
   },
   {
     "id": 7036,
@@ -7716,7 +7716,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7041,
@@ -10166,7 +10166,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6895,
@@ -10414,7 +10414,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-10"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7717,
@@ -11592,7 +11592,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7152,
@@ -12398,7 +12398,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6705,
@@ -12429,7 +12429,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6706,
@@ -12460,7 +12460,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7177,
@@ -14289,7 +14289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6715,
@@ -14320,7 +14320,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6716,
@@ -14351,7 +14351,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7730,
@@ -14909,7 +14909,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6721,
@@ -14940,7 +14940,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7734,
@@ -16583,7 +16583,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6723,
@@ -16614,7 +16614,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6725,
@@ -16645,7 +16645,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6726,
@@ -16676,7 +16676,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7736,
@@ -17513,7 +17513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6735,
@@ -17544,7 +17544,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6740,
@@ -20799,7 +20799,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7422,
@@ -21634,7 +21634,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": null
+    "available_from": "2026-04-29"
   },
   {
     "id": 7445,
@@ -22223,7 +22223,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6750,
@@ -22254,7 +22254,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6751,
@@ -22285,7 +22285,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7462,
@@ -23463,7 +23463,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7497,
@@ -24112,7 +24112,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": null
+    "available_from": "2026-04-29"
   },
   {
     "id": 7515,
@@ -24358,7 +24358,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": null
+    "available_from": "2026-04-29"
   },
   {
     "id": 7521,
@@ -24730,7 +24730,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6760,
@@ -24761,7 +24761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7752,
@@ -25660,7 +25660,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7557,
@@ -26495,7 +26495,7 @@ export const products: Product[] = [
     "has_photo": false,
     "total_stems": null,
     "contents_note": null,
-    "available_from": null
+    "available_from": "2026-04-29"
   },
   {
     "id": 7756,
@@ -28665,7 +28665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6776,
@@ -28696,7 +28696,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7652,
@@ -30340,7 +30340,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 6778,
@@ -30402,7 +30402,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-04-01"
+    "available_from": "2026-04-29"
   },
   {
     "id": 7098,

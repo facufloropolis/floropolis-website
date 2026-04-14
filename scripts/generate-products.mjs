@@ -70,14 +70,39 @@ async function fetchAll() {
   return allRows;
 }
 
+// D1 backfill: extract length from name when the length column is null/empty.
+// Matches "50cm", "50 cm", "60-70cm", "80CM". Returns "50 cm" style string or null.
+function extractLengthFromName(name) {
+  if (!name) return null;
+  const m = name.match(/(\d{2,3}(?:-\d{2,3})?)\s*c[mM]\b/);
+  if (!m) return null;
+  return `${m[1]} cm`;
+}
+
+// D0b (source-of-truth rule): site shows the full catalog at a tier-valid date.
+// Effective available_from = max(supabase_arrival_date, today + tier_min_days + 1 TZ buffer).
+// T1/T2 min = 5 days; T3 min = 14 days. +1 day buffer absorbs TZ rounding (UTC vs local).
+function clampAvailableFrom(arrivalDateISO, tier) {
+  // Work in UTC to avoid TZ drift between generator + validator.
+  const nowUTC = new Date();
+  const todayUTC = new Date(Date.UTC(nowUTC.getUTCFullYear(), nowUTC.getUTCMonth(), nowUTC.getUTCDate()));
+  const tierMin = tier === "T3" ? 14 : 5;
+  const floor = new Date(todayUTC.getTime() + (tierMin + 1) * 86400000);
+  const db = arrivalDateISO ? new Date(arrivalDateISO) : null;
+  const effective = !db || isNaN(db.getTime()) || db < floor ? floor : db;
+  return effective.toISOString().slice(0, 10);
+}
+
 function toProduct(row) {
+  const tier = row.tier || "T3";
+  const length = row.length || extractLengthFromName(row.name);
   return {
     id: row.id,
     name: row.name || "",
     category: row.category || "Other",
     color: row.color || "",
     variety: row.variety || "",
-    length: row.length || null,
+    length: length || null,
     price: Number(row.price) || 0,
     unit: row.unit || "Stem",
     stems_per_bunch: Number(row.stems_per_bunch) || 0,
@@ -94,11 +119,11 @@ function toProduct(row) {
     display_order: row.display_order ?? 999,
     slug: (row.slug || "").replace(/&/g, "and").replace(/[^a-z0-9-]/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, ""),
     images: Array.isArray(row.images) ? row.images : [],
-    tier: row.tier || "T3",
+    tier,
     has_photo: Array.isArray(row.images) && row.images.length > 0,
     total_stems: row.total_stems ? Number(row.total_stems) : null,
     contents_note: row.contents_note || null,
-    available_from: row.arrival_date || null,
+    available_from: clampAvailableFrom(row.arrival_date, tier),
   };
 }
 
