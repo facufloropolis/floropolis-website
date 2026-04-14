@@ -491,7 +491,7 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   Larkspur: "/images/shop/delphinium/astolat.png",
   "Heliconia Hanging": "/images/shop/tropicals/rostrata-red.png",
   "Heliconia up-right": "/images/shop/tropicals/iris-red.png",
-  Anthurium: "/images/shop/tropicals/tropical-xlarge-red.jpg",
+  Anthurium: "/images/shop/tropicals/anthuriums-tropical-xlarge-red.jpg",
   Heliconia: "/images/shop/tropicals/hel-fire-opal-red.png",
 };
 
