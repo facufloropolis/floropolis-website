@@ -28,10 +28,12 @@ function extractConst(name) {
 // Accept both quoted ("Mixed Boxes": ...) and unquoted (Rose: ...) keys.
 function parseMap(body) {
   const out = {};
-  const re = /^\s*(?:["']([^"']+)["']|([A-Za-z][A-Za-z0-9_ &]*?))\s*:\s*["']([^"']+)["']/gm;
+  // Separate alternatives for key (quoted or unquoted) and value (quoted) so apostrophes inside double-quoted values don't break matching.
+  const re = /^\s*(?:"([^"]+)"|'([^']+)'|([A-Za-z][A-Za-z0-9_ &]*?))\s*:\s*(?:"([^"]+)"|'([^']+)')/gm;
   for (const m of body.matchAll(re)) {
-    const key = (m[1] ?? m[2] ?? "").trim();
-    if (key) out[key] = m[3];
+    const key = (m[1] ?? m[2] ?? m[3] ?? "").trim();
+    const val = m[4] ?? m[5];
+    if (key && val) out[key] = val;
   }
   return out;
 }
