@@ -79,6 +79,49 @@ function extractLengthFromName(name) {
   return `${m[1]} cm`;
 }
 
+// D3 backfill: extract color from variety/name when color column is null/empty.
+// Common colors in the catalog — pulled from Supabase color distinct values.
+const KNOWN_COLORS = [
+  "White","Red","Pink","Yellow","Orange","Peach","Cream","Lavender","Purple",
+  "Green","Burgundy","Blue","Bicolor","Assorted","Rainbow","Salmon","Coral",
+  "Fuchsia","Magenta","Black","Dark Pink","Light Pink","Hot Pink","Dark Red",
+  "Light Yellow","Sandy Cream","Light Peach","Cherry","Mauve","Brown",
+];
+function extractColorFromName(name) {
+  if (!name) return null;
+  // Prefer longer matches first to avoid "Pink" matching inside "Hot Pink"
+  const sorted = [...KNOWN_COLORS].sort((a, b) => b.length - a.length);
+  for (const c of sorted) {
+    // Word-boundary match, case-insensitive
+    const re = new RegExp("\\b" + c.replace(/\s/g, "\\s+") + "\\b", "i");
+    if (re.test(name)) return c;
+  }
+  return null;
+}
+
+// D1 backfill: default box_type by category when null/empty.
+// Values mirror what the catalog actually uses in Supabase.
+const BOX_TYPE_BY_CATEGORY = {
+  Rose: "QB",
+  Anemone: "EB",
+  Ranunculus: "EB",
+  Delphinium: "FB",
+  "Greens & Foliage": "HB",
+  Tropicals: "HB",
+  Bouquets: "QB",
+  "Mixed Boxes": "QB",
+  Gypsophila: "EB",
+  Scabiosa: "EB",
+  "Bells of Ireland": "HB",
+  Craspedia: "EB",
+  Thistle: "EB",
+  Larkspur: "FB",
+  Anthurium: "HB",
+};
+function defaultBoxType(category) {
+  return BOX_TYPE_BY_CATEGORY[category] || "QB";
+}
+
 // D0b (source-of-truth rule): site shows the full catalog at a tier-valid date.
 // Effective available_from = max(supabase_arrival_date, today + tier_min_days + 1 TZ buffer).
 // T1/T2 min = 5 days; T3 min = 14 days. +1 day buffer absorbs TZ rounding (UTC vs local).
@@ -95,19 +138,22 @@ function clampAvailableFrom(arrivalDateISO, tier) {
 
 function toProduct(row) {
   const tier = row.tier || "T3";
+  const category = row.category || "Other";
   const length = row.length || extractLengthFromName(row.name);
+  const color = row.color || extractColorFromName(row.variety) || extractColorFromName(row.name) || "";
+  const box_type = row.box_type || defaultBoxType(category);
   return {
     id: row.id,
     name: row.name || "",
-    category: row.category || "Other",
-    color: row.color || "",
+    category,
+    color,
     variety: row.variety || "",
     length: length || null,
     price: Number(row.price) || 0,
     unit: row.unit || "Stem",
     stems_per_bunch: Number(row.stems_per_bunch) || 0,
     units_per_box: Number(row.units_per_box) || 0,
-    box_type: row.box_type || "QB",
+    box_type,
     stock: Number(row.stock) || 0,
     vendor: row.vendor || "",
     is_on_deal: row.is_on_deal || false,
