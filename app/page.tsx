@@ -42,7 +42,7 @@ export default function Home() {
       <section className="relative min-h-[40vh] sm:min-h-[53vh] flex items-center justify-center">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1600&q=75&auto=format&fit=crop"
+            src="/images/hero/home-hero.jpg"
             alt="Professional florist arranging fresh flowers"
             fill
             className="object-cover object-center"
