@@ -1049,28 +1049,52 @@ export default function ProductDetailPage({
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 {product.category === "Rose" && (
-                  <>{product.variety} is a premium {product.color?.toLowerCase()} rose variety, sourced fresh from top Colombian and Ecuadorian farms. Known for its large head size, vibrant color, and excellent vase life of 7–12 days.</>
+                  <>{product.variety} is a premium {product.color?.toLowerCase()} rose variety, farm-direct from top Ecuadorian growers. Perfect for wedding bouquets, event centerpieces, and wholesale floral arrangements. Large head size, vibrant color, and a vase life of 7–12 days.</>
                 )}
                 {product.category === "Ranunculus" && (
-                  <>{product.variety} is a beautiful {product.color?.toLowerCase()} ranunculus with delicate, layered petals. Perfect for bridal bouquets, centerpieces, and spring arrangements. Vase life of 5–8 days.</>
+                  <>{product.variety} is a premium {product.color?.toLowerCase()} ranunculus with delicate, layered petals. Perfect for bridal bouquets, centerpieces, and spring arrangements. Farm-direct, grade-A, vase life of 5–8 days.</>
                 )}
                 {product.category === "Anemone" && (
-                  <>{product.variety} is a striking {product.color?.toLowerCase()} anemone with its signature dark center. A favorite for weddings and upscale arrangements. Vase life of 5–7 days.</>
+                  <>{product.variety} is a striking premium {product.color?.toLowerCase()} anemone with its signature dark center. A favorite for weddings and upscale arrangements. Farm-direct, grade-A, vase life of 5–7 days.</>
                 )}
                 {product.category === "Tropicals" && (
-                  <>{product.variety} is an exotic tropical flower that adds drama and structure to any arrangement. Hardy and long-lasting with a vase life of 10–14 days.</>
+                  <>{product.variety} is an exotic tropical flower that adds drama and structure to any arrangement. Perfect for statement centerpieces and event installations. Farm-direct, premium grade, vase life 10–14 days.</>
                 )}
                 {(product.category === "Greens" || product.category === "Greens & Foliage") && (
-                  <>{product.variety} is a premium foliage variety used to add texture and volume to arrangements. Sourced fresh for maximum freshness and longevity.</>
+                  <>{product.variety} is a premium foliage variety, farm-direct and used to add texture and volume to any arrangement. Ideal for weddings, events, and wholesale bouquet assembly. Sourced fresh for a vase life of 10–21 days.</>
                 )}
                 {product.category === "Bouquets" && (
-                  <>The {product.variety} bouquet is a curated mix of premium flowers, professionally assembled and ready to sell or display. Each bouquet is designed for maximum visual impact.</>
+                  <>The {product.variety} bouquet is a curated mix of premium flowers, professionally assembled and ready to sell or display. Perfect for retail florists and event designers — designed for maximum visual impact with a vase life of 7–10 days.</>
                 )}
                 {product.category === "Mixed Boxes" && (
-                  <>The {product.variety} box is a curated assortment of premium flowers, perfect for florists who want variety without the commitment of full boxes. Each box is designed with complementary colors and textures.</>
+                  <>The {product.variety} box is a curated assortment of premium grade flowers, perfect for florists who want variety without the commitment of full boxes. Farm-direct, designed for arrangements and events with complementary colors and textures. Vase life 7–10 days.</>
                 )}
-                {!["Rose", "Ranunculus", "Anemone", "Tropicals", "Greens", "Greens & Foliage", "Bouquets", "Mixed Boxes"].includes(product.category) && (
-                  <>{product.variety} {product.color} is a premium {product.category.toLowerCase()} variety, sourced directly from top farms for guaranteed freshness and quality.</>
+                {product.category === "Delphinium" && (
+                  <>{product.variety} is a tall, elegant {product.color?.toLowerCase()} delphinium grown at high elevation in Ecuador. Perfect for wedding arrangements and event centerpieces where height and drama matter. Premium grade, farm-direct, vase life of 7–10 days.</>
+                )}
+                {product.category === "Larkspur" && (
+                  <>{product.variety} is a farm-direct {product.color?.toLowerCase()} larkspur with classic spike form. Perfect for bridal bouquets, cottage-garden weddings, and mass floral designs. Premium grade, vase life 6–8 days.</>
+                )}
+                {product.category === "Gypsophila" && (
+                  <>{product.variety} is a premium {product.color?.toLowerCase()} gypsophila (baby's breath) variety, farm-direct from Ecuador. Ideal for wedding bouquets, event filler, and floral designs needing texture. Grade-A, long vase life of 10–14 days.</>
+                )}
+                {product.category === "Scabiosa" && (
+                  <>{product.variety} is a delicate {product.color?.toLowerCase()} scabiosa with pincushion blooms. Perfect for wedding arrangements and wildflower-inspired bouquets. Farm-direct premium grade, vase life 5–7 days.</>
+                )}
+                {product.category === "Bells of Ireland" && (
+                  <>{product.variety} is a striking green spike variety known for its bell-shaped calyx. Perfect for adding vertical drama to wedding and event arrangements. Farm-direct, premium grade, vase life 7–10 days.</>
+                )}
+                {product.category === "Thistle" && (
+                  <>{product.variety} is a textured {product.color?.toLowerCase()} thistle variety, farm-direct and ideal for rustic weddings, event installations, and bouquets needing unusual texture. Premium grade, vase life 10–14 days.</>
+                )}
+                {product.category === "Craspedia" && (
+                  <>{product.variety} is a long-stem {product.color?.toLowerCase()} craspedia (billy button) variety with spherical golden heads. Perfect for modern wedding arrangements, bouquets, and dried designs. Farm-direct, vase life 14+ days fresh.</>
+                )}
+                {product.category === "Anthurium" && (
+                  <>{product.variety} is a bold {product.color?.toLowerCase()} anthurium with waxy, heart-shaped spathe. Perfect for tropical event arrangements, modern bouquets, and statement centerpieces. Premium grade, long vase life of 14–21 days.</>
+                )}
+                {!["Rose", "Ranunculus", "Anemone", "Tropicals", "Greens", "Greens & Foliage", "Bouquets", "Mixed Boxes", "Delphinium", "Larkspur", "Gypsophila", "Scabiosa", "Bells of Ireland", "Thistle", "Craspedia", "Anthurium"].includes(product.category) && (
+                  <>{product.variety} {product.color} is a premium {product.category.toLowerCase()} variety, farm-direct from top Ecuadorian growers. Perfect for event floral design, arrangements, and wholesale florist use. Grade-A quality with a strong vase life.</>
                 )}
               </p>
               {currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
