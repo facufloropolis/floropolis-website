@@ -9,6 +9,7 @@ import WhatsAppCTA from "@/components/WhatsAppCTA";
 import EmailPopup from "@/components/EmailPopup";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 import { AuthProvider } from "@/lib/auth-context";
+import WebVitalsReporter from "@/components/WebVitalsReporter";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -118,6 +119,7 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           />
         </noscript>
         <AuthProvider>
+          <WebVitalsReporter />
           {children}
           <QuoteCartWidget />
           <QuoteBar />
