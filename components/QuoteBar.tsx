@@ -27,9 +27,13 @@ export default function QuoteBar() {
   const [qBusiness, setQBusiness] = useState("");
   const [qName, setQName] = useState("");
   const [qEmail, setQEmail] = useState("");
+  const [qPhone, setQPhone] = useState("");
+  const [qState, setQState] = useState("");
   const [qSubmitting, setQSubmitting] = useState(false);
   const [qError, setQError] = useState<string | null>(null);
   const [qSuccess, setQSuccess] = useState(false);
+
+  const NO_SHIP_STATES = ["PR", "VI", "GU", "AS", "MP"];
 
   useEffect(() => {
     const update = () => {
@@ -109,11 +113,23 @@ export default function QuoteBar() {
   // EXP-139: quick-submit POST
   const handleQuickSubmit = async () => {
     if (!qBusiness.trim() || !qName.trim() || !qEmail.trim()) {
-      setQError("All three fields are required.");
+      setQError("Please fill in all required fields.");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(qEmail)) {
       setQError("Please enter a valid email.");
+      return;
+    }
+    if (!qPhone.trim()) {
+      setQError("Phone number is required so we can confirm your order.");
+      return;
+    }
+    if (!qState) {
+      setQError("Please select your state so we can confirm we ship to your area.");
+      return;
+    }
+    if (NO_SHIP_STATES.includes(qState)) {
+      setQError("Sorry, we currently don't ship to this location. Please contact us on WhatsApp for alternatives.");
       return;
     }
 
@@ -122,17 +138,18 @@ export default function QuoteBar() {
     pushEvent("form_start", { path: "quick_submit", item_count: itemCount });
 
     const items = getCartItems();
+    const firstDeliveryDate = items.find(i => i.delivery_date)?.delivery_date ?? null;
     const payload = {
       business_name: qBusiness.trim(),
       contact_name: qName.trim(),
       email: qEmail.trim(),
-      phone: null,
+      phone: qPhone.trim(),
       shipping_address: null,
       shipping_city: null,
-      shipping_state: null,
+      shipping_state: qState,
       shipping_zip: null,
-      preferred_delivery_date: null,
-      notes: "Submitted via quick-submit (EXP-139) — shipping details to be confirmed on call.",
+      preferred_delivery_date: firstDeliveryDate,
+      notes: "Submitted via quick-submit (EXP-139).",
       wants_call: false,
       is_existing_client: false,
       items: items.map((i) => ({
@@ -271,39 +288,71 @@ export default function QuoteBar() {
             </p>
 
             <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-700">Business name</span>
+                  <input
+                    type="text"
+                    value={qBusiness}
+                    onChange={(e) => setQBusiness(e.target.value)}
+                    autoFocus
+                    placeholder="Your shop"
+                    className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    disabled={qSubmitting}
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-700">Your name</span>
+                  <input
+                    type="text"
+                    value={qName}
+                    onChange={(e) => setQName(e.target.value)}
+                    placeholder="First and last"
+                    className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    disabled={qSubmitting}
+                  />
+                </label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-700">Email</span>
+                  <input
+                    type="email"
+                    value={qEmail}
+                    onChange={(e) => setQEmail(e.target.value)}
+                    placeholder="you@yourshop.com"
+                    className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    disabled={qSubmitting}
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-700">Phone *</span>
+                  <input
+                    type="tel"
+                    value={qPhone}
+                    onChange={(e) => setQPhone(e.target.value)}
+                    placeholder="For WhatsApp / SMS"
+                    className="mt-1 block w-full rounded-lg border border-emerald-300 bg-emerald-50/40 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    disabled={qSubmitting}
+                  />
+                </label>
+              </div>
               <label className="block">
-                <span className="text-sm font-semibold text-slate-700">Business name</span>
-                <input
-                  type="text"
-                  value={qBusiness}
-                  onChange={(e) => setQBusiness(e.target.value)}
-                  autoFocus
-                  placeholder="Your florist shop or company"
-                  className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                <span className="text-sm font-semibold text-slate-700">Ship-to state *</span>
+                <select
+                  value={qState}
+                  onChange={(e) => setQState(e.target.value)}
+                  className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:ring-emerald-500"
                   disabled={qSubmitting}
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-semibold text-slate-700">Your name</span>
-                <input
-                  type="text"
-                  value={qName}
-                  onChange={(e) => setQName(e.target.value)}
-                  placeholder="First and last name"
-                  className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-                  disabled={qSubmitting}
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-semibold text-slate-700">Email</span>
-                <input
-                  type="email"
-                  value={qEmail}
-                  onChange={(e) => setQEmail(e.target.value)}
-                  placeholder="you@yourshop.com"
-                  className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-                  disabled={qSubmitting}
-                />
+                >
+                  <option value="" disabled>Select state</option>
+                  {[["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]].map(([v, l]) => (
+                    <option key={v} value={v}>{l}</option>
+                  ))}
+                </select>
+                {NO_SHIP_STATES.includes(qState) && (
+                  <p className="mt-1 text-xs text-rose-600">We don't ship to this location. Contact us on WhatsApp.</p>
+                )}
               </label>
             </div>
 

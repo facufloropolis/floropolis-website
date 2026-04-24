@@ -131,7 +131,7 @@ async function saveToSupabase(payload: QuotePayload): Promise<{ id: number | nul
           apikey: SUPABASE_ANON_KEY,
           Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
           "Content-Type": "application/json",
-          Prefer: "return=headers-only",
+          Prefer: "return=representation",
         },
         body: JSON.stringify(body),
       });
@@ -144,10 +144,8 @@ async function saveToSupabase(payload: QuotePayload): Promise<{ id: number | nul
         continue;
       }
 
-      // Extract ID from Location header: /quote_requests?id=eq.21
-      const location = res.headers.get("location") || "";
-      const idMatch = location.match(/id=eq\.(\d+)/);
-      const id = idMatch ? parseInt(idMatch[1], 10) : null;
+      const rows = await res.json();
+      const id = Array.isArray(rows) && rows[0]?.id ? rows[0].id : null;
       return { id, error: null };
     } catch (err) {
       lastError = String(err);
