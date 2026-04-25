@@ -380,13 +380,16 @@ export default function ProductDetailPage({
   const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
 
   // For Box products (combo boxes), stems_per_bunch × units_per_box is meaningless.
-  // total_stems field will be added by Alvar for those products; for now suppress.
+  // When unit === "Stem", units_per_box IS the stem count — do not multiply by stems_per_bunch.
+  // When unit === "Bunch", total = stems_per_bunch × units_per_box.
   const totalStems =
     currentVariant.unit === "Box"
       ? ((currentVariant as { total_stems?: number }).total_stems ?? null)
-      : currentVariant.stems_per_bunch && currentVariant.units_per_box
-        ? Math.round(currentVariant.stems_per_bunch * currentVariant.units_per_box)
-        : null;
+      : currentVariant.unit === "Stem" && currentVariant.units_per_box
+        ? currentVariant.units_per_box
+        : currentVariant.stems_per_bunch && currentVariant.units_per_box
+          ? Math.round(currentVariant.stems_per_bunch * currentVariant.units_per_box)
+          : null;
 
   const displayName =
     [product.variety, product.color].filter(Boolean).join(" ") || product.name;
@@ -642,6 +645,8 @@ export default function ProductDetailPage({
                       const vStems =
                         v.unit === "Box"
                           ? ((v as { total_stems?: number }).total_stems ?? null)
+                          : v.unit === "Stem" && v.units_per_box
+                          ? v.units_per_box
                           : v.stems_per_bunch && v.units_per_box
                           ? Math.round(v.stems_per_bunch * v.units_per_box)
                           : null;
@@ -1099,9 +1104,10 @@ export default function ProductDetailPage({
               </p>
               {currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
                 <p className="text-sm text-slate-500 mt-3">
-                  Packed {currentVariant.stems_per_bunch} stems per bunch · {currentVariant.units_per_box} {currentVariant.unit === "Bunch" ? "bunches" : "units"} per {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type || "box"}
-                  {currentVariant.unit !== "Box" && currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
-                    <> · <span className="font-semibold text-slate-700">{(currentVariant.stems_per_bunch * currentVariant.units_per_box).toLocaleString()} stems total</span></>
+                  {currentVariant.unit !== "Stem" && <>Packed {currentVariant.stems_per_bunch} stems per bunch · </>}
+                  {currentVariant.units_per_box} {currentVariant.unit === "Bunch" ? "bunches" : "stems"} per {BOX_TYPE_LABELS[currentVariant.box_type] || currentVariant.box_type || "box"}
+                  {currentVariant.unit === "Bunch" && currentVariant.stems_per_bunch > 0 && currentVariant.units_per_box > 0 && (
+                    <> · <span className="font-semibold text-slate-700">{Math.round(currentVariant.stems_per_bunch * currentVariant.units_per_box).toLocaleString()} stems total</span></>
                   )}
                 </p>
               )}
