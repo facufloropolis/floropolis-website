@@ -69,6 +69,7 @@ export default function QuotePage() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const formStartedRef = useRef(false);
   const [lastQuote, setLastQuote] = useState<{ contact_name: string; phone: string | null; items: QuoteItem[]; total: number } | null>(null);
+  const draftIdRef = useRef<string | null>(null);
   // EXP-060: Pre-fill form for logged-in users
   const { user, profile } = useAuth();
 
@@ -206,6 +207,23 @@ export default function QuotePage() {
     setPromoDescription(result.description || "");
   };
 
+  const saveDraft = async (email: string) => {
+    if (!email || !email.includes("@")) return;
+    try {
+      const res = await fetch("/api/save-quote-draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          cart_items: items.length > 0 ? items : null,
+          delivery_date: deliveryDates[0] || null,
+        }),
+      });
+      const data = await res.json();
+      if (data.draft_id) draftIdRef.current = data.draft_id;
+    } catch { /* silent — never block the user */ }
+  };
+
   const handleQuickAdd = (product: Product) => {
     const earliest = getEarliestDeliveryDate(product.tier);
     const deliveryDate = toISODate(earliest);
@@ -298,6 +316,13 @@ export default function QuotePage() {
         has_promo: !!promoCode,
       });
       clearCart();
+      if (draftIdRef.current) {
+        fetch("/api/save-quote-draft", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ draft_id: draftIdRef.current }),
+        }).catch(() => {});
+      }
       const quoteId = data.quote_id ? `?id=${data.quote_id}` : "";
       // Delay redirect 300ms so GTM can send the hit to GA4 before page unload
       setTimeout(() => { window.location.href = `/quote/confirmation${quoteId}`; }, 300);
@@ -710,6 +735,21 @@ export default function QuotePage() {
                     pushEvent(CTA_EVENTS.quote_form_started, { item_count: items.length });
                   }
                 }}>
+                <div>
+                  <label className="block text-slate-700 mb-1 text-xs font-medium">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                    placeholder="you@company.com"
+                    defaultValue={user?.email ?? savedContact?.email ?? ""}
+                    onBlur={(e) => saveDraft(e.target.value)}
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-slate-700 mb-1 text-xs font-medium">
@@ -737,34 +777,19 @@ export default function QuotePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-700 mb-1 text-xs font-medium">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
-                      placeholder="you@company.com"
-                      defaultValue={user?.email ?? savedContact?.email ?? ""}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-700 mb-1 text-xs font-medium">
-                      Phone *
-                    </label>
-                    <input
-                      name="phone"
-                      type="tel"
-                      required
-                      className="w-full rounded-lg border border-emerald-300 bg-emerald-50/40 px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                      placeholder="For WhatsApp or SMS confirmation"
-                      defaultValue={profile?.phone ?? savedContact?.phone ?? ""}
-                    />
-                    <p className="text-xs text-emerald-600 mt-1">We'll confirm your order via WhatsApp or SMS.</p>
-                  </div>
+                <div>
+                  <label className="block text-slate-700 mb-1 text-xs font-medium">
+                    Phone *
+                  </label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    required
+                    className="w-full rounded-lg border border-emerald-300 bg-emerald-50/40 px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    placeholder="For WhatsApp or SMS confirmation"
+                    defaultValue={profile?.phone ?? savedContact?.phone ?? ""}
+                  />
+                  <p className="text-xs text-emerald-600 mt-1">We'll confirm your order via WhatsApp or SMS.</p>
                 </div>
 
                 {/* EXP-036+082: Shipping address optional, collapsed by default — reduces visual complexity */}

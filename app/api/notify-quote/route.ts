@@ -3,7 +3,7 @@ import { appendQuoteToSheet } from "@/lib/google-sheets";
 
 const FACU_EMAIL = process.env.FACU_EMAIL || "facu@floropolis.com";
 const JJ_EMAIL = process.env.JJ_EMAIL || "jjp@floropolis.com";
-const WHATSAPP_NUMBER = "17864603229";
+const WHATSAPP_NUMBER = "16452405203";
 const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -285,7 +285,7 @@ async function sendCustomerConfirmation(payload: QuotePayload, quoteId: number |
              style="display:inline-block;background:#25D366;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;margin-right:8px">
             WhatsApp Us
           </a>
-          <a href="tel:+17864603229"
+          <a href="tel:+16452405203"
              style="display:inline-block;background:#3b82f6;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px">
             Call Us: (786) 460-3229
           </a>
@@ -294,7 +294,7 @@ async function sendCustomerConfirmation(payload: QuotePayload, quoteId: number |
       <div style="padding:16px 24px;background:#f8fafc;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px;text-align:center">
         <p style="margin:0;font-size:12px;color:#94a3b8">
           Floropolis — Farm-Direct Wholesale Flowers<br>
-          <a href="https://www.floropolis.com" style="color:#059669">floropolis.com</a> · <a href="tel:+17864603229" style="color:#059669">(786) 460-3229</a>
+          <a href="https://www.floropolis.com" style="color:#059669">floropolis.com</a> · <a href="tel:+16452405203" style="color:#059669">(786) 460-3229</a>
         </p>
       </div>
     </div>
