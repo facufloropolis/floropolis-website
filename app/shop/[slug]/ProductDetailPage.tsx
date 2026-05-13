@@ -160,6 +160,7 @@ function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDat
       stem_length: b.length || undefined,
     });
     pushEvent(CTA_EVENTS.add_to_quote, {
+      item_id: b.slug,
       product_name: b.name,
       product_category: b.category,
       product_price: price,
@@ -326,6 +327,7 @@ export default function ProductDetailPage({
   // Track product view on mount
   useEffect(() => {
     pushEvent(CTA_EVENTS.view_product, {
+      item_id: product.slug,
       product_name: [product.variety, product.color].filter(Boolean).join(" "),
       product_category: product.category,
       product_tier: product.tier,
@@ -421,6 +423,7 @@ export default function ProductDetailPage({
     };
     addItem(quoteItem);
     pushEvent(CTA_EVENTS.add_to_quote, {
+      item_id: currentVariant.slug,
       product_name: displayName,
       product_category: currentVariant.category,
       product_price: currentVariant.price ?? 0,

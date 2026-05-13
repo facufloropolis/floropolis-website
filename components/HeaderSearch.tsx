@@ -15,6 +15,7 @@ import {
   type ProductCategory,
 } from "@/lib/shop-search";
 import type { ShopProduct } from "@/lib/shop-products";
+import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 
 const MAX_PRODUCT_RESULTS = 8;
 const MAX_CATEGORY_RESULTS = 4;
@@ -52,6 +53,18 @@ export default function HeaderSearch() {
     setRecent(getRecentSearches());
   }, [showDropdown]);
 
+  // Fire view_search_results 500ms after query stabilizes — captures term + whether results exist
+  useEffect(() => {
+    if (!query.trim()) return;
+    const timer = setTimeout(() => {
+      pushEvent(CTA_EVENTS.view_search_results, {
+        search_term: query.trim(),
+        results_count: productResults.length + categoryResults.length,
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [query, productResults.length, categoryResults.length]);
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -63,15 +76,21 @@ export default function HeaderSearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (type: "product" | "category" | "popular" | "recent", value: string, href: string) => {
+  const handleSelect = (type: "product" | "category" | "popular" | "recent", value: string, href: string, slug?: string) => {
     addRecentSearch(value);
+    if (type === "product" && query.trim()) {
+      pushEvent(CTA_EVENTS.search_result_click, {
+        search_term: query.trim(),
+        item_id: slug ?? href.replace("/shop/", ""),
+        item_name: value,
+      });
+    }
     setQuery("");
     setIsOpen(false);
     setIsFocused(false);
     if (href.startsWith("http")) {
       window.location.href = href;
     }
-    // If same page Link, navigation happens via Link
   };
 
   const showRecentOrPopular = showDropdown && !query.trim();
@@ -245,7 +264,7 @@ export default function HeaderSearch() {
                       <ProductRow
                         key={p.id}
                         product={p}
-                        onSelect={() => handleSelect("product", p.name, `/shop/${p.id}`)}
+                        onSelect={() => handleSelect("product", p.name, `/shop/${p.id}`, p.id)}
                       />
                     ))}
                   </ul>
