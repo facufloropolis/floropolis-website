@@ -2,10 +2,11 @@
  * Delivery date logic for Floropolis.
  *
  * Delivery days: Monday, Tuesday, Thursday, Friday
- * Order cutoff: 12pm PST
+ * Order cutoff: 8pm EST (America/New_York)
+ * Lead time: 5 calendar days
  *
  * Inventory layers:
- *   Layer 1 (T1) + Layer 2 (T2) = available 5 business days from now
+ *   Layer 1 (T1) + Layer 2 (T2) = available 5 calendar days from now, next valid delivery day
  *   Layer 3 (T3/T4) = available 14 calendar days from now (10 days to source)
  *
  * The slider on /shop shows dates, not tier labels.
@@ -107,4 +108,56 @@ export function getSliderDeliveryDates(): Date[] {
   const min = getMinSliderDate();
   const max = getMaxSliderDate();
   return getDeliveryDates(min, 8).filter((d) => d <= max);
+}
+
+/** Parse current wall-clock time in America/New_York as a plain local Date. */
+function getNowEST(): Date {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric", month: "numeric", day: "numeric",
+    hour: "numeric", minute: "numeric", second: "numeric",
+    hour12: false,
+  }).formatToParts(new Date());
+  const g = (t: string) => parseInt(parts.find((p) => p.type === t)!.value);
+  return new Date(g("year"), g("month") - 1, g("day"), g("hour") % 24, g("minute"), g("second"));
+}
+
+/**
+ * Returns the next { orderBy, receiveBy } window.
+ * orderBy = cutoff datetime in EST (delivery - 5 days at 8pm EST).
+ * receiveBy = the delivery date (midnight = start of day).
+ * Returns null only if no window found in 3 weeks (shouldn't happen).
+ */
+export function getNextOrderWindow(): { orderBy: Date; receiveBy: Date } | null {
+  const now = getNowEST();
+  for (let i = 0; i < 21; i++) {
+    const delivery = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+    if (!DELIVERY_DAYS.includes(delivery.getDay())) continue;
+    const cutoff = new Date(delivery.getFullYear(), delivery.getMonth(), delivery.getDate() - 5, 20, 0, 0);
+    if (now <= cutoff) return { orderBy: cutoff, receiveBy: delivery };
+  }
+  return null;
+}
+
+const SHORT_DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const SHORT_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/**
+ * Formats a delivery window as urgency copy.
+ * e.g. "Order by tonight 8pm EST · Arrives Mon May 19"
+ *      "Order by Wed May 14 by 8pm EST · Arrives Mon May 19"
+ */
+export function formatOrderWindow(w: { orderBy: Date; receiveBy: Date }): string {
+  const now = getNowEST();
+  const ob = w.orderBy;
+  const isToday =
+    ob.getFullYear() === now.getFullYear() &&
+    ob.getMonth() === now.getMonth() &&
+    ob.getDate() === now.getDate();
+  const orderByLabel = isToday
+    ? "tonight by 8pm EST"
+    : `${SHORT_DAY[ob.getDay()]} ${SHORT_MON[ob.getMonth()]} ${ob.getDate()} by 8pm EST`;
+  const rb = w.receiveBy;
+  const receiveByLabel = `${SHORT_DAY[rb.getDay()]} ${SHORT_MON[rb.getMonth()]} ${rb.getDate()}`;
+  return `Order by ${orderByLabel} · Arrives ${receiveByLabel}`;
 }

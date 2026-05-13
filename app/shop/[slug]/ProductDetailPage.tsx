@@ -19,6 +19,8 @@ import {
   getDeliveryDates,
   formatDeliveryDate,
   toISODate,
+  getNextOrderWindow,
+  formatOrderWindow,
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
 import { getCareInstructions } from "@/lib/care-instructions";
@@ -435,6 +437,9 @@ export default function ProductDetailPage({
     setJustAdded(true);
   };
 
+  const [orderWindow, setOrderWindow] = useState<{ orderBy: Date; receiveBy: Date } | null>(null);
+  useEffect(() => { setOrderWindow(getNextOrderWindow()); }, []);
+
   // Sticky mobile CTA — show when main Add to Quote button is off-screen (EXP-024)
   const addToQuoteRef = useRef<HTMLButtonElement>(null);
   const [showStickyBtn, setShowStickyBtn] = useState(false);
@@ -784,13 +789,15 @@ export default function ProductDetailPage({
               />
             </div>
 
-            {/* EXP-079: Order urgency — shows cutoff + no minimum to drive immediate action */}
+            {/* EXP-079: Order urgency — dynamic cutoff (8pm EST) + next delivery date */}
             {isPriceAvailable && bestTier !== "T3" && (
               <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                  Order by noon PST for fastest delivery
-                </span>
+                {orderWindow && (
+                  <span className="flex items-center gap-1 font-medium text-slate-700">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block flex-shrink-0" />
+                    {formatOrderWindow(orderWindow)}
+                  </span>
+                )}
                 <span className="flex items-center gap-1">
                   <span className="text-emerald-600 font-semibold">✓</span> No minimum order
                 </span>
