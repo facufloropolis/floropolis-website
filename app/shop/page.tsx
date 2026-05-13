@@ -515,8 +515,7 @@ function ShopPageContent() {
               {showFast && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
             </span>
             <span>
-              <span className="block font-semibold">In stock · ships in ~4 days</span>
-              <span className="text-slate-400 font-normal">Layer 1 &amp; 2 — ready inventory</span>
+              <span className="block font-semibold">Ships in 4–5 days</span>
             </span>
           </button>
           <button
@@ -535,8 +534,7 @@ function ShopPageContent() {
               {showPreorder && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
             </span>
             <span>
-              <span className="block font-semibold">Pre-order · ships in ~14 days</span>
-              <span className="text-slate-400 font-normal">Layer 3 — full catalog</span>
+              <span className="block font-semibold">Ships in 5+ days</span>
             </span>
           </button>
         </div>
@@ -696,7 +694,7 @@ function ShopPageContent() {
 
         {/* Popular Right Now — curated bestsellers. EXP-026: hidden on small mobile (products below fold) */}
         {popularProducts.length > 0 && !searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
-          <div className="hidden sm:block mb-8">
+          <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-900">Popular Right Now</h2>
               <button
@@ -757,51 +755,6 @@ function ShopPageContent() {
           </div>
         )}
 
-        {/* EXP-074: MDY Phase 1 — Mother's Day banner on /shop. Remove after May 10. */}
-        {!searchQuery && categoryFilter.length === 0 && colorGroupFilter.length === 0 && (
-          <div className="mb-8 rounded-2xl overflow-hidden border border-rose-200 bg-gradient-to-r from-rose-50 to-pink-50">
-            <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-rose-500 bg-rose-100 px-2 py-0.5 rounded-full">Mother&apos;s Day</span>
-                  <span className="text-xs text-rose-400 font-medium">Pre-order cutoff: May 4</span>
-                </div>
-                <h2 className="text-lg font-bold text-slate-900 leading-tight">
-                  Farm-direct flowers for Mother&apos;s Day — guaranteed May 10 delivery
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">Farm-direct from Ecuador · Delivery included in price</p>
-              </div>
-              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0 snap-x">
-                {[
-                  { name: "Ranunculus Pink Amandine", price: 1.23, slug: "pink-amandine-hot-pink" },
-                  { name: "Anemone FullStar Red", price: 1.23, slug: "fullstar-red-35cm" },
-                  { name: "Delphinium Sky Waltz", price: 1.17, slug: "delphinium-light-blue-sky-waltz-60cm" },
-                ].map((p) => (
-                  <Link
-                    key={p.slug}
-                    href={`/shop/${p.slug}`}
-                    className="flex-none snap-start bg-white rounded-xl border border-rose-100 px-3 py-2 hover:border-rose-300 hover:shadow-sm transition-all text-center min-w-[130px]"
-                    onClick={() => pushEvent("mdy_featured_click", { product: p.name, source: "mdy_banner" })}
-                  >
-                    <p className="text-xs font-semibold text-slate-800 leading-tight line-clamp-2">{p.name}</p>
-                    <p className="text-sm font-bold text-emerald-600 mt-1">${p.price.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/stem</span></p>
-                    <p className="text-[10px] text-rose-500 mt-0.5">Order now →</p>
-                  </Link>
-                ))}
-              </div>
-              <div className="px-5 pb-3 pt-0">
-                {/* EXP-106: MDY banner → dedicated page link — drives traffic to higher-converting MDY page */}
-                <Link
-                  href="/mothers-day-2026"
-                  onClick={() => pushEvent("mdy_featured_click", { product: "banner_view_all", source: "mdy_banner" })}
-                  className="text-xs font-semibold text-rose-500 hover:text-rose-700 hover:underline"
-                >
-                  View Mother&apos;s Day collection — order by May 4 →
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div className="flex gap-8">
           {/* Sidebar: desktop */}
@@ -1219,13 +1172,13 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
           )}
           {/* EXP-033: Delivery date */}
           <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
-            {group.tier === "T1" || group.tier === "T2" ? (
+            {group.tier === "PLATINUM" || group.tier === "T2" ? (
               <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                 In Stock
               </span>
             ) : (
-              <span className="text-amber-600 font-semibold">Pre-Order</span>
+              <span className="text-slate-600 font-semibold">Pre-Order</span>
             )}
             <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
             {group.variantCount > 1 && (

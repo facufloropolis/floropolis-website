@@ -35,13 +35,13 @@ export default function TopBanner() {
       <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 text-white py-1.5 sm:py-2.5 text-center text-xs sm:text-sm font-semibold tracking-wide relative overflow-hidden">
         <div className="relative z-10 flex items-center justify-center gap-x-2 px-3">
           <span className="sm:hidden truncate">
-            🌸 Free Sample Box — Try Farm-Direct Flowers{" "}
+            Free Sample Box — Try Farm-Direct Flowers{" "}
             <Link href="/sample-box" className="underline font-bold" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "top_banner" })}>
               Get Yours →
             </Link>
           </span>
           <span className="hidden sm:flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <span>🌸 Free Sample Box — Try our farm-direct flowers, no obligation</span>
+            <span>Free Sample Box — Try our farm-direct flowers, no obligation</span>
             <span className="text-white/80">|</span>
             <Link href="/sample-box" className="underline hover:no-underline font-bold" onClick={() => pushEvent(CTA_EVENTS.sample_box_click, { cta_location: "top_banner" })}>
               Request Your Free Box →

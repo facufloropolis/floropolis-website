@@ -125,7 +125,7 @@ export default function Home() {
               { img: "/images/shop/novelties/anana-torch-red.jpg", label: "Tropicals", sub: "Birds of paradise, heliconias", href: "/shop/tropicals" },
               { img: "/images/shop/ranunculus/amandine-pink.png", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
               { img: "/images/shop/shop-all-greens.jpg", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
-              { img: "/images/shop/anemone/anemones-pink.jpg", label: "Mother's Day →", sub: "Order by May 4", href: "/mothers-day-2026" },
+              { img: "/images/shop/anemone/anemones-pink.jpg", label: "Spring Collection", sub: "Ranunculus, anemone & more", href: "/shop/spring-collection" },
               { img: "/images/shop/Summer-Flowers-Valentines.png", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
             ].map(({ img, label, sub, href }) => (
               <Link
@@ -217,7 +217,6 @@ export default function Home() {
       <section className="bg-emerald-900 py-4 px-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6">
           <div className="flex items-center gap-3 text-center sm:text-left">
-            <span className="text-2xl hidden sm:block">📦</span>
             <div>
               <p className="text-white font-semibold text-sm sm:text-base">Not ready to commit? Try a free sample box first.</p>
               <p className="text-emerald-200 text-xs sm:text-sm">No credit card · Free shipping · Real farm-direct quality — judge for yourself</p>
@@ -240,26 +239,34 @@ export default function Home() {
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">Shop by Color</h2>
             <p className="text-base sm:text-xl text-slate-600">Find the perfect flowers for your next event</p>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 max-w-3xl mx-auto">
+          <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-4xl mx-auto">
             {[
-              { name: "Red", color: "bg-red-500", href: "/shop?color=Red" },
-              { name: "Pink", color: "bg-pink-400", href: "/shop?color=Pink" },
-              { name: "White", color: "bg-white border-2 border-slate-200", href: "/shop?color=White", textDark: true },
-              { name: "Yellow", color: "bg-yellow-400", href: "/shop?color=Yellow" },
-              { name: "Orange", color: "bg-orange-400", href: "/shop?color=Orange" },
-              { name: "Purple", color: "bg-purple-500", href: "/shop?color=Purple" },
-              { name: "Blue", color: "bg-blue-500", href: "/shop?color=Blue" },
-              { name: "Green", color: "bg-emerald-500", href: "/shop?color=Green" },
-              { name: "Mixed", color: "bg-gradient-to-br from-pink-400 via-yellow-300 to-purple-400", href: "/shop?color=Mixed" },
-              { name: "All Colors", color: "bg-slate-800", href: "/shop" },
-            ].map(({ name, color, href, textDark }) => (
+              { name: "Red", img: "/images/shop/Ranunculus_Red_FINAL.png", href: "/shop?color=Red" },
+              { name: "Pink", img: "/images/shop/roses/lola-hot-pink.png", href: "/shop?color=Pink" },
+              { name: "White", img: "/images/shop/Anemone_3.png", href: "/shop?color=White" },
+              { name: "Yellow", img: "/images/shop/Summer-Flowers-Valentines.png", href: "/shop?color=Yellow" },
+              { name: "Orange", img: "/images/shop/novelties/anana-torch-red.jpg", href: "/shop?color=Orange" },
+              { name: "Purple", img: "/images/shop/anemone/anemones-pink.jpg", href: "/shop?color=Purple" },
+              { name: "Blue", img: "/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png", href: "/shop?color=Blue" },
+              { name: "Green", img: "/images/shop/shop-all-greens.jpg", href: "/shop?color=Green" },
+              { name: "Mixed", img: "/images/shop/ranunculus/amandine-pink.png", href: "/shop?color=Mixed" },
+              { name: "All", img: "/images/shop/Summer-Flowers-Valentines.png", href: "/shop" },
+            ].map(({ name, img, href }) => (
               <Link
                 key={name}
                 href={href}
-                className="group flex flex-col items-center gap-2"
+                onClick={() => pushEvent("homepage_color_click", { color: name })}
+                className="group relative rounded-xl overflow-hidden aspect-square hover:shadow-lg transition-all"
               >
-                <div className={`w-14 h-14 sm:w-18 sm:h-18 rounded-full ${color} shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all`} />
-                <span className={`text-xs sm:text-sm font-medium ${textDark ? "text-slate-700" : "text-slate-700"} group-hover:text-emerald-600 transition-colors`}>
+                <Image
+                  src={img}
+                  alt={`${name} wholesale flowers`}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 640px) 20vw, 12vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+                <span className="absolute bottom-1.5 inset-x-0 text-center text-white text-[10px] sm:text-xs font-semibold drop-shadow">
                   {name}
                 </span>
               </Link>
@@ -322,42 +329,42 @@ export default function Home() {
             <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
+                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
             </div>
@@ -548,18 +555,16 @@ export default function Home() {
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
             Ready to Try Farm-Direct?
           </h2>
-          {/* EXP-115: MDY seasonal primary CTA on homepage final section — April urgency */}
-          <p className="text-emerald-200 mb-3 text-sm">💐 Mother&apos;s Day pre-order cutoff: May 4 — guaranteed May 10 delivery</p>
           <p className="text-base sm:text-xl text-emerald-100 mb-4 sm:mb-6 max-w-2xl mx-auto">
             Get a free sample box and see the quality difference for yourself. No obligation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/mothers-day-2026"
-              className="bg-white text-rose-600 px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-rose-50 hover:scale-105 transition-all shadow-lg"
-              onClick={() => pushEvent("mdy_banner_click", { cta_location: "homepage_final" })}
+              href="/shop"
+              className="bg-white text-emerald-700 px-6 py-3.5 sm:px-10 sm:py-5 rounded-full text-base sm:text-lg font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg"
+              onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "homepage_final" })}
             >
-              Shop Mother&apos;s Day →
+              Browse Catalog
             </Link>
             <Link
               href="/sample-box"

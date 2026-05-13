@@ -100,7 +100,7 @@ export function getFeaturedProducts(limit = 4): Product[] {
         (p.is_best_seller ? 100 : 0) +
         (p.has_photo ? 50 : 0) +
         (p.is_on_deal ? 20 : 0) +
-        (p.tier === "T1" ? 15 : p.tier === "T2" ? 10 : 0),
+        (p.tier === "PLATINUM" ? 20 : p.tier === "T2" ? 10 : 0),
     }))
     .sort((a, b) => b.score - a.score);
 

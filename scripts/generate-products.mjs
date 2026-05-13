@@ -157,9 +157,24 @@ function toProduct(row) {
     box_type,
     stock: Number(row.stock) || 0,
     vendor: row.vendor || "",
-    is_on_deal: row.is_on_deal || false,
+    is_on_deal: (() => {
+      if (!row.is_on_deal) return false;
+      const regularPrice = Number(row.price) || 0;
+      const dealPrice = Number(row.deal_price) || 0;
+      if (dealPrice > 0 && regularPrice > 0 && dealPrice < regularPrice * 0.60) {
+        console.warn(`⚠️  DEAL BLOCKED — potential loss: ${row.name} deal_price=$${dealPrice.toFixed(2)} vs price=$${regularPrice.toFixed(2)} (>${Math.round((1 - dealPrice/regularPrice)*100)}% off). Not publishing deal. Facu must review.`);
+        return false;
+      }
+      return true;
+    })(),
     deal_label: row.deal_label || null,
-    deal_price: row.deal_price ? Number(row.deal_price) : null,
+    deal_price: (() => {
+      if (!row.is_on_deal || !row.deal_price) return null;
+      const regularPrice = Number(row.price) || 0;
+      const dealPrice = Number(row.deal_price);
+      if (regularPrice > 0 && dealPrice < regularPrice * 0.60) return null;
+      return dealPrice;
+    })(),
     deal_expiry: row.deal_expiry || null,
     is_best_seller: row.is_best_seller || false,
     is_featured: row.is_featured || false,
