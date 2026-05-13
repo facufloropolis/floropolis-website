@@ -38,7 +38,7 @@ async function fetchAll() {
 
   while (true) {
     const params = new URLSearchParams({
-      tier: "in.(T1,T2,T3)",
+      tier: "in.(T2,T3,PLATINUM)",
       has_open_price_alert: "eq.false",
       order: "tier,category,variety,length",
       offset: String(offset),
@@ -130,7 +130,7 @@ function clampAvailableFrom(arrivalDateISO, tier) {
   // Work in UTC to avoid TZ drift between generator + validator.
   const nowUTC = new Date();
   const todayUTC = new Date(Date.UTC(nowUTC.getUTCFullYear(), nowUTC.getUTCMonth(), nowUTC.getUTCDate()));
-  const tierMin = tier === "T3" ? 14 : 5;
+  const tierMin = 5; // T2, T3, PLATINUM all available from today+5
   const floor = new Date(todayUTC.getTime() + (tierMin + 1) * 86400000);
   const db = arrivalDateISO ? new Date(arrivalDateISO) : null;
   const effective = !db || isNaN(db.getTime()) || db < floor ? floor : db;
@@ -185,6 +185,16 @@ async function main() {
   if (skipped.length > 0) {
     console.warn(`⚠️  Filtered ${skipped.length} products with $0 price or unknown vendor (hidden from site until fixed):`);
     for (const r of skipped) console.log(`  🚫 [${r.tier}] "${r.name}" (ID: ${r.id}, price: ${r.price}, vendor: ${r.vendor})`);
+  }
+  // Warn on roses without stem_length — these hurt conversion but we don't block other categories
+  const ROSE_CATEGORIES = ['Rose'];
+  const rosesNoLength = rows.filter(r => r.price && Number(r.price) > 0 && r.vendor && r.vendor !== 'Unknown'
+    && ROSE_CATEGORIES.includes(r.category)
+    && (!r.length || r.length.trim() === '')
+    && !extractLengthFromName(r.name));
+  if (rosesNoLength.length > 0) {
+    console.warn(`⚠️  ${rosesNoLength.length} Rose products have no stem_length (published but showing without size — fix in floropolis_inventory):`);
+    for (const r of rosesNoLength) console.log(`  ⚠️  [${r.tier}] "${r.name}" (ID: ${r.id})`);
   }
   const products = rows.filter(r => r.price && Number(r.price) > 0 && r.vendor && r.vendor !== 'Unknown').map(toProduct);
 

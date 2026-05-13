@@ -134,11 +134,13 @@ export default function Home() {
                 onClick={() => pushEvent("homepage_category_click", { category: label })}
                 className="group flex flex-col items-center text-center gap-1.5 bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-emerald-400 hover:shadow-md transition-all"
               >
-                <div className="w-full h-24 overflow-hidden">
-                  <img
+                <div className="w-full h-24 relative overflow-hidden">
+                  <Image
                     src={img}
                     alt={label}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 50vw, 33vw"
                   />
                 </div>
                 <div className="px-3 pb-3 pt-1">
@@ -168,11 +170,13 @@ export default function Home() {
                   className="bg-white p-3 md:p-4 rounded-2xl shadow-lg text-center hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer group"
                 >
                   <div className="aspect-square relative overflow-hidden bg-white flex items-center justify-center p-1 md:p-2 mb-2">
-                    <img
+                    <Image
                       src={img}
                       alt={displayName}
-                      className="object-contain w-full h-full group-hover:scale-105 transition-transform"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/Floropolis-logo-only.png"; }}
+                      fill
+                      priority
+                      className="object-contain group-hover:scale-105 transition-transform"
+                      sizes="(max-width: 768px) 50vw, 25vw"
                     />
                     {p.is_best_seller && (
                       <span className="absolute top-1 left-1 bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">Bestseller</span>
@@ -318,82 +322,42 @@ export default function Home() {
             <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.44%20(2).jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202026-01-30%20at%2010.28.32.jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.44.jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.45.jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202026-02-01%20at%2010.12.56%20(1).jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img
-                    src="/images/Testimonials/WhatsApp%20Image%202025-11-07%20at%2017.08.07.jpeg"
-                    alt="Customer photo"
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+                  <Image src="" alt="Customer photo" fill loading="lazy" className="object-cover" sizes="256px" />
                 </div>
               </div>
             </div>

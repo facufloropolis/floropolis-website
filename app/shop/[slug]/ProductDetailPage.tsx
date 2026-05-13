@@ -522,7 +522,7 @@ export default function ProductDetailPage({
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-contain"
-                    unoptimized
+                    priority
                   />
                   {hasDeal &&
                     (product.deal_label || currentVariant.deal_label) && (
@@ -550,7 +550,6 @@ export default function ProductDetailPage({
                           fill
                           className="object-contain"
                           sizes="64px"
-                          unoptimized
                         />
                       </button>
                     ))}
@@ -1019,7 +1018,6 @@ export default function ProductDetailPage({
                           fill
                           className="object-contain group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-                          unoptimized
                         />
                         {hasDealRel && p.deal_label && (
                           <span className="absolute top-2 left-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 shadow">
