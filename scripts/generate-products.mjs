@@ -39,6 +39,7 @@ async function fetchAll() {
   while (true) {
     const params = new URLSearchParams({
       tier: "in.(T1,T2,T3)",
+      has_open_price_alert: "eq.false",
       order: "tier,category,variety,length",
       offset: String(offset),
       limit: String(limit),
