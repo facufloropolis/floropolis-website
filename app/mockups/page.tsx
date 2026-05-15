@@ -1,5 +1,5 @@
-// Mockup index — Floropolis Checkout System v2
-// v3.1 | 2026-05-14 | Job_PM [V8 SHADOW]
+// Mockup index -- Floropolis Mockups
+// v3.2 | 2026-05-15 | Job_PM [V8 SHADOW]
 
 import Link from "next/link";
 
@@ -111,14 +111,86 @@ const groups: Group[] = [
   {
     label: "Vendor / Farm",
     icon: "🌹",
-    description: "Mobile-first portal for farms — pickup confirmation, per-day box manifest",
+    description: "Mobile-first portal for farms -- pickup confirmation, per-day box manifest",
     screens: [
       {
         num: "V1",
-        title: "Vendor Portal — Pickup Confirmation",
+        title: "Vendor Portal -- Pickup Confirmation",
         url: "/mockups/vendor-portal",
         description: "14-day multi-day view. Per-day expand/collapse. Confirm per day or via WhatsApp. FedEx depot clarification banner. Auto-confirmation placeholder (driver pickup confirmed via WhatsApp). Real WhatsApp CTA.",
         color: "teal",
+      },
+    ],
+  },
+  {
+    label: "Catalog Control Plane (v0.1 -- 2026-05-15)",
+    icon: "📦",
+    description: "Admin-only catalog command center. Multi-vendor, multi-country, multi-ingestion. 8 screens.",
+    screens: [
+      {
+        num: "X1",
+        title: "Catalog -- Unified List",
+        url: "/mockups/admin-catalog",
+        description: "30 SKUs across 5 vendors / 3 countries. Source badges (K2K live / T2 / T3), GPM bands, filters, inline 'awaiting Facu' indicators, today vs target toggle.",
+        color: "violet",
+        badge: "v0.1",
+      },
+      {
+        num: "X2",
+        title: "Catalog -- SKU Detail",
+        url: "/mockups/admin-catalog/sku_eco_freedom_60",
+        description: "Sources side-by-side, full cost breakdown with shipping transparency, override audit, history + verifier health (Pita owned).",
+        color: "violet",
+        variants: [
+          { label: "Ecoroses Freedom Red", href: "/mockups/admin-catalog/sku_eco_freedom_60" },
+          { label: "MF Anemone (awaiting cost)", href: "/mockups/admin-catalog/sku_mf_anemone_fuchsia" },
+          { label: "AndesColor (WhatsApp)", href: "/mockups/admin-catalog/sku_and_hydrangea_blue" },
+          { label: "DutchFlora (email NL)", href: "/mockups/admin-catalog/sku_dut_peony_sarah" },
+        ],
+      },
+      {
+        num: "X3",
+        title: "Catalog -- Config (Inputs)",
+        url: "/mockups/admin-catalog-config",
+        description: "Tabs: Box types per vendor, Shipping config per country/port, GPM targets. Propose -> Facu approves -> cascade preview.",
+        color: "violet",
+      },
+      {
+        num: "X4",
+        title: "Catalog -- Ingest staging",
+        url: "/mockups/admin-catalog-ingest",
+        description: "Vendor Ingestion Adapter output: K2K API, email, WhatsApp, CSV. Auto-applied >= 0.85 conf, review queue below.",
+        color: "violet",
+      },
+      {
+        num: "X5",
+        title: "Catalog -- SKU mapping queue",
+        url: "/mockups/admin-catalog-mapping",
+        description: "Low-confidence vendor name -> quality_family matches awaiting human review. Accept / remap / new family.",
+        color: "violet",
+      },
+      {
+        num: "X6",
+        title: "Catalog -- Discount rules",
+        url: "/mockups/admin-catalog-discounts",
+        description: "Discounts by category / vendor / SKU / client. Inline warnings (low margin, below GPM floor). Facu approves all.",
+        color: "violet",
+      },
+      {
+        num: "X7",
+        title: "Catalog -- Approval queue",
+        url: "/mockups/admin-catalog-approval-queue",
+        description: "Facu's destination. All proposals from across the catalog plane. Cascade impact + warnings + approve/reject inline.",
+        color: "violet",
+        badge: "Facu inbox",
+      },
+      {
+        num: "X8",
+        title: "Catalog -- Proposals (meta)",
+        url: "/mockups/admin-catalog-proposals",
+        description: "Tab A: 15 specializations Job_PM needs (F/B/I) with 6 full specs for cutover blockers. Tab B: agents / contracts / tables / flows / verifiers Job has already specced.",
+        color: "violet",
+        badge: "CPO surface",
       },
     ],
   },
@@ -136,6 +208,7 @@ const groupHeaderColors: Record<string, string> = {
   "Customer": "bg-emerald-600",
   "Admin": "bg-violet-600",
   "Vendor / Farm": "bg-teal-600",
+  "Catalog Control Plane (v0.1 -- 2026-05-15)": "bg-violet-700",
 };
 
 export default function MockupIndex() {
@@ -149,14 +222,15 @@ export default function MockupIndex() {
               <span className="text-white text-lg font-bold">F</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Floropolis Checkout System v2</h1>
-              <p className="text-slate-500 text-sm">9 screens · All hardcoded mockups — safe to open anywhere</p>
+              <h1 className="text-2xl font-bold text-slate-900">Floropolis Mockups</h1>
+              <p className="text-slate-500 text-sm">17 screens . All hardcoded mockups -- safe to open anywhere</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
             <span className="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium">4 Customer screens</span>
             <span className="text-xs bg-violet-100 text-violet-800 px-3 py-1 rounded-full font-medium">4 Admin screens</span>
             <span className="text-xs bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">1 Vendor screen</span>
+            <span className="text-xs bg-violet-100 text-violet-800 px-3 py-1 rounded-full font-medium">8 Catalog Control Plane</span>
             <span className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Next.js 15 · Tailwind · TypeScript</span>
           </div>
         </div>
