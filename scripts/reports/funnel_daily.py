@@ -21,12 +21,12 @@ Renders HTML email + sends via SMTP if creds set, otherwise prints to stdout.
 Env vars:
   SUPABASE_URL           required
   SUPABASE_SERVICE_KEY   required
-  SMTP_HOST              optional (default: smtp.gmail.com)
-  SMTP_PORT              optional (default: 587)
-  SMTP_USER              optional -- if missing, skip email send
-  SMTP_PASS              optional -- if missing, skip email send
+  BREVO_API_KEY          optional -- if missing, skip email send (prints to stdout instead)
   REPORT_TO              optional (default: faculavino@gmail.com)
-  REPORT_FROM            optional (default: same as SMTP_USER)
+  REPORT_FROM            optional (default: facu@floropolis.com)
+  REPORT_FROM_NAME       optional (default: "Floropolis BI")
+
+Send path: Brevo transactional REST API (https://api.brevo.com/v3/smtp/email).
 """
 
 from __future__ import annotations
@@ -34,11 +34,8 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
-import smtplib
-import ssl
 import sys
 import urllib.request
-from email.message import EmailMessage
 
 
 # ============================================================================
@@ -286,29 +283,35 @@ Cron: GitHub Actions daily 13:00 UTC (06:00 PDT) . Job_PM-owned per Nahua P2.3 V
 
 
 def send_email(html: str, subject: str) -> bool:
-    """Send via SMTP if creds set, else return False."""
-    user = os.environ.get("SMTP_USER", "").strip()
-    password = os.environ.get("SMTP_PASS", "").strip()
-    if not user or not password:
+    """Send via Brevo transactional REST API. Returns False if BREVO_API_KEY missing."""
+    api_key = os.environ.get("BREVO_API_KEY", "").strip()
+    if not api_key:
         return False
 
-    host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    port = int(os.environ.get("SMTP_PORT", "587"))
     to = os.environ.get("REPORT_TO", "faculavino@gmail.com")
-    sender = os.environ.get("REPORT_FROM", user)
+    sender_email = os.environ.get("REPORT_FROM", "facu@floropolis.com")
+    sender_name = os.environ.get("REPORT_FROM_NAME", "Floropolis BI")
 
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = sender
-    msg["To"] = to
-    msg.set_content("Your funnel report is in HTML. View in a modern client.")
-    msg.add_alternative(html, subtype="html")
+    payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": to}],
+        "subject": subject,
+        "htmlContent": html,
+        "textContent": "Your funnel report is in HTML. View in a modern email client.",
+    }
 
-    ctx = ssl.create_default_context()
-    with smtplib.SMTP(host, port, timeout=30) as smtp:
-        smtp.starttls(context=ctx)
-        smtp.login(user, password)
-        smtp.send_message(msg)
+    req = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        headers={
+            "accept": "application/json",
+            "api-key": api_key,
+            "content-type": "application/json",
+        },
+        data=json.dumps(payload).encode("utf-8"),
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        resp.read()
     return True
 
 
@@ -349,9 +352,9 @@ def main() -> int:
     )
 
     if send_email(html, subject):
-        print(f"\nEMAIL SENT: {os.environ.get('REPORT_TO','faculavino@gmail.com')}")
+        print(f"\nEMAIL SENT via Brevo to: {os.environ.get('REPORT_TO','faculavino@gmail.com')}")
     else:
-        print("\nEMAIL SKIPPED: SMTP_USER + SMTP_PASS not set. Set repo secrets to enable.")
+        print("\nEMAIL SKIPPED: BREVO_API_KEY not set. Set repo secret to enable.")
 
     return 0
 

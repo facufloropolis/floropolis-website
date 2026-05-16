@@ -5,12 +5,12 @@
 # If SMTP secrets aren't set, prints to workflow log only (no email).
 #
 # Required secrets (in addition to D0's SUPABASE_URL + SUPABASE_SERVICE_KEY):
-#   SMTP_USER   -- Gmail account (e.g. facu@floropolis.com)
-#   SMTP_PASS   -- Gmail App Password (https://myaccount.google.com/apppasswords)
+#   BREVO_API_KEY -- pulled from existing Vercel env (Facu has had Brevo for marketing 67d+)
 #
 # Optional secrets:
-#   REPORT_TO   -- recipient (default: faculavino@gmail.com)
-#   REPORT_FROM -- sender display (default: SMTP_USER)
+#   REPORT_TO        -- recipient (default: faculavino@gmail.com)
+#   REPORT_FROM      -- sender email (default: facu@floropolis.com -- must be verified in Brevo)
+#   REPORT_FROM_NAME -- sender display name (default: "Floropolis BI")
 
 name: Funnel daily
 
@@ -35,10 +35,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           REPORT_TO: ${{ secrets.REPORT_TO }}
           REPORT_FROM: ${{ secrets.REPORT_FROM }}
+          REPORT_FROM_NAME: ${{ secrets.REPORT_FROM_NAME }}
         run: python scripts/reports/funnel_daily.py
