@@ -1,0 +1,54 @@
+# D0 -- experiment auto-measure cron
+# v1 | 2026-05-16 | Job_PM [V8 SHADOW]
+#
+# Per Nahua framework v2 -- Phase 2 prep (AUTORIZO from Facu 2026-05-16).
+# Job is R+A. Pita measures (verify_experiment_auto_measure). Metric = unmeasured
+# experiments age > 14 sessions count. Loop = age breach -> auto-kill recommendation.
+#
+# Required repo secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_URL              e.g. https://swhglnjyuorkycpgkmec.supabase.co
+#   SUPABASE_SERVICE_KEY      service role key (NOT anon)
+#
+# Manual test: gh workflow run experiment_auto_measure.yml
+# or via GitHub UI -> Actions -> "D0 experiment auto-measure" -> Run workflow
+
+name: D0 experiment auto-measure
+
+on:
+  schedule:
+    # Daily at 13:00 UTC = 06:00 PDT (Job session-start window)
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run without writing to DB'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run experiment auto-measure
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python scripts/jobs/experiment_auto_measure.py --dry-run
+          else
+            python scripts/jobs/experiment_auto_measure.py
+          fi
