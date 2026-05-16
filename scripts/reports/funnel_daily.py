@@ -310,9 +310,17 @@ def send_email(html: str, subject: str) -> bool:
         data=json.dumps(payload).encode("utf-8"),
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        resp.read()
-    return True
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            resp.read()
+        return True
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        print(f"\nBREVO API error {e.code}: {body[:500]}", file=sys.stderr)
+        # Surface the offending payload (without HTML content -- too long)
+        debug_payload = {**payload, "htmlContent": f"<{len(payload['htmlContent'])} chars omitted>"}
+        print(f"Payload was: {json.dumps(debug_payload, indent=2)[:600]}", file=sys.stderr)
+        return False
 
 
 # ============================================================================
