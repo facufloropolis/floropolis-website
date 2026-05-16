@@ -1,0 +1,44 @@
+# Daily funnel report -- only deliverable per Nahua rule for next 2 weeks
+# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+#
+# Pulls Supabase funnel metrics + experiment deltas + emails to faculavino@gmail.com.
+# If SMTP secrets aren't set, prints to workflow log only (no email).
+#
+# Required secrets (in addition to D0's SUPABASE_URL + SUPABASE_SERVICE_KEY):
+#   SMTP_USER   -- Gmail account (e.g. facu@floropolis.com)
+#   SMTP_PASS   -- Gmail App Password (https://myaccount.google.com/apppasswords)
+#
+# Optional secrets:
+#   REPORT_TO   -- recipient (default: faculavino@gmail.com)
+#   REPORT_FROM -- sender display (default: SMTP_USER)
+
+name: Funnel daily
+
+on:
+  schedule:
+    # Daily at 13:00 UTC = 06:00 PDT
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+jobs:
+  funnel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run funnel pull + email
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          REPORT_TO: ${{ secrets.REPORT_TO }}
+          REPORT_FROM: ${{ secrets.REPORT_FROM }}
+        run: python scripts/reports/funnel_daily.py
