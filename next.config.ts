@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   async redirects() {
@@ -28,4 +29,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Wrap with Sentry -- uploads source maps + tunnels client errors past ad blockers.
+// Sentry config (SENTRY_ORG, SENTRY_PROJECT, SENTRY_AUTH_TOKEN) read from env at build time.
+// If env vars are missing, withSentryConfig falls back to a no-op build (safe).
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  sourcemaps: { disable: false },
+  disableLogger: true,
+  automaticVercelMonitors: true,
+});
