@@ -288,9 +288,11 @@ def send_email(html: str, subject: str) -> bool:
     if not api_key:
         return False
 
-    to = os.environ.get("REPORT_TO", "faculavino@gmail.com")
-    sender_email = os.environ.get("REPORT_FROM", "facu@floropolis.com")
-    sender_name = os.environ.get("REPORT_FROM_NAME", "Floropolis BI")
+    # `or` handles both "key missing" AND "key set to empty string" (which GitHub Actions
+    # does when a secret doesn't exist but the env var is still passed).
+    to = os.environ.get("REPORT_TO") or "faculavino@gmail.com"
+    sender_email = os.environ.get("REPORT_FROM") or "facu@floropolis.com"
+    sender_name = os.environ.get("REPORT_FROM_NAME") or "Floropolis BI"
 
     payload = {
         "sender": {"name": sender_name, "email": sender_email},
