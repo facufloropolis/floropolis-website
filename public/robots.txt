@@ -1,0 +1,40 @@
+# Floropolis robots.txt
+# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+# Goals: (1) keep search engines indexing customer catalog, (2) block internal surfaces,
+# (3) throttle aggressive crawlers that drove 32M+ edge requests in April-May 2026.
+
+User-agent: *
+# Throttle: wait 10 seconds between requests. Most crawlers respect this; abusive ones won't.
+Crawl-delay: 10
+
+# Allow customer catalog + landing pages (the things we want indexed)
+Allow: /
+Allow: /shop
+Allow: /shop/
+Allow: /quote
+Allow: /inspiration-builder
+
+# Block internal / admin / API / mockup surfaces
+Disallow: /mockups/
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /checkout/
+Disallow: /_next/
+
+# Block known aggressive scrapers (extend list as needed)
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap location (when we publish one)
+# Sitemap: https://www.floropolis.com/sitemap.xml
