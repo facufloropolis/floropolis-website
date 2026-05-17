@@ -246,7 +246,7 @@ export default function Home() {
               { name: "Red",    img: "/images/shop/Ranunculus_Red_FINAL.png",                      href: "/shop?color=Red" },
               { name: "Pink",   img: "/images/shop/roses/lola-hot-pink.png",                        href: "/shop?color=Pink" },
               { name: "White",  img: "/images/shop/Ranunculus_White_FINAL.PNG",                     href: "/shop?color=White" },
-              { name: "Purple", img: "/images/shop/lavender-deep-purple-ai.png",                    href: "/shop?color=Purple" },
+              { name: "Purple", img: "/images/shop/delphinium-serene-lavender.png",                href: "/shop?color=Purple" },
               { name: "Blue",   img: "/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png", href: "/shop?color=Blue" },
               { name: "Green",  img: "/images/shop/shop-all-greens.jpg",                            href: "/shop?color=Green" },
               { name: "Mixed",  img: "/images/shop/ranunculus/amandine-assorted.jpg",               href: "/shop?color=Mixed" },
