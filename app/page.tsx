@@ -301,44 +301,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* How It Works -- v2 | 2026-05-17 | Facu directive: stop highlighting weaknesses
+           ("we confirm in 1 hour" admits manual review delay). Tell a confident story:
+           they book, farms pick, we ship, they get it fresh in 4 days. */}
       <section className="py-8 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">How It Works</h2>
-            <p className="text-base sm:text-xl text-slate-600">Farm-direct from Ecuador to your door in 4 days</p>
+            <p className="text-base sm:text-xl text-slate-600">From Ecuador's best farms to your door in 4 days</p>
           </div>
-          
-          {/* EXP-083: Added "Submit Quote — We Confirm in 1 Hour" step to show low-risk process */}
+
           <div className="grid md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Add to Quote</h3>
-              <p className="text-slate-600 text-sm">270+ varieties, per-stem pricing — no login</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">You Order</h3>
+              <p className="text-slate-600 text-sm">270+ varieties, transparent pricing -- no login, no minimum</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">2</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Submit — We Confirm in 1 Hour</h3>
-              <p className="text-slate-600 text-sm">No commitment. We confirm availability & pricing, Mon–Fri 8–6 ET</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Farms Cut to Order</h3>
+              <p className="text-slate-600 text-sm">We source from Ecuador's best growers -- premier farms, premium grade</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">3</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Farm Picks & Ships</h3>
-              <p className="text-slate-600 text-sm">Cut-to-order, climate-controlled via Miami</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">FedEx Air Direct</h3>
+              <p className="text-slate-600 text-sm">Cut, packed, and shipped same day -- no warehouse, no middlemen</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">4</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Delivered Fresh in 4 Days</h3>
-              <p className="text-slate-600 text-sm">Farm-direct to your door</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Fresh at Your Door</h3>
+              <p className="text-slate-600 text-sm">4 days farm-to-shop, climate-controlled cold chain the whole way</p>
             </div>
+          </div>
+
+          {/* "Missing something? We'll find it" -- positions custom sourcing as confidence, not weakness */}
+          <div className="mt-8 max-w-3xl mx-auto bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center">
+            <p className="text-base sm:text-lg font-semibold text-emerald-900 mb-1">Don't see what you need?</p>
+            <p className="text-sm text-emerald-800 mb-3">Tell us the variety -- our network spans 5+ premier Ecuador farms. We'll source it for you.</p>
+            <a
+              href="https://wa.me/16452405203?text=Hi!%20I%27m%20looking%20for%20a%20specific%20variety%20and%20don%27t%20see%20it%20in%20your%20catalog%20--%20can%20you%20source%20it%3F"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => pushEvent("how_it_works_source_request_click", { cta_location: "how_it_works" })}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              Ask us to source it
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </section>
