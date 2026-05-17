@@ -151,7 +151,7 @@ export default function ShopRosesPage() {
             <p className="mt-4 text-slate-500 text-sm">
               Have a specific variety in mind?{" "}
               <a
-                href="https://wa.me/17869308463?text=Hi!%20I%27m%20looking%20for%20wholesale%20roses%20from%20Floropolis."
+                href="https://wa.me/16452405203?text=Hi!%20I%27m%20looking%20for%20wholesale%20roses%20from%20Floropolis."
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => pushEvent("whatsapp_click", { cta_location: "roses_faq" })}

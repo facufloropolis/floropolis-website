@@ -11,7 +11,7 @@
 import { usePathname } from "next/navigation";
 import { pushEvent } from "@/lib/gtm";
 
-const WA_NUMBER = "17869308463";
+const WA_NUMBER = "16452405203";
 
 // Context-aware messages make it easier for Facu to qualify leads immediately
 function getWhatsAppMessage(pathname: string | null): string {

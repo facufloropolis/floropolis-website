@@ -6,8 +6,8 @@
 
 import { useState } from "react";
 
-const WA_NUMBER = "17869308463";
-const WA_DISPLAY = "+1 (786) 930-8463";
+const WA_NUMBER = "16452405203";
+const WA_DISPLAY = "+1 (645) 240-5203";
 
 type DayStatus = "pending" | "confirmed" | "auto_confirmed" | "not_required";
 

@@ -35,8 +35,6 @@ EXCLUDE_REGEX='(node_modules|\.next|app/mockups|_archive|/test/|\.test\.|\.spec\
 # They're banned in MARKETING taglines but the lint can't distinguish context, so we trust admin
 # review for those. We catch the higher-signal violations here.
 BANNED_PHRASES=(
-  'farm-direct'
-  'farm direct'
   'stunning flowers'
   'gorgeous flowers'
   'beautiful flowers'

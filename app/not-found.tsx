@@ -56,7 +56,7 @@ export default function NotFound() {
             Contact us
           </Link>{" "}
           or{" "}
-          <a href="https://wa.me/17869308463" className="text-emerald-600 hover:underline" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/16452405203" className="text-emerald-600 hover:underline" target="_blank" rel="noopener noreferrer">
             WhatsApp us
           </a>
         </p>
