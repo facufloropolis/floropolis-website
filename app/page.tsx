@@ -7,11 +7,37 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
-import { getFeaturedProducts } from "@/lib/data/product-helpers";
+import { getFeaturedProducts, getProductBySlug } from "@/lib/data/product-helpers";
+import type { Product } from "@/lib/data/products";
 import { getProductImage } from "@/lib/product-images";
 
+// Homepage carousel -- v2 framework picks (2026-05-17, Facu + Job).
+// Replaces the prior getFeaturedProducts(4) algorithm which picked "Assorted"
+// variants by category-diversity scoring + lacked competitive pricing hooks.
+//
+// Selection logic (debated 2026-05-17):
+//   1 Rose      = Cool Water Lavender (iconic named variety, -47% vs FiftyFlowers)
+//   1 Summer    = Sky Waltz Light Blue Delphinium (rare true blue, -36% vs Potomac)
+//   1 Bouquet   = Flat Hanna Assorted (Magic Flowers ready-made, classic mix)
+//   1 Open      = Ranunculus Amandine Assorted (spring/summer named variety, mix)
+//
+// Display: "Variety Color from $X.XX/unit" -- length removed, "from" added because
+// shown price = cheapest length per variety. Lets buyer click in for length options.
+const HOMEPAGE_FEATURED_SLUGS = [
+  "cool-water-lavender-50-cm",                 // Rose -- $1.02/stem (50cm cheapest)
+  "sky-waltz-light-blue-60cm",                 // Summer/Delphinium -- $0.88/stem (60cm cheapest)
+  "flat-hanna-assorted-farm-choice-assorted-55", // Bouquet (Magic Flowers) -- $11.97/bouquet
+  "amandine-assorted",                         // Ranunculus (Megaflor) -- $2.17/stem
+] as const;
+
 export default function Home() {
-  const featured = getFeaturedProducts(4);
+  // Resolve framework-picked slugs to actual Product records.
+  // Fallback to getFeaturedProducts if any slug missing (defensive).
+  const featured: Product[] = HOMEPAGE_FEATURED_SLUGS
+    .map(slug => getProductBySlug(slug))
+    .filter((p): p is Product => p !== undefined);
+  const _fallback = featured.length === 4 ? featured : getFeaturedProducts(4);
+  const featuredResolved = featured.length === 4 ? featured : _fallback;
 
   const orgLd = {
     "@context": "https://schema.org",
@@ -156,7 +182,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
-            {featured.map((p) => {
+            {featuredResolved.map((p) => {
               const img = (Array.isArray(p.images) && p.images.length > 0)
                 ? ((p.images[0].startsWith("http") || p.images[0].startsWith("/")) ? p.images[0] : `/product-photos/${p.images[0]}`)
                 : getProductImage(p.variety, p.color, p.category);
@@ -188,7 +214,7 @@ export default function Home() {
                   <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-0.5">{displayName}</h3>
                   <p className="text-slate-600 mb-1 text-xs md:text-base">{p.category}</p>
                   <div className="text-xl md:text-3xl font-bold text-emerald-600">
-                    ${displayPrice.toFixed(2)}/{unitLabel}
+                    <span className="text-sm md:text-lg font-medium text-emerald-700">from </span>${displayPrice.toFixed(2)}/{unitLabel}
                   </div>
                   {/* EXP-037: Shipping included signal — consistent with shop cards */}
                   {displayPrice > 0 && (
