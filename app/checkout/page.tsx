@@ -38,6 +38,7 @@ import {
 } from "@stripe/react-stripe-js";
 
 import { BRAND } from "../mockups/_constants/brand";
+import { useAuth } from "@/lib/auth-context";
 
 // ============================================================================
 // Types
@@ -167,30 +168,77 @@ function leadDays(deliveryISO: string): number {
   return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
 }
 
-function modeHintFor(lead: number): { mode: "A" | "B" | "C"; text: string; tone: string } {
+interface ModeHint {
+  mode: "A" | "B" | "C";
+  title: string;
+  body: string;
+  refund: string;
+  chargeSummary: string; // one-line summary for the "what happens next" section
+  tone: string;
+}
+
+function modeHintFor(lead: number, grandTotal: number, deliveryISO: string): ModeHint {
+  const total = grandTotal > 0 ? money(grandTotal) : "the full amount";
+  const chargeDays = 5; // M = days before delivery the card is charged
+  const verifyDays = 6; // N = days before delivery the $1 verification hold runs (Mode A)
+
+  // The actual charge calendar date = delivery_date - chargeDays.
+  const chargeDate = deliveryISO
+    ? formatChargeDate(deliveryISO, chargeDays)
+    : "";
+  // emerald-themed across all modes — soft, not alarming. Mode C is slightly
+  // amber to flag "charged today" but never red (Facu: don't make it look like
+  // an error).
   if (lead >= 10) {
     return {
       mode: "A",
-      tone: "bg-emerald-50 border-emerald-200 text-emerald-800",
-      text: "We will charge your card 5 days before delivery.",
+      tone: "bg-emerald-50 border-emerald-200 text-emerald-900",
+      title: "You won't be charged today.",
+      body: `We save your card now. ${verifyDays} days before delivery we hold $1 to verify it works, then charge ${total} in full ${chargeDays} days before delivery${chargeDate ? ` (on ${chargeDate})` : ""}.`,
+      refund: "Cancel anytime before the charge — no fees.",
+      chargeSummary: `No charge today. Full ${total} runs ${chargeDays} days before delivery${chargeDate ? ` (${chargeDate})` : ""}.`,
     };
   }
   if (lead >= 6) {
     return {
       mode: "B",
-      tone: "bg-amber-50 border-amber-200 text-amber-800",
-      text: "Card saved + held with $1 verification. Full charge 5 days before delivery.",
+      tone: "bg-emerald-50 border-emerald-200 text-emerald-900",
+      title: "$1 hold now, full charge later.",
+      body: `We save your card and place a $1 verification hold today. Full ${total} charge happens ${chargeDays} days before delivery${chargeDate ? ` (on ${chargeDate})` : ""}.`,
+      refund: `Cancel up to ${chargeDays - 1} days before delivery — no fees.`,
+      chargeSummary: `$1 hold today. Full ${total} runs ${chargeDays} days before delivery${chargeDate ? ` (${chargeDate})` : ""}.`,
     };
   }
   return {
     mode: "C",
-    tone: "bg-red-50 border-red-200 text-red-800",
-    text: "We will charge your card now (5 days or less to delivery).",
+    tone: "bg-amber-50 border-amber-200 text-amber-900",
+    title: "Charged today.",
+    body: `Because delivery is so close, we charge ${total} now to lock the inventory.`,
+    refund: "Quality guarantee: report any issues within 48h of delivery for a refund.",
+    chargeSummary: `Full ${total} charged today to lock the inventory.`,
   };
 }
 
 function money(n: number): string {
   return `$${n.toFixed(2)}`;
+}
+
+// Format "delivery_date - N days" as a friendly short date (e.g. "Wed May 22").
+// Returns "" if the ISO is invalid so callers can hide it.
+function formatChargeDate(deliveryISO: string, daysBefore: number): string {
+  try {
+    const d = new Date(deliveryISO + "T00:00:00Z");
+    if (Number.isNaN(d.getTime())) return "";
+    d.setUTCDate(d.getUTCDate() - daysBefore);
+    return d.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  } catch {
+    return "";
+  }
 }
 
 // ============================================================================
@@ -266,6 +314,7 @@ function StripePayForm({
 // ============================================================================
 
 function CheckoutContent() {
+  const { user, loading: authLoading, signOut } = useAuth();
   const [cart, setCart] = useState<LocalCart | null>(null);
   const [cartLoaded, setCartLoaded] = useState(false);
   const [skuMap, setSkuMap] = useState<Map<number, SkuDetail>>(new Map());
@@ -338,7 +387,10 @@ function CheckoutContent() {
   }, [cart, skuMap]);
 
   const lead = useMemo(() => (deliveryDate ? leadDays(deliveryDate) : 0), [deliveryDate]);
-  const modeHint = useMemo(() => modeHintFor(lead), [lead]);
+  const modeHint = useMemo(
+    () => modeHintFor(lead, subtotal, deliveryDate),
+    [lead, subtotal, deliveryDate],
+  );
 
   // ---- 4. Validation ----
   function addressValid(a: AddressForm): string | null {
@@ -476,6 +528,10 @@ function CheckoutContent() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
+      {/* Auth status indicator — confirms whether the user is signed in
+          or continuing as guest. Doesn't block checkout. */}
+      <AuthStatusBar user={user} loading={authLoading} signOut={signOut} />
+
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Confirm your order</h1>
         <p className="text-slate-500 text-sm mt-1">
@@ -498,9 +554,14 @@ function CheckoutContent() {
                   min={new Date().toISOString().slice(0, 10)}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
                 />
-                <p className={`mt-3 text-xs px-3 py-2 rounded-xl border ${modeHint.tone}`}>
-                  Mode {modeHint.mode} - {lead} day{lead === 1 ? "" : "s"} out. {modeHint.text}
-                </p>
+                <div className={`mt-3 rounded-xl border px-4 py-3 ${modeHint.tone}`}>
+                  <p className="text-sm font-semibold">{modeHint.title}</p>
+                  <p className="text-xs mt-1 leading-relaxed">{modeHint.body}</p>
+                  <p className="text-xs mt-2 opacity-80">{modeHint.refund}</p>
+                  <p className="text-[11px] mt-2 opacity-60">
+                    Mode {modeHint.mode} · {lead} day{lead === 1 ? "" : "s"} out
+                  </p>
+                </div>
               </section>
 
               {/* Shipping */}
@@ -529,6 +590,35 @@ function CheckoutContent() {
                   onChange={setBilling}
                 />
               )}
+
+              {/* What happens next — trust + flow transparency before the CTA. */}
+              <section className="bg-white rounded-2xl border border-slate-200 p-6">
+                <h2 className="font-semibold text-slate-900 mb-3">What happens next</h2>
+                <ol className="space-y-2.5 text-sm text-slate-700">
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center justify-center">1</span>
+                    <span>Enter your card. We use Stripe — your card details never touch our servers.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center justify-center">2</span>
+                    <span>{modeHint.chargeSummary}</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center justify-center">3</span>
+                    <span>Email and WhatsApp confirmations the moment we ship.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center justify-center">4</span>
+                    <span>
+                      Need a hand? Text us at{" "}
+                      <a href={BRAND.whatsappUrl} className="text-emerald-700 font-medium underline underline-offset-2">
+                        {BRAND.whatsappDisplay}
+                      </a>
+                      {" "}— we reply in minutes.
+                    </span>
+                  </li>
+                </ol>
+              </section>
 
               {submitError && (
                 <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
@@ -701,6 +791,63 @@ function CheckoutContent() {
           </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Auth status indicator — shows signed-in email + sign out, OR guest banner
+// ============================================================================
+
+function AuthStatusBar({
+  user,
+  loading,
+  signOut,
+}: {
+  user: { email?: string | null } | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+}) {
+  // While auth loads, render a neutral placeholder so the layout doesn't jump.
+  if (loading) {
+    return (
+      <div className="mb-4 rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-400">
+        Checking sign-in status...
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <div className="mb-4 rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 flex items-center justify-between gap-3">
+        <p className="text-sm text-slate-700">
+          <span className="text-emerald-700 font-semibold">Signed in</span>
+          {user.email ? <> as <span className="font-medium">{user.email}</span></> : null}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            void signOut();
+          }}
+          className="text-xs text-slate-500 hover:text-emerald-700 underline underline-offset-2"
+        >
+          Sign out
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
+      <p className="text-sm text-amber-900">
+        Continuing as guest — your order will be linked to your email.
+      </p>
+      <Link
+        href="/auth/login?next=/checkout"
+        className="text-xs text-amber-900 font-semibold underline underline-offset-2 hover:text-amber-700"
+      >
+        Sign in instead
+      </Link>
     </div>
   );
 }

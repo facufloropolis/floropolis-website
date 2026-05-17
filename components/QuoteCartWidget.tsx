@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ShoppingCart, X, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import {
@@ -15,6 +16,10 @@ import {
 } from "@/lib/quote-cart";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-engine";
 
+// Quote-flow UI must not show during the Stripe checkout flow (it's replacing
+// quotes), order confirmation, or admin surfaces.
+const SUPPRESS_PATHS = ["/checkout", "/order-confirmation", "/admin"];
+
 type PromoState = {
   code: string;
   discount: number;
@@ -23,6 +28,7 @@ type PromoState = {
 };
 
 export default function QuoteCartWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [promo, setPromo] = useState<PromoState>({ code: "", discount: 0 });
@@ -45,6 +51,9 @@ export default function QuoteCartWidget() {
   }, []);
 
   if (typeof window === "undefined") return null;
+
+  // Suppress on Stripe checkout / order confirmation / admin surfaces.
+  if (SUPPRESS_PATHS.some((p) => pathname?.startsWith(p))) return null;
 
   const subtotal = getSubtotal();
   const total = Math.max(0, subtotal - promo.discount);

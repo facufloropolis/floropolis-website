@@ -245,7 +245,8 @@ function SignupWizard() {
         .update({
           business_name: businessName.trim(),
           phone: `+1${digitsOnly(phone)}`,
-          status: "pending",
+          status: "approved",
+          approved_at: new Date().toISOString(),
           notes,
         })
         .eq("user_id", user.id);
@@ -257,7 +258,8 @@ function SignupWizard() {
           user_id: user.id,
           business_name: businessName.trim(),
           phone: `+1${digitsOnly(phone)}`,
-          status: "pending",
+          status: "approved",
+          approved_at: new Date().toISOString(),
           notes,
         });
       dbError = error;
@@ -485,8 +487,8 @@ function SignupWizard() {
       {/* ============================== STEP 2: REVIEW ============================== */}
       {step === 2 && (
         <div>
-          <h2 className="text-xl font-bold text-slate-900 mb-1">Review your application</h2>
-          <p className="text-slate-500 text-sm mb-6">Confirm everything looks right before you submit</p>
+          <h2 className="text-xl font-bold text-slate-900 mb-1">Review your details</h2>
+          <p className="text-slate-500 text-sm mb-6">Confirm everything looks right, then start ordering</p>
 
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5 space-y-3 text-sm">
             {email && (
@@ -518,7 +520,7 @@ function SignupWizard() {
           </div>
 
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-5 text-xs text-emerald-800 leading-relaxed">
-            Your account is pending approval. We typically respond within 1 business day.
+            You're set. Sign up and start ordering — first box ships in 4 days.
           </div>
 
           {step2Error && (
@@ -545,7 +547,7 @@ function SignupWizard() {
               {submitLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <>Submit application <ArrowRight className="w-4 h-4" /></>
+                <>Create account <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
           </div>
@@ -571,9 +573,9 @@ export default function SignupPage() {
               className="mx-auto mb-3"
             />
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Apply for wholesale access</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
           <p className="text-slate-500 text-sm mt-1">
-            Direct from Ecuador farms. Fresh, fast, fair pricing.
+            Direct from Ecuador farms. Order in minutes — no application needed.
           </p>
         </div>
 

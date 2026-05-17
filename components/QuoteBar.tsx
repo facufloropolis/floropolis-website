@@ -7,14 +7,19 @@
 //   Metric: submit_quote events via quick-submit path vs legacy /quote path.
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getCartItems, getSubtotal, clearCart } from "@/lib/quote-cart";
 import { ShoppingCart, Share2, X, Copy, Check, Send } from "lucide-react";
 import { pushEvent } from "@/lib/gtm";
 import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 
+// Quote-flow UI must not show during the Stripe checkout flow (it's replacing
+// quotes), order confirmation, or admin surfaces.
+const SUPPRESS_PATHS = ["/checkout", "/order-confirmation", "/admin"];
+
 export default function QuoteBar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [itemCount, setItemCount] = useState(0);
   const [visible, setVisible] = useState(false);
   const [subtotal, setSubtotal] = useState(0);
@@ -49,6 +54,9 @@ export default function QuoteBar() {
   }, []);
 
   if (!visible && !qSuccess) return null;
+
+  // Suppress on Stripe checkout / order confirmation / admin surfaces.
+  if (SUPPRESS_PATHS.some((p) => pathname?.startsWith(p))) return null;
 
   const openQuickSubmit = () => {
     pushEvent("quick_submit_opened", { item_count: itemCount, subtotal });

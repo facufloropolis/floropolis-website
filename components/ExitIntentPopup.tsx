@@ -3,14 +3,19 @@
 import { useState, useEffect } from 'react'
 import { X, Gift, Percent, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { pushEvent, CTA_EVENTS } from '@/lib/gtm'
 import { getCartItems, getSubtotal } from '@/lib/quote-cart'
+
+// Conversion paths where popups must NEVER fire — interrupting a user mid-checkout
+// or mid-signup tanks completion rate. Add new flows here as they ship.
+const SUPPRESS_PATHS = ['/checkout', '/signup', '/order-confirmation', '/admin', '/account', '/auth']
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
 export default function ExitIntentPopup() {
   const router = useRouter()
+  const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState('')
   const [selectedOption, setSelectedOption] = useState<'discount' | 'sample' | null>(null)
@@ -115,6 +120,11 @@ export default function ExitIntentPopup() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Suppress on conversion pages (checkout, signup, order confirmation, admin, account, auth)
+  if (SUPPRESS_PATHS.some((p) => pathname?.startsWith(p))) {
+    return null
   }
 
   // Don't render if already submitted or dismissed
