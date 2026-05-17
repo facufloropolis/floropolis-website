@@ -195,13 +195,20 @@ def validate_row(row: dict) -> dict:
 
 
 def run_validation() -> dict:
-    """Pull all inventory + validate every row. Return summary dict."""
+    """Pull all inventory + validate every row. Return summary dict.
+
+    INVENTORY_TABLE env var defaults to 'floropolis_inventory' (prod).
+    Set to 'floropolis_inventory_mirror' when running against supabase-backup.
+    """
+    table = os.environ.get("INVENTORY_TABLE", "floropolis_inventory")
+    # whitelist to prevent injection -- only known table names allowed
+    if table not in ("floropolis_inventory", "floropolis_inventory_mirror"):
+        raise ValueError(f"INVENTORY_TABLE must be floropolis_inventory or floropolis_inventory_mirror, got {table!r}")
     rows = execute_sql(
         "SELECT id, slug, name, variety, color, vendor, tier, price, stock, "
         "farm_cost, cost_source, cost_verified_at, margin_status, "
         "has_open_price_alert, arrival_date, live, active, box_type, "
-        "units_per_box, total_stems, images "
-        "FROM floropolis_inventory ORDER BY id"
+        f"units_per_box, total_stems, images FROM {table} ORDER BY id"
     )
 
     issue_counts: dict[str, int] = {}

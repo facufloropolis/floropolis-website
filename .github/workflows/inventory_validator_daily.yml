@@ -1,18 +1,19 @@
 # Subagent A: Inventory Data Validator -- daily cron
-# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+# v2 | 2026-05-17 | Job_PM [V8 SHADOW]
 #
-# Pulls floropolis_inventory, validates every row, emails Facu if critical
-# data-quality thresholds breached (>5% missing price, >5% unknown margin,
-# >10% open price alert, etc).
+# Path A (per Facu 2026-05-17): runs against supabase-backup MIRROR, not prod.
+# The mirror is refreshed at 13:00 UTC by inventory_mirror_sync_daily.yml.
+# Once we're 99% confident in validator accuracy, we promote to prod.
 #
-# Runs daily 14:00 UTC (1h after Rose's morning ingest typically completes).
-# Required secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY, BREVO_API_KEY (optional).
+# Runs daily 14:00 UTC. Required secrets:
+#   BACKUP_SUPABASE_URL, BACKUP_SUPABASE_SERVICE_KEY (NEW -- Facu to set)
+#   BREVO_API_KEY (existing)
 
-name: Inventory Validator (Subagent A)
+name: Inventory Validator (Subagent A) -- backup
 
 on:
   schedule:
-    - cron: '0 14 * * *'  # 14:00 UTC = 07:00 PDT
+    - cron: '0 14 * * *'  # 14:00 UTC = 07:00 PDT, after mirror sync
   workflow_dispatch:
 
 jobs:
@@ -24,10 +25,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run validator
+      - name: Run validator against backup mirror
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+          INVENTORY_TABLE: floropolis_inventory_mirror
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           REPORT_TO: ${{ secrets.REPORT_TO }}
         run: python scripts/jobs/inventory_data_validator.py

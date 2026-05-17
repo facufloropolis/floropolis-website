@@ -1,0 +1,35 @@
+# Daily sync of production floropolis_inventory into supabase-backup mirror.
+# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+#
+# Per standing rule #10: new pipelines validate against supabase-backup first.
+# Runs at 13:00 UTC (1h before validator at 14:00 UTC).
+#
+# Required secrets:
+#   SUPABASE_URL                 prod floropolis-bi URL (existing)
+#   SUPABASE_SERVICE_KEY         prod floropolis-bi service key (existing)
+#   BACKUP_SUPABASE_URL          supabase-backup project URL (NEW -- Facu to set)
+#   BACKUP_SUPABASE_SERVICE_KEY  supabase-backup service key (NEW -- Facu to set)
+
+name: Inventory Mirror Sync (backup project)
+
+on:
+  schedule:
+    - cron: '0 13 * * *'  # 13:00 UTC = 06:00 PDT, 1h before validator
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run mirror sync
+        env:
+          SOURCE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SOURCE_SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BACKUP_SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+          BACKUP_SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+        run: python scripts/jobs/sync_inventory_mirror.py
