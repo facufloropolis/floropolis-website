@@ -1,0 +1,33 @@
+# Subagent A: Inventory Data Validator -- daily cron
+# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+#
+# Pulls floropolis_inventory, validates every row, emails Facu if critical
+# data-quality thresholds breached (>5% missing price, >5% unknown margin,
+# >10% open price alert, etc).
+#
+# Runs daily 14:00 UTC (1h after Rose's morning ingest typically completes).
+# Required secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY, BREVO_API_KEY (optional).
+
+name: Inventory Validator (Subagent A)
+
+on:
+  schedule:
+    - cron: '0 14 * * *'  # 14:00 UTC = 07:00 PDT
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run validator
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          REPORT_TO: ${{ secrets.REPORT_TO }}
+        run: python scripts/jobs/inventory_data_validator.py
