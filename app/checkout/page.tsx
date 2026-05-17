@@ -118,6 +118,27 @@ function defaultDeliveryDate(): string {
 
 function readLocalCart(): LocalCart | null {
   if (typeof window === "undefined") return null;
+
+  // Demo mode: ?demo=1 in URL = synthesize a 2-item cart so Facu (or anyone
+  // reviewing the design) can see the full checkout without seeding localStorage.
+  // Picks 2 real SKU IDs from the current mirror (FullStar Anemone variants).
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("demo") === "1") {
+      const fortnight = new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)
+        .toISOString().slice(0, 10);
+      return {
+        items: [
+          { sku_id: 6676, quantity: 100 },
+          { sku_id: 6677, quantity: 50 },
+        ],
+        delivery_date: fortnight,
+      };
+    }
+  } catch {
+    /* fall through to localStorage */
+  }
+
   try {
     const raw = window.localStorage.getItem(CART_KEY);
     if (!raw) return null;
