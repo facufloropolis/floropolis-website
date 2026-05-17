@@ -239,18 +239,18 @@ export default function Home() {
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">Shop by Color</h2>
             <p className="text-base sm:text-xl text-slate-600">Find the perfect flowers for your next event</p>
           </div>
-          <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-4xl mx-auto">
+          {/* v2 | 2026-05-17 | Facu directive: removed Yellow + Orange (low demand from filter data).
+              Fixed White, Purple, Mixed images that previously showed wrong-color flowers (pink/red). */}
+          <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto">
             {[
-              { name: "Red", img: "/images/shop/Ranunculus_Red_FINAL.png", href: "/shop?color=Red" },
-              { name: "Pink", img: "/images/shop/roses/lola-hot-pink.png", href: "/shop?color=Pink" },
-              { name: "White", img: "/images/shop/Anemone_3.png", href: "/shop?color=White" },
-              { name: "Yellow", img: "/images/shop/Summer-Flowers-Valentines.png", href: "/shop?color=Yellow" },
-              { name: "Orange", img: "/images/shop/novelties/anana-torch-red.jpg", href: "/shop?color=Orange" },
-              { name: "Purple", img: "/images/shop/anemone/anemones-pink.jpg", href: "/shop?color=Purple" },
-              { name: "Blue", img: "/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png", href: "/shop?color=Blue" },
-              { name: "Green", img: "/images/shop/shop-all-greens.jpg", href: "/shop?color=Green" },
-              { name: "Mixed", img: "/images/shop/ranunculus/amandine-pink.png", href: "/shop?color=Mixed" },
-              { name: "All", img: "/images/shop/Summer-Flowers-Valentines.png", href: "/shop" },
+              { name: "Red",    img: "/images/shop/Ranunculus_Red_FINAL.png",                      href: "/shop?color=Red" },
+              { name: "Pink",   img: "/images/shop/roses/lola-hot-pink.png",                        href: "/shop?color=Pink" },
+              { name: "White",  img: "/images/shop/Ranunculus_White_FINAL.PNG",                     href: "/shop?color=White" },
+              { name: "Purple", img: "/images/shop/lavender-deep-purple-ai.png",                    href: "/shop?color=Purple" },
+              { name: "Blue",   img: "/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png", href: "/shop?color=Blue" },
+              { name: "Green",  img: "/images/shop/shop-all-greens.jpg",                            href: "/shop?color=Green" },
+              { name: "Mixed",  img: "/images/shop/ranunculus/amandine-assorted.jpg",               href: "/shop?color=Mixed" },
+              { name: "All",    img: "/images/shop/bouquets/bouquet-rainbow_be2ae9aa066b.png",      href: "/shop" },
             ].map(({ name, img, href }) => (
               <Link
                 key={name}
