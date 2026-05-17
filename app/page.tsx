@@ -329,42 +329,42 @@ export default function Home() {
             <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202025-11-07%20at%2017.08.07.jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202025-11-09%20at%2018.21.31.jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.44.jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.44%20(2).jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202025-12-12%20at%2010.04.45.jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202026-01-30%20at%2010.28.32.jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202026-02-01%20at%2010.12.56.jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
               <div className="flex-none w-64 snap-center">
                 <div className="aspect-square relative rounded-xl overflow-hidden shadow-lg bg-slate-100">
-                  <img src="" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
+                  <img src="/images/Testimonials/WhatsApp%20Image%202026-02-01%20at%2010.12.56%20(1).jpeg" alt="Customer photo" className="object-cover w-full h-full" loading="lazy" />
                 </div>
               </div>
             </div>
