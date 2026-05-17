@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 SUBAGENT A: Inventory Data Validator (Job_PM-owned)
-v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+v1.1 | 2026-05-17 | Job_PM [V8 SHADOW]
 
 Continuous validation of `floropolis_inventory` data quality. Catches what Rose's
 pipeline might miss before customers see it. Per Facu directive 2026-05-17:
@@ -27,6 +27,21 @@ Env vars:
   SUPABASE_SERVICE_KEY  required
   BREVO_API_KEY         optional (skip email if missing)
   REPORT_TO             optional (default: faculavino@gmail.com)
+
+v1.1 changes (W2-S7 polish, 2026-05-17):
+  1. USA vendor branch verified — zero USA-vendor rows in mirror today, code dormant
+     but correct (cost / 0.67, no delivery). Awaits Megaflor-USA SKUs.
+  2. box_dim_kg_lookup expanded to cover multi-format box types observed in mirror:
+     - "EB/QB", "HB/QB", "EB/HB/QB" (Magic Flowers ships multi-format): use SMALLEST
+       weight in the set, which yields a LOWER expected price -> preserves alerts on
+       overpriced rows (does not silence them). Justification: when vendor reserves
+       the right to ship in any of N box types, we should validate against the cheapest
+       delivery scenario; if actual price still deviates, that is real signal.
+     - "BB" (2 Magic Flowers rows): UNKNOWN code, NO entry added. TODO escalate to Rose.
+  3. New helper `vendor_deviation_summary()` produces per-vendor breakdown of
+     formula deviations (mean, max, direction). Added to summary JSON under
+     `vendor_deviation_analysis` and rendered in the email body when
+     `formula_deviation` is a critical breach.
 """
 
 from __future__ import annotations
@@ -121,6 +136,14 @@ def compute_expected_price(row: dict) -> float | None:
         "QB": 6.80,   "QB-M": 5.30,  "QB-OLI": 6.80,  "QB-MF": 6.05,
         "HB": 11.70,  "EB": 4.25,    "EB-M": 3.99,    "EB-MF": 4.76,
         "SB-M": 2.94, "QBV": 8.75,   "FB": 20.90,
+        # Multi-format box types (Magic Flowers SKUs, observed in mirror 2026-05-17).
+        # Use SMALLEST weight in the set -> lower expected price -> preserves alerts.
+        # Do not raise these weights without Rose's sign-off (would silence deviations).
+        "EB/QB": 4.25,        # min(EB 4.25, QB 6.80) = EB
+        "HB/QB": 6.80,        # min(HB 11.70, QB 6.80) = QB
+        "EB/HB/QB": 4.25,     # min(EB 4.25, HB 11.70, QB 6.80) = EB
+        # TODO(Rose): "BB" (2 Magic Flowers SKUs) — unfamiliar code, weight unknown.
+        # Pending clarification via shared/handoffs.md 2026-05-17. Left out of lookup.
     }
     dim_kg = box_dim_kg_lookup.get(box_type)
     if dim_kg is None:
@@ -133,11 +156,17 @@ def compute_expected_price(row: dict) -> float | None:
 
 
 def validate_row(row: dict) -> dict:
-    """Return list of issues for one row. Empty list = clean."""
+    """Return list of issues for one row. Empty list = clean.
+
+    Also returns `deviation_pct_signed` (float or None) so downstream aggregators
+    (vendor_deviation_summary) can compute mean/max/direction without re-running
+    compute_expected_price.
+    """
     issues = []
     tier = (row.get("tier") or "").upper()
     price = row.get("price") or 0
     stock = row.get("stock") or 0
+    deviation_pct_signed: float | None = None
 
     # 1. Missing price
     if not price or price <= 0:
@@ -169,7 +198,9 @@ def validate_row(row: dict) -> dict:
     if price > 0 and row.get("farm_cost"):
         expected = compute_expected_price(row)
         if expected is not None and expected > 0:
-            delta_pct = abs(price - expected) / expected * 100
+            # signed: negative = underpriced vs formula, positive = overpriced
+            deviation_pct_signed = (price - expected) / expected * 100
+            delta_pct = abs(deviation_pct_signed)
             if delta_pct > FORMULA_DEVIATION_THRESHOLD_PCT:
                 issues.append(f"formula_deviation_{delta_pct:.0f}pct")
 
@@ -186,7 +217,89 @@ def validate_row(row: dict) -> dict:
     if images is None or (isinstance(images, list) and len(images) == 0):
         issues.append("missing_image")
 
-    return {"row_id": row.get("id"), "slug": row.get("slug"), "variety": row.get("variety"), "tier": tier, "vendor": row.get("vendor"), "price": price, "issues": issues}
+    return {
+        "row_id": row.get("id"),
+        "slug": row.get("slug"),
+        "variety": row.get("variety"),
+        "tier": tier,
+        "vendor": row.get("vendor"),
+        "price": price,
+        "issues": issues,
+        "deviation_pct_signed": deviation_pct_signed,
+    }
+
+
+# ============================================================================
+# Per-vendor deviation analysis (W2-S7 polish 3)
+# ============================================================================
+
+
+def vendor_deviation_summary(validated_rows: list[dict]) -> dict:
+    """Aggregate formula deviation by vendor.
+
+    Input: full list of validate_row() outputs (one per inventory row, clean or not).
+    Output: {vendor: {total_rows, deviations, mean_deviation_pct, max_deviation_pct,
+                      stddev_deviation_pct, direction}}
+
+    Notes:
+      - `total_rows` = total rows for this vendor (incl. ones with no expected price).
+      - `deviations` = rows that tripped the FORMULA_DEVIATION_THRESHOLD_PCT alert.
+      - `mean_deviation_pct` is computed over rows where deviation_pct_signed is not None
+        (i.e. we could actually compute an expected price). Signed.
+      - `direction`:
+          "underpriced" if mean < 0 and stddev <= abs(mean)
+          "overpriced"  if mean > 0 and stddev <= abs(mean)
+          "mixed"       if stddev > abs(mean) (high variance, no consistent direction)
+          "n/a"         if no rows had a computable expected price
+    """
+    by_vendor: dict[str, dict] = {}
+    for r in validated_rows:
+        v = r.get("vendor") or "Unknown"
+        bucket = by_vendor.setdefault(v, {"total_rows": 0, "deviations": 0, "_signed": []})
+        bucket["total_rows"] += 1
+        if any(i.startswith("formula_deviation_") for i in r.get("issues", [])):
+            bucket["deviations"] += 1
+        dps = r.get("deviation_pct_signed")
+        if dps is not None:
+            bucket["_signed"].append(dps)
+
+    out: dict[str, dict] = {}
+    for vendor, b in by_vendor.items():
+        signed = b["_signed"]
+        n = len(signed)
+        if n == 0:
+            out[vendor] = {
+                "total_rows": b["total_rows"],
+                "deviations": b["deviations"],
+                "mean_deviation_pct": None,
+                "max_deviation_pct": None,
+                "stddev_deviation_pct": None,
+                "direction": "n/a",
+            }
+            continue
+        mean = sum(signed) / n
+        # max by absolute value, but keep the sign for context
+        max_signed = max(signed, key=lambda x: abs(x))
+        variance = sum((x - mean) ** 2 for x in signed) / n
+        stddev = math.sqrt(variance)
+        if stddev > abs(mean):
+            direction = "mixed"
+        elif mean < 0:
+            direction = "underpriced"
+        elif mean > 0:
+            direction = "overpriced"
+        else:
+            direction = "on_formula"
+        out[vendor] = {
+            "total_rows": b["total_rows"],
+            "deviations": b["deviations"],
+            "mean_deviation_pct": round(mean, 1),
+            "max_deviation_pct": round(max_signed, 1),
+            "stddev_deviation_pct": round(stddev, 1),
+            "direction": direction,
+        }
+    # Sort by deviation count desc for stable readable output
+    return dict(sorted(out.items(), key=lambda kv: kv[1]["deviations"], reverse=True))
 
 
 # ============================================================================
@@ -214,10 +327,12 @@ def run_validation() -> dict:
     issue_counts: dict[str, int] = {}
     issue_examples: dict[str, list] = {}
     rows_with_issues = []
+    all_results: list[dict] = []
     rows_clean = 0
 
     for row in rows:
         result = validate_row(row)
+        all_results.append(result)
         if result["issues"]:
             rows_with_issues.append(result)
             for issue in result["issues"]:
@@ -243,6 +358,8 @@ def run_validation() -> dict:
                 "count": issue_counts[issue],
             })
 
+    vendor_dev = vendor_deviation_summary(all_results)
+
     return {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "date": dt.date.today().isoformat(),
@@ -254,6 +371,7 @@ def run_validation() -> dict:
         "issue_examples": issue_examples,
         "critical_breaches": critical_breaches,
         "thresholds": CRITICAL_THRESHOLDS,
+        "vendor_deviation_analysis": vendor_dev,
     }
 
 
@@ -290,6 +408,33 @@ def maybe_send_email(summary: dict) -> bool:
             examples_html += f'<li>[{ex.get("tier","?")}] {ex.get("variety","?")} -- vendor {ex.get("vendor","?")}, price ${ex.get("price","?")}, slug={ex.get("slug","?")}</li>'
         examples_html += "</ul>"
 
+    # Per-vendor formula deviation breakdown -- only when formula_deviation is a critical breach
+    vendor_dev_html = ""
+    formula_breach = any(b["issue"] == "formula_deviation" for b in breaches)
+    vendor_dev = summary.get("vendor_deviation_analysis") or {}
+    if formula_breach and vendor_dev:
+        vendor_dev_rows = "".join(
+            f'<tr><td style="padding:6px 8px">{vendor}</td>'
+            f'<td style="padding:6px 8px;text-align:right">{stats["total_rows"]}</td>'
+            f'<td style="padding:6px 8px;text-align:right"><b>{stats["deviations"]}</b></td>'
+            f'<td style="padding:6px 8px;text-align:right">{stats["mean_deviation_pct"]}%</td>'
+            f'<td style="padding:6px 8px;text-align:right">{stats["max_deviation_pct"]}%</td>'
+            f'<td style="padding:6px 8px">{stats["direction"]}</td></tr>'
+            for vendor, stats in vendor_dev.items()
+        )
+        vendor_dev_html = (
+            '<h4 style="margin:18px 0 4px 0">formula_deviation by vendor</h4>'
+            '<table style="width:100%;border-collapse:collapse;font-size:12px;margin:6px 0">'
+            '<thead><tr style="background:#fef2f2">'
+            '<th style="padding:6px 8px;text-align:left">Vendor</th>'
+            '<th style="padding:6px 8px;text-align:right">Total</th>'
+            '<th style="padding:6px 8px;text-align:right">Deviations</th>'
+            '<th style="padding:6px 8px;text-align:right">Mean dev</th>'
+            '<th style="padding:6px 8px;text-align:right">Max dev</th>'
+            '<th style="padding:6px 8px;text-align:left">Direction</th>'
+            f'</tr></thead><tbody>{vendor_dev_rows}</tbody></table>'
+        )
+
     html = f"""<!DOCTYPE html>
 <html><body style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:680px;margin:0 auto;padding:24px">
 <h2 style="color:#dc2626;margin:0">Inventory Validation -- {len(breaches)} alert(s)</h2>
@@ -299,6 +444,7 @@ def maybe_send_email(summary: dict) -> bool:
 <tbody>{breach_rows}</tbody>
 </table>
 {examples_html}
+{vendor_dev_html}
 <hr style="margin:20px 0;border:none;border-top:1px solid #e2e8f0">
 <p style="font-size:11px;color:#94a3b8">Generated by inventory_data_validator.py (Job_PM Subagent A). Cron daily 14:00 UTC.</p>
 </body></html>"""
@@ -357,6 +503,7 @@ def main() -> int:
         "issue_counts": summary["issue_counts"],
         "issue_pct": summary["issue_pct"],
         "critical_breaches": summary["critical_breaches"],
+        "vendor_deviation_analysis": summary["vendor_deviation_analysis"],
     }, indent=2))
 
     # Send email IF breaches
