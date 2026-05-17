@@ -1,0 +1,36 @@
+# Catalog Audit Daily -- day-over-day inventory change detector (Task #66)
+# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+#
+# Runs against supabase-backup MIRROR (same pattern as Subagent A).
+# Schedule: 15:00 UTC = 1h after Subagent A validator (which runs 14:00 UTC),
+# so today's mirror is fresh and the validator's /tmp file can optionally be
+# read for the validator_json column.
+#
+# Required secrets:
+#   BACKUP_SUPABASE_URL, BACKUP_SUPABASE_SERVICE_KEY (existing)
+#   BREVO_API_KEY, REPORT_TO (existing)
+
+name: Catalog Audit Daily (Task #66) -- backup
+
+on:
+  schedule:
+    - cron: '0 15 * * *'  # 15:00 UTC = 08:00 PDT, 1h after Subagent A
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run catalog audit against backup mirror
+        env:
+          SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+          INVENTORY_TABLE: floropolis_inventory_mirror
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          REPORT_TO: ${{ secrets.REPORT_TO }}
+        run: python scripts/jobs/catalog_audit_daily.py
