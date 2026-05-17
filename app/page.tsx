@@ -7,11 +7,37 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
-import { getFeaturedProducts } from "@/lib/data/product-helpers";
+import { getFeaturedProducts, getProductBySlug } from "@/lib/data/product-helpers";
+import type { Product } from "@/lib/data/products";
 import { getProductImage } from "@/lib/product-images";
 
+// Homepage carousel -- v2 framework picks (2026-05-17, Facu + Job).
+// Replaces the prior getFeaturedProducts(4) algorithm which picked "Assorted"
+// variants by category-diversity scoring + lacked competitive pricing hooks.
+//
+// Selection logic (debated 2026-05-17):
+//   1 Rose      = Cool Water Lavender (iconic named variety, -47% vs FiftyFlowers)
+//   1 Summer    = Sky Waltz Light Blue Delphinium (rare true blue, -36% vs Potomac)
+//   1 Bouquet   = Flat Hanna Assorted (Magic Flowers ready-made, classic mix)
+//   1 Open      = Ranunculus Amandine Assorted (spring/summer named variety, mix)
+//
+// Display: "Variety Color from $X.XX/unit" -- length removed, "from" added because
+// shown price = cheapest length per variety. Lets buyer click in for length options.
+const HOMEPAGE_FEATURED_SLUGS = [
+  "cool-water-lavender-50-cm",                 // Rose -- $1.02/stem (50cm cheapest)
+  "sky-waltz-light-blue-60cm",                 // Summer/Delphinium -- $0.88/stem (60cm cheapest)
+  "flat-hanna-assorted-farm-choice-assorted-55", // Bouquet (Magic Flowers) -- $11.97/bouquet
+  "amandine-assorted",                         // Ranunculus (Megaflor) -- $2.17/stem
+] as const;
+
 export default function Home() {
-  const featured = getFeaturedProducts(4);
+  // Resolve framework-picked slugs to actual Product records.
+  // Fallback to getFeaturedProducts if any slug missing (defensive).
+  const featured: Product[] = HOMEPAGE_FEATURED_SLUGS
+    .map(slug => getProductBySlug(slug))
+    .filter((p): p is Product => p !== undefined);
+  const _fallback = featured.length === 4 ? featured : getFeaturedProducts(4);
+  const featuredResolved = featured.length === 4 ? featured : _fallback;
 
   const orgLd = {
     "@context": "https://schema.org",
@@ -156,7 +182,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
-            {featured.map((p) => {
+            {featuredResolved.map((p) => {
               const img = (Array.isArray(p.images) && p.images.length > 0)
                 ? ((p.images[0].startsWith("http") || p.images[0].startsWith("/")) ? p.images[0] : `/product-photos/${p.images[0]}`)
                 : getProductImage(p.variety, p.color, p.category);
@@ -188,7 +214,7 @@ export default function Home() {
                   <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-0.5">{displayName}</h3>
                   <p className="text-slate-600 mb-1 text-xs md:text-base">{p.category}</p>
                   <div className="text-xl md:text-3xl font-bold text-emerald-600">
-                    ${displayPrice.toFixed(2)}/{unitLabel}
+                    <span className="text-sm md:text-lg font-medium text-emerald-700">from </span>${displayPrice.toFixed(2)}/{unitLabel}
                   </div>
                   {/* EXP-037: Shipping included signal — consistent with shop cards */}
                   {displayPrice > 0 && (
@@ -239,18 +265,18 @@ export default function Home() {
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">Shop by Color</h2>
             <p className="text-base sm:text-xl text-slate-600">Find the perfect flowers for your next event</p>
           </div>
-          <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-4xl mx-auto">
+          {/* v2 | 2026-05-17 | Facu directive: removed Yellow + Orange (low demand from filter data).
+              Fixed White, Purple, Mixed images that previously showed wrong-color flowers (pink/red). */}
+          <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto">
             {[
-              { name: "Red", img: "/images/shop/Ranunculus_Red_FINAL.png", href: "/shop?color=Red" },
-              { name: "Pink", img: "/images/shop/roses/lola-hot-pink.png", href: "/shop?color=Pink" },
-              { name: "White", img: "/images/shop/Anemone_3.png", href: "/shop?color=White" },
-              { name: "Yellow", img: "/images/shop/Summer-Flowers-Valentines.png", href: "/shop?color=Yellow" },
-              { name: "Orange", img: "/images/shop/novelties/anana-torch-red.jpg", href: "/shop?color=Orange" },
-              { name: "Purple", img: "/images/shop/anemone/anemones-pink.jpg", href: "/shop?color=Purple" },
-              { name: "Blue", img: "/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png", href: "/shop?color=Blue" },
-              { name: "Green", img: "/images/shop/shop-all-greens.jpg", href: "/shop?color=Green" },
-              { name: "Mixed", img: "/images/shop/ranunculus/amandine-pink.png", href: "/shop?color=Mixed" },
-              { name: "All", img: "/images/shop/Summer-Flowers-Valentines.png", href: "/shop" },
+              { name: "Red",    img: "/images/shop/Ranunculus_Red_FINAL.png",                      href: "/shop?color=Red" },
+              { name: "Pink",   img: "/images/shop/roses/lola-hot-pink.png",                        href: "/shop?color=Pink" },
+              { name: "White",  img: "/images/shop/Ranunculus_White_FINAL.PNG",                     href: "/shop?color=White" },
+              { name: "Purple", img: "/images/shop/delphinium-serene-lavender.png",                href: "/shop?color=Purple" },
+              { name: "Blue",   img: "/images/shop/Delphinium%20Sea%20Waltz%20Dark%20Blue%20FINAL.png", href: "/shop?color=Blue" },
+              { name: "Green",  img: "/images/shop/shop-all-greens.jpg",                            href: "/shop?color=Green" },
+              { name: "Mixed",  img: "/images/shop/ranunculus/amandine-assorted.jpg",               href: "/shop?color=Mixed" },
+              { name: "All",    img: "/images/shop/bouquets/bouquet-rainbow_be2ae9aa066b.png",      href: "/shop" },
             ].map(({ name, img, href }) => (
               <Link
                 key={name}
@@ -275,44 +301,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* How It Works -- v2 | 2026-05-17 | Facu directive: stop highlighting weaknesses
+           ("we confirm in 1 hour" admits manual review delay). Tell a confident story:
+           they book, farms pick, we ship, they get it fresh in 4 days. */}
       <section className="py-8 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2">How It Works</h2>
-            <p className="text-base sm:text-xl text-slate-600">Farm-direct from Ecuador to your door in 4 days</p>
+            <p className="text-base sm:text-xl text-slate-600">From Ecuador's best farms to your door in 4 days</p>
           </div>
-          
-          {/* EXP-083: Added "Submit Quote — We Confirm in 1 Hour" step to show low-risk process */}
+
           <div className="grid md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Browse & Add to Quote</h3>
-              <p className="text-slate-600 text-sm">270+ varieties, per-stem pricing — no login</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">You Order</h3>
+              <p className="text-slate-600 text-sm">270+ varieties, transparent pricing -- no login, no minimum</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">2</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Submit — We Confirm in 1 Hour</h3>
-              <p className="text-slate-600 text-sm">No commitment. We confirm availability & pricing, Mon–Fri 8–6 ET</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Farms Cut to Order</h3>
+              <p className="text-slate-600 text-sm">We source from Ecuador's best growers -- premier farms, premium grade</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">3</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Farm Picks & Ships</h3>
-              <p className="text-slate-600 text-sm">Cut-to-order, climate-controlled via Miami</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">FedEx Air Direct</h3>
+              <p className="text-slate-600 text-sm">Cut, packed, and shipped same day -- no warehouse, no middlemen</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-2xl font-bold text-emerald-600">4</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Delivered Fresh in 4 Days</h3>
-              <p className="text-slate-600 text-sm">Farm-direct to your door</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">Fresh at Your Door</h3>
+              <p className="text-slate-600 text-sm">4 days farm-to-shop, climate-controlled cold chain the whole way</p>
             </div>
+          </div>
+
+          {/* "Missing something? We'll find it" -- positions custom sourcing as confidence, not weakness */}
+          <div className="mt-8 max-w-3xl mx-auto bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center">
+            <p className="text-base sm:text-lg font-semibold text-emerald-900 mb-1">Don't see what you need?</p>
+            <p className="text-sm text-emerald-800 mb-3">Tell us the variety -- our network spans 5+ premier Ecuador farms. We'll source it for you.</p>
+            <a
+              href="https://wa.me/16452405203?text=Hi!%20I%27m%20looking%20for%20a%20specific%20variety%20and%20don%27t%20see%20it%20in%20your%20catalog%20--%20can%20you%20source%20it%3F"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => pushEvent("how_it_works_source_request_click", { cta_location: "how_it_works" })}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              Ask us to source it
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </section>
