@@ -1,17 +1,26 @@
-// Auth callback handler — v2 | 2026-03-23 | Job_PM
+// Auth callback handler — v3 | 2026-05-17 | Job_PM
 // After code exchange: checks if user has a profile.
-// No profile → redirect to onboarding. Profile exists → redirect to ?next or /shop.
+// No profile → /auth/onboarding, UNLESS next= is a safe /signup path (wizard resumes itself).
+// Profile exists → redirect to ?next or /shop.
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+
+// Safe relative path: starts with "/", but NOT "//" (protocol-relative).
+// Rejects scheme ("://") and backslash ("\"). Prevents open redirects.
+function isSafeRelativePath(p: string): boolean {
+  return p.startsWith("/") && !p.startsWith("//") && !p.includes("://") && !p.includes("\\");
+}
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
-  // Validate next is a relative path (prevent open redirect)
+  // Validate next is a safe relative path (prevent open redirect)
   const rawNext = searchParams.get("next") ?? "";
-  const next = rawNext.startsWith("/") ? rawNext : "/shop";
+  const hasNext = rawNext.length > 0;
+  const nextIsSafe = hasNext && isSafeRelativePath(rawNext);
+  const next = nextIsSafe ? rawNext : "/shop";
 
   if (code) {
     const supabase = await createClient();
@@ -27,8 +36,13 @@ export async function GET(request: Request) {
           .eq("user_id", user.id)
           .single();
 
-        // First-time user — send to onboarding to collect business info
+        // First-time user
         if (!profile) {
+          // If caller passed a safe /signup path, honor it (wizard resumes).
+          if (nextIsSafe && rawNext.startsWith("/signup")) {
+            return NextResponse.redirect(`${origin}${rawNext}`);
+          }
+          // Legacy/unspecified path — collect business info via onboarding.
           return NextResponse.redirect(`${origin}/auth/onboarding`);
         }
       }

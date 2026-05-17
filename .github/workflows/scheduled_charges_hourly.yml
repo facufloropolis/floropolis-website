@@ -1,0 +1,51 @@
+# Lead-time scheduled charges cron — fires preauth / full charge per order.scheduled_*_at.
+# v1 | 2026-05-17 | Job_PM [V8 SHADOW] (W3-S10)
+#
+# Targets supabase-backup (BACKUP_SUPABASE_*) per standing rule #10. Cutover to prod
+# happens in a later wave after 7 days of clean shadow runs.
+#
+# Required secrets (per W2-S6 design section 6 + 9):
+#   BACKUP_SUPABASE_URL          supabase-backup project URL (existing)
+#   BACKUP_SUPABASE_SERVICE_KEY  supabase-backup service key (existing)
+#   STRIPE_SECRET_KEY            sk_test_... (NEW — Facu to set before enabling)
+#   TELEGRAM_BOT_TOKEN           existing (optional — alerts on hard failures)
+#   TELEGRAM_CHAT_ID             existing (optional, paired with bot token)
+
+name: Scheduled Charges (hourly)
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # top of every hour, UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (list candidates only, no Stripe calls)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  charge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BACKUP_SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+      BACKUP_SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run scheduled charges
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python scripts/jobs/scheduled_charges.py --dry-run
+          else
+            python scripts/jobs/scheduled_charges.py
+          fi
