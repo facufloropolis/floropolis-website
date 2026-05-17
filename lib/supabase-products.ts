@@ -208,7 +208,17 @@ export async function fetchCatalogProducts(
   }
 
   const data = await supabaseFetchInventory(queryParams);
-  return buildCatalogProducts((data ?? []) as FloropolisInventoryRow[]);
+  const rawRows = (data ?? []) as FloropolisInventoryRow[];
+
+  // Apply publishability filter per NEXT_PUBLIC_CATALOG_FILTER_MODE env (default 'off').
+  // SAFE TO DEPLOY: with mode='off' (default), behavior matches current production.
+  // To activate filtering: set env var to 'lenient' / 'balanced' / 'strict' in Vercel.
+  // See lib/catalog-filters.ts for mode definitions + lib/data/catalog-filters.ts comments.
+  const { filterPublishable, getFilterMode } = await import("./catalog-filters");
+  const mode = getFilterMode();
+  const filtered = filterPublishable(rawRows, new Date(), mode);
+
+  return buildCatalogProducts(filtered);
 }
 
 /**
