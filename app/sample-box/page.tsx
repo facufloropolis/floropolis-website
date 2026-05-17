@@ -278,7 +278,7 @@ function SampleBoxContent() {
               Already know what you need? Build a quote →
             </Link>
             <a
-              href="https://wa.me/17869308463?text=Hi!%20I%20just%20requested%20a%20sample%20box%20from%20Floropolis."
+              href="https://wa.me/16452405203?text=Hi!%20I%20just%20requested%20a%20sample%20box%20from%20Floropolis."
               target="_blank"
               rel="noopener noreferrer"
               className="text-center text-sm text-emerald-600 hover:text-emerald-700 font-medium"
@@ -536,7 +536,7 @@ function SampleBoxContent() {
                 <div className="text-center pt-1">
                   <span className="text-xs text-slate-400">Prefer to chat first? </span>
                   <a
-                    href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20request%20a%20free%20sample%20box."
+                    href="https://wa.me/16452405203?text=Hi!%20I%27d%20like%20to%20request%20a%20free%20sample%20box."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-[#128C2E] font-semibold hover:underline"

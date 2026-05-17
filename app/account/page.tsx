@@ -88,7 +88,7 @@ export default async function AccountPage() {
             In the meantime, reach out via WhatsApp for any order questions.
           </p>
           <a
-            href="https://wa.me/17869308463?text=Hi%2C%20I%20have%20a%20question%20about%20my%20Floropolis%20account."
+            href="https://wa.me/16452405203?text=Hi%2C%20I%20have%20a%20question%20about%20my%20Floropolis%20account."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 mt-5 bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-emerald-700 transition-colors"

@@ -498,7 +498,7 @@ export default function BoxBuilderPage() {
               <p className="text-center mt-3 text-xs text-slate-500">
                 Prefer to chat?{" "}
                 <a
-                  href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20help%20building%20a%20custom%20flower%20box%20order."
+                  href="https://wa.me/16452405203?text=Hi!%20I%27d%20like%20help%20building%20a%20custom%20flower%20box%20order."
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => pushEvent("whatsapp_click", { cta_location: "box_builder_quote" })}

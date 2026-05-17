@@ -90,7 +90,7 @@ export default function ShopGreensPage() {
           <p className="mt-4 text-slate-500 text-sm">
             Prefer to chat first?{" "}
             <a
-              href="https://wa.me/17869308463?text=Hi!%20I%27m%20interested%20in%20wholesale%20greens%20and%20foliage%20from%20Floropolis."
+              href="https://wa.me/16452405203?text=Hi!%20I%27m%20interested%20in%20wholesale%20greens%20and%20foliage%20from%20Floropolis."
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => pushEvent("whatsapp_click", { cta_location: "greens_cta" })}

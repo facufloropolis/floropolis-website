@@ -159,7 +159,7 @@ export default function GuidePage() {
                 <p className="text-xs text-slate-400 text-center mt-2">
                   Or{" "}
                   <a
-                    href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20to%20learn%20about%20farm-direct%20wholesale%20flowers."
+                    href="https://wa.me/16452405203?text=Hi!%20I%27d%20like%20to%20learn%20about%20farm-direct%20wholesale%20flowers."
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => pushEvent("whatsapp_click", { cta_location: "guide_form" })}

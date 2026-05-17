@@ -63,7 +63,7 @@ export default function TopBanner() {
             className="underline font-bold"
             onClick={() => pushEvent("mdy_banner_click", { cta_location: "top_banner" })}
           >
-            Shop Now →
+            See pricing →
           </Link>
           {timeLeft && <span className="text-white/80 ml-1">· {timeLeft}</span>}
         </span>

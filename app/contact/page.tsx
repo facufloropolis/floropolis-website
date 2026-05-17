@@ -42,13 +42,13 @@ export default function Contact() {
             </div>
 
             <div className="text-center p-4 bg-slate-50 rounded-2xl">
-              <a href="https://wa.me/17869308463" className="block" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.contact_whatsapp_click)}>
+              <a href="https://wa.me/16452405203" className="block" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.contact_whatsapp_click)}>
                 <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2 cursor-pointer hover:bg-emerald-200 transition-colors">
                   <MessageCircle className="w-7 h-7 text-emerald-600" />
                 </div>
               </a>
               <h3 className="text-xl font-bold text-slate-900 mb-1">WhatsApp</h3>
-              <a href="https://wa.me/17869308463" className="text-emerald-600 hover:text-emerald-700 font-medium" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.contact_whatsapp_click)}>
+              <a href="https://wa.me/16452405203" className="text-emerald-600 hover:text-emerald-700 font-medium" onClick={(e) => handleOutboundClick(e, CTA_EVENTS.contact_whatsapp_click)}>
                 +1 (786) 930-8463
               </a>
               <p className="text-sm text-slate-500 mt-2">Quick questions & support</p>

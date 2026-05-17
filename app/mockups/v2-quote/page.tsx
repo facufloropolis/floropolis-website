@@ -203,7 +203,7 @@ export default function V2Quote() {
               </div>
 
               {/* WhatsApp alternative */}
-              <a href="https://wa.me/17869308463?text=Hola,%20quiero%20una%20cotizacion" target="_blank" rel="noopener" className="block bg-white border border-slate-200 rounded-2xl p-4 hover:border-emerald-300 transition-colors">
+              <a href="https://wa.me/16452405203?text=Hola,%20quiero%20una%20cotizacion" target="_blank" rel="noopener" className="block bg-white border border-slate-200 rounded-2xl p-4 hover:border-emerald-300 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xs">WA</div>
                   <div className="flex-1">

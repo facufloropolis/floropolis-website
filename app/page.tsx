@@ -578,7 +578,7 @@ export default function Home() {
           <p className="mt-4 text-emerald-200 text-sm">
             Prefer to chat first?{" "}
             <a
-              href="https://wa.me/17869308463?text=Hi!%20I%27m%20interested%20in%20wholesale%20flowers%20from%20Floropolis."
+              href="https://wa.me/16452405203?text=Hi!%20I%27m%20interested%20in%20wholesale%20flowers%20from%20Floropolis."
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => pushEvent("whatsapp_click", { cta_location: "homepage_final_cta" })}

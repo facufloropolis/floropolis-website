@@ -321,7 +321,7 @@ export default function AssortedBoxesPage() {
             </Link>
             {/* EXP-121: WA escape on assorted-boxes page */}
             <a
-              href="https://wa.me/17869308463?text=Hi!%20I%27d%20like%20help%20putting%20together%20an%20assorted%20flower%20order."
+              href="https://wa.me/16452405203?text=Hi!%20I%27d%20like%20help%20putting%20together%20an%20assorted%20flower%20order."
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => pushEvent("whatsapp_click", { cta_location: "assorted_boxes_cta" })}
