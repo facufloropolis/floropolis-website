@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 SUBAGENT A: Inventory Data Validator (Job_PM-owned)
-v1.1 | 2026-05-17 | Job_PM [V8 SHADOW]
+v1.2 | 2026-05-18 | Job_PM [V8 SHADOW]
 
 Continuous validation of `floropolis_inventory` data quality. Catches what Rose's
 pipeline might miss before customers see it. Per Facu directive 2026-05-17:
@@ -14,6 +14,7 @@ Output:
   - JSON summary printed to stdout (workflow log)
   - JSON state file written to /tmp/inventory_validation_<date>.json
   - HTML email to faculavino@gmail.com via Brevo IF any critical threshold breached
+  - Per-SKU classifications upserted into `catalog_classifications` (v1.2)
 
 Critical thresholds (email triggers):
   - >5% of catalog has missing price
@@ -27,6 +28,30 @@ Env vars:
   SUPABASE_SERVICE_KEY  required
   BREVO_API_KEY         optional (skip email if missing)
   REPORT_TO             optional (default: faculavino@gmail.com)
+  INVENTORY_TABLE       optional (default: floropolis_inventory; mirror for backup)
+
+v1.2 changes (CAT-S2, 2026-05-18):
+  1. Reads pricing constants (gpm_target, fedex_rate_per_kg, fuel_surcharge_mult)
+     from `pricing_constants` table at start of run. Falls back to hardcoded
+     defaults if table is empty/unreachable. This means Facu can edit values via
+     /admin/catalog/config and next validator run picks them up.
+  2. Reads box weights from `box_master` table at start of run. Falls back to
+     hardcoded lookup if table is empty. Multi-format box types (EB/QB, HB/QB,
+     EB/HB/QB) still resolve via min() over component weights at runtime.
+  3. Per-SKU classification against the 16 hard gates from perfect_inventory_bar.md.
+     Each row gets a status (publishable / needs_data_fix / needs_facu_review),
+     failing_gates jsonb array, and gate_score (0-16). UPSERTed into
+     `catalog_classifications` with last_changed_at preserved on unchanged rows
+     and reviewer_* columns NEVER overwritten (preserves human input).
+  4. New section in JSON output: `classifications_summary` with global + per-vendor
+     + per (vendor,tier) status counts.
+
+  Note on gate coverage: gates 14 (last_harvested_date), 15 (vase_life_days) are
+  NOT yet evaluated because the mirror schema lacks the underlying columns. Gate 11
+  uses `contents_note` (column actually present) since `contents_description` is
+  what perfect_inventory_bar.md aspires to. Per spec: only emit IDs we actually
+  evaluate; do not fake-pass. Once Rose adds the columns, gate evaluation expands
+  automatically.
 
 v1.1 changes (W2-S7 polish, 2026-05-17):
   1. USA vendor branch verified — zero USA-vendor rows in mirror today, code dormant
@@ -55,10 +80,105 @@ import urllib.request
 
 
 # === Constants per Rose's pricing_formula.md (Section 1) ===
+# These are FALLBACKS. At runtime, load_pricing_constants() and load_box_master()
+# pull live values from `pricing_constants` and `box_master`. Edits via
+# /admin/catalog/config flow through on the next validator run.
 GPM_TARGET = 0.33                 # gross profit margin on selling price
 FEDEX_RATE_PER_KG = 6.50           # USD per kg
 FUEL_SURCHARGE_MULT = 1.25         # 25% fuel surcharge
 FORMULA_DEVIATION_THRESHOLD_PCT = 5  # flag if actual price deviates >5% from expected
+
+# Hardcoded box weight fallback (used only if box_master read fails / returns empty).
+# Multi-format keys (EB/QB, HB/QB, EB/HB/QB) are derived at runtime from min() of
+# component weights, so they are NOT included here.
+_BOX_DIM_KG_FALLBACK = {
+    "QB": 6.80,   "QB-M": 5.30,  "QB-OLI": 6.80,  "QB-MF": 6.05,
+    "HB": 11.70,  "EB": 4.25,    "EB-M": 3.99,    "EB-MF": 4.76,
+    "SB-M": 2.94, "QBV": 8.75,   "FB": 20.90,
+    "1/8-MF": 4.76,
+}
+
+# Live, mutable lookup. Populated by load_box_master() at start of run().
+BOX_DIM_KG: dict[str, float] = dict(_BOX_DIM_KG_FALLBACK)
+
+# Tracks whether pricing/box reads fell back to hardcoded values (for return summary).
+CONFIG_LOAD_FALLBACK = {
+    "pricing_constants": False,
+    "box_master": False,
+}
+
+# 16 hard gates from kb/projects/perfect_inventory_bar.md.
+# Gates currently NOT evaluated (mirror lacks the columns):
+#   14 missing_last_harvested  -- needs last_harvested_date column (Rose owns)
+#   15 missing_vase_life       -- needs vase_life_days column (Rose owns)
+# Gate 11 uses `contents_note` (the column actually present).
+ALL_GATE_IDS = [
+    "price_zero",                    # 1
+    "margin_unknown",                # 2
+    "formula_deviation",             # 3
+    "missing_cost_source",           # 4
+    "cost_unverified",               # 5
+    "open_price_alert",              # 6
+    "missing_box_dims",              # 7
+    "missing_units_or_bunch",        # 8
+    "missing_unit",                  # 9
+    "missing_image",                 # 10
+    "missing_contents_description",  # 11 (mapped to contents_note)
+    "missing_arrival_date",          # 12a
+    "t2_outside_5d_window",          # 12b
+    "t3_outside_14d_window",         # 12c
+    "missing_vendor_name",           # 13
+    "stock_live_mismatch",           # extra (not in the 16, but Facu-review signal)
+]
+
+# Subset we actually evaluate today. Used to size gate_score max.
+EVALUATED_GATE_IDS = {
+    "price_zero",
+    "margin_unknown",
+    "formula_deviation",
+    "missing_cost_source",
+    "cost_unverified",
+    "open_price_alert",
+    "missing_box_dims",
+    "missing_units_or_bunch",
+    "missing_unit",
+    "missing_image",
+    "missing_contents_description",
+    "missing_arrival_date",
+    "t2_outside_5d_window",
+    "t3_outside_14d_window",
+    "missing_vendor_name",
+}
+# Number of gates we can actually evaluate today (max gate_score). The schema
+# caps gate_score at 16, but with gates 14/15 not yet implementable our practical
+# max is len(EVALUATED_GATE_IDS) = 15. We still emit 0-16 in the column so future
+# expansion is a no-op DB-side.
+
+# Gates that route to needs_data_fix (Rose can resolve without Facu).
+DATA_FIX_GATES = {
+    "price_zero",
+    "margin_unknown",
+    "missing_cost_source",
+    "cost_unverified",
+    "open_price_alert",
+    "missing_arrival_date",
+    "missing_image",
+    "missing_unit",
+    "missing_units_or_bunch",
+    "missing_box_dims",
+    "missing_contents_description",
+    "missing_vendor_name",
+}
+# Gates that route to needs_facu_review (policy/edge calls).
+FACU_REVIEW_GATES = {
+    "formula_deviation",
+    "stock_live_mismatch",
+    "t2_outside_5d_window",
+    "t3_outside_14d_window",
+}
+
+# Cost verification freshness window (gate 5).
+COST_VERIFIED_WINDOW_DAYS = 30
 
 # Email-trigger thresholds (% of catalog)
 CRITICAL_THRESHOLDS = {
@@ -89,8 +209,16 @@ def _supabase_post(fn: str, params: dict) -> object:
         data=json.dumps(params).encode("utf-8"),
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        raw = resp.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            raw = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        # Surface the response body so callers can debug Postgres errors.
+        try:
+            body = e.read().decode("utf-8")[:600]
+        except Exception:
+            body = ""
+        raise RuntimeError(f"supabase rpc {fn} {e.code}: {body}") from e
     return json.loads(raw) if raw else None
 
 
@@ -104,6 +232,97 @@ def execute_sql(query: str) -> list[dict]:
         if isinstance(payload.get("rows"), list):
             return payload["rows"]
     return []
+
+
+# ============================================================================
+# Config loaders (pricing_constants + box_master)
+# ============================================================================
+
+
+def load_pricing_constants() -> None:
+    """Load GPM_TARGET, FEDEX_RATE_PER_KG, FUEL_SURCHARGE_MULT from pricing_constants
+    table. Mutate module globals. On any failure or empty table, leave hardcoded
+    fallbacks in place and set CONFIG_LOAD_FALLBACK['pricing_constants']=True.
+    """
+    global GPM_TARGET, FEDEX_RATE_PER_KG, FUEL_SURCHARGE_MULT
+    try:
+        rows = execute_sql(
+            "SELECT id, value_numeric FROM pricing_constants "
+            "WHERE id IN ('gpm_target','fedex_rate_per_kg','fuel_surcharge_mult')"
+        )
+    except Exception as e:
+        print(f"pricing_constants read failed ({e}); using hardcoded fallback", file=sys.stderr)
+        CONFIG_LOAD_FALLBACK["pricing_constants"] = True
+        return
+
+    if not rows:
+        print("pricing_constants empty; using hardcoded fallback", file=sys.stderr)
+        CONFIG_LOAD_FALLBACK["pricing_constants"] = True
+        return
+
+    by_id = {r["id"]: r.get("value_numeric") for r in rows}
+    try:
+        if by_id.get("gpm_target") is not None:
+            GPM_TARGET = float(by_id["gpm_target"])
+        if by_id.get("fedex_rate_per_kg") is not None:
+            FEDEX_RATE_PER_KG = float(by_id["fedex_rate_per_kg"])
+        if by_id.get("fuel_surcharge_mult") is not None:
+            FUEL_SURCHARGE_MULT = float(by_id["fuel_surcharge_mult"])
+    except (TypeError, ValueError) as e:
+        print(f"pricing_constants parse failed ({e}); using hardcoded fallback", file=sys.stderr)
+        CONFIG_LOAD_FALLBACK["pricing_constants"] = True
+
+
+def load_box_master() -> None:
+    """Load box_type -> weight_kg from box_master table. Mutate BOX_DIM_KG global.
+    On any failure or empty table, leave hardcoded fallback in place and set
+    CONFIG_LOAD_FALLBACK['box_master']=True.
+    """
+    global BOX_DIM_KG
+    try:
+        rows = execute_sql("SELECT box_type, weight_kg FROM box_master WHERE active = true")
+    except Exception as e:
+        print(f"box_master read failed ({e}); using hardcoded fallback", file=sys.stderr)
+        CONFIG_LOAD_FALLBACK["box_master"] = True
+        return
+
+    if not rows:
+        print("box_master empty; using hardcoded fallback", file=sys.stderr)
+        CONFIG_LOAD_FALLBACK["box_master"] = True
+        return
+
+    loaded: dict[str, float] = {}
+    for r in rows:
+        bt = r.get("box_type")
+        wk = r.get("weight_kg")
+        if bt is None or wk is None:
+            continue
+        try:
+            loaded[str(bt).upper().strip()] = float(wk)
+        except (TypeError, ValueError):
+            continue
+    if loaded:
+        BOX_DIM_KG = loaded
+    else:
+        CONFIG_LOAD_FALLBACK["box_master"] = True
+
+
+def resolve_box_weight(box_type_raw: str | None) -> float | None:
+    """Look up box weight, including multi-format types (EB/QB, HB/QB, EB/HB/QB).
+    Multi-format types resolve to the MIN of component weights (preserves alerts
+    on overpriced rows — per v1.1 design note).
+    """
+    if not box_type_raw:
+        return None
+    bt = box_type_raw.upper().strip()
+    if bt in BOX_DIM_KG:
+        return BOX_DIM_KG[bt]
+    if "/" in bt:
+        components = [c.strip() for c in bt.split("/") if c.strip()]
+        weights = [BOX_DIM_KG[c] for c in components if c in BOX_DIM_KG]
+        if weights:
+            return min(weights)
+    return None
 
 
 # ============================================================================
@@ -129,23 +348,7 @@ def compute_expected_price(row: dict) -> float | None:
     if not stems_per_box or stems_per_box <= 0:
         return None
 
-    # Approximate delivery_per_stem from box_type (per Rose's verified table).
-    # We don't have box_weight_kg on the row -- best-effort lookup by box_type.
-    box_type = (row.get("box_type") or "").upper().strip()
-    box_dim_kg_lookup = {
-        "QB": 6.80,   "QB-M": 5.30,  "QB-OLI": 6.80,  "QB-MF": 6.05,
-        "HB": 11.70,  "EB": 4.25,    "EB-M": 3.99,    "EB-MF": 4.76,
-        "SB-M": 2.94, "QBV": 8.75,   "FB": 20.90,
-        # Multi-format box types (Magic Flowers SKUs, observed in mirror 2026-05-17).
-        # Use SMALLEST weight in the set -> lower expected price -> preserves alerts.
-        # Do not raise these weights without Rose's sign-off (would silence deviations).
-        "EB/QB": 4.25,        # min(EB 4.25, QB 6.80) = EB
-        "HB/QB": 6.80,        # min(HB 11.70, QB 6.80) = QB
-        "EB/HB/QB": 4.25,     # min(EB 4.25, HB 11.70, QB 6.80) = EB
-        # TODO(Rose): "BB" (2 Magic Flowers SKUs) — unfamiliar code, weight unknown.
-        # Pending clarification via shared/handoffs.md 2026-05-17. Left out of lookup.
-    }
-    dim_kg = box_dim_kg_lookup.get(box_type)
+    dim_kg = resolve_box_weight(row.get("box_type"))
     if dim_kg is None:
         return None  # unknown box type, can't validate
 
@@ -303,6 +506,316 @@ def vendor_deviation_summary(validated_rows: list[dict]) -> dict:
 
 
 # ============================================================================
+# 16-gate classification (CAT-S2)
+# ============================================================================
+
+
+def _is_within_cost_window(cost_verified_at) -> bool:
+    """Return True if cost_verified_at is within COST_VERIFIED_WINDOW_DAYS of today.
+    Accepts ISO string or date/datetime. None / unparseable -> False (treat as stale).
+    """
+    if not cost_verified_at:
+        return False
+    today = dt.date.today()
+    try:
+        if isinstance(cost_verified_at, dt.date) and not isinstance(cost_verified_at, dt.datetime):
+            d = cost_verified_at
+        elif isinstance(cost_verified_at, dt.datetime):
+            d = cost_verified_at.date()
+        else:
+            s = str(cost_verified_at)
+            # Tolerate "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SS..." variants
+            d = dt.date.fromisoformat(s[:10])
+    except (ValueError, TypeError):
+        return False
+    return (today - d).days <= COST_VERIFIED_WINDOW_DAYS
+
+
+def _parse_date(v) -> dt.date | None:
+    if not v:
+        return None
+    if isinstance(v, dt.date) and not isinstance(v, dt.datetime):
+        return v
+    if isinstance(v, dt.datetime):
+        return v.date()
+    try:
+        return dt.date.fromisoformat(str(v)[:10])
+    except (ValueError, TypeError):
+        return None
+
+
+def classify_row(row: dict, validate_result: dict) -> dict:
+    """Compute 16-gate classification for one inventory row.
+
+    Returns dict with: sku_id, status, failing_gates (list[str]), gate_score (int),
+    vendor, tier, variety.
+
+    `validate_result` is the corresponding output of validate_row() and lets us
+    reuse deviation_pct_signed without recomputing compute_expected_price.
+    """
+    failing: list[str] = []
+    today = dt.date.today()
+    tier = (row.get("tier") or "").upper()
+    price = row.get("price") or 0
+    stock = row.get("stock") or 0
+
+    # 1 price > 0
+    if not price or price <= 0:
+        failing.append("price_zero")
+
+    # 2 margin_status set + not UNKNOWN
+    ms = row.get("margin_status")
+    if not ms or ms == "UNKNOWN":
+        failing.append("margin_unknown")
+
+    # 3 formula deviation ~ 0 (perfect_inventory_bar gate 3 is "<=$0.01" but
+    # at the dollar level our threshold proxy is FORMULA_DEVIATION_THRESHOLD_PCT)
+    dps = validate_result.get("deviation_pct_signed")
+    if dps is not None and abs(dps) > FORMULA_DEVIATION_THRESHOLD_PCT:
+        failing.append("formula_deviation")
+
+    # 4 cost_source set
+    if not row.get("cost_source"):
+        failing.append("missing_cost_source")
+
+    # 5 cost_verified_at set + within 30d
+    if not _is_within_cost_window(row.get("cost_verified_at")):
+        failing.append("cost_unverified")
+
+    # 6 has_open_price_alert = false
+    if row.get("has_open_price_alert") is True:
+        failing.append("open_price_alert")
+
+    # 7 box_type set AND validated weight available
+    if resolve_box_weight(row.get("box_type")) is None:
+        failing.append("missing_box_dims")
+
+    # 8 units_per_box > 0 AND stems_per_bunch > 0 where applicable
+    upb = row.get("units_per_box") or 0
+    spb = row.get("stems_per_bunch") or 0
+    unit_lower = (row.get("unit") or "").lower()
+    needs_bunch = unit_lower == "bunch"
+    if upb <= 0 or (needs_bunch and spb <= 0):
+        failing.append("missing_units_or_bunch")
+
+    # 9 unit set
+    if not row.get("unit"):
+        failing.append("missing_unit")
+
+    # 10 images >= 1
+    imgs = row.get("images")
+    if imgs is None or (isinstance(imgs, list) and len(imgs) == 0):
+        failing.append("missing_image")
+
+    # 11 contents_description set (mirror schema uses `contents_note`)
+    if not row.get("contents_note"):
+        failing.append("missing_contents_description")
+
+    # 12 tier-appropriate lead time
+    arrival = _parse_date(row.get("arrival_date"))
+    if tier in ("T2", "T3") and arrival is None:
+        failing.append("missing_arrival_date")
+    if tier == "T2" and arrival is not None and stock <= 0:
+        if (arrival - today).days < 5:
+            failing.append("t2_outside_5d_window")
+    if tier == "T3" and arrival is not None and stock <= 0:
+        if (arrival - today).days < 14:
+            failing.append("t3_outside_14d_window")
+
+    # 13 vendor name set
+    if not row.get("vendor"):
+        failing.append("missing_vendor_name")
+
+    # Gates 14 (last_harvested_date), 15 (vase_life_days), 16 (description-of-contents)
+    # are intentionally NOT evaluated: mirror schema lacks the columns. Per spec:
+    # do not fake-pass. When Rose adds the columns, append gate evaluations above.
+
+    # Extra signal (not in the 16 but flagged for Facu): stock>0 + live=false
+    if stock > 0 and row.get("live") is False:
+        failing.append("stock_live_mismatch")
+
+    # gate_score: count of evaluated gates that PASSED.
+    failing_evaluated = [g for g in failing if g in EVALUATED_GATE_IDS]
+    gate_score = max(0, min(16, len(EVALUATED_GATE_IDS) - len(failing_evaluated)))
+
+    # Status routing
+    has_data_fix = any(g in DATA_FIX_GATES for g in failing)
+    has_facu = any(g in FACU_REVIEW_GATES for g in failing)
+    if not failing_evaluated and not has_facu:
+        status = "publishable"
+    elif has_data_fix:
+        status = "needs_data_fix"   # prioritized — Rose can resolve without Facu
+    elif has_facu:
+        status = "needs_facu_review"
+    else:
+        # Failing gates exist but none routed -- conservative fallback
+        status = "needs_data_fix"
+
+    return {
+        "sku_id": row.get("id"),
+        "status": status,
+        "failing_gates": failing,
+        "gate_score": gate_score,
+        "vendor": row.get("vendor"),
+        "tier": tier or None,
+        "variety": row.get("variety"),
+    }
+
+
+def _supabase_upsert(table: str, rows: list[dict], on_conflict: str) -> int:
+    """POST rows to /rest/v1/<table> with merge-duplicates resolution. Returns count."""
+    if not rows:
+        return 0
+    url = (
+        os.environ["SUPABASE_URL"].rstrip("/")
+        + f"/rest/v1/{table}?on_conflict={on_conflict}"
+    )
+    key = os.environ["SUPABASE_SERVICE_KEY"]
+    req = urllib.request.Request(
+        url,
+        headers={
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates,return=minimal",
+        },
+        data=json.dumps(rows).encode("utf-8"),
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            resp.read()
+    except urllib.error.HTTPError as e:
+        try:
+            body = e.read().decode("utf-8")[:600]
+        except Exception:
+            body = ""
+        raise RuntimeError(f"supabase upsert {table} {e.code}: {body}") from e
+    return len(rows)
+
+
+def upsert_classifications(classifications: list[dict], batch_size: int = 200) -> int:
+    """UPSERT classifications into catalog_classifications via PostgREST.
+
+    Preserves reviewer_* columns automatically (we never send those keys -> they
+    fall back to existing values on update). For last_changed_at: we first SELECT
+    existing (sku_id, status, last_changed_at), then for each payload row decide
+    whether to bump last_changed_at to now() (status changed or new row) or carry
+    the prior value (status unchanged).
+
+    Why not a data-modifying CTE through the execute_sql RPC? Postgres forbids
+    data-modifying statements inside the RPC's `SELECT row_to_json(t) FROM (...) t`
+    wrapper. PostgREST native upsert sidesteps that.
+
+    Returns count of rows written.
+    """
+    if not classifications:
+        return 0
+
+    # 1) Fetch existing rows so we can compute last_changed_at correctly.
+    #    Use the RPC (which IS SELECT-friendly) to avoid REST pagination caps.
+    existing_rows = execute_sql(
+        "SELECT sku_id, status, last_changed_at FROM catalog_classifications"
+    )
+    existing: dict[int, dict] = {}
+    for r in existing_rows or []:
+        sid = r.get("sku_id")
+        if sid is None:
+            continue
+        existing[int(sid)] = {
+            "status": r.get("status"),
+            "last_changed_at": r.get("last_changed_at"),
+        }
+
+    now_iso = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+
+    payload: list[dict] = []
+    for c in classifications:
+        sku = c.get("sku_id")
+        if sku is None:
+            continue
+        sku_int = int(sku)
+        prior = existing.get(sku_int)
+        if prior is None:
+            last_changed = now_iso  # new row
+        elif prior["status"] != c["status"]:
+            last_changed = now_iso  # status flipped
+        else:
+            # status unchanged -> preserve prior last_changed_at
+            last_changed = prior["last_changed_at"] or now_iso
+        payload.append({
+            "sku_id": sku_int,
+            "status": c["status"],
+            "failing_gates": c["failing_gates"],
+            "gate_score": int(c["gate_score"]),
+            "vendor": c.get("vendor"),
+            "tier": c.get("tier"),
+            "variety": c.get("variety"),
+            "last_validated_at": now_iso,
+            "last_changed_at": last_changed,
+        })
+
+    # 2) Upsert in batches via PostgREST.
+    written = 0
+    for i in range(0, len(payload), batch_size):
+        batch = payload[i:i + batch_size]
+        written += _supabase_upsert("catalog_classifications", batch, on_conflict="sku_id")
+    return written
+
+
+def summarize_classifications(classifications: list[dict]) -> dict:
+    """Build classifications_summary: global, per-vendor, per (vendor, tier)."""
+    statuses = ("publishable", "needs_data_fix", "needs_facu_review")
+    global_counts = {s: 0 for s in statuses}
+    by_vendor: dict[str, dict] = {}
+    by_vendor_tier: dict[str, dict] = {}
+
+    for c in classifications:
+        s = c["status"]
+        if s not in global_counts:
+            # admin overrides etc -- include but don't crash
+            global_counts.setdefault(s, 0)
+        global_counts[s] = global_counts.get(s, 0) + 1
+
+        v = c.get("vendor") or "Unknown"
+        vbucket = by_vendor.setdefault(v, {st: 0 for st in statuses})
+        vbucket.setdefault(s, 0)
+        vbucket[s] = vbucket.get(s, 0) + 1
+
+        t = c.get("tier") or "Unknown"
+        key = f"{v} | {t}"
+        vt = by_vendor_tier.setdefault(key, {st: 0 for st in statuses})
+        vt.setdefault(s, 0)
+        vt[s] = vt.get(s, 0) + 1
+
+    # totals + publishable %
+    def _with_total(d: dict[str, dict]) -> dict[str, dict]:
+        out = {}
+        for k, v in d.items():
+            total = sum(v.values())
+            pub = v.get("publishable", 0)
+            out[k] = {
+                **v,
+                "total": total,
+                "publishable_pct": round(pub / total * 100, 1) if total else 0.0,
+            }
+        return out
+
+    total = sum(global_counts.values())
+    pub = global_counts.get("publishable", 0)
+    return {
+        "global": {
+            **global_counts,
+            "total": total,
+            "publishable_pct": round(pub / total * 100, 1) if total else 0.0,
+        },
+        "by_vendor": _with_total(by_vendor),
+        "by_vendor_tier": _with_total(by_vendor_tier),
+    }
+
+
+# ============================================================================
 # Aggregate + report
 # ============================================================================
 
@@ -313,6 +826,10 @@ def run_validation() -> dict:
     INVENTORY_TABLE env var defaults to 'floropolis_inventory' (prod).
     Set to 'floropolis_inventory_mirror' when running against supabase-backup.
     """
+    # Load live config from DB (with fallback to hardcoded constants)
+    load_pricing_constants()
+    load_box_master()
+
     table = os.environ.get("INVENTORY_TABLE", "floropolis_inventory")
     # whitelist to prevent injection -- only known table names allowed
     if table not in ("floropolis_inventory", "floropolis_inventory_mirror"):
@@ -321,13 +838,15 @@ def run_validation() -> dict:
         "SELECT id, slug, name, variety, color, vendor, tier, price, stock, "
         "farm_cost, cost_source, cost_verified_at, margin_status, "
         "has_open_price_alert, arrival_date, live, active, box_type, "
-        f"units_per_box, total_stems, images FROM {table} ORDER BY id"
+        "units_per_box, total_stems, stems_per_bunch, unit, contents_note, "
+        f"images FROM {table} ORDER BY id"
     )
 
     issue_counts: dict[str, int] = {}
     issue_examples: dict[str, list] = {}
     rows_with_issues = []
     all_results: list[dict] = []
+    classifications: list[dict] = []
     rows_clean = 0
 
     for row in rows:
@@ -343,6 +862,8 @@ def run_validation() -> dict:
                     issue_examples[key].append(result)
         else:
             rows_clean += 1
+        # 16-gate classification (CAT-S2)
+        classifications.append(classify_row(row, result))
 
     total = len(rows)
     issue_pct = {k: round(v / total * 100, 1) for k, v in issue_counts.items()}
@@ -360,6 +881,16 @@ def run_validation() -> dict:
 
     vendor_dev = vendor_deviation_summary(all_results)
 
+    # Upsert classifications into catalog_classifications (CAT-S2)
+    classification_summary = summarize_classifications(classifications)
+    rows_written = 0
+    upsert_error: str | None = None
+    try:
+        rows_written = upsert_classifications(classifications)
+    except Exception as e:  # noqa: BLE001
+        upsert_error = f"{type(e).__name__}: {e}"
+        print(f"catalog_classifications upsert failed: {upsert_error}", file=sys.stderr)
+
     return {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "date": dt.date.today().isoformat(),
@@ -372,6 +903,15 @@ def run_validation() -> dict:
         "critical_breaches": critical_breaches,
         "thresholds": CRITICAL_THRESHOLDS,
         "vendor_deviation_analysis": vendor_dev,
+        "classifications_summary": classification_summary,
+        "classifications_written": rows_written,
+        "classifications_upsert_error": upsert_error,
+        "config_load_fallback": dict(CONFIG_LOAD_FALLBACK),
+        "pricing_constants_used": {
+            "gpm_target": GPM_TARGET,
+            "fedex_rate_per_kg": FEDEX_RATE_PER_KG,
+            "fuel_surcharge_mult": FUEL_SURCHARGE_MULT,
+        },
     }
 
 
@@ -504,6 +1044,11 @@ def main() -> int:
         "issue_pct": summary["issue_pct"],
         "critical_breaches": summary["critical_breaches"],
         "vendor_deviation_analysis": summary["vendor_deviation_analysis"],
+        "classifications_summary": summary["classifications_summary"],
+        "classifications_written": summary["classifications_written"],
+        "classifications_upsert_error": summary["classifications_upsert_error"],
+        "config_load_fallback": summary["config_load_fallback"],
+        "pricing_constants_used": summary["pricing_constants_used"],
     }, indent=2))
 
     # Send email IF breaches
