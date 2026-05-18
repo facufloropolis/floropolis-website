@@ -1,0 +1,40 @@
+# CAT-S6: Catalog Review Notify -- daily email when SKUs await Facu's decision
+# v1 | 2026-05-18 | Job_PM [V8 SHADOW]
+#
+# Runs daily 14:30 UTC (07:30 PDT), 30 minutes after Subagent A (Inventory
+# Validator) refreshes `catalog_classifications`. Queries the approval queue
+# and emails Facu only if there's at least one row awaiting his review.
+#
+# NOTE: this workflow does NOT run on push. The `on:` block only declares
+# `schedule` + `workflow_dispatch`, so committing or merging this file will
+# not trigger the cron prematurely.
+#
+# Required secrets:
+#   BACKUP_SUPABASE_URL          (existing)
+#   BACKUP_SUPABASE_SERVICE_KEY  (existing)
+#   BREVO_API_KEY                (existing)
+#   REPORT_TO                    (existing; defaults to faculavino@gmail.com)
+
+name: Catalog Review Notify (daily)
+
+on:
+  schedule:
+    - cron: '30 14 * * *'  # 14:30 UTC = 07:30 PDT, 30 min after validator
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run catalog review notifier
+        env:
+          SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          REPORT_TO: ${{ secrets.REPORT_TO }}
+        run: python scripts/jobs/catalog_review_notify_daily.py

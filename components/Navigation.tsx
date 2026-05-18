@@ -208,17 +208,41 @@ export default function Navigation() {
             <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
               Free Sample Box
             </Link>
-            {/* Backup-project auth (the only auth surface now -- legacy AuthWidget removed 2026-05-17) */}
+            {/* Backup-project auth: dropdown when signed in (My orders + Admin + Sign out) */}
             {!backupAuth.loading && (
               backupAuth.user ? (
-                <Link
-                  href="/account/orders"
-                  className="flex items-center gap-1.5 text-slate-700 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
-                  title={backupAuth.user.email ?? 'My orders'}
-                >
-                  <User className="w-3.5 h-3.5" />
-                  My orders
-                </Link>
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-1.5 text-slate-700 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
+                    aria-label="Account menu"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                      {backupAuth.user.email?.[0]?.toUpperCase() ?? "U"}
+                    </div>
+                    <ChevronDown className="w-3 h-3 text-slate-400" />
+                  </button>
+                  {dropdownOpen && (
+                    <div className="absolute right-0 top-10 w-52 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 z-50">
+                      <div className="px-3 py-2 border-b border-slate-100 text-[11px] text-slate-500 truncate">{backupAuth.user.email}</div>
+                      <Link href="/account/orders" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">My orders</Link>
+                      <Link href="/admin/catalog" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin catalog</Link>
+                      <Link href="/admin/refunds" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin refunds</Link>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setDropdownOpen(false);
+                          await backupAuth.signOut();
+                          window.location.assign('/');
+                        }}
+                        className="block w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 border-t border-slate-100"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link
                   href="/auth/login"
