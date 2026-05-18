@@ -230,13 +230,17 @@ function SignupWizard() {
     noteParts.push(`submitted_at: ${new Date().toISOString()}`);
     const notes = noteParts.join(" | ");
 
-    // Check if a profile row already exists for this user (e.g. OAuth path
-    // already routed through /auth/onboarding earlier). If so, update; else insert.
+    // Check if a profile row already exists for this user.
+    // First fetch with FULL row so we can preserve protected fields like
+    // status='admin' (don't downgrade admins back to 'approved').
     const { data: existing } = await supabase
       .from("client_profiles")
-      .select("id")
+      .select("id, status")
       .eq("user_id", user.id)
       .maybeSingle();
+
+    // Preserve admin status if already set. Otherwise default to 'approved'.
+    const targetStatus = existing?.status === "admin" ? "admin" : "approved";
 
     let dbError = null;
     if (existing) {
@@ -245,23 +249,24 @@ function SignupWizard() {
         .update({
           business_name: businessName.trim(),
           phone: `+1${digitsOnly(phone)}`,
-          status: "approved",
+          status: targetStatus,
           approved_at: new Date().toISOString(),
           notes,
         })
         .eq("user_id", user.id);
       dbError = error;
     } else {
+      // Use upsert so concurrent or out-of-order callbacks don't break.
       const { error } = await supabase
         .from("client_profiles")
-        .insert({
+        .upsert({
           user_id: user.id,
           business_name: businessName.trim(),
           phone: `+1${digitsOnly(phone)}`,
-          status: "approved",
+          status: targetStatus,
           approved_at: new Date().toISOString(),
           notes,
-        });
+        }, { onConflict: "user_id" });
       dbError = error;
     }
 

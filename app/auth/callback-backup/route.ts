@@ -12,6 +12,7 @@
 
 import { NextResponse } from "next/server";
 import { createBackupServerClient } from "@/lib/supabase/backup-server-session";
+import { getBackupServiceClient } from "@/lib/supabase/backup-server";
 
 // Safe relative path: starts with "/", but NOT "//" (protocol-relative).
 // Rejects scheme ("://") and backslash ("\"). Prevents open redirects.
@@ -43,9 +44,15 @@ export async function GET(request: Request) {
 
     if (!error) {
       // Check if this user already has a client profile in BACKUP.
+      // IMPORTANT: use service-role client for the profile lookup, NOT the
+      // cookie-bound session client. Cookies set by exchangeCodeForSession
+      // are not yet visible to the cookie-bound client in the same request
+      // (Next.js cookie race) -- which made RLS reject the SELECT and sent
+      // existing users through the signup wizard.
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile } = await supabase
+        const serviceClient = getBackupServiceClient();
+        const { data: profile } = await serviceClient
           .from("client_profiles")
           .select("id")
           .eq("user_id", user.id)
