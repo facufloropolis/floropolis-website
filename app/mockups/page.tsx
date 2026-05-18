@@ -27,22 +27,6 @@ const groups: Group[] = [
     description: "Next-version proposals for ecommerce + conversions + admin. Plan doc: ~/Claude_MA_v8/Job_PM/kb/projects/v2_master_plan.md",
     screens: [
       {
-        num: "Y1",
-        title: "v2 Homepage -- multi-path entry",
-        url: "/mockups/v2-home",
-        description: "Browse / Box Builder / Quote. Multi-path entry segments by intent. Trust signals strip with NUMBERS. Login-aware hero with reorder CTA + negotiated rate banner.",
-        color: "emerald",
-        badge: "v2",
-      },
-      {
-        num: "Y2",
-        title: "v2 Catalog browse",
-        url: "/mockups/v2-shop",
-        description: "Faceted search (vendor / country / category / length / delivery week / source / GPM band). Source badges per card. Login-aware pricing (negotiated rates shown). Cross-vendor count per card.",
-        color: "emerald",
-        badge: "v2",
-      },
-      {
         num: "Y3",
         title: "v2 PDP",
         url: "/mockups/v2-pdp",
@@ -271,7 +255,7 @@ export default function MockupIndex() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Floropolis Mockups</h1>
-              <p className="text-slate-500 text-sm">22 screens . All hardcoded mockups -- safe to open anywhere</p>
+              <p className="text-slate-500 text-sm">20 screens . All hardcoded mockups -- safe to open anywhere</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
@@ -279,7 +263,7 @@ export default function MockupIndex() {
             <span className="text-xs bg-violet-100 text-violet-800 px-3 py-1 rounded-full font-medium">4 Admin screens</span>
             <span className="text-xs bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">1 Vendor screen</span>
             <span className="text-xs bg-violet-100 text-violet-800 px-3 py-1 rounded-full font-medium">8 Catalog Control Plane</span>
-            <span className="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium">5 v2 Vision (FOR REVIEW)</span>
+            <span className="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium">3 v2 Vision (FOR REVIEW)</span>
             <span className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Next.js 15 · Tailwind · TypeScript</span>
           </div>
         </div>

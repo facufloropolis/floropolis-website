@@ -67,6 +67,10 @@ interface CheckoutBody {
   shipping_address_id?: number;
   shipping_address?: InlineAddress;
   customer_note?: string | null;
+  // CHK-POLISH (2026-05-18): if true, the user picked their saved payment_method
+  // on the checkout page. We confirm the SetupIntent server-side with that pm_id
+  // instead of returning a client_secret for the browser Elements widget.
+  use_saved_payment_method?: boolean;
 }
 
 type PaymentMode = 'mode_a' | 'mode_b' | 'mode_c';
@@ -444,11 +448,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // ---- 13. Stripe: get-or-create Customer + SetupIntent ----
   const stripe = getStripe();
   let stripeCustomerId: string;
+  // CHK-POLISH: track saved pm_id from prior orders so we can both surface it
+  // back to the page (for the "Use saved card" option) AND confirm the SetupIntent
+  // server-side when the user picks it.
+  let savedPaymentMethodId: string | null = null;
   try {
     // Reuse existing Customer if user already has one (look in most recent order).
+    // ALSO grab the most recent stripe_payment_method_id — that's the saved card.
     const { data: priorOrder } = await backup
       .from('orders')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id,stripe_payment_method_id')
       .eq('user_id', userId)
       .not('stripe_customer_id', 'is', null)
       .order('created_at', { ascending: false })
@@ -457,6 +466,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (priorOrder?.stripe_customer_id) {
       stripeCustomerId = priorOrder.stripe_customer_id;
+      // Pull the most recent saved pm from ANY prior order for this user
+      // (not just the one matched above — the user might have multiple cards
+      // and the latest order might be from before they saved one).
+      const { data: priorPmRow } = await backup
+        .from('orders')
+        .select('stripe_payment_method_id')
+        .eq('user_id', userId)
+        .not('stripe_payment_method_id', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      savedPaymentMethodId = priorPmRow?.stripe_payment_method_id ?? null;
     } else {
       // Idempotency key includes a v2 suffix so an earlier diagnostic test
       // (which consumed `customer:${userId}` with potentially different params)
@@ -487,8 +508,35 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
+  // CHK-POLISH: look up saved pm brand+last4 so the page can render
+  // "Use saved card ending in 4242 (Visa)". Best-effort: if Stripe rejects the
+  // lookup, fall back to "no saved card" rather than failing the whole session.
+  let savedPaymentMethod: { pm_id: string; brand: string; last4: string } | null = null;
+  if (savedPaymentMethodId) {
+    try {
+      const pm = await stripe.paymentMethods.retrieve(savedPaymentMethodId);
+      if (pm.card?.brand && pm.card?.last4) {
+        savedPaymentMethod = {
+          pm_id: savedPaymentMethodId,
+          brand: pm.card.brand,
+          last4: pm.card.last4,
+        };
+      }
+    } catch (err) {
+      // Card may have been deleted / detached / customer churned. Swallow and
+      // just don't offer the saved-card option this time.
+      console.warn('[checkout/session] saved pm lookup failed (non-fatal):', err);
+    }
+  }
+
   const setupIdempotencyKey = keyForSetupIntent(orderId);
   let setupIntent;
+  // CHK-POLISH: if the user picked "Use saved card", attach the pm AND confirm
+  // server-side. The SetupIntent transitions straight to `succeeded` and our
+  // existing webhook fires the Mode A/B/C side-effects normally — no browser-side
+  // Elements widget needed.
+  const useSaved =
+    body.use_saved_payment_method === true && savedPaymentMethod != null;
   try {
     setupIntent = await stripe.setupIntents.create(
       {
@@ -501,6 +549,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           floropolis_user_id: userId,
           payment_mode: modeInfo.mode,
         },
+        ...(useSaved && savedPaymentMethod
+          ? {
+              payment_method: savedPaymentMethod.pm_id,
+              confirm: true,
+            }
+          : {}),
       },
       { idempotencyKey: setupIdempotencyKey },
     );
@@ -555,6 +609,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     publishable_key: STRIPE_PUBLISHABLE_KEY,
     grand_total: totals.grand_total,
     currency: 'USD',
-    next_step: 'confirm_card',
+    // CHK-POLISH: surface the saved card (if any) so the page can offer
+    // "Use saved card" before mounting Stripe Elements. null if user has no
+    // prior usable pm.
+    saved_payment_method: savedPaymentMethod,
+    // 'succeeded' when use_saved_payment_method was true and Stripe confirmed
+    // the SetupIntent inline. Page uses this to skip the Elements widget and
+    // jump straight to the order-confirmation interstitial.
+    setup_intent_status: setupIntent.status,
+    next_step: useSaved ? 'order_saved' : 'confirm_card',
   });
 }

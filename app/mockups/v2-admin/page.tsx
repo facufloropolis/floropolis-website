@@ -85,7 +85,7 @@ export default function V2Admin() {
       <header className="bg-white border-b border-slate-200 sticky top-[33px] z-40">
         <div className="px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/mockups/v2-home" className="flex items-center gap-2">
+            <Link href="/mockups" className="flex items-center gap-2">
               <div className="w-7 h-7 bg-violet-600 rounded-md flex items-center justify-center text-white font-bold text-xs">F</div>
               <span className="font-bold text-slate-900 text-sm">Floropolis Admin</span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 font-semibold">v2 unified</span>

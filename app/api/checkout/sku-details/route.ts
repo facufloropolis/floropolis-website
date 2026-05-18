@@ -38,6 +38,10 @@ interface SkuDetail {
   is_on_deal: boolean;
   deal_price: number | null;
   images: unknown | null;
+  // CHK-POLISH (2026-05-18): line-item unit context. /checkout uses these to show
+  // "3 stems = less than 1 bunch" and friends without re-querying.
+  stems_per_bunch: number | null;
+  units_per_box: number | null;
 }
 
 function mockItemForId(id: number): SkuDetail {
@@ -53,6 +57,8 @@ function mockItemForId(id: number): SkuDetail {
     is_on_deal: false,
     deal_price: null,
     images: null,
+    stems_per_bunch: 10,
+    units_per_box: 40,
   };
 }
 
@@ -104,7 +110,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const { data, error } = await backup
       .from('floropolis_inventory_mirror')
       .select(
-        'id,name,variety,length,unit,price,vendor,is_on_deal,deal_price,images',
+        'id,name,variety,length,unit,price,vendor,is_on_deal,deal_price,images,stems_per_bunch,units_per_box',
       )
       .in('id', ids);
 
@@ -127,6 +133,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       is_on_deal: !!row.is_on_deal,
       deal_price: row.deal_price != null ? Number(row.deal_price) : null,
       images: row.images ?? null,
+      stems_per_bunch: row.stems_per_bunch != null ? Number(row.stems_per_bunch) : null,
+      units_per_box: row.units_per_box != null ? Number(row.units_per_box) : null,
     }));
 
     const foundIds = new Set(items.map((i) => i.id));

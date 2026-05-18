@@ -65,7 +65,7 @@ export default function V2PDP() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-[33px] z-40">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/mockups/v2-home" className="flex items-center gap-2">
+          <Link href="/mockups" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">F</div>
             <span className="font-bold text-slate-900 text-base">Floropolis</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 font-semibold">v2</span>
@@ -78,8 +78,8 @@ export default function V2PDP() {
 
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-4 py-2 text-xs text-slate-500">
-        <Link href="/mockups/v2-home" className="hover:underline">Home</Link>{' / '}
-        <Link href="/mockups/v2-shop" className="hover:underline">Shop</Link>{' / '}
+        <Link href="/mockups" className="hover:underline">Home</Link>{' / '}
+        <span>Shop</span>{' / '}
         <span>Roses</span>{' / '}
         <span className="text-slate-700">{PRODUCT.name}</span>
       </div>

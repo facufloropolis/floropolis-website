@@ -65,6 +65,8 @@ interface SkuDetail {
   is_on_deal: boolean;
   deal_price: number | null;
   images: unknown | null;
+  stems_per_bunch: number | null;
+  units_per_box: number | null;
 }
 
 interface AddressForm {
@@ -78,6 +80,12 @@ interface AddressForm {
   postal_code: string;
 }
 
+interface SavedPaymentMethod {
+  pm_id: string;
+  brand: string;
+  last4: string;
+}
+
 interface SessionResponse {
   order_id: number;
   order_number: string;
@@ -88,6 +96,12 @@ interface SessionResponse {
   grand_total: number;
   currency: string;
   next_step: string;
+  // CHK-POLISH (2026-05-18): present when user has a usable saved card on file.
+  saved_payment_method?: SavedPaymentMethod | null;
+  // 'succeeded' when the server already confirmed the SetupIntent inline
+  // (use_saved_payment_method=true on submit). Tells the page to skip Stripe
+  // Elements entirely and go straight to /order-confirmation/{order_id}.
+  setup_intent_status?: string;
 }
 
 // ============================================================================
@@ -203,10 +217,13 @@ function modeHintFor(lead: number, grandTotal: number, deliveryISO: string): Mod
     return {
       mode: "B",
       tone: "bg-emerald-50 border-emerald-200 text-emerald-900",
-      title: "$1 hold now, full charge later.",
-      body: `We save your card and place a $1 verification hold today. Full ${total} charge happens ${chargeDays} days before delivery${chargeDate ? ` (on ${chargeDate})` : ""}.`,
+      title: "We save your card today.",
+      // CHK-POLISH (2026-05-18): Facu wanted the $1 hold call-out kept but with
+      // plain-English framing — "verification" not "preauth", clear date for
+      // the full charge.
+      body: `We save your card today + place a $1 verification hold so we know it works. Full ${total} charges ${chargeDays} days before delivery${chargeDate ? ` on ${chargeDate}` : ""}.`,
       refund: `Cancel up to ${chargeDays - 1} days before delivery — no fees.`,
-      chargeSummary: `$1 hold today. Full ${total} runs ${chargeDays} days before delivery${chargeDate ? ` (${chargeDate})` : ""}.`,
+      chargeSummary: `Card saved today. Full ${total} runs ${chargeDays} days before delivery${chargeDate ? ` (${chargeDate})` : ""}.`,
     };
   }
   return {
@@ -221,6 +238,70 @@ function modeHintFor(lead: number, grandTotal: number, deliveryISO: string): Mod
 
 function money(n: number): string {
   return `$${n.toFixed(2)}`;
+}
+
+// CHK-POLISH (2026-05-18): format the line-item header + footnote with unit
+// context. Centralized here so the order summary stays declarative. Returns:
+//   header   - "3 stems × $4.48/stem = $13.44"
+//   footnote - "(less than 1 bunch — bunches are 10 stems)" or null when N/A
+//   warning  - small-qty warning string when qty < stems_per_bunch (soft)
+interface LineDisplay {
+  header: string;
+  footnote: string | null;
+  warning: string | null;
+}
+function describeLine(qty: number, unitPrice: number, snap: SkuDetail | undefined): LineDisplay {
+  const total = qty * unitPrice;
+  if (!snap || !snap.unit) {
+    // Fallback: no unit info -> show "3 × $4.48 = $13.44", no context.
+    return {
+      header: `${qty} × ${money(unitPrice)} = ${money(total)}`,
+      footnote: null,
+      warning: null,
+    };
+  }
+  const unitLower = snap.unit.toLowerCase();
+  const spb = snap.stems_per_bunch ?? null;
+  const upb = snap.units_per_box ?? null;
+  if (unitLower === "stem" && spb && spb > 0) {
+    const header = `${qty} stem${qty === 1 ? "" : "s"} × ${money(unitPrice)}/stem = ${money(total)}`;
+    const footnote =
+      qty < spb
+        ? `(less than 1 bunch — bunches are ${spb} stems)`
+        : `(${Math.floor(qty / spb)} bunch${Math.floor(qty / spb) === 1 ? "" : "es"}${qty % spb === 0 ? "" : ` + ${qty % spb} stems`} — ${spb} stems/bunch)`;
+    const warning =
+      qty < spb
+        ? `Less than 1 bunch. Increase to ${spb} stems (1 bunch) for the standard wholesale order.`
+        : null;
+    return { header, footnote, warning };
+  }
+  if (unitLower === "bunch") {
+    const header = `${qty} bunch${qty === 1 ? "" : "es"} × ${money(unitPrice)}/bunch = ${money(total)}`;
+    const footnote = spb && spb > 0
+      ? `(${qty * spb} stems total — ${spb} stems/bunch)`
+      : null;
+    return { header, footnote, warning: null };
+  }
+  if (unitLower === "box") {
+    const header = `${qty} box${qty === 1 ? "" : "es"} × ${money(unitPrice)}/box = ${money(total)}`;
+    // Box stem totals = units_per_box × stems_per_bunch for Bunch-packed boxes;
+    // for Stem-packed boxes, units_per_box IS the stem count. We don't know
+    // which here without the original product unit, so prefer the simple form
+    // when both are present.
+    let footnote: string | null = null;
+    if (upb && upb > 0 && spb && spb > 0) {
+      const stemsTotal = upb * spb;
+      footnote = `(${qty * stemsTotal} stems total — ${stemsTotal} stems/box)`;
+    } else if (upb && upb > 0) {
+      footnote = `(${qty * upb} stems total — ${upb} stems/box)`;
+    }
+    return { header, footnote, warning: null };
+  }
+  return {
+    header: `${qty} × ${money(unitPrice)} = ${money(total)}`,
+    footnote: null,
+    warning: null,
+  };
 }
 
 // Format "delivery_date - N days" as a friendly short date (e.g. "Wed May 22").
@@ -330,6 +411,96 @@ function StripePayForm({
 }
 
 // ============================================================================
+// Saved-card confirm button (CHK-POLISH 2026-05-18)
+// Hits /api/checkout/confirm-saved to confirm the SetupIntent with the saved
+// pm. No Stripe.js loaded on the page — server does the talking. On success
+// the parent flips `savedCardConfirmed` and redirects.
+// ============================================================================
+
+function SavedCardConfirmButton({
+  session,
+  onError,
+  onConfirmed,
+  busy,
+  setBusy,
+}: {
+  session: SessionResponse;
+  onError: (msg: string) => void;
+  onConfirmed: () => void;
+  busy: boolean;
+  setBusy: (b: boolean) => void;
+}) {
+  async function handleConfirm() {
+    setBusy(true);
+    onError("");
+    try {
+      const res = await fetch("/api/checkout/confirm-saved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: session.order_id }),
+        credentials: "include",
+      });
+      const j = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        message?: string;
+        status?: string;
+        next_action?: unknown;
+      };
+      if (!res.ok) {
+        onError(j.message ?? j.error ?? `Could not confirm saved card (${res.status})`);
+        return;
+      }
+      // SetupIntent may transition to `requires_action` for 3DS-like flows on
+      // some banks. We don't have Stripe.js loaded, so surface a clear message
+      // and let the user fall back to "Add a new card".
+      if (j.status === "requires_action") {
+        onError(
+          "Your bank wants to verify this card. Pick \"Add a new card\" to complete verification, or try a different card.",
+        );
+        return;
+      }
+      if (j.status !== "succeeded") {
+        onError(`Card not confirmed (status: ${j.status ?? "unknown"}). Try \"Add a new card\".`);
+        return;
+      }
+      onConfirmed();
+    } catch (err) {
+      onError(err instanceof Error ? err.message : "Could not confirm saved card");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleConfirm}
+      disabled={busy}
+      className={`w-full py-4 rounded-2xl font-bold text-base transition-all ${
+        busy
+          ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+          : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg"
+      }`}
+    >
+      {busy ? "Confirming..." : `Confirm order with saved card - ${money(session.grand_total)}`}
+    </button>
+  );
+}
+
+function brandLabel(brand: string): string {
+  const map: Record<string, string> = {
+    visa: "Visa",
+    mastercard: "Mastercard",
+    amex: "American Express",
+    discover: "Discover",
+    diners: "Diners",
+    jcb: "JCB",
+    unionpay: "UnionPay",
+  };
+  return map[brand.toLowerCase()] ?? brand.charAt(0).toUpperCase() + brand.slice(1);
+}
+
+// ============================================================================
 // Main page
 // ============================================================================
 
@@ -346,6 +517,10 @@ function CheckoutContent() {
   const [shipping, setShipping] = useState<AddressForm>(emptyAddress());
   const [billingSame, setBillingSame] = useState(true);
   const [billing, setBilling] = useState<AddressForm>(emptyAddress());
+  // CHK-POLISH (2026-05-18): true when we prefilled `shipping` from the user's
+  // most recent address. Drives the "Using your last shipping address. Change?"
+  // pill. User clicking the pill resets shipping to empty + clears this flag.
+  const [shippingPrefilled, setShippingPrefilled] = useState(false);
 
   const [submitError, setSubmitError] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
@@ -353,6 +528,12 @@ function CheckoutContent() {
   const [stripePromise, setStripePromise] =
     useState<Promise<StripeJs | null> | null>(null);
   const [paying, setPaying] = useState(false);
+  // CHK-POLISH (2026-05-18): when the user has a saved card on file, default to
+  // reusing it. Setting to false re-renders Stripe Elements for "Add a new card".
+  const [useSavedCard, setUseSavedCard] = useState<boolean>(true);
+  // CHK-POLISH (2026-05-18): true once we successfully confirmed the SetupIntent
+  // server-side using the saved pm. Triggers redirect to order-confirmation.
+  const [savedCardConfirmed, setSavedCardConfirmed] = useState<boolean>(false);
 
   // ---- 1. Read localStorage cart on mount ----
   useEffect(() => {
@@ -394,6 +575,47 @@ function CheckoutContent() {
       cancelled = true;
     };
   }, [cart]);
+
+  // ---- 2b. Prefill shipping address from user's most recent address ----
+  // CHK-POLISH (2026-05-18): returning users should see their last address
+  // already filled. New users (404) stay with the empty form.
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) return; // guest -> nothing to prefill
+    let cancelled = false;
+    fetch("/api/account/last-address?kind=shipping", { credentials: "include" })
+      .then(async (res) => {
+        if (res.status === 404) return null;
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then((j: { address?: AddressForm } | null) => {
+        if (cancelled || !j?.address) return;
+        const addr = j.address;
+        // Only prefill if the user hasn't already started typing into the form.
+        setShipping((cur) => {
+          const empty = !cur.recipient_name && !cur.line1 && !cur.city && !cur.postal_code;
+          if (!empty) return cur;
+          setShippingPrefilled(true);
+          return {
+            recipient_name: addr.recipient_name ?? "",
+            business_name: addr.business_name ?? "",
+            phone: addr.phone ?? "",
+            line1: addr.line1 ?? "",
+            line2: addr.line2 ?? "",
+            city: addr.city ?? "",
+            state: addr.state ?? "",
+            postal_code: addr.postal_code ?? "",
+          };
+        });
+      })
+      .catch(() => {
+        /* swallow — form just stays empty */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, user]);
 
   // ---- 3. Totals ----
   const subtotal = useMemo(() => {
@@ -578,9 +800,9 @@ function CheckoutContent() {
                   <p className="text-sm font-semibold">{modeHint.title}</p>
                   <p className="text-xs mt-1 leading-relaxed">{modeHint.body}</p>
                   <p className="text-xs mt-2 opacity-80">{modeHint.refund}</p>
-                  <p className="text-[11px] mt-2 opacity-60">
-                    Mode {modeHint.mode} · {lead} day{lead === 1 ? "" : "s"} out
-                  </p>
+                  {/* CHK-POLISH (2026-05-18): dropped internal "Mode X · N days out"
+                      footer — customer-facing, jargon. Internal payment-mode tag
+                      stays in the API/DB, just hidden from UI. */}
                 </div>
               </section>
 
@@ -588,8 +810,27 @@ function CheckoutContent() {
               <AddressFieldset
                 title="Shipping address"
                 value={shipping}
-                onChange={setShipping}
+                onChange={(next) => {
+                  setShipping(next);
+                  // CHK-POLISH: any manual edit clears the prefill banner.
+                  if (shippingPrefilled) setShippingPrefilled(false);
+                }}
                 requirePhone
+                headerExtra={
+                  shippingPrefilled ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShipping(emptyAddress());
+                        setShippingPrefilled(false);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full px-3 py-1 hover:bg-emerald-100 transition-colors"
+                    >
+                      <span>Using your last shipping address.</span>
+                      <span className="underline underline-offset-2 font-medium">Change?</span>
+                    </button>
+                  ) : null
+                }
               />
 
               {/* Billing toggle */}
@@ -666,6 +907,15 @@ function CheckoutContent() {
                 {submitting ? "Preparing checkout..." : "Continue to payment"}
               </button>
             </form>
+          ) : savedCardConfirmed ? (
+            // CHK-POLISH (2026-05-18): user picked saved card AND server confirmed.
+            // Brief interstitial; redirect to /order-confirmation/{order_id} on
+            // the next tick.
+            <section className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
+              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-700 text-xl">✓</div>
+              <p className="text-sm font-semibold text-slate-900">Order placed.</p>
+              <p className="text-xs text-slate-500 mt-1">Redirecting to your confirmation...</p>
+            </section>
           ) : (
             <section className="bg-white rounded-2xl border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
@@ -678,34 +928,109 @@ function CheckoutContent() {
                 Order #{session.order_number}. Card secured by Stripe; Floropolis never sees the digits.
               </p>
 
-              {stripePromise && (
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret: session.client_secret,
-                    appearance: {
-                      theme: "stripe",
-                      variables: {
-                        colorPrimary: "#059669",
-                        borderRadius: "12px",
-                        fontFamily: "Plus Jakarta Sans, system-ui, sans-serif",
-                      },
-                    },
+              {/* CHK-POLISH (2026-05-18): saved-card option. Renders only when
+                  the backend reports a usable pm on file. Default = saved card;
+                  switching to "new card" renders Stripe Elements below. */}
+              {session.saved_payment_method && (
+                <div className="mb-4 space-y-2">
+                  <label className="flex items-center gap-3 cursor-pointer bg-emerald-50/60 border border-emerald-200 rounded-xl px-4 py-3 hover:bg-emerald-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="card-choice"
+                      checked={useSavedCard}
+                      onChange={() => {
+                        setUseSavedCard(true);
+                        setSubmitError("");
+                      }}
+                      className="w-4 h-4 accent-emerald-600"
+                    />
+                    <span className="text-sm text-slate-800">
+                      Use saved card ending in{" "}
+                      <span className="font-semibold">**** {session.saved_payment_method.last4}</span>{" "}
+                      <span className="text-slate-500">({brandLabel(session.saved_payment_method.brand)})</span>
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer bg-white border border-slate-200 rounded-xl px-4 py-3 hover:bg-slate-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="card-choice"
+                      checked={!useSavedCard}
+                      onChange={() => {
+                        setUseSavedCard(false);
+                        setSubmitError("");
+                      }}
+                      className="w-4 h-4 accent-emerald-600"
+                    />
+                    <span className="text-sm text-slate-800">Add a new card</span>
+                  </label>
+                </div>
+              )}
+
+              {session.saved_payment_method && useSavedCard ? (
+                <SavedCardConfirmButton
+                  session={session}
+                  onError={setSubmitError}
+                  onConfirmed={() => {
+                    setSavedCardConfirmed(true);
+                    // Redirect after a short beat so the user sees the success state.
+                    if (typeof window !== "undefined") {
+                      setTimeout(() => {
+                        window.location.href = `/order-confirmation/${session.order_id}`;
+                      }, 600);
+                    }
                   }}
-                >
-                  <StripePayForm
-                    session={session}
-                    billingAddress={billingSame ? shipping : billing}
-                    onError={setSubmitError}
-                    busy={paying}
-                    setBusy={setPaying}
-                  />
-                </Elements>
+                  busy={paying}
+                  setBusy={setPaying}
+                />
+              ) : (
+                stripePromise && (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{
+                      clientSecret: session.client_secret,
+                      appearance: {
+                        theme: "stripe",
+                        variables: {
+                          colorPrimary: "#059669",
+                          borderRadius: "12px",
+                          fontFamily: "Plus Jakarta Sans, system-ui, sans-serif",
+                        },
+                      },
+                    }}
+                  >
+                    <StripePayForm
+                      session={session}
+                      billingAddress={billingSame ? shipping : billing}
+                      onError={setSubmitError}
+                      busy={paying}
+                      setBusy={setPaying}
+                    />
+                  </Elements>
+                )
               )}
 
               {submitError && (
                 <div className="mt-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
                   {submitError}
+                  {/* CHK-POLISH (2026-05-18): phone error recovery — let the user
+                      go back to the form, fix the phone, then retry without
+                      losing the rest of their state. */}
+                  {/phone|verification|3d secure/i.test(submitError) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSession(null);
+                        setStripePromise(null);
+                        setSubmitError("");
+                        setSavedCardConfirmed(false);
+                        // shipping/billing state is preserved by React — user just
+                        // edits the phone field and re-submits.
+                      }}
+                      className="block mt-2 underline font-medium hover:text-red-900"
+                    >
+                      Edit phone number and try again
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -715,6 +1040,7 @@ function CheckoutContent() {
                   setSession(null);
                   setStripePromise(null);
                   setSubmitError("");
+                  setSavedCardConfirmed(false);
                 }}
                 className="mt-4 text-xs text-slate-500 hover:text-emerald-600"
               >
@@ -739,10 +1065,13 @@ function CheckoutContent() {
             <div className="space-y-4 mb-5">
               {cart.items.map((it) => {
                 const snap = skuMap.get(it.sku_id);
-                const unit =
+                const unitPrice =
                   snap?.is_on_deal && snap?.deal_price != null
                     ? snap.deal_price
                     : snap?.price ?? 0;
+                // CHK-POLISH (2026-05-18): unit-aware line display + soft small-
+                // qty warning when stem qty < 1 bunch.
+                const desc = describeLine(it.quantity, unitPrice, snap);
                 return (
                   <div key={it.sku_id} className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-lg shrink-0">
@@ -756,12 +1085,18 @@ function CheckoutContent() {
                       <p className="text-xs text-slate-400 truncate">
                         {snap?.vendor ?? ""}
                       </p>
-                      <p className="text-xs text-slate-500">
-                        {it.quantity} x {money(unit)}
-                      </p>
+                      <p className="text-xs text-slate-500">{desc.header}</p>
+                      {desc.footnote && (
+                        <p className="text-[11px] text-slate-400 mt-0.5">{desc.footnote}</p>
+                      )}
+                      {desc.warning && (
+                        <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1 mt-1.5">
+                          {desc.warning}
+                        </p>
+                      )}
                     </div>
                     <p className="text-sm font-semibold text-slate-900 shrink-0">
-                      {money(unit * it.quantity)}
+                      {money(unitPrice * it.quantity)}
                     </p>
                   </div>
                 );
@@ -797,10 +1132,10 @@ function CheckoutContent() {
                 {deliveryDate || "Pick a date"}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span>Charge mode</span>
-              <span className="font-medium text-slate-600">Mode {modeHint.mode}</span>
-            </div>
+            {/* CHK-POLISH (2026-05-18): removed "Charge mode Mode B" row — that
+                was internal payment-mode jargon leaking into the customer view.
+                The mode hint card above already explains the charge schedule in
+                plain English. */}
           </div>
 
           <div className="mt-4 bg-slate-50 rounded-xl p-3 text-center text-xs text-slate-500">
@@ -882,18 +1217,25 @@ function AddressFieldset({
   value,
   onChange,
   requirePhone = false,
+  headerExtra = null,
 }: {
   title: string;
   value: AddressForm;
   onChange: (next: AddressForm) => void;
   requirePhone?: boolean;
+  // CHK-POLISH (2026-05-18): slot for the "Using your last shipping address"
+  // pill (and anything else we want to drop in the header in the future).
+  headerExtra?: React.ReactNode;
 }) {
   const set = <K extends keyof AddressForm>(k: K, v: AddressForm[K]) =>
     onChange({ ...value, [k]: v });
 
   return (
     <section className="bg-white rounded-2xl border border-slate-200 p-6">
-      <h2 className="font-semibold text-slate-900 mb-4">{title}</h2>
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <h2 className="font-semibold text-slate-900">{title}</h2>
+        {headerExtra}
+      </div>
       <div className="space-y-3">
         <LabeledInput
           label="Recipient name"

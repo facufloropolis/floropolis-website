@@ -64,7 +64,7 @@ export default function V2Quote() {
             <div className="flex justify-between mb-1"><span className="text-slate-500">Estimated</span><span className="font-semibold">${totalPrice.toFixed(2)}</span></div>
             <div className="flex justify-between"><span className="text-slate-500">Delivery week</span><span className="font-semibold">W20</span></div>
           </div>
-          <Link href="/mockups/v2-home" className="inline-block bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700">Back to home</Link>
+          <Link href="/mockups" className="inline-block bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700">Back to mockups</Link>
         </div>
       </div>
     );
@@ -75,7 +75,7 @@ export default function V2Quote() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-[33px] z-40">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/mockups/v2-home" className="flex items-center gap-2">
+          <Link href="/mockups" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">F</div>
             <span className="font-bold text-slate-900 text-base">Floropolis</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 font-semibold">v2</span>
@@ -102,11 +102,11 @@ export default function V2Quote() {
             <section className="bg-white rounded-2xl border border-slate-200 p-5">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-bold text-slate-900">Your selection</h2>
-                <Link href="/mockups/v2-shop" className="text-xs text-emerald-700 hover:underline">+ Add more from catalog</Link>
+                <span className="text-xs text-slate-400">+ Add more from catalog</span>
               </div>
               {cart.length === 0 ? (
                 <div className="text-center py-8 text-sm text-slate-500">
-                  Cart empty. <Link href="/mockups/v2-shop" className="text-emerald-700 underline">Browse the catalog</Link> or describe what you need in the notes below.
+                  Cart empty. Browse the catalog or describe what you need in the notes below.
                 </div>
               ) : (
                 <div className="space-y-2">
