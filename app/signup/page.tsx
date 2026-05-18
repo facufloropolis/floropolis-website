@@ -136,7 +136,7 @@ function SignupWizard() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent("/signup?step=1")}`,
+        redirectTo: `${window.location.origin}/auth/post-oauth?next=${encodeURIComponent("/signup?step=1")}`,
       },
     });
     if (error) {
@@ -170,7 +170,7 @@ function SignupWizard() {
       email: email.trim(),
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback-backup?next=/account`,
+        emailRedirectTo: `${window.location.origin}/auth/post-oauth?next=/account`,
       },
     });
     if (error) {
