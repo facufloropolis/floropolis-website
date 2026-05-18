@@ -1,83 +1,100 @@
 // Auth callback handler for the BACKUP project (Phase 4 transactional auth).
-// v1 | 2026-05-17 | Job_PM W5-S15 [V8 SHADOW]
+// v2 | 2026-05-18 | Job_PM [V8 SHADOW]
 //
-// Mirrors /auth/callback but exchanges the OAuth code against supabase-backup
-// instead of prod. After exchange:
-//   - No client_profile in backup -> redirect to /signup?step=1 if next= is a
-//     safe /signup path, else /auth/onboarding (which itself will write to
-//     backup once converted -- TODO follow-up ticket).
-//   - Profile exists -> redirect to ?next or /shop.
+// v2 fix: cookies are attached to the REDIRECT response (not via next/headers).
+// The previous implementation used createBackupServerClient which wrote cookies
+// via cookieStore.set — those didn't reliably make it onto the 307 redirect,
+// so the browser landed back at /auth/login with no session cookies set,
+// even though exchangeCodeForSession had succeeded server-side (auth.users
+// last_sign_in_at WAS updating).
 //
-// Open-redirect protection identical to prod /auth/callback.
+// This v2 follows the Supabase Next.js 15 documented pattern for route handlers:
+// build the response FIRST, pass it to the createServerClient cookies.setAll,
+// then RETURN that response. Set-Cookie headers travel with the redirect.
 
-import { NextResponse } from "next/server";
-import { createBackupServerClient } from "@/lib/supabase/backup-server-session";
+import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import { getBackupServiceClient } from "@/lib/supabase/backup-server";
 
-// Safe relative path: starts with "/", but NOT "//" (protocol-relative).
-// Rejects scheme ("://") and backslash ("\"). Prevents open redirects.
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 function isSafeRelativePath(p: string): boolean {
   return p.startsWith("/") && !p.startsWith("//") && !p.includes("://") && !p.includes("\\");
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
-  // Validate next is a safe relative path (prevent open redirect)
   const rawNext = searchParams.get("next") ?? "";
   const hasNext = rawNext.length > 0;
   const nextIsSafe = hasNext && isSafeRelativePath(rawNext);
-  const next = nextIsSafe ? rawNext : "/shop";
+  const defaultNext = nextIsSafe ? rawNext : "/shop";
 
-  if (code) {
-    let supabase;
-    try {
-      supabase = await createBackupServerClient();
-    } catch (err) {
-      // Backup env not configured -- can't complete OAuth round-trip.
-      console.error("[auth/callback-backup] backup env missing:", err);
-      return NextResponse.redirect(`${origin}/auth/login?error=backup_unavailable`);
-    }
-
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      // Check if this user already has a client profile in BACKUP.
-      // IMPORTANT: use service-role client for the profile lookup, NOT the
-      // cookie-bound session client. Cookies set by exchangeCodeForSession
-      // are not yet visible to the cookie-bound client in the same request
-      // (Next.js cookie race) -- which made RLS reject the SELECT and sent
-      // existing users through the signup wizard.
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const serviceClient = getBackupServiceClient();
-        const { data: profile } = await serviceClient
-          .from("client_profiles")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        // First-time user
-        if (!profile) {
-          // If caller passed a safe /signup path, honor it (wizard resumes).
-          if (nextIsSafe && rawNext.startsWith("/signup")) {
-            return NextResponse.redirect(`${origin}${rawNext}`);
-          }
-          // Legacy/unspecified path -- send them to the signup wizard to
-          // collect business info instead of bouncing to /auth/onboarding
-          // (which still writes against the prod project).
-          return NextResponse.redirect(`${origin}/signup?step=1`);
-        }
-      }
-
-      // Existing user -- go to requested page or shop
-      return NextResponse.redirect(`${origin}${next}`);
-    }
-
-    console.error("[auth/callback-backup] exchangeCodeForSession failed:", error);
+  const backupUrl = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL;
+  const backupKey = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY;
+  if (!backupUrl || !backupKey) {
+    console.error("[auth/callback-backup] missing NEXT_PUBLIC_BACKUP_SUPABASE_* env");
+    return NextResponse.redirect(`${origin}/auth/login?error=backup_unavailable`);
   }
 
-  // Auth failed -- redirect to login with error param
-  return NextResponse.redirect(`${origin}/auth/login?error=auth_failed`);
+  if (!code) {
+    return NextResponse.redirect(`${origin}/auth/login?error=missing_code`);
+  }
+
+  // Build the redirect response UP FRONT. Cookies get attached to THIS response.
+  // We may overwrite the destination after profile lookup, but cookies persist.
+  const response = NextResponse.redirect(`${origin}${defaultNext}`);
+
+  const supabase = createServerClient(backupUrl, backupKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          response.cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+  if (exchangeError) {
+    console.error("[auth/callback-backup] exchangeCodeForSession failed:", exchangeError);
+    return NextResponse.redirect(`${origin}/auth/login?error=auth_failed`);
+  }
+
+  // Session cookies are now attached to `response`. Decide final destination.
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    // Shouldn't happen if exchange succeeded, but guard anyway.
+    return NextResponse.redirect(`${origin}/auth/login?error=no_user`);
+  }
+
+  // Look up profile via service role (RLS bypass; works regardless of cookie race).
+  const serviceClient = getBackupServiceClient();
+  const { data: profile } = await serviceClient
+    .from("client_profiles")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  // No profile → send to signup wizard (cookies still on the response).
+  if (!profile) {
+    const target = (nextIsSafe && rawNext.startsWith("/signup"))
+      ? `${origin}${rawNext}`
+      : `${origin}/signup?step=1`;
+    const wizardResponse = NextResponse.redirect(target);
+    // Copy cookies from the original response (the ones supabase set during exchange)
+    response.cookies.getAll().forEach((c) => {
+      wizardResponse.cookies.set(c.name, c.value, c);
+    });
+    return wizardResponse;
+  }
+
+  // Profile exists → use the already-built response (it has the cookies + the
+  // /shop or `next` URL).
+  return response;
 }
