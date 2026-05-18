@@ -34,18 +34,22 @@ export function createBackupClient() {
       "[supabase/backup-client] MISSING ENV: NEXT_PUBLIC_BACKUP_SUPABASE_URL or NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY",
     );
   }
-  // 2026-05-18 (AUTH-FIX round 2): switched from PKCE default to IMPLICIT flow.
-  // PKCE was failing in production — the verifier cookie wasn't persisting
-  // through Google->Supabase->our-callback even after @supabase/ssr 0.10.3
-  // upgrade + canonical single-response callback refactor (supabase/ssr #55).
+  // 2026-05-18 (AUTH-FIX r7): back to PKCE (default).
   //
-  // Implicit returns session in URL hash; supabase-js auto-detects on page
-  // load and writes cookies via the storage adapter. NO PKCE verifier to lose.
-  // Trade-off: token briefly in URL fragment (#access_token=...). Acceptable
-  // until we can debug PKCE in a clean environment.
+  // Round 2 set flowType='implicit' to dodge a server-side exchange bug, but
+  // /api/debug/whoami showed the server couldn't see the session at all
+  // ("Auth session missing!"). Implicit flow makes supabase-js fall back to
+  // localStorage (browser-only) instead of writing cookies — so the browser
+  // looked signed-in (nav showed "Sign out") but middleware/SSR routes
+  // treated every request as anonymous and bounced /admin/* to /shop.
+  //
+  // PKCE writes to cookie storage (visible to both client AND server). The
+  // exchange-loses-verifier bug from rounds 1-3 is now moot because /auth/post-oauth
+  // runs PKCE end-to-end in the browser (same process that wrote the verifier
+  // does the read). No server-side exchange in the path.
   return createBrowserClient(url, key, {
     auth: {
-      flowType: "implicit",
+      flowType: "pkce",
       detectSessionInUrl: true,
     },
   });
