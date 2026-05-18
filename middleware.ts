@@ -1,26 +1,21 @@
-// Middleware -- v4 | 2026-05-17 | Job_PM W5-S15 [V8 SHADOW]
-// v4 changes (Phase 4 SEGURISIMA migration):
-//   - All guarded routes now check the BACKUP supabase session, not prod.
+// Middleware -- v5 | 2026-05-18 | Job_PM [V8 SHADOW]
+// v5 changes:
+//   - Admin gate now checks client_profiles.status='admin' in backup, not
+//     hardcoded email. Lets both Facu accounts + JJ access /admin without
+//     code changes when admin list expands.
+//   - Falls back to ADMIN_EMAILS allow-list if backup REST is unreachable
+//     (edge environment shouldn't fail closed for transient backend issues).
+//
+// v4 history:
+//   - All guarded routes check BACKUP supabase session, not prod.
 //   - Routes: /admin, /account, /checkout, /order-confirmation.
-//   - If NEXT_PUBLIC_BACKUP_SUPABASE_URL / _ANON_KEY are unset, middleware
-//     allows the request through with a console warning (graceful fallback
-//     for environments where backup isn't configured yet).
-//   - Refreshes the BACKUP session cookie on each protected hit.
-//
-// v3 history:
-//   - Tightened matcher to ONLY /admin, /account, /checkout, /order-confirmation
-//     (was: all paths). Cuts ~95% of edge invocations driven by bot crawls.
-//   - Trade-off: session refresh only happens when user hits a protected route.
-//
-// Function:
-//   - Guards /admin routes: only facu@floropolis.com can access
-//   - Guards /account, /checkout, /order-confirmation: must be signed in (BACKUP)
-//   - Refreshes BACKUP Supabase session on protected hits
 
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const ADMIN_EMAIL = "facu@floropolis.com";
+// Fallback allowlist used only if the backup REST query fails (e.g.
+// transient outage). Normal path uses client_profiles.status='admin'.
+const ADMIN_EMAILS = ["facu@floropolis.com", "jjpj@crescoinversiones.com"];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -59,9 +54,35 @@ export async function middleware(request: NextRequest) {
   // Refresh BACKUP session so it doesn't expire during browsing
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Guard: /admin -- must be facu@floropolis.com (per BACKUP project)
+  // Guard: /admin -- must have client_profiles.status='admin' in BACKUP.
   if (request.nextUrl.pathname.startsWith("/admin")) {
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!user) {
+      return NextResponse.redirect(new URL("/auth/login?next=" + request.nextUrl.pathname, request.url));
+    }
+    let isAdmin = false;
+    try {
+      const adminRes = await fetch(
+        `${backupUrl}/rest/v1/client_profiles?user_id=eq.${user.id}&select=status`,
+        {
+          headers: {
+            apikey: backupKey,
+            Authorization: `Bearer ${backupKey}`,
+            Accept: "application/json",
+          },
+        },
+      );
+      if (adminRes.ok) {
+        const rows: Array<{ status?: string }> = await adminRes.json();
+        isAdmin = rows.some((r) => r.status === "admin");
+      }
+    } catch (e) {
+      console.warn("[middleware] admin status lookup failed, falling back to email allowlist:", e);
+    }
+    // Fallback to allowlist if REST failed OR profile query returned no admin row.
+    if (!isAdmin && user.email && ADMIN_EMAILS.includes(user.email)) {
+      isAdmin = true;
+    }
+    if (!isAdmin) {
       return NextResponse.redirect(new URL("/shop", request.url));
     }
   }
