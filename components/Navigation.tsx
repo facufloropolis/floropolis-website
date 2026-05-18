@@ -229,8 +229,13 @@ export default function Navigation() {
                       <Link href="/account/orders" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">My orders</Link>
                       {backupAuth.profile?.status === 'admin' && (
                         <>
-                          <Link href="/admin/catalog" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin catalog</Link>
-                          <Link href="/admin/refunds" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin refunds</Link>
+                          <div className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wide text-slate-400 font-semibold border-t border-slate-100 mt-1">Admin</div>
+                          <Link href="/admin" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Control plane</Link>
+                          <Link href="/admin/catalog" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Catalog</Link>
+                          <Link href="/admin/orders" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">All orders</Link>
+                          <Link href="/admin/dispatch" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Dispatch</Link>
+                          <Link href="/admin/refunds" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Refunds</Link>
+                          <Link href="/admin/catalog/approval-queue" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Approval queue</Link>
                         </>
                       )}
                       <button
