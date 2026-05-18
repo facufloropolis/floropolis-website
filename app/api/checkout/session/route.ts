@@ -22,7 +22,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 
-import { createClient as createUserSupabase } from '@/lib/supabase/server';
+import { createBackupServerClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getStripe, STRIPE_PUBLISHABLE_KEY, assertStripeEnv } from '@/lib/stripe/client';
 import { keyForSetupIntent } from '@/lib/stripe/idempotency';
@@ -163,11 +163,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   assertStripeEnv();
   const startedAt = Date.now();
 
-  // ---- 1. Auth ----
+  // ---- 1. Auth (BACKUP session -- Phase 4 SEGURISIMA) ----
   let userId: string;
   let userEmail: string | null = null;
   try {
-    const userClient = await createUserSupabase();
+    const userClient = await createBackupServerClient();
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) {
       return NextResponse.json(

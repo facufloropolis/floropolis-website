@@ -9,6 +9,7 @@ import WhatsAppCTA from "@/components/WhatsAppCTA";
 import EmailPopup from "@/components/EmailPopup";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 import { AuthProvider } from "@/lib/auth-context";
+import { AuthBackupProvider } from "@/lib/auth-context-backup";
 import WebVitalsReporter from "@/components/WebVitalsReporter";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -119,13 +120,15 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           />
         </noscript>
         <AuthProvider>
-          <WebVitalsReporter />
-          {children}
-          <QuoteCartWidget />
-          <QuoteBar />
-          <WhatsAppCTA />
-          <EmailPopup />
-          <ExitIntentPopup />
+          <AuthBackupProvider>
+            <WebVitalsReporter />
+            {children}
+            <QuoteCartWidget />
+            <QuoteBar />
+            <WhatsAppCTA />
+            <EmailPopup />
+            <ExitIntentPopup />
+          </AuthBackupProvider>
         </AuthProvider>
         <Analytics />
       </body>

@@ -1,13 +1,14 @@
 "use client";
-// Login page — v2 | 2026-03-23 | Job_PM
-// Added: Google OAuth, phone OTP (6-digit verify step), improved UX framing
-// Kept: magic link email flow (already worked)
+// Login page — v3 | 2026-05-17 | Job_PM W5-S15 [V8 SHADOW]
+// Migrated from prod Supabase to BACKUP Supabase (Phase 4 SEGURISIMA rule).
+// All sign-in methods now run against supabase-backup (auth.users in backup).
+// OAuth/magic-link callbacks go to /auth/callback-backup (not /auth/callback).
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
+import { createBackupClient } from "@/lib/supabase/backup-client";
 import { Mail, Phone, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 
 // --- Google SVG icon (inline, no external dependency) ---
@@ -66,11 +67,11 @@ function LoginContent() {
   // --- Google OAuth ---
   const handleGoogle = async () => {
     setGoogleLoading(true);
-    const supabase = createClient();
+    const supabase = createBackupClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextParam)}`,
+        redirectTo: `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent(nextParam)}`,
       },
     });
     if (error) {
@@ -86,11 +87,11 @@ function LoginContent() {
     if (!email || emailLoading) return;
     setEmailLoading(true);
     setEmailError(null);
-    const supabase = createClient();
+    const supabase = createBackupClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextParam)}`,
+        emailRedirectTo: `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent(nextParam)}`,
       },
     });
     if (error) {
@@ -107,7 +108,7 @@ function LoginContent() {
     if (!phone || phoneLoading) return;
     setPhoneLoading(true);
     setPhoneError(null);
-    const supabase = createClient();
+    const supabase = createBackupClient();
     const { error } = await supabase.auth.signInWithOtp({ phone });
     if (error) {
       setPhoneError(error.message);
@@ -124,7 +125,7 @@ function LoginContent() {
     if (!otp || otpLoading) return;
     setOtpLoading(true);
     setPhoneError(null);
-    const supabase = createClient();
+    const supabase = createBackupClient();
     const { error } = await supabase.auth.verifyOtp({
       phone,
       token: otp,

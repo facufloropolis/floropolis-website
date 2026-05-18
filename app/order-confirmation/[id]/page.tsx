@@ -15,7 +15,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 
-import { createClient } from '@/lib/supabase/server';
+import { createBackupServerClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getProductImage } from '@/lib/product-images';
 import Navigation from '@/components/Navigation';
@@ -185,14 +185,14 @@ export default async function OrderConfirmationPage({
   const orderIdNum = Number(id);
   if (!Number.isFinite(orderIdNum) || orderIdNum <= 0) notFound();
 
-  // ---- Auth (user supabase client; auth lives in prod project) ----
-  const userClient = await createClient();
+  // ---- Auth (BACKUP session -- Phase 4 SEGURISIMA) ----
+  const userClient = await createBackupServerClient();
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) {
     redirect(`/auth/login?next=/order-confirmation/${id}`);
   }
 
-  // Check admin status from the user's project (client_profiles is in prod supabase).
+  // Check admin status from BACKUP project (client_profiles lives in backup).
   const { data: profile } = await userClient
     .from('client_profiles')
     .select('status')

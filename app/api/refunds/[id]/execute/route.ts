@@ -36,7 +36,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 
-import { createClient as createUserClient } from '@/lib/supabase/server';
+import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getStripe, assertStripeEnv } from '@/lib/stripe/client';
 import { keyForRefund } from '@/lib/stripe/idempotency';

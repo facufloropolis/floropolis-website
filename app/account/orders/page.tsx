@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { createClient } from '@/lib/supabase/server';
+import { createBackupServerClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -73,8 +73,8 @@ function fmtDate(iso: string | null | undefined): string {
 }
 
 export default async function AccountOrdersPage() {
-  // ---- Auth (user-context client) ----
-  const userClient = await createClient();
+  // ---- Auth (BACKUP session -- Phase 4 SEGURISIMA) ----
+  const userClient = await createBackupServerClient();
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) {
     redirect('/auth/login?next=/account/orders');

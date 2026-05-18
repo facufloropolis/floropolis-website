@@ -38,7 +38,7 @@ import {
 } from "@stripe/react-stripe-js";
 
 import { BRAND } from "../mockups/_constants/brand";
-import { useAuth } from "@/lib/auth-context";
+import { useAuthBackup } from "@/lib/auth-context-backup";
 
 // ============================================================================
 // Types
@@ -314,7 +314,7 @@ function StripePayForm({
 // ============================================================================
 
 function CheckoutContent() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuthBackup();
   const [cart, setCart] = useState<LocalCart | null>(null);
   const [cartLoaded, setCartLoaded] = useState(false);
   const [skuMap, setSkuMap] = useState<Map<number, SkuDetail>>(new Map());

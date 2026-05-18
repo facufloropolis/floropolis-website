@@ -14,16 +14,16 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 
-import { createClient as createUserSupabase } from '@/lib/supabase/server';
+import { createBackupServerClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 
 const RESPONSE_LIMIT = 50;
 
 export async function GET(): Promise<NextResponse> {
-  // ---- Auth ----
+  // ---- Auth (BACKUP session -- Phase 4 SEGURISIMA) ----
   let userId: string;
   try {
-    const userClient = await createUserSupabase();
+    const userClient = await createBackupServerClient();
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });

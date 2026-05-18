@@ -1,17 +1,17 @@
 "use client";
-// Signup wizard -- v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+// Signup wizard -- v2 | 2026-05-17 | Job_PM W5-S15 [V8 SHADOW]
+// Migrated from prod Supabase to BACKUP Supabase (Phase 4 SEGURISIMA rule).
 // 3-step signup: account -> business info -> review.
-// Real Supabase auth (signUp with password OR Google OAuth).
-// On submit, INSERT into client_profiles with status='pending'.
-// Schema source of truth: supabase/migrations/20260323_login_mvp.sql
+// Real Supabase auth (signUp with password OR Google OAuth) on supabase-backup.
+// On submit, INSERT into client_profiles (in BACKUP) with status='approved'.
+// Schema source of truth: supabase/migrations/20260323_login_mvp.sql (replicated to backup)
 // Columns used: user_id, business_name, phone, status, notes
-// Instagram + referral + submitted_at are packed into notes as a single string.
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
+import { createBackupClient } from "@/lib/supabase/backup-client";
 import { Mail, Lock, ArrowRight, ArrowLeft, Loader2, CheckCircle, Phone, Instagram, Building2 } from "lucide-react";
 
 // ----- constants -----
@@ -116,7 +116,7 @@ function SignupWizard() {
   // Watch for an authenticated session arriving while we're on step 0 (e.g. OAuth return).
   // If user is already signed in when they land on /signup, jump them past account creation.
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createBackupClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user && step === 0 && !accountLoading && !googleLoading) {
         setStep(1);
@@ -129,14 +129,14 @@ function SignupWizard() {
   const handleGoogle = async () => {
     setStep0Error(null);
     setGoogleLoading(true);
-    const supabase = createClient();
-    // After Google round-trip the existing /auth/callback route checks for an
-    // existing client_profile and routes the user. New users land on
-    // /auth/onboarding (the old single-form pattern). See Open Questions.
+    const supabase = createBackupClient();
+    // After Google round-trip the BACKUP callback route checks for an existing
+    // client_profile (in backup) and routes the user. New users come back to
+    // step 1 of this wizard to fill in business info.
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/signup?step=1`,
+        redirectTo: `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent("/signup?step=1")}`,
       },
     });
     if (error) {
@@ -165,12 +165,12 @@ function SignupWizard() {
     if (!ok) return;
 
     setAccountLoading(true);
-    const supabase = createClient();
+    const supabase = createBackupClient();
     const { error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/account`,
+        emailRedirectTo: `${window.location.origin}/auth/callback-backup?next=/account`,
       },
     });
     if (error) {
@@ -213,7 +213,7 @@ function SignupWizard() {
     setSubmitLoading(true);
     setStep2Error(null);
 
-    const supabase = createClient();
+    const supabase = createBackupClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setStep2Error("Your session expired. Please go back and create your account again.");
