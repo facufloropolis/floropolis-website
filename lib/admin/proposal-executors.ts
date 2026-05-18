@@ -377,6 +377,76 @@ async function execRefundCreate(
   };
 }
 
+// sku_mapping.confirm: bind a vendor SKU row in sku_mappings to a canonical
+// (parent_sku_id, quality_family_id). Triggered from /admin/catalog/mapping.
+// Payload shape: { mapping_id: uuid, parent_sku_id: string, quality_family_id: string }
+// target_table is informational ('sku_mappings'); the mapping row id is in payload
+// so the executor can update it regardless of what target_id holds.
+async function execSkuMappingConfirm(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+
+  const mappingId = payload.mapping_id;
+  if (typeof mappingId !== 'string' || mappingId.length === 0) {
+    return fail('invalid_mapping_id');
+  }
+  const parentSkuId = payload.parent_sku_id;
+  if (typeof parentSkuId !== 'string' || parentSkuId.trim().length === 0) {
+    return fail('invalid_parent_sku_id');
+  }
+  const qualityFamilyId = payload.quality_family_id;
+  if (typeof qualityFamilyId !== 'string' || qualityFamilyId.trim().length === 0) {
+    return fail('invalid_quality_family_id');
+  }
+
+  const { data: before, error: readErr } = await service
+    .from('sku_mappings')
+    .select('*')
+    .eq('id', mappingId)
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!before) return fail('target_not_found');
+
+  // Only awaiting_review and low_confidence rows can be confirmed. Already-mapped
+  // or rejected rows should be re-opened explicitly before remapping.
+  const beforeStatus = (before as Record<string, unknown>).status;
+  if (beforeStatus !== 'awaiting_review' && beforeStatus !== 'low_confidence') {
+    return fail(`invalid_state: mapping status is ${String(beforeStatus)}`);
+  }
+
+  const { data: after, error: updErr } = await service
+    .from('sku_mappings')
+    .update({
+      status: 'mapped',
+      parent_sku_id: parentSkuId.trim(),
+      quality_family_id: qualityFamilyId.trim(),
+      mapped_by: proposal.proposed_by,
+      mapped_at: new Date().toISOString(),
+      mapped_via_proposal_id: proposal.id,
+    })
+    .eq('id', mappingId)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'sku_mappings',
+        target_id: mappingId,
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execSkuMappingConfirm',
+      },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -400,6 +470,8 @@ export async function executeProposal(
       return execDiscountRuleCreate(proposal, service);
     case 'refund.create':
       return execRefundCreate(proposal);
+    case 'sku_mapping.confirm':
+      return execSkuMappingConfirm(proposal, service);
     default:
       return fail(`unknown_proposal_type: ${proposal.type}`);
   }
@@ -415,4 +487,5 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   // TODO[refund.create executor]: see execRefundCreate. Until then approval
   // surfaces an explicit error and no Stripe refund is issued.
   'refund.create',
+  'sku_mapping.confirm',
 ];
