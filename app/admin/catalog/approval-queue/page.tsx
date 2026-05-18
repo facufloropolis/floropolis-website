@@ -1,22 +1,25 @@
-// Admin catalog -- approval queue (Facu triage).
-// v1 | 2026-05-18 | Job_PM CAT-S5 [V8 SHADOW]
+// Admin catalog -- approval queue (Facu triage for admin_proposals).
+// v2 | 2026-05-18 | Job_PM admin-port X7 [V8 SHADOW]
 //
-// Lists catalog_classifications rows where status='needs_facu_review' AND
-// reviewer_action='awaiting'. Per Facu (2026-05-18):
-//   "Rose sends you what you should publish and you flag what is approved
-//    and force me to review."
+// Reads admin_proposals from supabase-backup and lets Facu approve or reject
+// each one. Three tabs: awaiting_facu (default), approved, rejected. Tab state
+// via search param ?status=.
 //
-// For each row Facu can:
-//   - Approve publish      -> reviewer_action='approve_publish', status='admin_overridden_publish'
-//   - Reject hide          -> reviewer_action='reject_hide',     status='admin_overridden_hide'
-//   - Forward to Rose      -> reviewer_action='forward_to_rose', status='needs_data_fix'
-//
-// Bulk action bar applies the same to all selected rows.
+// For each row we render:
+//   - type badge + target table/id + short payload summary
+//   - cascade impact: count of SKUs affected (computed from payload)
+//     - box_master.update      -> SKUs in floropolis_inventory_mirror with that box_type
+//     - pricing_constants.*    -> all SKUs (single global pricing constant)
+//     - shipping_config.create -> TBD (no join key in mirror today)
+//     - stub types             -> TBD
+//   - warnings rendered as red (critical) / amber (warn) / slate pills
+//   - proposed_by email (resolved via get_client_emails RPC) + proposed_at
+//   - awaiting tab: Approve (green) + Reject (with reason prompt) buttons
 //
 // Access:
 //   - Middleware guards /admin and restricts to ADMIN_EMAILS or
 //     client_profiles.status='admin'.
-//   - Server-side belt-and-suspenders: re-check session + admin status.
+//   - Server-side belt-and-suspenders: re-check session + admin status here.
 //   - Non-admin -> redirect("/").
 //
 // Style: emerald-600 primary, Plus Jakarta Sans (inherited), ASCII-clean copy.
@@ -29,64 +32,83 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
-import {
-  BulkBar,
-  RowActions,
-  RowSelect,
-  SelectionProvider,
-} from './Actions';
-import { gateCategory, gateLabel } from '@/lib/catalog-gates';
+import ProposalActions from './Actions';
 
-interface ClassificationRow {
-  sku_id: number;
+const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
+
+type Status = 'awaiting_facu' | 'approved' | 'rejected';
+const STATUS_VALUES: Status[] = ['awaiting_facu', 'approved', 'rejected'];
+const STATUS_LABELS: Record<Status, string> = {
+  awaiting_facu: 'Awaiting your sign-off',
+  approved: 'Approved',
+  rejected: 'Rejected',
+};
+
+interface ProposalRow {
+  id: string;
+  type: string;
+  target_table: string;
+  target_id: string | null;
+  payload: Record<string, unknown> | null;
+  warnings: unknown;
   status: string;
-  failing_gates: string[] | null;
-  gate_score: number;
-  vendor: string | null;
-  tier: string | null;
-  variety: string | null;
-  last_validated_at: string;
+  proposed_by: string | null;
+  proposed_at: string;
+  notes: string | null;
 }
 
-interface MirrorSlim {
-  id: number;
-  name: string | null;
-  variety: string | null;
-  length: string | null;
-  vendor: string | null;
+interface WarningPill {
+  severity: 'critical' | 'warn' | 'info';
+  text: string;
 }
 
 interface PageProps {
-  searchParams: Promise<{
-    filter?: string;
-  }>;
+  searchParams: Promise<{ status?: string }>;
 }
 
-type Filter = 'all' | 'price' | 'formula' | 't3_edge';
-const FILTER_LABELS: Record<Filter, string> = {
-  all: 'All awaiting',
-  price: 'Just price issues',
-  formula: 'Just formula issues',
-  t3_edge: 'Just T3 edge cases',
-};
-
-function asGateArray(raw: unknown): string[] {
+function asWarnings(raw: unknown): WarningPill[] {
   if (!Array.isArray(raw)) return [];
-  return raw.filter((v): v is string => typeof v === 'string');
+  const out: WarningPill[] = [];
+  for (const w of raw) {
+    if (typeof w === 'string') {
+      out.push({ severity: 'info', text: w });
+      continue;
+    }
+    if (w && typeof w === 'object') {
+      const obj = w as Record<string, unknown>;
+      const sev = typeof obj.severity === 'string' ? obj.severity : 'info';
+      const text =
+        typeof obj.text === 'string'
+          ? obj.text
+          : typeof obj.message === 'string'
+            ? (obj.message as string)
+            : JSON.stringify(obj);
+      const normalized: 'critical' | 'warn' | 'info' =
+        sev === 'critical' ? 'critical' : sev === 'warn' ? 'warn' : 'info';
+      out.push({ severity: normalized, text });
+    }
+  }
+  return out;
 }
 
-function rowMatchesFilter(gates: string[], filter: Filter): boolean {
-  if (filter === 'all') return true;
-  return gates.some((g) => gateCategory(g) === filter);
-}
-
-function skuLabel(m: MirrorSlim | undefined, c: ClassificationRow): string {
-  const bits = [
-    m?.name ?? c.variety ?? 'unknown',
-    m?.variety,
-    m?.length,
-  ].filter(Boolean);
-  return bits.join(' / ') || `SKU #${c.sku_id}`;
+function payloadSummary(p: ProposalRow): string {
+  const payload = p.payload;
+  if (!payload || typeof payload !== 'object') return '(no payload)';
+  const keys = Object.keys(payload);
+  if (keys.length === 0) return '(empty payload)';
+  // Render up to 3 fields as key=value, truncating long values.
+  const parts: string[] = [];
+  for (const k of keys.slice(0, 3)) {
+    const v = (payload as Record<string, unknown>)[k];
+    let s: string;
+    if (v == null) s = 'null';
+    else if (typeof v === 'string') s = v.length > 40 ? v.slice(0, 40) + '...' : v;
+    else if (typeof v === 'number' || typeof v === 'boolean') s = String(v);
+    else s = JSON.stringify(v).slice(0, 40);
+    parts.push(`${k}=${s}`);
+  }
+  const suffix = keys.length > 3 ? ` (+${keys.length - 3} more)` : '';
+  return parts.join(', ') + suffix;
 }
 
 function fmtDate(iso: string | null): string {
@@ -96,9 +118,15 @@ function fmtDate(iso: string | null): string {
   return d.toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+function tabHref(s: Status): string {
+  if (s === 'awaiting_facu') return '/admin/catalog/approval-queue';
+  return `/admin/catalog/approval-queue?status=${s}`;
 }
 
 export const metadata = {
@@ -117,64 +145,147 @@ export default async function AdminCatalogApprovalQueuePage({
   if (!user) redirect('/');
 
   const adminClient = getBackupServiceClient();
-  const { data: profile } = await adminClient
-    .from('client_profiles')
-    .select('status')
-    .eq('user_id', user.id)
-    .maybeSingle();
-  if (!profile || profile.status !== 'admin') {
-    redirect('/');
-  }
-
-  const sp = await searchParams;
-  const rawFilter = (sp.filter ?? 'all') as Filter;
-  const filter: Filter = (['all', 'price', 'formula', 't3_edge'] as Filter[]).includes(rawFilter)
-    ? rawFilter
-    : 'all';
-
-  // Fetch rows awaiting Facu review --------------------------------------
-  const backup = getBackupServiceClient();
-  const { data: classRaw, error: classErr } = await backup
-    .from('catalog_classifications')
-    .select(
-      'sku_id,status,failing_gates,gate_score,vendor,tier,variety,last_validated_at',
-    )
-    .eq('status', 'needs_facu_review')
-    .eq('reviewer_action', 'awaiting')
-    .order('last_validated_at', { ascending: false })
-    .limit(500);
-  if (classErr) {
-    console.error('[admin/catalog/approval-queue] fetch:', classErr);
-  }
-  const classifications = (classRaw ?? []).map((r) => ({
-    ...(r as ClassificationRow),
-    failing_gates: asGateArray((r as { failing_gates: unknown }).failing_gates),
-  })) as ClassificationRow[];
-
-  // Filter post-fetch (gate category is derived in JS).
-  const filtered = classifications.filter((c) =>
-    rowMatchesFilter(c.failing_gates ?? [], filter),
-  );
-
-  // Mirror lookup for name / length context ------------------------------
-  const skuIds = filtered.map((c) => c.sku_id);
-  let mirrorById: Record<number, MirrorSlim> = {};
-  if (skuIds.length > 0) {
-    const { data: mirrorRaw } = await backup
-      .from('floropolis_inventory_mirror')
-      .select('id,name,variety,length,vendor')
-      .in('id', skuIds);
-    for (const m of (mirrorRaw ?? []) as MirrorSlim[]) {
-      mirrorById[m.id] = m;
+  const emailLc = (user.email ?? '').toLowerCase();
+  const isAdminByEmail = ADMIN_EMAILS.includes(emailLc);
+  if (!isAdminByEmail) {
+    const { data: profile } = await adminClient
+      .from('client_profiles')
+      .select('status')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (!profile || profile.status !== 'admin') {
+      redirect('/');
     }
   }
 
-  // Filter chip hrefs ----------------------------------------------------
-  function chipHref(f: Filter): string {
-    if (f === 'all') return '/admin/catalog/approval-queue';
-    return `/admin/catalog/approval-queue?filter=${f}`;
+  // Tab state ------------------------------------------------------------
+  const sp = await searchParams;
+  const requested = (sp.status ?? 'awaiting_facu') as Status;
+  const status: Status = STATUS_VALUES.includes(requested)
+    ? requested
+    : 'awaiting_facu';
+
+  // Counts for tab badges (single round trip per status; small table) ----
+  const backup = getBackupServiceClient();
+  const countResults = await Promise.all(
+    STATUS_VALUES.map(async (s) => {
+      const { count } = await backup
+        .from('admin_proposals')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', s);
+      return [s, count ?? 0] as const;
+    }),
+  );
+  const counts: Record<Status, number> = {
+    awaiting_facu: 0,
+    approved: 0,
+    rejected: 0,
+  };
+  for (const [s, n] of countResults) counts[s] = n;
+
+  // Fetch proposals for the active tab ----------------------------------
+  const { data: rowsRaw, error: rowsErr } = await backup
+    .from('admin_proposals')
+    .select(
+      'id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes',
+    )
+    .eq('status', status)
+    .order('proposed_at', { ascending: false })
+    .limit(200);
+  if (rowsErr) {
+    console.error('[admin/catalog/approval-queue] fetch:', rowsErr);
+  }
+  const rows = (rowsRaw ?? []) as unknown as ProposalRow[];
+
+  // Resolve proposer emails via the shared RPC --------------------------
+  const proposerIds = Array.from(
+    new Set(rows.map((r) => r.proposed_by).filter((v): v is string => !!v)),
+  );
+  const emailMap: Record<string, string> = {};
+  if (proposerIds.length > 0) {
+    const { data: emailRows } = await userClient.rpc('get_client_emails', {
+      user_ids: proposerIds,
+    });
+    (emailRows ?? []).forEach((r: { user_id: string; email: string }) => {
+      emailMap[r.user_id] = r.email;
+    });
   }
 
+  // Cascade impact pre-compute ------------------------------------------
+  //   - box_master.update    -> SKUs with that box_type
+  //   - pricing_constants.*  -> total SKU count (single global constant)
+  //   - shipping_config.*    -> TBD
+  //   - everything else      -> TBD (stubs)
+  const needsBoxCounts = rows.some(
+    (r) => r.type === 'box_master.update' && !!r.target_id,
+  );
+  const needsTotal = rows.some((r) =>
+    r.type.startsWith('pricing_constants.'),
+  );
+
+  const boxTypeCounts: Record<string, number> = {};
+  if (needsBoxCounts) {
+    // Group SKU counts by box_type in a single query.
+    const wantedBoxTypes = Array.from(
+      new Set(
+        rows
+          .filter((r) => r.type === 'box_master.update' && !!r.target_id)
+          .map((r) => r.target_id as string),
+      ),
+    );
+    if (wantedBoxTypes.length > 0) {
+      const { data: mirrorRows } = await backup
+        .from('floropolis_inventory_mirror')
+        .select('box_type')
+        .in('box_type', wantedBoxTypes);
+      for (const row of (mirrorRows ?? []) as { box_type: string | null }[]) {
+        if (!row.box_type) continue;
+        boxTypeCounts[row.box_type] = (boxTypeCounts[row.box_type] ?? 0) + 1;
+      }
+    }
+  }
+
+  let totalSkuCount: number | null = null;
+  if (needsTotal) {
+    const { count } = await backup
+      .from('floropolis_inventory_mirror')
+      .select('id', { count: 'exact', head: true });
+    totalSkuCount = count ?? 0;
+  }
+
+  function cascadeFor(p: ProposalRow): { value: number | null; label: string } {
+    if (p.type === 'box_master.update' && p.target_id) {
+      const n = boxTypeCounts[p.target_id] ?? 0;
+      return { value: n, label: `${n.toLocaleString()} SKU${n === 1 ? '' : 's'}` };
+    }
+    if (p.type.startsWith('pricing_constants.')) {
+      const n = totalSkuCount ?? 0;
+      return {
+        value: n,
+        label: `${n.toLocaleString()} SKU${n === 1 ? '' : 's'} (all)`,
+      };
+    }
+    return { value: null, label: 'TBD' };
+  }
+
+  // Cascade total across the awaiting tab (for the top tile).
+  let cascadeTotal = 0;
+  let cascadeHasUnknown = false;
+  if (status === 'awaiting_facu') {
+    for (const r of rows) {
+      const c = cascadeFor(r);
+      if (c.value == null) cascadeHasUnknown = true;
+      else cascadeTotal += c.value;
+    }
+  }
+
+  // Critical-warning count for the top tile.
+  const criticalCount = rows.reduce((acc, r) => {
+    const ws = asWarnings(r.warnings);
+    return acc + (ws.some((w) => w.severity === 'critical') ? 1 : 0);
+  }, 0);
+
+  // Render --------------------------------------------------------------
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
@@ -184,120 +295,268 @@ export default async function AdminCatalogApprovalQueuePage({
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Approval queue</h1>
           <p className="text-slate-500 text-sm mt-1 max-w-2xl">
-            {filtered.length} row{filtered.length === 1 ? '' : 's'} awaiting your
-            review. Rose sends what looks publishable; the validator flags rows
-            that need a human call. Approve, reject, or send back to Rose.
+            Every proposal from across the catalog control plane lands here.
+            Approve or reject each. Cascade impact and warnings are shown
+            inline. Data source: admin_proposals on supabase-backup.
           </p>
-          <div className="flex flex-wrap gap-2 mt-4">
-            {(['all', 'price', 'formula', 't3_edge'] as Filter[]).map((f) => {
-              const active = filter === f;
-              return (
-                <a
-                  key={f}
-                  href={chipHref(f)}
+        </div>
+
+        {/* Tab bar */}
+        <div className="flex flex-wrap gap-1 mb-5 border-b border-slate-200">
+          {STATUS_VALUES.map((s) => {
+            const active = status === s;
+            return (
+              <a
+                key={s}
+                href={tabHref(s)}
+                className={
+                  active
+                    ? 'px-4 py-2 text-sm font-semibold text-emerald-700 border-b-2 border-emerald-600 -mb-px'
+                    : 'px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent -mb-px'
+                }
+              >
+                {STATUS_LABELS[s]}
+                <span
                   className={
                     active
-                      ? 'px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      : 'px-3 py-1 text-xs font-medium rounded-full text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'ml-2 inline-flex items-center justify-center text-[11px] font-semibold rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5'
+                      : 'ml-2 inline-flex items-center justify-center text-[11px] font-medium rounded-full bg-slate-100 text-slate-600 px-2 py-0.5'
                   }
                 >
-                  {FILTER_LABELS[f]}
-                </a>
+                  {counts[s]}
+                </span>
+              </a>
+            );
+          })}
+        </div>
+
+        {/* Tiles (awaiting tab only) */}
+        {status === 'awaiting_facu' && rows.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <Tile
+              label="Awaiting your sign-off"
+              value={String(counts.awaiting_facu)}
+              hint="From all proposers"
+              tone="orange"
+            />
+            <Tile
+              label="With critical warnings"
+              value={String(criticalCount)}
+              hint="Flagged on this page"
+              tone="red"
+            />
+            <Tile
+              label="SKUs affected (cascade)"
+              value={
+                cascadeHasUnknown
+                  ? `${cascadeTotal.toLocaleString()}+`
+                  : cascadeTotal.toLocaleString()
+              }
+              hint={
+                cascadeHasUnknown
+                  ? 'Some proposals have no SKU join key (TBD)'
+                  : 'Sum across visible proposals'
+              }
+              tone="amber"
+            />
+          </div>
+        )}
+
+        {/* Body */}
+        {rows.length === 0 ? (
+          <div className="text-center py-20 text-slate-500 border border-dashed border-slate-200 rounded-xl">
+            {status === 'awaiting_facu' ? (
+              <>
+                <p className="font-semibold text-slate-700">
+                  No proposals awaiting your sign-off.
+                </p>
+                <p className="text-sm mt-1">
+                  The catalog is in steady state.
+                </p>
+              </>
+            ) : status === 'approved' ? (
+              <>
+                <p className="font-semibold text-slate-700">
+                  No approved proposals yet.
+                </p>
+                <p className="text-sm mt-1">
+                  Once you approve one it will show up here.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-semibold text-slate-700">
+                  No rejected proposals.
+                </p>
+                <p className="text-sm mt-1">
+                  Anything you reject will land here with the reason you gave.
+                </p>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {rows.map((p) => {
+              const warnings = asWarnings(p.warnings);
+              const hasCritical = warnings.some((w) => w.severity === 'critical');
+              const hasWarn = warnings.some((w) => w.severity === 'warn');
+              const cardBorder = hasCritical
+                ? 'border-red-300'
+                : hasWarn
+                  ? 'border-amber-300'
+                  : 'border-slate-200';
+              const cascade = cascadeFor(p);
+              const proposerEmail = p.proposed_by
+                ? (emailMap[p.proposed_by] ?? p.proposed_by.slice(0, 8) + '...')
+                : 'unknown';
+
+              return (
+                <div
+                  key={p.id}
+                  className={`bg-white rounded-xl border ${cardBorder} p-5 hover:border-slate-300 transition-colors`}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {p.id.slice(0, 8)}
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold uppercase tracking-wide">
+                          {p.type}
+                        </span>
+                        <span className="font-semibold text-slate-900 text-sm break-all">
+                          {p.target_table}
+                          {p.target_id ? ` / ${p.target_id}` : ''}
+                        </span>
+                        {hasCritical && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-semibold">
+                            CRITICAL
+                          </span>
+                        )}
+                        {hasWarn && !hasCritical && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">
+                            WARN
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        Proposed by {proposerEmail} on {fmtDate(p.proposed_at)}
+                      </p>
+                    </div>
+                    {status === 'awaiting_facu' && (
+                      <ProposalActions id={p.id} />
+                    )}
+                  </div>
+
+                  {/* Payload summary */}
+                  <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 p-3">
+                    <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">
+                      Payload
+                    </div>
+                    <div className="text-xs text-slate-700 font-mono break-words">
+                      {payloadSummary(p)}
+                    </div>
+                  </div>
+
+                  {/* Cascade impact */}
+                  <div className="border-t border-slate-100 pt-3 mb-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-semibold text-slate-700">
+                        Cascade impact:{' '}
+                        <span
+                          className={
+                            cascade.value == null
+                              ? 'font-mono text-slate-500'
+                              : 'font-mono text-slate-900'
+                          }
+                        >
+                          {cascade.label}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Warnings */}
+                  {warnings.length > 0 && (
+                    <div className="border-t border-slate-100 pt-3 space-y-1.5">
+                      {warnings.map((w, i) => {
+                        const pill =
+                          w.severity === 'critical'
+                            ? 'bg-red-100 text-red-800 border-red-200'
+                            : w.severity === 'warn'
+                              ? 'bg-amber-100 text-amber-800 border-amber-200'
+                              : 'bg-slate-100 text-slate-700 border-slate-200';
+                        return (
+                          <div
+                            key={i}
+                            className={`text-xs flex items-start gap-2 px-2.5 py-1.5 rounded border ${pill}`}
+                          >
+                            <span className="font-bold shrink-0">
+                              {w.severity === 'critical'
+                                ? '!!'
+                                : w.severity === 'warn'
+                                  ? '!'
+                                  : '.'}
+                            </span>
+                            <span>{w.text}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Notes (if any) */}
+                  {p.notes && (
+                    <div className="border-t border-slate-100 pt-3 mt-3 text-xs text-slate-600">
+                      <span className="font-semibold text-slate-700">
+                        Notes:
+                      </span>{' '}
+                      {p.notes}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="text-center py-20 text-slate-400 border border-dashed border-slate-200 rounded-xl">
-            <p className="font-semibold text-slate-600">
-              Nothing awaiting your review.
-            </p>
-            <p className="text-sm mt-1">
-              Validator is happy or no rows match needs_facu_review.
-            </p>
-          </div>
-        ) : (
-          <SelectionProvider>
-            <BulkBar allSkuIds={filtered.map((c) => c.sku_id)} />
-
-            <div className="space-y-4">
-              {filtered.map((c) => {
-                const m = mirrorById[c.sku_id];
-                const gates = c.failing_gates ?? [];
-                return (
-                  <div
-                    key={c.sku_id}
-                    className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors"
-                  >
-                    <div className="flex flex-wrap items-start gap-4">
-                      {/* Left: select + identity */}
-                      <div className="flex items-start gap-3 min-w-[220px] flex-1">
-                        <div className="pt-1">
-                          <RowSelect skuId={c.sku_id} />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-semibold text-slate-900 text-sm">
-                            {skuLabel(m, c)}
-                          </div>
-                          <div className="text-xs text-slate-500 mt-0.5">
-                            {(c.vendor ?? m?.vendor) ?? 'no vendor'}
-                            {c.tier ? ` -- ${c.tier.toUpperCase()}` : ''}
-                          </div>
-                          <div className="text-[11px] text-slate-400 font-mono mt-1">
-                            SKU #{c.sku_id} -- gate score {c.gate_score}/16 --
-                            last validated {fmtDate(c.last_validated_at)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Middle: failing gates */}
-                      <div className="flex-1 min-w-[260px]">
-                        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-2">
-                          Failing gates
-                        </div>
-                        {gates.length === 0 ? (
-                          <div className="text-xs text-slate-400 italic">
-                            No gates listed -- forwarded by override
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-1.5">
-                            {gates.map((g) => (
-                              <div
-                                key={g}
-                                className="flex items-start gap-2 text-xs"
-                              >
-                                <span className="inline-block shrink-0 text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-800 border border-red-200">
-                                  {g}
-                                </span>
-                                <span className="text-slate-700">
-                                  {gateLabel(g)}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Right: actions */}
-                      <RowActions skuId={c.sku_id} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </SelectionProvider>
         )}
 
         <p className="text-xs text-slate-400 mt-8">
-          Data source: supabase-backup catalog_classifications. Approve =
-          status flips to admin_overridden_publish; reject = admin_overridden_hide;
-          forward = back to Rose with status needs_data_fix. All three stamp
-          reviewer_user_id + reviewer_at + reviewer_notes.
+          Data source: supabase-backup admin_proposals. Approve =&gt; executor
+          runs against the target table, override_audit row written, status
+          flips to approved. Reject =&gt; no executor, status flips to rejected
+          with the reason you give.
         </p>
       </main>
 
       <Footer />
+    </div>
+  );
+}
+
+function Tile({
+  label,
+  value,
+  hint,
+  tone,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  tone: 'orange' | 'red' | 'amber';
+}) {
+  const cls =
+    tone === 'orange'
+      ? 'bg-orange-50 border-orange-200 text-orange-900'
+      : tone === 'red'
+        ? 'bg-red-50 border-red-200 text-red-900'
+        : 'bg-amber-50 border-amber-200 text-amber-900';
+  return (
+    <div className={`rounded-xl border p-4 ${cls}`}>
+      <div className="text-[11px] uppercase tracking-wide opacity-70">
+        {label}
+      </div>
+      <div className="text-2xl font-bold mt-0.5">{value}</div>
+      <div className="text-[11px] mt-0.5 opacity-70">{hint}</div>
     </div>
   );
 }
