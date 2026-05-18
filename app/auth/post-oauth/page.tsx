@@ -1,25 +1,15 @@
 "use client";
 
-// Client-side OAuth landing page — replaces the server callback for Google.
-// 2026-05-18 | Job_PM AUTH-FIX r3 [V8 SHADOW]
+// Client-side OAuth landing page — explicit PKCE exchange + visible errors.
+// 2026-05-18 r8 | Job_PM AUTH-FIX [V8 SHADOW]
 //
-// Why this exists:
-//   Server-side exchangeCodeForSession() kept losing the PKCE verifier cookie
-//   across the Google -> Supabase -> our-callback redirect chain (supabase/ssr
-//   #55, plus more). We tried upgrading the lib (0.10.3), the canonical
-//   single-response pattern, and switching to implicit flow — none survived
-//   real-world testing.
+// r8: previous version relied on createBrowserClient's auto-exchange
+// (detectSessionInUrl=true). When the exchange silently failed, getSession()
+// kept returning null and we redirected the user to /shop signed-out.
 //
-//   The robust path: let supabase-js do PKCE end-to-end in the BROWSER. The
-//   browser-side client wrote the verifier (localStorage + cookie), and the
-//   browser-side client should read it back. Server doesn't touch it.
-//
-//   This page is the redirectTo target for OAuth. supabase-js with
-//   detectSessionInUrl=true auto-parses `?code=...` from window.location,
-//   exchanges it, writes the session to cookies, and we then push the user
-//   to their destination.
-//
-// Reads ?next= for the post-auth destination. Falls back to /shop.
+// This version calls exchangeCodeForSession() explicitly so we can SEE the
+// error. If anything goes wrong (missing verifier cookie, code expired,
+// network), we display it on-page instead of swallowing it.
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -38,66 +28,113 @@ export default function PostOAuthPage() {
 function PostOAuthInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [message, setMessage] = useState("Signing you in…");
+  const [status, setStatus] = useState<string>("Signing you in…");
+  const [debug, setDebug] = useState<Record<string, unknown>>({});
   const [errored, setErrored] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const supabase = createBackupClient();
+      const dbg: Record<string, unknown> = {
+        href: typeof window !== "undefined" ? window.location.href : "(ssr)",
+        hasCode: !!searchParams.get("code"),
+        hasError: !!searchParams.get("error"),
+        errorParam: searchParams.get("error"),
+        errorDescParam: searchParams.get("error_description"),
+      };
 
+      if (searchParams.get("error")) {
+        dbg.stage = "google_returned_error";
+        setDebug(dbg);
+        setErrored(true);
+        setStatus(`Google error: ${searchParams.get("error_description") ?? searchParams.get("error")}`);
+        return;
+      }
+
+      const supabase = createBackupClient();
       const rawNext = searchParams.get("next") ?? "/shop";
       const next = rawNext.startsWith("/") && !rawNext.startsWith("//") && !rawNext.includes("://")
         ? rawNext
         : "/shop";
+      dbg.next = next;
 
-      // Give supabase-js a tick to parse the URL (it does this on createBrowserClient).
-      // detectSessionInUrl runs synchronously on construction but the actual
-      // exchangeCodeForSession is async. Poll briefly for a session.
-      const startedAt = Date.now();
-      const deadline = startedAt + 8000;
-      let session = null;
-      let lastError: unknown = null;
-      while (Date.now() < deadline) {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) lastError = error;
-        if (data.session) {
-          session = data.session;
-          break;
+      const code = searchParams.get("code");
+      if (!code) {
+        // Maybe session arrived via URL fragment (implicit flow). Poll briefly.
+        dbg.stage = "no_code_polling_session";
+        for (let i = 0; i < 10 && !cancelled; i++) {
+          const { data } = await supabase.auth.getSession();
+          if (data.session) {
+            dbg.sessionFrom = "fragment_poll";
+            break;
+          }
+          await new Promise((r) => setTimeout(r, 300));
         }
-        await new Promise((r) => setTimeout(r, 250));
+      } else {
+        // Explicit PKCE exchange. supabase-js looks up the verifier cookie
+        // and POSTs to /auth/v1/token?grant_type=pkce.
+        dbg.stage = "exchanging_pkce_code";
+        try {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            dbg.exchangeError = { name: error.name, message: error.message, status: (error as { status?: number }).status };
+          } else {
+            dbg.exchangeOk = true;
+            dbg.userEmail = data.session?.user.email ?? null;
+            dbg.hasSession = !!data.session;
+          }
+        } catch (e) {
+          dbg.exchangeThrew = String(e);
+        }
       }
 
       if (cancelled) return;
 
-      if (!session) {
-        console.error("[post-oauth] no session after 8s", { lastError });
+      // Final state check
+      const { data: sessionData } = await supabase.auth.getSession();
+      dbg.finalSessionEmail = sessionData.session?.user.email ?? null;
+      dbg.finalHasSession = !!sessionData.session;
+
+      // Visible cookie inventory (browser only)
+      if (typeof document !== "undefined") {
+        const names = document.cookie.split(/;\s*/).map((c) => c.split("=")[0]).filter(Boolean);
+        dbg.cookieNames = names.filter((n) => n.startsWith("sb-"));
+      }
+
+      setDebug(dbg);
+
+      if (!sessionData.session) {
         setErrored(true);
-        setMessage("Sign-in did not complete. Returning to login…");
-        setTimeout(() => router.replace("/auth/login?error=oauth_no_session"), 1500);
+        setStatus("Sign-in did not complete. See diagnostics below.");
         return;
       }
 
-      // Check if profile exists -> route to signup wizard if not (mirrors prior callback behavior).
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.replace("/auth/login?error=no_user");
-        return;
-      }
-
-      const { data: profile } = await supabase
+      // Look up profile (RLS now allows authenticated user to read own row)
+      const userId = sessionData.session.user.id;
+      const { data: profile, error: profErr } = await supabase
         .from("client_profiles")
-        .select("id")
-        .eq("user_id", user.id)
+        .select("id, status")
+        .eq("user_id", userId)
         .maybeSingle();
 
+      if (profErr) {
+        dbg.profileError = profErr.message;
+        setDebug({ ...dbg });
+      }
+
       if (!profile) {
-        router.replace("/signup?step=1");
+        dbg.routing = "no_profile_to_signup";
+        setDebug({ ...dbg });
+        setStatus("New account — taking you to signup…");
+        setTimeout(() => router.replace("/signup?step=1"), 800);
         return;
       }
 
-      // Clean the URL fragment / query before navigating so we don't leak tokens.
-      router.replace(next);
+      dbg.routing = `to_${next}`;
+      dbg.profileStatus = profile.status;
+      setDebug({ ...dbg });
+      setStatus("Signed in. Redirecting…");
+      setTimeout(() => router.replace(next), 400);
     })();
 
     return () => {
@@ -106,10 +143,24 @@ function PostOAuthInner() {
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-emerald-50 to-slate-50 px-4">
-      <div className={`text-sm ${errored ? "text-red-600" : "text-slate-600"}`}>
-        {message}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-emerald-50 to-slate-50 px-4 py-12">
+      <div className={`text-sm mb-6 ${errored ? "text-red-600 font-semibold" : "text-slate-600"}`}>
+        {status}
       </div>
+      {errored && (
+        <div className="max-w-xl w-full bg-white border border-slate-200 rounded-lg p-4">
+          <div className="text-xs text-slate-500 mb-2">Diagnostics (share with support):</div>
+          <pre className="text-xs text-slate-800 overflow-x-auto whitespace-pre-wrap break-all">
+{JSON.stringify(debug, null, 2)}
+          </pre>
+          <a
+            href="/auth/login"
+            className="inline-block mt-4 text-sm text-emerald-700 hover:underline"
+          >
+            ← Back to sign in
+          </a>
+        </div>
+      )}
     </div>
   );
 }
