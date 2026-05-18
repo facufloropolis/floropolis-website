@@ -60,23 +60,33 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/auth/login?next=" + request.nextUrl.pathname, request.url));
     }
     let isAdmin = false;
-    try {
-      const adminRes = await fetch(
-        `${backupUrl}/rest/v1/client_profiles?user_id=eq.${user.id}&select=status`,
-        {
-          headers: {
-            apikey: backupKey,
-            Authorization: `Bearer ${backupKey}`,
-            Accept: "application/json",
+    // Use SERVICE KEY for the admin lookup (bypasses RLS). The anon key
+    // alone returns no rows because middleware doesn't pass the user JWT
+    // to the REST call -- RLS sees auth.uid() = NULL and rejects.
+    const serviceKey = process.env.BACKUP_SUPABASE_SERVICE_KEY;
+    if (serviceKey) {
+      try {
+        const adminRes = await fetch(
+          `${backupUrl}/rest/v1/client_profiles?user_id=eq.${user.id}&select=status`,
+          {
+            headers: {
+              apikey: serviceKey,
+              Authorization: `Bearer ${serviceKey}`,
+              Accept: "application/json",
+            },
           },
-        },
-      );
-      if (adminRes.ok) {
-        const rows: Array<{ status?: string }> = await adminRes.json();
-        isAdmin = rows.some((r) => r.status === "admin");
+        );
+        if (adminRes.ok) {
+          const rows: Array<{ status?: string }> = await adminRes.json();
+          isAdmin = rows.some((r) => r.status === "admin");
+        } else {
+          console.warn("[middleware] admin status lookup HTTP", adminRes.status);
+        }
+      } catch (e) {
+        console.warn("[middleware] admin status lookup failed:", e);
       }
-    } catch (e) {
-      console.warn("[middleware] admin status lookup failed, falling back to email allowlist:", e);
+    } else {
+      console.warn("[middleware] BACKUP_SUPABASE_SERVICE_KEY missing -- falling back to email allowlist");
     }
     // Fallback to allowlist if REST failed OR profile query returned no admin row.
     if (!isAdmin && user.email && ADMIN_EMAILS.includes(user.email)) {

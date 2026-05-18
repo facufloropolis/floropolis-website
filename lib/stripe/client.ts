@@ -10,8 +10,9 @@
 
 import Stripe from 'stripe';
 
-const STRIPE_API_VERSION = '2025-09-30.acacia' as const;
-
+// API version: rely on the Stripe SDK's bundled default. Earlier pin of
+// '2025-09-30.acacia' was made up and rejected by Stripe. SDK version pin
+// can be re-introduced when we have a verified one from the dashboard.
 let _stripe: Stripe | null = null;
 
 /**
@@ -29,9 +30,6 @@ export function getStripe(): Stripe {
   }
 
   _stripe = new Stripe(key, {
-    // apiVersion literal type pinned per design doc; Stripe SDK types may lag
-    // behind dashboard versions, so we widen the cast intentionally.
-    apiVersion: STRIPE_API_VERSION as Stripe.LatestApiVersion,
     typescript: true,
     appInfo: { name: 'floropolis', version: '0.1.0' },
     maxNetworkRetries: 2,
@@ -57,4 +55,3 @@ export function assertStripeEnv(opts: { webhook?: boolean } = {}): void {
 }
 
 export const STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
-export { STRIPE_API_VERSION };
