@@ -1,5 +1,13 @@
 // Browser-side Supabase client pointed at supabase-backup (ibckhcjvyxzrhvdiazbx).
-// v1 | 2026-05-17 | Job_PM W5-S15 [V8 SHADOW]
+// v2 | 2026-05-18 | Job_PM AUTH-FIX [V8 SHADOW]
+//
+// v2: removed the redundant cookieOptions: { sameSite: "lax" } override.
+// SameSite=Lax is already the @supabase/ssr default and our server-side
+// clients (backup-server-session, middleware, callback-backup/route) do
+// NOT override cookieOptions. Keeping the override only on the browser
+// side risked an asymmetric cookie config between the writer (browser
+// during signInWithOAuth verifier write) and the reader (server during
+// exchangeCodeForSession). All four clients now use library defaults.
 //
 // Per Phase 4 SEGURISIMA rule: auth + the entire transactional system run on
 // supabase-backup, NOT prod. This client is for browser code (signup wizard,
@@ -16,7 +24,7 @@
 // project ref in the URL), so this client's session is fully isolated from
 // the prod client's session in the same browser. Both can coexist.
 
-import { createBrowserClient, type CookieOptions } from "@supabase/ssr";
+import { createBrowserClient } from "@supabase/ssr";
 
 export function createBackupClient() {
   const url = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL;
@@ -27,9 +35,7 @@ export function createBackupClient() {
       "[supabase/backup-client] MISSING ENV: NEXT_PUBLIC_BACKUP_SUPABASE_URL or NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY",
     );
   }
-  // createBrowserClient also accepts an options object for cookies; we leave
-  // the default behavior which uses document.cookie scoped to the project.
-  return createBrowserClient(url, key, {
-    cookieOptions: { sameSite: "lax" } as CookieOptions,
-  });
+  // Library defaults: HttpOnly, Secure (prod), Path=/, SameSite=Lax.
+  // No explicit cookieOptions — server clients also use defaults.
+  return createBrowserClient(url, key);
 }

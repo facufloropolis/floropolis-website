@@ -196,27 +196,24 @@ function LoginContent() {
         </p>
       )}
 
-      {/* ── Google (TEMPORARILY DISABLED 2026-05-18) ──
-          PKCE callback flow had cookie-persistence issues. Reactivate after
-          switching supabase-js to implicit flow OR fixing the cookie chain.
-          For now, email OTP is the canonical sign-in path. */}
-      {false && (
-        <button
-          type="button"
-          onClick={handleGoogle}
-          disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold py-3 rounded-xl text-sm transition-all hover:shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {googleLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <GoogleIcon />
-          )}
-          Continue with Google
-        </button>
-      )}
+      {/* ── Google OAuth (re-enabled 2026-05-18 by AUTH-FIX) ──
+          PKCE callback rewritten to single-response pattern + @supabase/ssr
+          upgraded 0.9.0 → 0.10.3 to fix the verifier cookie persistence bug. */}
+      <button
+        type="button"
+        onClick={handleGoogle}
+        disabled={googleLoading}
+        className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold py-3 rounded-xl text-sm transition-all hover:shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {googleLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <GoogleIcon />
+        )}
+        Continue with Google
+      </button>
 
-      {/* Email OTP is now the primary sign-in. No divider needed since Google is hidden. */}
+      <Divider label="or sign in with email" />
 
       {/* ── Email OTP (6-digit code) ── */}
       {emailStep === "verify" ? (
