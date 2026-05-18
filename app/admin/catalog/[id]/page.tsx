@@ -1,16 +1,24 @@
 // Admin Catalog -- per-SKU control plane.
-// v1 | 2026-05-18 | Job_PM CAT-S4 [V8 SHADOW]
+// v2 | 2026-05-18 | Job_PM admin-port X2 [V8 SHADOW]
 //
-// Lands on /admin/catalog/[id]. Three sections:
-//   1. Gate status table (16 gates, fixers inline for the failing ones)
-//   2. All raw mirror fields (definition list, inline edit for the writable ones)
-//   3. Admin actions (force publish/hide, forward to Rose, reset, reviewer notes)
+// Lands on /admin/catalog/[id]. Sections (ported from
+// app/mockups/admin-catalog/[sku]/page.tsx, mapped to real Supabase tables):
 //
-// Server component. Inline editors live in Editor.tsx (client island).
+//   1. Header (quality_family, vendor, price, status, gate score)
+//   2. Sources side-by-side (other SKUs in same quality_family_id, across vendors)
+//      -- most rows have NULL quality_family_id today, so most pages render the
+//         "no cross-source data yet" note
+//   3. Cost breakdown (pricing_constants + box_master + farm_cost -> selling price)
+//   4. Override audit timeline (override_audit where target_id = sku_id text)
+//   5. Gate status (16) -- PRESERVED from v1 (Editor.tsx fixers untouched)
+//   6. Raw mirror fields -- PRESERVED from v1
+//   7. Admin actions -- PRESERVED from v1
+//   8. Propose change cluster -- new client island wired to /api/admin/proposals
 //
 // All writes funnel through:
 //   POST /api/admin/catalog/sku/[id]/update         -- single-field mirror writes
 //   POST /api/admin/catalog/sku/[id]/admin-action   -- catalog_classifications status
+//   POST /api/admin/proposals                       -- new admin_proposals row
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +49,12 @@ import {
   VerifyCostButton,
 } from './Editor';
 import { FlagToggleClient as FlagToggle } from './Editor.flag';
+import {
+  DiscountSkuForm,
+  HideSkuForm,
+  ProposeChangeCluster,
+  UnsupportedProposeButton,
+} from './ProposeForms';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -60,6 +74,7 @@ interface ClassificationRow {
   reviewer_at: string | null;
   reviewer_notes: string | null;
   created_at: string | null;
+  quality_family_id: string | null;
 }
 
 interface MirrorRow {
@@ -92,7 +107,45 @@ interface MirrorRow {
   is_on_deal: boolean | null;
   is_best_seller: boolean | null;
   is_featured: boolean | null;
+  quality_family_id: string | null;
   [k: string]: unknown;
+}
+
+interface BoxMasterRow {
+  box_type: string;
+  weight_kg: number | string | null;
+  description: string | null;
+}
+
+interface PricingConstantRow {
+  id: string;
+  value_numeric: number | string | null;
+  description: string | null;
+  unit: string | null;
+}
+
+interface OverrideAuditRow {
+  id: string;
+  proposal_id: string | null;
+  target_table: string;
+  target_id: string | null;
+  before_jsonb: Record<string, unknown> | null;
+  after_jsonb: Record<string, unknown> | null;
+  applied_at: string;
+  applied_by_function: string | null;
+}
+
+interface SiblingSkuRow {
+  id: number;
+  vendor: string | null;
+  name: string | null;
+  variety: string | null;
+  length: string | null;
+  price: number | string | null;
+  farm_cost: number | string | null;
+  stock: number | string | null;
+  live: boolean | null;
+  tier: string | null;
 }
 
 // All 16 gate IDs the validator can emit (plus the stock_live_mismatch signal).
@@ -142,6 +195,18 @@ function toNumOrNull(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function fmtUsd(v: unknown): string {
+  const n = toNumOrNull(v);
+  if (n == null) return '-';
+  return `$${n.toFixed(2)}`;
+}
+
+function fmtPct(v: unknown): string {
+  const n = toNumOrNull(v);
+  if (n == null) return '-';
+  return `${(n * 100).toFixed(1)}%`;
+}
+
 function imagesArr(v: unknown): string[] {
   if (Array.isArray(v)) {
     return v.filter((x): x is string => typeof x === 'string');
@@ -183,6 +248,89 @@ function statusBadge(status: string): { label: string; cls: string } {
   return { label: status, cls: 'bg-slate-100 text-slate-700 border-slate-300' };
 }
 
+// ---------------------------------------------------------------------------
+// Cost breakdown computation. Mirrors Rose's pricing formula:
+//   delivery_per_box  = ceil(box_weight_kg) * fedex_rate_per_kg * fuel_surcharge_mult
+//   delivery_per_stem = delivery_per_box / units_per_box
+//   target_ex_delivery = farm_cost / (1 - gpm_target)
+//   target_price      = target_ex_delivery + delivery_per_stem
+//
+// Note: box_master in supabase-backup currently has only weight_kg (no L/W/H
+// dims), so dim weight is taken directly from weight_kg. When the dim-weight
+// columns ship, swap weight_kg -> max(weight_kg, dim_weight_kg) at the ceil
+// step.
+// ---------------------------------------------------------------------------
+
+interface CostBreakdown {
+  farmCost: number | null;
+  gpmTarget: number | null;
+  fedexRate: number | null;
+  fuelMult: number | null;
+  boxWeight: number | null;
+  ceilBoxWeight: number | null;
+  unitsPerBox: number | null;
+  deliveryPerBox: number | null;
+  deliveryPerStem: number | null;
+  targetExDelivery: number | null;
+  targetPrice: number | null;
+  currentPrice: number | null;
+  realizedGpm: number | null;
+  origin: string;
+}
+
+function computeBreakdown(
+  mirror: MirrorRow,
+  box: BoxMasterRow | null,
+  constants: Map<string, number>,
+): CostBreakdown {
+  const farmCost = toNumOrNull(mirror.farm_cost);
+  const gpmTarget = constants.get('gpm_target') ?? null;
+  const fedexRate = constants.get('fedex_rate_per_kg') ?? null;
+  const fuelMult = constants.get('fuel_surcharge_mult') ?? null;
+  const boxWeight = box ? toNumOrNull(box.weight_kg) : null;
+  const ceilBoxWeight = boxWeight != null ? Math.ceil(boxWeight) : null;
+  const unitsPerBox = toNumOrNull(mirror.units_per_box);
+  const currentPrice = toNumOrNull(mirror.price);
+
+  const deliveryPerBox =
+    ceilBoxWeight != null && fedexRate != null && fuelMult != null
+      ? ceilBoxWeight * fedexRate * fuelMult
+      : null;
+  const deliveryPerStem =
+    deliveryPerBox != null && unitsPerBox && unitsPerBox > 0
+      ? deliveryPerBox / unitsPerBox
+      : null;
+  const targetExDelivery =
+    farmCost != null && gpmTarget != null && gpmTarget < 1
+      ? farmCost / (1 - gpmTarget)
+      : null;
+  const targetPrice =
+    targetExDelivery != null && deliveryPerStem != null
+      ? targetExDelivery + deliveryPerStem
+      : null;
+  const realizedGpm =
+    currentPrice != null && currentPrice > 0 && farmCost != null
+      ? 1 - farmCost / currentPrice
+      : null;
+
+  return {
+    farmCost,
+    gpmTarget,
+    fedexRate,
+    fuelMult,
+    boxWeight,
+    ceilBoxWeight,
+    unitsPerBox,
+    deliveryPerBox,
+    deliveryPerStem,
+    targetExDelivery,
+    targetPrice,
+    currentPrice,
+    realizedGpm,
+    origin: 'Ecuador -> Miami', // hardcoded until shipping_config_v2 has rows
+  };
+}
+
 export const metadata = {
   title: 'SKU detail | Floropolis Admin',
   robots: { index: false, follow: false },
@@ -212,28 +360,72 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
 
   const backup = getBackupServiceClient();
 
-  const { data: classRow } = await backup
-    .from('catalog_classifications')
+  const [classRes, mirrorRes, constantsRes] = await Promise.all([
+    backup
+      .from('catalog_classifications')
+      .select(
+        'sku_id, status, gate_score, failing_gates, vendor, tier, variety, last_validated_at, last_changed_at, reviewer_action, reviewer_at, reviewer_notes, created_at, quality_family_id',
+      )
+      .eq('sku_id', skuId)
+      .maybeSingle(),
+    backup.from('floropolis_inventory_mirror').select('*').eq('id', skuId).maybeSingle(),
+    backup.from('pricing_constants').select('id, value_numeric, description, unit'),
+  ]);
+
+  const cls = classRes.data as ClassificationRow | null;
+  const mirror = mirrorRes.data as MirrorRow | null;
+  const constantsRows = (constantsRes.data ?? []) as PricingConstantRow[];
+
+  const constants = new Map<string, number>();
+  for (const c of constantsRows) {
+    const n = toNumOrNull(c.value_numeric);
+    if (n != null) constants.set(c.id, n);
+  }
+
+  // Box master row for this SKU's box_type.
+  let box: BoxMasterRow | null = null;
+  if (mirror?.box_type) {
+    const { data: boxRow } = await backup
+      .from('box_master')
+      .select('box_type, weight_kg, description')
+      .eq('box_type', mirror.box_type)
+      .maybeSingle();
+    box = (boxRow ?? null) as BoxMasterRow | null;
+  }
+
+  // Sibling SKUs (same quality_family_id, excluding this row).
+  const qfid = mirror?.quality_family_id ?? cls?.quality_family_id ?? null;
+  let siblings: SiblingSkuRow[] = [];
+  if (qfid) {
+    const { data: siblingRows } = await backup
+      .from('floropolis_inventory_mirror')
+      .select('id, vendor, name, variety, length, price, farm_cost, stock, live, tier')
+      .eq('quality_family_id', qfid)
+      .neq('id', skuId)
+      .limit(20);
+    siblings = (siblingRows ?? []) as SiblingSkuRow[];
+  }
+
+  // Override audit timeline -- target_id is stored as text, so coerce.
+  const { data: auditRows } = await backup
+    .from('override_audit')
     .select(
-      'sku_id, status, gate_score, failing_gates, vendor, tier, variety, last_validated_at, last_changed_at, reviewer_action, reviewer_at, reviewer_notes, created_at',
+      'id, proposal_id, target_table, target_id, before_jsonb, after_jsonb, applied_at, applied_by_function',
     )
-    .eq('sku_id', skuId)
-    .maybeSingle();
+    .eq('target_id', String(skuId))
+    .order('applied_at', { ascending: true })
+    .limit(50);
+  const audit = (auditRows ?? []) as OverrideAuditRow[];
 
-  const { data: mirrorRow } = await backup
-    .from('floropolis_inventory_mirror')
-    .select('*')
-    .eq('id', skuId)
-    .maybeSingle();
-
-  const cls = classRow as ClassificationRow | null;
-  const mirror = mirrorRow as MirrorRow | null;
   const failingSet = new Set<string>(
     Array.isArray(cls?.failing_gates) ? (cls!.failing_gates as string[]) : [],
   );
-
   const isAdminOverridden =
     typeof cls?.status === 'string' && cls.status.startsWith('admin_overridden_');
+
+  const breakdown = mirror
+    ? computeBreakdown(mirror, box, constants)
+    : null;
 
   return (
     <div className="min-h-screen bg-white">
@@ -270,6 +462,11 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                 <span className="font-medium">{mirror?.vendor ?? '-'}</span>{' '}
                 . tier <span className="font-mono">{mirror?.tier ?? '-'}</span>
               </p>
+              <p className="text-[11px] text-slate-400 font-mono mt-1">
+                box: {mirror?.box_type ?? '-'} . quality_family_id:{' '}
+                {qfid ?? '(null)'} . units_per_box:{' '}
+                {mirror?.units_per_box ?? '-'}
+              </p>
               {cls && (
                 <p className="text-xs text-slate-500 mt-2">
                   Last validated {fmtDate(cls.last_validated_at)} . Last
@@ -279,6 +476,12 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex flex-col items-end gap-2">
+              <div className="text-2xl font-bold text-slate-900">
+                {fmtUsd(mirror?.price)}
+              </div>
+              <div className="text-[11px] text-slate-500">
+                per {mirror?.unit ?? 'unit'}
+              </div>
               {cls && (
                 <>
                   <span
@@ -295,7 +498,289 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Section 1: Gate status table */}
+        {/* Section: Sources side-by-side */}
+        <SectionCard
+          title="Sources side-by-side"
+          subtitle="Other SKUs in the same quality_family across vendors"
+        >
+          {!qfid ? (
+            <p className="text-xs text-slate-500 italic">
+              No cross-source data yet (quality_family_id not backfilled). Once
+              Rose backfills the column, this panel will list every vendor
+              offering the same quality family side by side.
+            </p>
+          ) : siblings.length === 0 ? (
+            <p className="text-xs text-slate-500 italic">
+              quality_family_id <span className="font-mono">{qfid}</span> is set
+              on this SKU but no sibling SKUs exist yet.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead className="bg-slate-50 text-left text-[11px] uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-2 py-1.5 font-semibold">SKU</th>
+                    <th className="px-2 py-1.5 font-semibold">Vendor</th>
+                    <th className="px-2 py-1.5 font-semibold">Variety / length</th>
+                    <th className="px-2 py-1.5 font-semibold text-right">Cost</th>
+                    <th className="px-2 py-1.5 font-semibold text-right">Price</th>
+                    <th className="px-2 py-1.5 font-semibold text-right">GPM</th>
+                    <th className="px-2 py-1.5 font-semibold text-right">Stock</th>
+                    <th className="px-2 py-1.5 font-semibold">Live</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* this SKU first as reference row */}
+                  {mirror && (
+                    <tr className="border-t border-slate-200 bg-emerald-50/40">
+                      <td className="px-2 py-1.5 font-mono text-emerald-800">
+                        {mirror.id} (this)
+                      </td>
+                      <td className="px-2 py-1.5">{mirror.vendor ?? '-'}</td>
+                      <td className="px-2 py-1.5 text-slate-600">
+                        {mirror.variety ?? '-'} . {mirror.length ?? '-'}
+                      </td>
+                      <td className="px-2 py-1.5 text-right">
+                        {fmtUsd(mirror.farm_cost)}
+                      </td>
+                      <td className="px-2 py-1.5 text-right">
+                        {fmtUsd(mirror.price)}
+                      </td>
+                      <td className="px-2 py-1.5 text-right">
+                        {breakdown ? fmtPct(breakdown.realizedGpm) : '-'}
+                      </td>
+                      <td className="px-2 py-1.5 text-right">
+                        {mirror.stock ?? '-'}
+                      </td>
+                      <td className="px-2 py-1.5">
+                        {mirror.live === true ? 'live' : '-'}
+                      </td>
+                    </tr>
+                  )}
+                  {siblings.map((s) => {
+                    const cost = toNumOrNull(s.farm_cost);
+                    const price = toNumOrNull(s.price);
+                    const gpm =
+                      cost != null && price != null && price > 0
+                        ? 1 - cost / price
+                        : null;
+                    return (
+                      <tr key={s.id} className="border-t border-slate-100">
+                        <td className="px-2 py-1.5 font-mono">
+                          <Link
+                            href={`/admin/catalog/${s.id}`}
+                            className="text-emerald-700 hover:underline"
+                          >
+                            {s.id}
+                          </Link>
+                        </td>
+                        <td className="px-2 py-1.5">{s.vendor ?? '-'}</td>
+                        <td className="px-2 py-1.5 text-slate-600">
+                          {s.variety ?? '-'} . {s.length ?? '-'}
+                        </td>
+                        <td className="px-2 py-1.5 text-right">{fmtUsd(s.farm_cost)}</td>
+                        <td className="px-2 py-1.5 text-right">{fmtUsd(s.price)}</td>
+                        <td className="px-2 py-1.5 text-right">{fmtPct(gpm)}</td>
+                        <td className="px-2 py-1.5 text-right">{s.stock ?? '-'}</td>
+                        <td className="px-2 py-1.5">
+                          {s.live === true ? 'live' : '-'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </SectionCard>
+
+        {/* Section: Cost breakdown */}
+        <SectionCard
+          title="Cost breakdown"
+          subtitle={`Rose's formula -- transparent calc per stem (origin: ${breakdown?.origin ?? 'unknown'})`}
+        >
+          {!mirror ? (
+            <p className="text-xs text-slate-500 italic">
+              No mirror row to compute against.
+            </p>
+          ) : breakdown && breakdown.farmCost == null ? (
+            <p className="text-xs text-amber-700 italic">
+              farm_cost is missing on this SKU -- selling price cannot be
+              derived. Fix the cost first or escalate to Rose.
+            </p>
+          ) : breakdown ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Formula */}
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-[11px] text-slate-700 leading-relaxed">
+                <div className="font-sans font-semibold text-slate-900 text-xs mb-2">
+                  Pricing formula (Rose, verified)
+                </div>
+                <div>price_ex_delivery = farm_cost / (1 - gpm_target)</div>
+                <div>delivery_per_box  = ceil(box_kg) * fedex_rate * fuel_mult</div>
+                <div>delivery_per_stem = delivery_per_box / units_per_box</div>
+                <div>target_price      = price_ex_delivery + delivery_per_stem</div>
+                <div className="font-sans text-[10px] text-slate-400 mt-3">
+                  Delivery passed through at cost -- no margin on delivery.
+                  Box dims default to weight_kg until L/W/H ship in box_master.
+                </div>
+              </div>
+              {/* Filled values */}
+              <div className="rounded-lg border border-slate-200 bg-white p-4 text-xs space-y-1.5">
+                <KvRow label="farm_cost" value={fmtUsd(breakdown.farmCost)} />
+                <KvRow
+                  label="gpm_target"
+                  value={fmtPct(breakdown.gpmTarget)}
+                  hint="pricing_constants.gpm_target"
+                />
+                <KvRow
+                  label="price_ex_delivery"
+                  value={fmtUsd(breakdown.targetExDelivery)}
+                />
+                <Divider />
+                <KvRow
+                  label={`box (${mirror.box_type ?? '?'})`}
+                  value={
+                    breakdown.boxWeight != null
+                      ? `${breakdown.boxWeight.toFixed(2)} kg`
+                      : '-'
+                  }
+                  hint="box_master.weight_kg"
+                />
+                <KvRow
+                  label="ceil(box_kg)"
+                  value={breakdown.ceilBoxWeight?.toString() ?? '-'}
+                />
+                <KvRow
+                  label="fedex_rate"
+                  value={
+                    breakdown.fedexRate != null
+                      ? `$${breakdown.fedexRate.toFixed(2)}/kg`
+                      : '-'
+                  }
+                  hint="pricing_constants.fedex_rate_per_kg"
+                />
+                <KvRow
+                  label="fuel_mult"
+                  value={
+                    breakdown.fuelMult != null
+                      ? `x ${breakdown.fuelMult.toFixed(2)}`
+                      : '-'
+                  }
+                  hint="pricing_constants.fuel_surcharge_mult"
+                />
+                <KvRow
+                  label="delivery_per_box"
+                  value={fmtUsd(breakdown.deliveryPerBox)}
+                />
+                <KvRow
+                  label="units_per_box"
+                  value={breakdown.unitsPerBox?.toString() ?? '-'}
+                />
+                <KvRow
+                  label="delivery_per_stem"
+                  value={fmtUsd(breakdown.deliveryPerStem)}
+                />
+                <Divider />
+                <div className="flex justify-between text-sm pt-1">
+                  <span className="font-semibold text-slate-900">target_price</span>
+                  <span className="font-bold text-slate-900">
+                    {fmtUsd(breakdown.targetPrice)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">current price</span>
+                  <span className="font-mono text-slate-700">
+                    {fmtUsd(breakdown.currentPrice)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">realized GPM</span>
+                  <span
+                    className={`font-semibold ${
+                      breakdown.realizedGpm != null && breakdown.gpmTarget != null
+                        ? breakdown.realizedGpm >= breakdown.gpmTarget
+                          ? 'text-emerald-700'
+                          : breakdown.realizedGpm >= breakdown.gpmTarget - 0.05
+                            ? 'text-amber-700'
+                            : 'text-red-700'
+                        : 'text-slate-500'
+                    }`}
+                  >
+                    {fmtPct(breakdown.realizedGpm)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </SectionCard>
+
+        {/* Section: Override audit timeline */}
+        <SectionCard
+          title="Override audit timeline"
+          subtitle="Every approved proposal that touched this SKU (oldest -> newest)"
+        >
+          {audit.length === 0 ? (
+            <p className="text-xs text-slate-500 italic">
+              No override_audit entries for SKU {skuId}. Nothing has flowed
+              through admin_proposals -&gt; executor for this row yet.
+            </p>
+          ) : (
+            <ol className="space-y-2">
+              {audit.map((a) => (
+                <li
+                  key={a.id}
+                  className="border border-slate-200 rounded-lg p-3 bg-white"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-[11px] font-mono text-slate-500">
+                      {fmtDate(a.applied_at)} . {a.applied_by_function ?? '-'}
+                    </span>
+                    {a.proposal_id && (
+                      <Link
+                        href={`/admin/catalog/approval-queue#${a.proposal_id}`}
+                        className="text-[11px] text-emerald-700 font-mono hover:underline"
+                      >
+                        proposal #{a.proposal_id.slice(0, 8)}
+                      </Link>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-600 mb-1">
+                    target: <span className="font-mono">{a.target_table}</span>{' '}
+                    / <span className="font-mono">{a.target_id ?? '-'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    <JsonBlock label="before" value={a.before_jsonb} />
+                    <JsonBlock label="after" value={a.after_jsonb} />
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </SectionCard>
+
+        {/* Section: Propose change cluster -- new admin_proposals row */}
+        <SectionCard
+          title="Propose change from here"
+          subtitle="Inserts an admin_proposals row. Facu must approve in /admin/catalog/approval-queue."
+        >
+          <ProposeChangeCluster>
+            <HideSkuForm skuId={skuId} />
+            <DiscountSkuForm
+              skuId={skuId}
+              currentPrice={toNumOrNull(mirror?.price)}
+            />
+            <UnsupportedProposeButton
+              label="change vendor cost"
+              reason="No executor for floropolis_inventory_mirror.update yet. Lives in lib/admin/proposal-executors.ts (different agent owns that). Use the farm_cost field inline above for now."
+            />
+            <UnsupportedProposeButton
+              label="set target price override"
+              reason="No executor for target_price.override yet. Closest available today: propose a discount on this SKU (above), or use the inline price editor."
+            />
+          </ProposeChangeCluster>
+        </SectionCard>
+
+        {/* Section 1: Gate status table -- PRESERVED from v1 */}
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Gate status (16)
@@ -365,7 +850,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* Section 2: Raw fields */}
+        {/* Section 2: Raw fields -- PRESERVED from v1 */}
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Raw fields (floropolis_inventory_mirror)
@@ -432,7 +917,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           )}
         </section>
 
-        {/* Section 3: Admin actions */}
+        {/* Section 3: Admin actions -- PRESERVED from v1 */}
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Admin actions
@@ -471,7 +956,76 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Per-gate inline fixer dispatch
+// Generic section wrapper used by the mockup-ported panels.
+// ---------------------------------------------------------------------------
+
+function SectionCard({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="bg-white border border-slate-200 rounded-xl p-5 mb-5">
+      <div className="mb-3">
+        <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+        {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function KvRow({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+}) {
+  return (
+    <div className="flex justify-between items-baseline gap-3">
+      <span className="text-slate-500">
+        {label}
+        {hint && (
+          <span className="block text-[10px] text-slate-400 font-mono">{hint}</span>
+        )}
+      </span>
+      <span className="text-slate-900 font-medium font-mono">{value}</span>
+    </div>
+  );
+}
+
+function Divider() {
+  return <div className="border-t border-slate-100 my-2" />;
+}
+
+function JsonBlock({
+  label,
+  value,
+}: {
+  label: string;
+  value: Record<string, unknown> | null;
+}) {
+  return (
+    <div className="rounded-md border border-slate-200 bg-slate-50 p-2 overflow-hidden">
+      <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+        {label}
+      </div>
+      <pre className="text-[10px] font-mono text-slate-700 whitespace-pre-wrap break-all max-h-40 overflow-y-auto">
+        {value == null ? '(null)' : JSON.stringify(value, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Per-gate inline fixer dispatch -- PRESERVED from v1
 // ---------------------------------------------------------------------------
 
 function GateFixer({
@@ -634,9 +1188,6 @@ function FlagRow({
   field: 'is_on_deal' | 'is_best_seller' | 'is_featured';
   value: boolean;
 }) {
-  // Small server-side wrapper that renders a client toggle.
-  // Defined inline so the page file stays the single source of truth for
-  // which mirror flags are exposed here.
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-xs uppercase tracking-wide text-slate-400 font-semibold">
