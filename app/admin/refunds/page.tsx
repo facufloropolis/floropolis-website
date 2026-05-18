@@ -89,13 +89,17 @@ export const metadata = {
 
 export default async function AdminRefundsPage() {
   // Re-check admin server-side ----------------------------------------------
+  // Get user from session (user-context client). Then look up admin status
+  // via service-role to bypass RLS (RLS-bound query was returning empty in
+  // this Vercel setup; verified via /api/debug/whoami).
   const userClient = await createUserClient();
   const {
     data: { user },
   } = await userClient.auth.getUser();
   if (!user) redirect('/');
 
-  const { data: profile } = await userClient
+  const adminClient = getBackupServiceClient();
+  const { data: profile } = await adminClient
     .from('client_profiles')
     .select('status')
     .eq('user_id', user.id)
