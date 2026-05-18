@@ -67,18 +67,36 @@ function LoginContent() {
   // --- Google OAuth ---
   const handleGoogle = async () => {
     setGoogleLoading(true);
+    setGlobalError(null);
     const supabase = createBackupClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent(nextParam)}`,
-      },
-    });
-    if (error) {
-      setGlobalError(error.message);
+    const redirectTo = `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent(nextParam)}`;
+    console.log("[auth/login] starting Google OAuth, redirectTo:", redirectTo);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (error) {
+        console.error("[auth/login] OAuth init error:", error);
+        setGlobalError(`OAuth init failed: ${error.message}`);
+        setGoogleLoading(false);
+        return;
+      }
+      // Force a manual redirect if the SDK didn't auto-redirect (popup blockers etc).
+      if (data?.url) {
+        console.log("[auth/login] redirecting to:", data.url);
+        window.location.assign(data.url);
+        setTimeout(() => setGoogleLoading(false), 5000);
+      } else {
+        console.warn("[auth/login] no redirect URL returned", data);
+        setGlobalError("OAuth returned no redirect URL. Check browser console.");
+        setGoogleLoading(false);
+      }
+    } catch (e) {
+      console.error("[auth/login] OAuth threw:", e);
+      setGlobalError(`OAuth threw: ${e instanceof Error ? e.message : String(e)}`);
       setGoogleLoading(false);
     }
-    // On success browser redirects — no state change needed
   };
 
   // --- Email magic link ---
