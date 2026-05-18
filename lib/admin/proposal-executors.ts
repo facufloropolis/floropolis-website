@@ -281,6 +281,26 @@ async function execDiscountRuleCreate(
   };
 }
 
+// TODO[refund.create executor missing]: Wire to the existing refund pipeline.
+// On Facu approval this should call /api/refunds/[id]/execute OR insert a
+// refund_approvals row and let the existing quorum flow handle the Stripe call.
+// For now the executor records the intent only -- approval will fail with
+// 'refund.create executor not implemented yet' so no Stripe refund is issued.
+// /admin/orders/[id] surfaces this via a TODO badge next to the proposed
+// refund. Payload shape: { order_id, order_number, amount, currency, reason }.
+async function execRefundCreate(
+  proposal: AdminProposal,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  return {
+    ok: false,
+    error:
+      'refund.create executor not implemented yet -- TODO: call /api/refunds/[id]/execute or insert a refund_approvals row to route through Stripe',
+    auditEntries: [],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -302,6 +322,8 @@ export async function executeProposal(
       return execVisibilityRuleCreate(proposal);
     case 'discount_rule.create':
       return execDiscountRuleCreate(proposal);
+    case 'refund.create':
+      return execRefundCreate(proposal);
     default:
       return fail(`unknown_proposal_type: ${proposal.type}`);
   }
@@ -314,4 +336,7 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'client_profiles.status_change',
   'visibility_rule.create',
   'discount_rule.create',
+  // TODO[refund.create executor]: see execRefundCreate. Until then approval
+  // surfaces an explicit error and no Stripe refund is issued.
+  'refund.create',
 ];
