@@ -6,20 +6,28 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, ShoppingBag, User, ChevronDown } from 'lucide-react'
+import { Menu, X, ShoppingBag, ShoppingCart, User, ChevronDown } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import HeaderSearch from '@/components/HeaderSearch'
 import { getItemCount } from '@/lib/quote-cart'
+import { buyNowCartCount, BUY_NOW_CART_EVENT } from '@/lib/buy-now-cart'
 import { useAuth } from '@/lib/auth-context'
+import { useAuthBackup } from '@/lib/auth-context-backup'
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  // PROPOSAL (2026-05-17): track the new /checkout cart independently so the
+  // existing Quote badge keeps reflecting the quote flow only.
+  const [buyNowCount, setBuyNowCount] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, loading, signOut } = useAuth();
+  // Backup-project auth — used for the proposal-branch "Sign in / My orders"
+  // links. Falls through to anonymous when the backup session isn't set.
+  const backupAuth = useAuthBackup();
 
   // Cart count listener
   useEffect(() => {
@@ -27,6 +35,18 @@ export default function Navigation() {
     updateCount();
     window.addEventListener('quote-cart-updated', updateCount);
     return () => window.removeEventListener('quote-cart-updated', updateCount);
+  }, []);
+
+  // Buy-now cart listener — same-tab CustomEvent + cross-tab "storage" event
+  useEffect(() => {
+    const updateBuyNow = () => setBuyNowCount(buyNowCartCount());
+    updateBuyNow();
+    window.addEventListener(BUY_NOW_CART_EVENT, updateBuyNow);
+    window.addEventListener('storage', updateBuyNow);
+    return () => {
+      window.removeEventListener(BUY_NOW_CART_EVENT, updateBuyNow);
+      window.removeEventListener('storage', updateBuyNow);
+    };
   }, []);
 
   // Close dropdown on outside click
@@ -175,9 +195,41 @@ export default function Navigation() {
                 </span>
               )}
             </Link>
+            {/* PROPOSAL (2026-05-17): direct checkout cart — separate from /quote */}
+            <Link href="/checkout" className="relative flex items-center gap-1 text-slate-700 hover:text-emerald-600 transition-colors p-2" aria-label="Checkout cart">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="text-sm font-medium hidden sm:inline">Cart</span>
+              {buyNowCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {buyNowCount}
+                </span>
+              )}
+            </Link>
             <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
               Free Sample Box
             </Link>
+            {/* PROPOSAL: backup-project auth surface (Sign in / My orders).
+                Sits next to the legacy AuthWidget so neither flow regresses. */}
+            {!backupAuth.loading && (
+              backupAuth.user ? (
+                <Link
+                  href="/account/orders"
+                  className="flex items-center gap-1.5 text-slate-700 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
+                  title={backupAuth.user.email ?? 'My orders'}
+                >
+                  <User className="w-3.5 h-3.5" />
+                  My orders
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="flex items-center gap-1.5 text-slate-700 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  Sign in
+                </Link>
+              )
+            )}
             <AuthWidget />
           </div>
 
@@ -192,6 +244,15 @@ export default function Navigation() {
               {cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {cartCount}
+                </span>
+              )}
+            </Link>
+            {/* PROPOSAL (2026-05-17): mobile checkout cart icon */}
+            <Link href="/checkout" className="relative flex items-center text-slate-700 hover:text-emerald-600 transition-colors p-2.5" aria-label="Checkout cart">
+              <ShoppingCart className="h-5 w-5" />
+              {buyNowCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {buyNowCount}
                 </span>
               )}
             </Link>
@@ -254,7 +315,27 @@ export default function Navigation() {
             >
               Contact Us
             </Link>
-            {/* Mobile auth */}
+            {/* PROPOSAL (2026-05-17): mobile backup-auth surface */}
+            {!backupAuth.loading && (
+              backupAuth.user ? (
+                <Link
+                  href="/account/orders"
+                  className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  My orders →
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign in →
+                </Link>
+              )
+            )}
+            {/* Mobile auth (legacy /shop session) */}
             {!loading && (
               user ? (
                 <>

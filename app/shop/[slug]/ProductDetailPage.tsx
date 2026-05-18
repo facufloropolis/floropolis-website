@@ -12,6 +12,8 @@ import type { Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
 import { addItem, getItemCount, type QuoteItem } from "@/lib/quote-cart";
+import { setBuyNowDeliveryDate } from "@/lib/buy-now-cart";
+import BuyNowButton from "@/components/BuyNowButton";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import {
@@ -870,28 +872,52 @@ export default function ProductDetailPage({
                 </div>
               )}
               {isPriceAvailable ? (
-                <button
-                  ref={addToQuoteRef}
-                  type="button"
-                  onClick={handleAddToQuote}
-                  className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all ${
-                    justAdded
-                      ? "bg-emerald-700 text-white ring-2 ring-emerald-300"
-                      : "bg-emerald-600 text-white hover:bg-emerald-700"
-                  }`}
-                >
-                  {justAdded ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      Added! Add Another?
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5" />
-                      Add to Quote
-                    </>
-                  )}
-                </button>
+                <>
+                  {/* PROPOSAL-BRANCH ONLY (Facu 2026-05-17): "Buy now" is the
+                      primary CTA in the mockup. Wires SKU + selected delivery
+                      date into the /checkout localStorage cart, then the
+                      button morphs to "Go to checkout" on the same press. */}
+                  <BuyNowButton
+                    skuId={currentVariant.id}
+                    defaultQuantity={boxQty}
+                    variant="primary"
+                    label="Buy now"
+                    onAdded={() => {
+                      // Persist the selected date so /checkout pre-selects it
+                      if (deliveryFrom) setBuyNowDeliveryDate(deliveryFrom);
+                      pushEvent(CTA_EVENTS.add_to_quote, {
+                        item_id: currentVariant.slug,
+                        product_name: displayName,
+                        product_category: currentVariant.category,
+                        product_price: currentVariant.price ?? 0,
+                        cta: "buy_now",
+                      });
+                    }}
+                  />
+                  {/* Existing quote flow preserved as secondary action. */}
+                  <button
+                    ref={addToQuoteRef}
+                    type="button"
+                    onClick={handleAddToQuote}
+                    className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg border-2 transition-all ${
+                      justAdded
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-600"
+                        : "bg-white text-emerald-700 border-emerald-600 hover:bg-emerald-50"
+                    }`}
+                  >
+                    {justAdded ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Added! Add Another?
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5" />
+                        Get a quote
+                      </>
+                    )}
+                  </button>
+                </>
               ) : (
                 <a
                   href={whatsappHref}

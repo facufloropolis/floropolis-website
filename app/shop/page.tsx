@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
@@ -16,6 +16,7 @@ import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constant
 import { getProductImage } from "@/lib/product-images";
 import { getEarliestDeliveryDate, formatDeliveryDate, toISODate } from "@/lib/delivery-dates";
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
+import { addToBuyNowCart, setBuyNowDeliveryDate } from "@/lib/buy-now-cart";
 
 type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
 
@@ -131,6 +132,8 @@ interface VarietyGroup {
   repUnitsPerBox: number;
   repBoxType: string;
   repStemLength: string | null;
+  // PROPOSAL-BRANCH (2026-05-17): SKU id for direct "Buy now" → /checkout cart
+  repSkuId: number;
 }
 
 // Returns true if a product is available to show based on tier + arrival_date rules.
@@ -219,6 +222,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       repUnitsPerBox: rep.units_per_box || 0,
       repBoxType: rep.box_type || "Standard",
       repStemLength: rep.length ?? null,
+      repSkuId: rep.id,
     });
   }
   return result;
@@ -1072,6 +1076,7 @@ export default function ShopPage() {
 function VarietyCard({ group }: { group: VarietyGroup }) {
   const imgSrc = group.image || "/Floropolis-logo-only.png";
   const [cardAdded, setCardAdded] = useState(false);
+  const router = useRouter();
 
   const hasPriceRange = group.minPrice !== group.maxPrice;
   const displayPrice = group.is_on_deal && group.dealPrice != null
@@ -1199,19 +1204,48 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
           )}
         </div>
       </Link>
-      {/* EXP-070: Single-variant with price → direct Add to Quote (no PDP trip) */}
+      {/* EXP-070 + PROPOSAL (2026-05-17): Single-variant card actions.
+          "Buy now" is the primary CTA (writes SKU into /checkout cart);
+          "Get a quote" is the secondary, preserving the legacy review flow. */}
       {group.variantCount === 1 && !group.hasPriceIssue && group.minPrice > 0 && (
-        <button
-          type="button"
-          onClick={handleDirectAdd}
-          className={`mx-3 mb-3 w-[calc(100%-1.5rem)] py-2 rounded-lg font-semibold text-xs transition-all text-center ${
-            cardAdded
-              ? "bg-emerald-700 text-white"
-              : "bg-emerald-600 text-white hover:bg-emerald-700"
-          }`}
-        >
-          {cardAdded ? "✓ Added!" : "Add to Quote →"}
-        </button>
+        <div className="mx-3 mb-3 flex flex-col gap-1.5">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (cardAdded) {
+                router.push("/checkout");
+                return;
+              }
+              addToBuyNowCart(group.repSkuId, 1);
+              if (earliestDate) setBuyNowDeliveryDate(toISODate(earliestDate));
+              pushEvent(CTA_EVENTS.add_to_quote, {
+                product_name: group.name,
+                product_category: group.category,
+                product_price: group.minPrice,
+                source: "shop_card",
+                cta: "buy_now",
+              });
+              setCardAdded(true);
+              setTimeout(() => setCardAdded(false), 2000);
+            }}
+            className={`w-full py-2 rounded-lg font-semibold text-xs transition-all text-center ${
+              cardAdded
+                ? "bg-emerald-700 text-white"
+                : "bg-emerald-600 text-white hover:bg-emerald-700"
+            }`}
+          >
+            {cardAdded ? "Added — checkout →" : "Buy now"}
+          </button>
+          <button
+            type="button"
+            onClick={handleDirectAdd}
+            className="w-full py-1.5 rounded-lg font-semibold text-[11px] border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition-all text-center"
+          >
+            Get a quote
+          </button>
+        </div>
       )}
     </div>
   );
