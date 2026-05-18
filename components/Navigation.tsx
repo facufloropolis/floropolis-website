@@ -227,8 +227,12 @@ export default function Navigation() {
                     <div className="absolute right-0 top-10 w-52 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 z-50">
                       <div className="px-3 py-2 border-b border-slate-100 text-[11px] text-slate-500 truncate">{backupAuth.user.email}</div>
                       <Link href="/account/orders" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">My orders</Link>
-                      <Link href="/admin/catalog" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin catalog</Link>
-                      <Link href="/admin/refunds" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin refunds</Link>
+                      {backupAuth.profile?.status === 'admin' && (
+                        <>
+                          <Link href="/admin/catalog" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin catalog</Link>
+                          <Link href="/admin/refunds" onClick={() => setDropdownOpen(false)} className="block px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">Admin refunds</Link>
+                        </>
+                      )}
                       <button
                         type="button"
                         onClick={async () => {
