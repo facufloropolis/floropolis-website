@@ -37,10 +37,13 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const nextParam = searchParams.get("next") ?? "/account";
 
-  // Email magic link state
+  // Email OTP (6-digit code) state — switched from magic link 2026-05-18
   const [email, setEmail] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [emailStep, setEmailStep] = useState<"input" | "verify">("input");
+  const [emailCode, setEmailCode] = useState("");
+  const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
 
   // Phone OTP state
@@ -99,25 +102,54 @@ function LoginContent() {
     }
   };
 
-  // --- Email magic link ---
+  // --- Email OTP (6-digit code, NOT magic link) ---
+  // FIX 2026-05-18: Magic link via emailRedirectTo was failing because Supabase
+  // PKCE flow required the verifier cookie to survive a cross-domain redirect
+  // chain (Gmail → Supabase verify → our callback), which it didn't.
+  // OTP code is bypass-the-callback: user types code into the form, we call
+  // verifyOtp() directly, session is returned in the API response and
+  // supabase-js writes cookies to BOTH localStorage + cookies in same context.
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || emailLoading) return;
     setEmailLoading(true);
     setEmailError(null);
     const supabase = createBackupClient();
+    // No emailRedirectTo -> Supabase sends 6-digit code instead of magic link
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent(nextParam)}`,
+        shouldCreateUser: false,  // don't auto-create; user must exist (signed up via /signup)
       },
     });
     if (error) {
       setEmailError(error.message);
     } else {
       setEmailSent(true);
+      setEmailStep("verify");
     }
     setEmailLoading(false);
+  };
+
+  // --- Email OTP step 2: verify the code typed by the user ---
+  const handleEmailVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailCode || emailVerifyLoading) return;
+    setEmailVerifyLoading(true);
+    setEmailError(null);
+    const supabase = createBackupClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: emailCode.trim(),
+      type: "email",
+    });
+    if (error) {
+      setEmailError(`Code rejected: ${error.message}. Try again or request a new code.`);
+      setEmailVerifyLoading(false);
+      return;
+    }
+    // Session is set in cookies by supabase-js. Navigate to the requested next.
+    window.location.assign(nextParam || "/shop");
   };
 
   // --- Phone OTP step 1: send code ---
@@ -181,26 +213,51 @@ function LoginContent() {
 
       <Divider label="or sign in with email" />
 
-      {/* ── Email magic link ── */}
-      {emailSent ? (
-        <div className="text-center space-y-3 py-2">
-          <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
-            <CheckCircle className="w-6 h-6 text-emerald-600" />
+      {/* ── Email OTP (6-digit code) ── */}
+      {emailStep === "verify" ? (
+        <form onSubmit={handleEmailVerify} className="space-y-3 py-2">
+          <div className="text-center mb-3">
+            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <CheckCircle className="w-6 h-6 text-emerald-600" />
+            </div>
+            <p className="font-semibold text-slate-900 text-sm">Code sent to <strong>{email}</strong></p>
+            <p className="text-xs text-slate-500 mt-1">Type the 6-digit code from the email below.</p>
           </div>
-          <div>
-            <p className="font-semibold text-slate-900 text-sm">Check your email</p>
-            <p className="text-xs text-slate-500 mt-1">
-              Sign-in link sent to <strong>{email}</strong>. Expires in 60 min — check spam if needed.
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={6}
+            value={emailCode}
+            onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, ""))}
+            placeholder="6-digit code"
+            required
+            className="w-full text-center tracking-[0.5em] text-lg font-mono py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+          />
+          {emailError && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              {emailError}
             </p>
-          </div>
+          )}
+          <button
+            type="submit"
+            disabled={emailVerifyLoading || emailCode.length !== 6}
+            className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+          >
+            {emailVerifyLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>Verify code <ArrowRight className="w-4 h-4" /></>
+            )}
+          </button>
           <button
             type="button"
-            onClick={() => { setEmailSent(false); setEmail(""); }}
-            className="text-xs text-emerald-600 hover:underline"
+            onClick={() => { setEmailStep("input"); setEmailSent(false); setEmailCode(""); setEmailError(null); }}
+            className="text-xs text-emerald-600 hover:underline block mx-auto"
           >
-            Use a different email
+            Use a different email or resend code
           </button>
-        </div>
+        </form>
       ) : (
         <form onSubmit={handleEmail} className="space-y-3">
           <div className="relative">
@@ -227,7 +284,7 @@ function LoginContent() {
             {emailLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <>Send magic link <ArrowRight className="w-4 h-4" /></>
+              <>Send 6-digit code <ArrowRight className="w-4 h-4" /></>
             )}
           </button>
         </form>
