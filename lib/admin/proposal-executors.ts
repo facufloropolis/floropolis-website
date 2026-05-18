@@ -260,22 +260,98 @@ async function execVisibilityRuleCreate(
   };
 }
 
-// STUB: discount_rule.create -- table doesn't exist yet. Same shape as above.
+// discount_rule.create -- inserts a row into discount_rules with status='active'
+// on Facu approval. The proposal payload must carry { scope, scope_value,
+// discount_pct } at minimum; valid_from / valid_until / min_qty / notes are
+// optional. created_by_proposal_id is stamped from the proposal so we can
+// trace any active rule back to its approval.
 async function execDiscountRuleCreate(
   proposal: AdminProposal,
+  service: SupabaseClient,
 ): Promise<ExecutorResult> {
   const payload = payloadObject(proposal);
   if (!payload) return fail('invalid_payload');
+
+  const VALID_SCOPES = ['category', 'vendor', 'sku', 'client', 'client_category'];
+  const scope = payload.scope;
+  if (typeof scope !== 'string' || !VALID_SCOPES.includes(scope)) {
+    return fail(`invalid_scope: must be one of ${VALID_SCOPES.join(', ')}`);
+  }
+  const scopeValue = payload.scope_value;
+  if (typeof scopeValue !== 'string' || scopeValue.trim().length === 0) {
+    return fail('invalid_scope_value');
+  }
+  const discountPctRaw = payload.discount_pct;
+  const discountPct =
+    typeof discountPctRaw === 'number'
+      ? discountPctRaw
+      : typeof discountPctRaw === 'string'
+        ? Number(discountPctRaw)
+        : NaN;
+  if (!Number.isFinite(discountPct) || discountPct <= 0 || discountPct > 100) {
+    return fail('invalid_discount_pct: must be (0, 100]');
+  }
+
+  const insertRow: Record<string, unknown> = {
+    scope,
+    scope_value: scopeValue.trim(),
+    discount_pct: discountPct,
+    status: 'active',
+    created_by_proposal_id: proposal.id,
+  };
+
+  if (
+    payload.valid_from !== undefined &&
+    payload.valid_from !== null &&
+    payload.valid_from !== ''
+  ) {
+    if (typeof payload.valid_from !== 'string') return fail('invalid_valid_from');
+    insertRow.valid_from = payload.valid_from;
+  }
+  if (
+    payload.valid_until !== undefined &&
+    payload.valid_until !== null &&
+    payload.valid_until !== ''
+  ) {
+    if (typeof payload.valid_until !== 'string') return fail('invalid_valid_until');
+    insertRow.valid_until = payload.valid_until;
+  }
+  if (payload.min_qty !== undefined && payload.min_qty !== null) {
+    const minQty =
+      typeof payload.min_qty === 'number'
+        ? payload.min_qty
+        : Number(payload.min_qty);
+    if (!Number.isFinite(minQty) || minQty < 1 || !Number.isInteger(minQty)) {
+      return fail('invalid_min_qty: must be integer >= 1');
+    }
+    insertRow.min_qty = minQty;
+  }
+  if (
+    payload.notes !== undefined &&
+    payload.notes !== null &&
+    payload.notes !== ''
+  ) {
+    if (typeof payload.notes !== 'string') return fail('invalid_notes');
+    insertRow.notes = payload.notes.slice(0, 4000);
+  }
+
+  const { data: after, error: insErr } = await service
+    .from('discount_rules')
+    .insert(insertRow)
+    .select('*')
+    .maybeSingle();
+  if (insErr) return fail(`insert_failed: ${insErr.message}`);
+
   return {
     ok: true,
     auditEntries: [
       {
         proposal_id: proposal.id,
         target_table: 'discount_rules',
-        target_id: null,
+        target_id: (after?.id as string | undefined) ?? null,
         before_jsonb: null,
-        after_jsonb: { stub: true, intended_payload: payload },
-        applied_by_function: 'proposal-executors.execDiscountRuleCreate[STUB]',
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execDiscountRuleCreate',
       },
     ],
   };
@@ -321,7 +397,7 @@ export async function executeProposal(
     case 'visibility_rule.create':
       return execVisibilityRuleCreate(proposal);
     case 'discount_rule.create':
-      return execDiscountRuleCreate(proposal);
+      return execDiscountRuleCreate(proposal, service);
     case 'refund.create':
       return execRefundCreate(proposal);
     default:

@@ -1,15 +1,27 @@
-// Admin catalog -- discount rules editor.
-// v1 | 2026-05-18 | Job_PM CAT-S10 [V8 SHADOW]
+// Admin catalog -- discount rules.
+// v2 | 2026-05-18 | Job_PM admin-port X6 [V8 SHADOW]
 //
-// Admin sets per-SKU deals on floropolis_inventory_mirror (is_on_deal,
-// deal_label, deal_price, deal_expiry). Today these columns exist but only
-// SQL can edit them -- this page is the UI.
+// Rewritten per mockup /mockups/admin-catalog-discounts. Drives a real
+// proposal flow:
 //
-// Sections:
-//   1. Active deals -- SKUs where is_on_deal=true. Edit / End now.
-//   2. Browse + add deal -- searchable/filterable SKU list, paginate 50/page.
-//   3. Bulk apply -- modal form: filter (vendor/variety/tier), set
-//      fixed $X or % off + label + expiry. Preview-then-confirm.
+//   1. Side-by-side "Create new rule" form (client island). Computes 3
+//      warnings live (low margin > 15% on sku/category; below GPM target
+//      based on pricing_constants.gpm_target; new client < 3 paid orders).
+//      Submit POSTs to /api/admin/proposals (type='discount_rule.create').
+//   2. "Pending" section above active rules. Reads admin_proposals where
+//      type='discount_rule.create' AND status='awaiting_facu'. Each row
+//      has inline Approve / Reject buttons that POST to
+//      /api/admin/proposals/[id]/{approve|reject} and refresh the page.
+//   3. "Active rules" section below. Reads discount_rules where
+//      status='active'. Shows scope badge, value, discount_pct, min_qty,
+//      valid range, status. No inline edit on this pass -- pause/expire
+//      ship in a follow-up.
+//
+// Scope value resolution: vendors come from floropolis_inventory_mirror.vendor
+// (distinct), categories from .category (distinct), SKUs from .id (with name
+// + price for the GPM warning). Clients come from client_profiles +
+// get_client_emails RPC; paid_order_count is derived from a single
+// COUNT-by-buyer query.
 //
 // Access:
 //   - Middleware guards /admin and restricts to ADMIN_EMAILS or
@@ -27,44 +39,41 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
-import EditDealForm from './EditDealForm';
-import BulkApplyForm from './BulkApplyForm';
-import EndDealButton from './EndDealButton';
+import CreateDiscountForm, {
+  type ScopeOption,
+} from './CreateDiscountForm';
+import PendingActions from './PendingActions';
 
-interface MirrorRow {
-  id: number;
-  name: string;
-  variety: string | null;
-  length: string | null;
-  unit: string | null;
-  price: number | string | null;
-  vendor: string | null;
-  category: string | null;
-  tier: string | null;
-  stock: number | null;
-  is_on_deal: boolean | null;
-  deal_label: string | null;
-  deal_price: number | string | null;
-  deal_expiry: string | null;
+interface DiscountRuleRow {
+  id: string;
+  scope: string;
+  scope_value: string;
+  discount_pct: number | string;
+  valid_from: string | null;
+  valid_until: string | null;
+  min_qty: number;
+  status: string;
+  notes: string | null;
+  created_by_proposal_id: string | null;
+  created_at: string;
 }
 
-interface PageProps {
-  searchParams: Promise<{
-    q?: string;
-    vendor?: string;
-    variety?: string;
-    tier?: string;
-    page?: string;
-  }>;
+interface PendingProposalRow {
+  id: string;
+  type: string;
+  target_table: string;
+  target_id: string | null;
+  payload: Record<string, unknown>;
+  warnings: unknown;
+  status: string;
+  proposed_by: string | null;
+  proposed_at: string;
+  notes: string | null;
 }
 
-const PAGE_SIZE = 50;
-
-function fmtUsd(amount: number | string | null): string {
-  if (amount == null) return '-';
-  const n = Number(amount);
-  if (!Number.isFinite(n)) return '-';
-  return `$${n.toFixed(2)}`;
+interface ProposalWarning {
+  severity: 'info' | 'warn' | 'critical';
+  text: string;
 }
 
 function fmtDate(iso: string | null): string {
@@ -78,26 +87,93 @@ function fmtDate(iso: string | null): string {
   });
 }
 
-function isExpired(iso: string | null): boolean {
-  if (!iso) return false;
-  const t = new Date(iso).getTime();
-  return Number.isFinite(t) && t < Date.now();
+function fmtPct(n: number | string): string {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return '-';
+  return `${v}%`;
 }
 
-function skuLabel(r: MirrorRow): string {
-  const bits = [r.name, r.variety, r.length].filter(Boolean);
-  return bits.join(' / ') || `SKU #${r.id}`;
+function asWarnings(raw: unknown): ProposalWarning[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((w) => {
+    if (!w || typeof w !== 'object') return [];
+    const r = w as { severity?: unknown; text?: unknown; detail?: unknown };
+    const sev = r.severity;
+    if (sev !== 'info' && sev !== 'warn' && sev !== 'critical') return [];
+    const text =
+      typeof r.text === 'string'
+        ? r.text
+        : typeof r.detail === 'string'
+          ? r.detail
+          : '';
+    if (!text) return [];
+    return [{ severity: sev, text }];
+  });
+}
+
+function payloadString(p: Record<string, unknown>, key: string): string {
+  const v = p[key];
+  return typeof v === 'string' ? v : '';
+}
+function payloadNumber(p: Record<string, unknown>, key: string): number | null {
+  const v = p[key];
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string') {
+    const n = Number(v);
+    if (Number.isFinite(n)) return n;
+  }
+  return null;
+}
+
+function ScopePill({ scope }: { scope: string }) {
+  const map: Record<string, string> = {
+    category: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    vendor: 'bg-blue-100 text-blue-800 border-blue-200',
+    sku: 'bg-violet-100 text-violet-800 border-violet-200',
+    client: 'bg-orange-100 text-orange-800 border-orange-200',
+    client_category: 'bg-amber-100 text-amber-800 border-amber-200',
+  };
+  const cls = map[scope] ?? 'bg-slate-100 text-slate-700 border-slate-200';
+  return (
+    <span
+      className={`inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded border ${cls}`}
+    >
+      {scope}
+    </span>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    active: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    awaiting_facu: 'bg-orange-100 text-orange-800 border-orange-200',
+    paused: 'bg-slate-100 text-slate-700 border-slate-200',
+    expired: 'bg-red-100 text-red-700 border-red-200',
+  };
+  const cls = map[status] ?? 'bg-slate-100 text-slate-700 border-slate-200';
+  return (
+    <span
+      className={`inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded border ${cls}`}
+    >
+      {status}
+    </span>
+  );
+}
+
+function validRangeLabel(from: string | null, until: string | null): string {
+  if (!from && !until) return 'no expiry';
+  if (from && until) return `${fmtDate(from)} - ${fmtDate(until)}`;
+  if (from) return `from ${fmtDate(from)}`;
+  return `until ${fmtDate(until)}`;
 }
 
 export const metadata = {
-  title: 'Catalog discounts | Floropolis Admin',
+  title: 'Discount rules | Floropolis Admin',
   robots: { index: false, follow: false },
 };
 
-export default async function AdminCatalogDiscountsPage({
-  searchParams,
-}: PageProps) {
-  // Auth gate ------------------------------------------------------------
+export default async function AdminCatalogDiscountsPage() {
+  // Auth gate -------------------------------------------------------------
   const userClient = await createUserClient();
   const {
     data: { user },
@@ -114,86 +190,175 @@ export default async function AdminCatalogDiscountsPage({
     redirect('/');
   }
 
-  // Filters --------------------------------------------------------------
-  const sp = await searchParams;
-  const q = (sp.q ?? '').trim();
-  const vendor = (sp.vendor ?? '').trim();
-  const variety = (sp.variety ?? '').trim();
-  const tier = (sp.tier ?? '').trim().toUpperCase();
-  const pageNum = Math.max(1, Number(sp.page ?? '1') || 1);
-  const from = (pageNum - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
-
   const backup = getBackupServiceClient();
-  const SELECT_COLS =
-    'id,name,variety,length,unit,price,vendor,category,tier,stock,is_on_deal,deal_label,deal_price,deal_expiry';
 
-  // Section 1: active deals (no pagination -- usually small).
+  // Active rules ----------------------------------------------------------
   const { data: activeRaw, error: activeErr } = await backup
-    .from('floropolis_inventory_mirror')
-    .select(SELECT_COLS)
-    .eq('is_on_deal', true)
-    .order('deal_expiry', { ascending: true, nullsFirst: false })
+    .from('discount_rules')
+    .select(
+      'id,scope,scope_value,discount_pct,valid_from,valid_until,min_qty,status,notes,created_by_proposal_id,created_at',
+    )
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
     .limit(500);
   if (activeErr) {
     console.error('[admin/catalog/discounts] active fetch:', activeErr);
   }
-  const active = (activeRaw ?? []) as unknown as MirrorRow[];
+  const active = (activeRaw ?? []) as unknown as DiscountRuleRow[];
 
-  // Filter-facets for the bulk modal + browse filters -- distinct vendors
-  // and tiers. We pull a slim slice so the dropdowns don't balloon.
+  // Pending discount proposals -------------------------------------------
+  const { data: pendingRaw, error: pendingErr } = await backup
+    .from('admin_proposals')
+    .select(
+      'id,type,target_table,target_id,payload,warnings,status,proposed_by,proposed_at,notes',
+    )
+    .eq('type', 'discount_rule.create')
+    .eq('status', 'awaiting_facu')
+    .order('proposed_at', { ascending: false })
+    .limit(200);
+  if (pendingErr) {
+    console.error('[admin/catalog/discounts] pending fetch:', pendingErr);
+  }
+  const pending = (pendingRaw ?? []) as unknown as PendingProposalRow[];
+
+  // pricing_constants.gpm_target ----------------------------------------
+  const { data: gpmRow } = await backup
+    .from('pricing_constants')
+    .select('value_numeric')
+    .eq('id', 'gpm_target')
+    .maybeSingle();
+  const gpmTarget = (() => {
+    const v = (gpmRow as { value_numeric?: number | string | null } | null)
+      ?.value_numeric;
+    if (typeof v === 'number' && Number.isFinite(v)) return v;
+    if (typeof v === 'string') {
+      const n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
+    return 0.33; // sensible default per pricing_constants seed
+  })();
+
+  // Scope option lists ---------------------------------------------------
+  // We pull a slim facet slice of inventory mirror to get vendors + categories
+  // + a SKU pick-list with name + price (for the GPM warning).
   const { data: facetRaw } = await backup
     .from('floropolis_inventory_mirror')
-    .select('vendor,tier')
-    .limit(5000);
-  const vendors = Array.from(
-    new Set(
-      (facetRaw ?? [])
-        .map((r) => (r as { vendor?: string | null }).vendor ?? '')
-        .filter((v) => !!v),
-    ),
-  ).sort();
-  const tiers = Array.from(
-    new Set(
-      (facetRaw ?? [])
-        .map((r) => (r as { tier?: string | null }).tier ?? '')
-        .filter((v) => !!v)
-        .map((v) => v.toUpperCase()),
-    ),
-  ).sort();
+    .select('id,name,variety,length,vendor,category,price')
+    .order('name', { ascending: true })
+    .limit(2000);
 
-  // Section 2: browse + add deal. Filter + paginate.
-  let browseQuery = backup
-    .from('floropolis_inventory_mirror')
-    .select(SELECT_COLS, { count: 'exact' });
-  if (q) {
-    // ilike on name OR variety
-    browseQuery = browseQuery.or(
-      `name.ilike.%${q}%,variety.ilike.%${q}%`,
-    );
+  type FacetRow = {
+    id: number;
+    name: string | null;
+    variety: string | null;
+    length: string | null;
+    vendor: string | null;
+    category: string | null;
+    price: number | string | null;
+  };
+  const facets = (facetRaw ?? []) as FacetRow[];
+
+  const vendorOptions: ScopeOption[] = Array.from(
+    new Set(facets.map((r) => r.vendor ?? '').filter((v) => !!v)),
+  )
+    .sort()
+    .map((v) => ({ value: v, label: v }));
+
+  const categoryOptions: ScopeOption[] = Array.from(
+    new Set(facets.map((r) => r.category ?? '').filter((v) => !!v)),
+  )
+    .sort()
+    .map((v) => ({ value: v, label: v }));
+
+  const skuOptions: ScopeOption[] = facets.slice(0, 1000).map((r) => {
+    const label = [r.name, r.variety, r.length].filter(Boolean).join(' / ') ||
+      `SKU #${r.id}`;
+    const priceN = r.price == null ? null : Number(r.price);
+    return {
+      value: String(r.id),
+      label: `${label} (#${r.id})`,
+      unitPrice: priceN != null && Number.isFinite(priceN) ? priceN : null,
+    };
+  });
+
+  // Clients -- name from client_profiles + emails via RPC + paid-order count
+  // from orders (count rows where paid_at is not null per user_id; bounded list).
+  const { data: clientProfiles } = await backup
+    .from('client_profiles')
+    .select('user_id,business_name,status')
+    .order('business_name', { ascending: true, nullsFirst: false })
+    .limit(500);
+
+  type ClientRow = {
+    user_id: string;
+    business_name: string | null;
+    status: string | null;
+  };
+  const clientRows = (clientProfiles ?? []) as ClientRow[];
+  const clientIds = clientRows.map((c) => c.user_id);
+
+  // Resolve emails via the existing RPC (used elsewhere in admin).
+  const emailMap: Record<string, string> = {};
+  if (clientIds.length > 0) {
+    try {
+      const { data: emailRows } = await userClient.rpc('get_client_emails', {
+        user_ids: clientIds,
+      });
+      (emailRows ?? []).forEach((r: { user_id: string; email: string }) => {
+        emailMap[r.user_id] = r.email;
+      });
+    } catch (e) {
+      console.error('[admin/catalog/discounts] email rpc:', e);
+    }
   }
-  if (vendor) browseQuery = browseQuery.eq('vendor', vendor);
-  if (variety) browseQuery = browseQuery.ilike('variety', `%${variety}%`);
-  if (tier) browseQuery = browseQuery.eq('tier', tier);
 
-  const { data: browseRaw, count: browseCount, error: browseErr } =
-    await browseQuery.order('name', { ascending: true }).range(from, to);
-  if (browseErr) {
-    console.error('[admin/catalog/discounts] browse fetch:', browseErr);
+  // Paid order count per user. Single fetch; bucket in JS. We use paid_at IS NOT NULL
+  // as the "paid" signal (orders table has no payment_status enum, just timestamps).
+  const paidCountByBuyer: Record<string, number> = {};
+  if (clientIds.length > 0) {
+    const { data: paidOrders } = await backup
+      .from('orders')
+      .select('user_id,paid_at')
+      .in('user_id', clientIds)
+      .not('paid_at', 'is', null)
+      .limit(5000);
+    (paidOrders ?? []).forEach((o) => {
+      const bid = (o as { user_id?: string | null }).user_id;
+      if (bid) paidCountByBuyer[bid] = (paidCountByBuyer[bid] ?? 0) + 1;
+    });
   }
-  const browse = (browseRaw ?? []) as unknown as MirrorRow[];
-  const total = browseCount ?? 0;
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  // Helpers for pager links ----------------------------------------------
-  function buildHref(p: number): string {
-    const params = new URLSearchParams();
-    if (q) params.set('q', q);
-    if (vendor) params.set('vendor', vendor);
-    if (variety) params.set('variety', variety);
-    if (tier) params.set('tier', tier);
-    params.set('page', String(p));
-    return `/admin/catalog/discounts?${params.toString()}`;
+  const clientOptions: ScopeOption[] = clientRows.map((c) => {
+    const display =
+      c.business_name?.trim() ||
+      emailMap[c.user_id] ||
+      c.user_id.slice(0, 8);
+    const email = emailMap[c.user_id];
+    const label = email ? `${display} (${email})` : display;
+    return {
+      value: c.user_id,
+      label,
+      paidOrderCount: paidCountByBuyer[c.user_id] ?? 0,
+    };
+  });
+
+  // Build a SKU id -> label lookup for the pending list (cheap rebuild).
+  const skuLabelById = new Map(
+    skuOptions.map((s) => [s.value, s.label.replace(/ \(#\d+\)$/, '')]),
+  );
+
+  function renderScopeValueLabel(scope: string, value: string): string {
+    if (scope === 'vendor' || scope === 'category' || scope === 'client_category') {
+      return value;
+    }
+    if (scope === 'sku') {
+      return skuLabelById.get(value) ?? `SKU #${value}`;
+    }
+    if (scope === 'client') {
+      const opt = clientOptions.find((o) => o.value === value);
+      return opt?.label ?? value.slice(0, 8);
+    }
+    return value;
   }
 
   return (
@@ -208,295 +373,233 @@ export default async function AdminCatalogDiscountsPage({
               Discount rules
             </h1>
             <p className="text-slate-500 text-sm mt-1 max-w-2xl">
-              Per-SKU deals on floropolis_inventory_mirror. Set a deal_price,
-              label, and expiry. Active deals show on the shop with the label
-              and a strikethrough on the original price.
+              Scope-driven discounts by category / vendor / SKU / client /
+              client category. Submit a proposal on the right; Facu approves
+              below. Active rules are read by checkout.
             </p>
           </div>
-          <BulkApplyForm vendors={vendors} tiers={tiers} />
+          <div className="flex gap-4 text-sm">
+            <div>
+              <span className="font-semibold text-emerald-700">
+                {active.length}
+              </span>
+              <span className="text-slate-500 ml-1">active</span>
+            </div>
+            <div>
+              <span className="font-semibold text-orange-700">
+                {pending.length}
+              </span>
+              <span className="text-slate-500 ml-1">pending</span>
+            </div>
+            <div>
+              <span className="font-semibold text-slate-700">
+                {(gpmTarget * 100).toFixed(0)}%
+              </span>
+              <span className="text-slate-500 ml-1">GPM target</span>
+            </div>
+          </div>
         </div>
 
-        {/* Section 1: Active deals --------------------------------------- */}
-        <section className="mb-12">
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="text-sm font-semibold text-emerald-900 uppercase tracking-wide">
-              Active deals
-            </h2>
-            <span className="text-xs text-slate-500">
-              {active.length} live
-            </span>
-          </div>
+        {/* Two-column layout: pending+active on the left, form on the right. */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left col: pending + active rules ------------------------------ */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Pending */}
+            <section>
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="text-sm font-semibold text-orange-900 uppercase tracking-wide">
+                  Pending Facu approval
+                </h2>
+                <span className="text-xs text-slate-500">
+                  {pending.length} awaiting
+                </span>
+              </div>
 
-          {active.length === 0 ? (
-            <div className="text-center py-10 text-slate-400 border border-dashed border-slate-200 rounded-xl">
-              <p className="font-semibold text-slate-600">No active deals</p>
-              <p className="text-sm mt-1">
-                Add one below or use bulk apply.
-              </p>
-            </div>
-          ) : (
-            <div className="border border-slate-200 rounded-xl overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th className="px-4 py-2 font-semibold">SKU</th>
-                    <th className="px-4 py-2 font-semibold">Vendor</th>
-                    <th className="px-4 py-2 font-semibold text-right">Was</th>
-                    <th className="px-4 py-2 font-semibold text-right">Deal</th>
-                    <th className="px-4 py-2 font-semibold">Label</th>
-                    <th className="px-4 py-2 font-semibold">Expiry</th>
-                    <th className="px-4 py-2 font-semibold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {active.map((r) => {
-                    const expired = isExpired(r.deal_expiry);
+              {pending.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                  <p className="font-semibold text-slate-600">
+                    No pending proposals
+                  </p>
+                  <p className="text-sm mt-1">
+                    Submit one on the right to queue an approval.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pending.map((p) => {
+                    const scope = payloadString(p.payload, 'scope');
+                    const scopeValue = payloadString(p.payload, 'scope_value');
+                    const discountPct = payloadNumber(p.payload, 'discount_pct');
+                    const minQty = payloadNumber(p.payload, 'min_qty') ?? 1;
+                    const validFrom = payloadString(p.payload, 'valid_from') || null;
+                    const validUntil = payloadString(p.payload, 'valid_until') || null;
+                    const warns = asWarnings(p.warnings);
+                    const notes =
+                      p.notes ?? (payloadString(p.payload, 'notes') || null);
                     return (
-                      <tr key={r.id} className={expired ? 'bg-red-50' : ''}>
-                        <td className="px-4 py-3 align-top">
-                          <div className="font-medium text-slate-900">
-                            {skuLabel(r)}
+                      <div
+                        key={p.id}
+                        className="rounded-xl border border-orange-200 bg-orange-50/50 p-4"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <ScopePill scope={scope} />
+                              <span className="font-semibold text-slate-900 text-sm">
+                                {renderScopeValueLabel(scope, scopeValue)}
+                              </span>
+                              <span className="text-base font-bold text-slate-900">
+                                {discountPct != null ? `${discountPct}% off` : '-'}
+                              </span>
+                              {minQty > 1 && (
+                                <span className="text-[11px] text-slate-500">
+                                  min {minQty} stems
+                                </span>
+                              )}
+                              <span className="text-[11px] text-slate-500">
+                                {validRangeLabel(validFrom, validUntil)}
+                              </span>
+                            </div>
+                            {notes && (
+                              <p className="text-xs text-slate-700 mt-1.5 italic">
+                                {notes}
+                              </p>
+                            )}
+                            {warns.length > 0 && (
+                              <div className="mt-2 space-y-0.5">
+                                {warns.map((w, i) => (
+                                  <div
+                                    key={i}
+                                    className={
+                                      'text-[11px] flex items-start gap-1 ' +
+                                      (w.severity === 'critical'
+                                        ? 'text-red-700'
+                                        : w.severity === 'warn'
+                                          ? 'text-amber-700'
+                                          : 'text-slate-500')
+                                    }
+                                  >
+                                    <span className="font-bold">
+                                      {w.severity === 'critical'
+                                        ? '!!'
+                                        : w.severity === 'warn'
+                                          ? '!'
+                                          : '.'}
+                                    </span>
+                                    <span>{w.text}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            <p className="text-[11px] text-slate-400 mt-2">
+                              Proposed {fmtDate(p.proposed_at)} - proposal{' '}
+                              <span className="font-mono">
+                                {p.id.slice(0, 8)}...
+                              </span>
+                            </p>
                           </div>
-                          <div className="text-xs text-slate-400 font-mono">
-                            #{r.id}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 align-top text-slate-700">
-                          {r.vendor ?? '-'}
-                        </td>
-                        <td className="px-4 py-3 align-top text-right text-slate-500 line-through">
-                          {fmtUsd(r.price)}
-                        </td>
-                        <td className="px-4 py-3 align-top text-right font-semibold text-emerald-700">
-                          {fmtUsd(r.deal_price)}
-                        </td>
-                        <td className="px-4 py-3 align-top text-slate-700">
-                          {r.deal_label ?? '-'}
-                        </td>
-                        <td className="px-4 py-3 align-top text-slate-700">
-                          {fmtDate(r.deal_expiry)}
-                          {expired && (
-                            <span className="ml-1 text-[10px] font-semibold text-red-700 uppercase">
-                              expired
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 align-top text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <EditDealForm
-                              skuId={r.id}
-                              skuLabel={skuLabel(r)}
-                              originalPrice={Number(r.price ?? 0)}
-                              initialDealPrice={
-                                r.deal_price != null
-                                  ? Number(r.deal_price)
-                                  : null
-                              }
-                              initialLabel={r.deal_label ?? ''}
-                              initialExpiry={r.deal_expiry ?? ''}
-                              initialIsOnDeal={!!r.is_on_deal}
-                            />
-                            <EndDealButton skuId={r.id} />
-                          </div>
-                        </td>
-                      </tr>
+                          <PendingActions proposalId={p.id} />
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+                </div>
+              )}
+            </section>
 
-        {/* Section 2: Browse + add deal ---------------------------------- */}
-        <section className="mb-12">
-          <div className="flex items-baseline justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">
-              Browse + add deal
-            </h2>
-            <span className="text-xs text-slate-500">
-              {total} SKUs match
-            </span>
+            {/* Active */}
+            <section>
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="text-sm font-semibold text-emerald-900 uppercase tracking-wide">
+                  Active rules
+                </h2>
+                <span className="text-xs text-slate-500">
+                  {active.length} live
+                </span>
+              </div>
+
+              {active.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                  <p className="font-semibold text-slate-600">No active rules</p>
+                  <p className="text-sm mt-1">
+                    Approve a pending proposal to activate it.
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                      <tr>
+                        <th className="px-4 py-2 font-semibold">Scope</th>
+                        <th className="px-4 py-2 font-semibold">Value</th>
+                        <th className="px-4 py-2 font-semibold text-right">
+                          Discount
+                        </th>
+                        <th className="px-4 py-2 font-semibold text-right">
+                          Min qty
+                        </th>
+                        <th className="px-4 py-2 font-semibold">Valid range</th>
+                        <th className="px-4 py-2 font-semibold">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {active.map((r) => (
+                        <tr key={r.id}>
+                          <td className="px-4 py-3 align-top">
+                            <ScopePill scope={r.scope} />
+                          </td>
+                          <td className="px-4 py-3 align-top text-slate-900">
+                            <div className="font-medium">
+                              {renderScopeValueLabel(r.scope, r.scope_value)}
+                            </div>
+                            {r.notes && (
+                              <div className="text-xs text-slate-500 italic mt-1">
+                                {r.notes}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 align-top text-right font-semibold text-emerald-700">
+                            {fmtPct(r.discount_pct)}
+                          </td>
+                          <td className="px-4 py-3 align-top text-right text-slate-700">
+                            {r.min_qty}
+                          </td>
+                          <td className="px-4 py-3 align-top text-slate-700">
+                            {validRangeLabel(r.valid_from, r.valid_until)}
+                          </td>
+                          <td className="px-4 py-3 align-top">
+                            <StatusPill status={r.status} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
           </div>
 
-          <form
-            method="get"
-            action="/admin/catalog/discounts"
-            className="mb-4 flex flex-wrap gap-2 items-end"
-          >
-            <div className="flex flex-col">
-              <label className="text-[10px] uppercase text-slate-500 tracking-wide mb-1">
-                Search name / variety
-              </label>
-              <input
-                type="text"
-                name="q"
-                defaultValue={q}
-                placeholder="e.g. antonia"
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm w-56"
+          {/* Right col: create form (sticky on lg+) ------------------------ */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-6">
+              <CreateDiscountForm
+                categories={categoryOptions}
+                vendors={vendorOptions}
+                skus={skuOptions}
+                clients={clientOptions}
+                gpmTarget={gpmTarget}
               />
             </div>
-            <div className="flex flex-col">
-              <label className="text-[10px] uppercase text-slate-500 tracking-wide mb-1">
-                Vendor
-              </label>
-              <select
-                name="vendor"
-                defaultValue={vendor}
-                className="border border-slate-300 rounded-md px-2 py-1.5 text-sm w-44"
-              >
-                <option value="">All</option>
-                {vendors.map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[10px] uppercase text-slate-500 tracking-wide mb-1">
-                Tier
-              </label>
-              <select
-                name="tier"
-                defaultValue={tier}
-                className="border border-slate-300 rounded-md px-2 py-1.5 text-sm w-28"
-              >
-                <option value="">All</option>
-                {tiers.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[10px] uppercase text-slate-500 tracking-wide mb-1">
-                Variety contains
-              </label>
-              <input
-                type="text"
-                name="variety"
-                defaultValue={variety}
-                placeholder="e.g. rose"
-                className="border border-slate-300 rounded-md px-3 py-1.5 text-sm w-44"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-1.5 rounded-md"
-            >
-              Filter
-            </button>
-            <a
-              href="/admin/catalog/discounts"
-              className="text-sm text-slate-500 hover:text-slate-700 px-2 py-1.5"
-            >
-              Reset
-            </a>
-          </form>
-
-          {browse.length === 0 ? (
-            <div className="text-center py-10 text-slate-400 border border-dashed border-slate-200 rounded-xl">
-              <p className="font-semibold text-slate-600">No SKUs match</p>
-              <p className="text-sm mt-1">Adjust filters above.</p>
-            </div>
-          ) : (
-            <div className="border border-slate-200 rounded-xl overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th className="px-4 py-2 font-semibold">SKU</th>
-                    <th className="px-4 py-2 font-semibold">Vendor</th>
-                    <th className="px-4 py-2 font-semibold">Tier</th>
-                    <th className="px-4 py-2 font-semibold text-right">Price</th>
-                    <th className="px-4 py-2 font-semibold">On deal?</th>
-                    <th className="px-4 py-2 font-semibold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {browse.map((r) => (
-                    <tr key={r.id}>
-                      <td className="px-4 py-3 align-top">
-                        <div className="font-medium text-slate-900">
-                          {skuLabel(r)}
-                        </div>
-                        <div className="text-xs text-slate-400 font-mono">
-                          #{r.id}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 align-top text-slate-700">
-                        {r.vendor ?? '-'}
-                      </td>
-                      <td className="px-4 py-3 align-top text-slate-700">
-                        {(r.tier ?? '').toString().toUpperCase() || '-'}
-                      </td>
-                      <td className="px-4 py-3 align-top text-right text-slate-900">
-                        {fmtUsd(r.price)}
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        {r.is_on_deal ? (
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold">
-                            Yes
-                          </span>
-                        ) : (
-                          <span className="text-[11px] text-slate-400">No</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 align-top text-right">
-                        <EditDealForm
-                          skuId={r.id}
-                          skuLabel={skuLabel(r)}
-                          originalPrice={Number(r.price ?? 0)}
-                          initialDealPrice={
-                            r.deal_price != null
-                              ? Number(r.deal_price)
-                              : null
-                          }
-                          initialLabel={r.deal_label ?? ''}
-                          initialExpiry={r.deal_expiry ?? ''}
-                          initialIsOnDeal={!!r.is_on_deal}
-                          ctaLabel={r.is_on_deal ? 'Edit' : 'Add to deal'}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {pages > 1 && (
-            <div className="mt-4 flex items-center justify-between text-sm">
-              <span className="text-slate-500">
-                Page {pageNum} of {pages}
-              </span>
-              <div className="flex gap-2">
-                {pageNum > 1 && (
-                  <a
-                    href={buildHref(pageNum - 1)}
-                    className="px-3 py-1 rounded border border-slate-200 hover:border-slate-300 text-slate-700"
-                  >
-                    Previous
-                  </a>
-                )}
-                {pageNum < pages && (
-                  <a
-                    href={buildHref(pageNum + 1)}
-                    className="px-3 py-1 rounded border border-slate-200 hover:border-slate-300 text-slate-700"
-                  >
-                    Next
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </section>
+          </div>
+        </div>
 
         <p className="text-xs text-slate-400 mt-8">
-          Data source: supabase-backup floropolis_inventory_mirror. Edits write
-          directly via service-role; the shop reads these columns on the next
-          page render. Bulk apply requires explicit confirm after preview.
+          Data sources: supabase-backup discount_rules (active) +
+          admin_proposals (pending). Submitting writes a proposal row, not the
+          rule directly. Approval calls the executor which inserts a row here
+          with status=active and stamps created_by_proposal_id. Warnings shown
+          on the form are also persisted on the proposal so Facu sees them at
+          approval time.
         </p>
       </main>
 
