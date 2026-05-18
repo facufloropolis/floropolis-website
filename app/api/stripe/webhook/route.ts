@@ -465,12 +465,15 @@ async function handlePaymentIntentSucceeded(
   const pi = event.data.object as Stripe.PaymentIntent;
   const existing = await findOrderByPaymentIntent(backup, pi.id);
   if (!existing) {
-    // No prior row — happened in Stripe before our DB caught up. Audit-only.
+    // No prior row -- happens when the charge is fired directly to Stripe
+    // (e.g. by scheduled_charges.py cron) without our API seeding a row first.
+    // Audit + transition the order status based on metadata.order_id + amount.
     const orderId = extractOrderIdFromEvent(event);
     if (orderId) {
+      const kind = pi.amount === 100 ? 'preauth' : 'full_charge';
       await insertPaymentAudit(backup, {
         order_id: orderId,
-        kind: pi.amount === 100 ? 'preauth' : 'full_charge',
+        kind,
         status: 'succeeded',
         amount: pi.amount / 100,
         stripe_payment_intent_id: pi.id,
@@ -478,6 +481,14 @@ async function handlePaymentIntentSucceeded(
         idempotency_key: auditKey,
         stripe_event_raw: event as unknown as Record<string, unknown>,
       });
+      // Same status transition logic as the existing-row branch below.
+      if (kind === 'preauth') {
+        await setOrderStatus(backup, orderId, 'preauth_held');
+      } else {
+        await setOrderStatus(backup, orderId, 'paid', {
+          paid_at: new Date().toISOString(),
+        });
+      }
     }
     return;
   }
