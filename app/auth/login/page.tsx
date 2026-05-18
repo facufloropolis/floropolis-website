@@ -292,6 +292,11 @@ function LoginContent() {
         </form>
       )}
 
+      {/* Phone OTP HIDDEN 2026-05-18 — Twilio not configured on backup project.
+          Supabase auth returns "Unsupported phone provider" (phone_provider_disabled).
+          Re-enable after wiring Twilio in Supabase backup dashboard → Auth → Providers. */}
+      {false && (
+        <>
       <Divider label="or sign in with phone" />
 
       {/* ── Phone OTP ── */}
@@ -357,6 +362,8 @@ function LoginContent() {
             Wrong number? Try again
           </button>
         </form>
+      )}
+        </>
       )}
 
       <div className="pt-5 border-t border-slate-100 text-center">

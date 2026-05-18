@@ -30,12 +30,23 @@ export function createBackupClient() {
   const url = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY;
   if (!url || !key) {
-    // Fail loudly in the browser console — better than a confusing 401 later.
     throw new Error(
       "[supabase/backup-client] MISSING ENV: NEXT_PUBLIC_BACKUP_SUPABASE_URL or NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY",
     );
   }
-  // Library defaults: HttpOnly, Secure (prod), Path=/, SameSite=Lax.
-  // No explicit cookieOptions — server clients also use defaults.
-  return createBrowserClient(url, key);
+  // 2026-05-18 (AUTH-FIX round 2): switched from PKCE default to IMPLICIT flow.
+  // PKCE was failing in production — the verifier cookie wasn't persisting
+  // through Google->Supabase->our-callback even after @supabase/ssr 0.10.3
+  // upgrade + canonical single-response callback refactor (supabase/ssr #55).
+  //
+  // Implicit returns session in URL hash; supabase-js auto-detects on page
+  // load and writes cookies via the storage adapter. NO PKCE verifier to lose.
+  // Trade-off: token briefly in URL fragment (#access_token=...). Acceptable
+  // until we can debug PKCE in a clean environment.
+  return createBrowserClient(url, key, {
+    auth: {
+      flowType: "implicit",
+      detectSessionInUrl: true,
+    },
+  });
 }
