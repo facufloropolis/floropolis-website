@@ -72,7 +72,11 @@ function LoginContent() {
     setGoogleLoading(true);
     setGlobalError(null);
     const supabase = createBackupClient();
-    const redirectTo = `${window.location.origin}/auth/callback-backup?next=${encodeURIComponent(nextParam)}`;
+    // 2026-05-18 r3: redirect Google to a CLIENT-side page (/auth/post-oauth)
+    // so supabase-js can complete PKCE in the browser where the verifier was
+    // written. Server callback (/auth/callback-backup) repeatedly lost the
+    // verifier; kept only as a fallback for magic links.
+    const redirectTo = `${window.location.origin}/auth/post-oauth?next=${encodeURIComponent(nextParam)}`;
     console.log("[auth/login] starting Google OAuth, redirectTo:", redirectTo);
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
