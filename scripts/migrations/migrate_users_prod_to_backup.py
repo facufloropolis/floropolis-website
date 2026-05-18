@@ -220,10 +220,21 @@ def backup_create_profile(
 # Mapping
 # ----------------------------------------------------------------------------
 
-ALLOWED_STATUSES = {"pending", "approved", "rejected"}
+ALLOWED_STATUSES = {"pending", "approved", "rejected", "admin"}
+
+# Explicit role assignments per Facu's call 2026-05-17.
+# Email -> status. Falls through to map_status() default for any email not listed.
+EMAIL_ROLE_OVERRIDES = {
+    "facu@floropolis.com": "admin",
+    "jjpj@crescoinversiones.com": "admin",
+    "faculavino@gmail.com": "approved",
+}
 
 
-def map_status(raw: str | None) -> str:
+def map_status(raw: str | None, email: str | None = None) -> str:
+    # Hard override by email first (Facu directive 2026-05-17)
+    if email and email.lower().strip() in EMAIL_ROLE_OVERRIDES:
+        return EMAIL_ROLE_OVERRIDES[email.lower().strip()]
     if raw and raw.lower() in ALLOWED_STATUSES:
         return raw.lower()
     return "approved"  # default per W5-S16 spec
@@ -323,7 +334,7 @@ def main(argv: list[str]) -> int:
         uid = u.get("id") or ""
         email = u.get("email") or "(no-email)"
         business = extract_business_name(u)
-        status_val = map_status(None)  # source has no status column; default approved
+        status_val = map_status(None, email=email)  # email overrides per Facu 2026-05-17
         oauth = is_oauth_only(u)
         created_at = u.get("created_at")
         approved_at = u.get("email_confirmed_at")
