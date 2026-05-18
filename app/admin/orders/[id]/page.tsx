@@ -39,6 +39,7 @@ import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
 import RefundProposalForm from './RefundProposalForm';
+import InitDispatchButton from './InitDispatchButton';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -290,7 +291,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   const order = orderRaw as OrderRow;
 
   // Parallel reads ---------------------------------------------------------
-  const [linesRes, paymentsRes, approvalsRes, invoiceRes, addressesRes, proposalsRes] =
+  const [linesRes, paymentsRes, approvalsRes, invoiceRes, addressesRes, proposalsRes, dispatchRes] =
     await Promise.all([
       svc
         .from('order_lines')
@@ -338,6 +339,11 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
         .eq('target_table', 'orders')
         .eq('target_id', String(orderId))
         .order('proposed_at', { ascending: false }),
+      svc
+        .from('dispatches')
+        .select('id, status, carrier, tracking_number, packed_at, picked_up_at, in_transit_at, delivered_at')
+        .eq('order_id', orderId)
+        .maybeSingle(),
     ]);
 
   const lines = (linesRes.data ?? []) as OrderLineRow[];
@@ -348,6 +354,16 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   const refundProposals = ((proposalsRes.data ?? []) as RefundProposalRow[]).filter(
     (p) => p.status === 'awaiting_facu' || p.status === 'approved',
   );
+  const dispatch = (dispatchRes?.data ?? null) as null | {
+    id: string;
+    status: string;
+    carrier: string | null;
+    tracking_number: string | null;
+    packed_at: string | null;
+    picked_up_at: string | null;
+    in_transit_at: string | null;
+    delivered_at: string | null;
+  };
 
   // Customer email (RPC on user-context client)
   let customerEmail: string | null = null;
@@ -439,6 +455,35 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             <div className="text-xs text-slate-500">grand total</div>
           </div>
         </div>
+
+        {/* Dispatch */}
+        <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
+          <div className="flex items-start justify-between flex-wrap gap-3 mb-2">
+            <div>
+              <h2 className="font-semibold text-slate-900">Dispatch</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Once initialized, manage status + tracking on{' '}
+                <Link href="/admin/dispatch" className="underline text-emerald-700 hover:text-emerald-900">
+                  /admin/dispatch
+                </Link>.
+              </p>
+            </div>
+            <InitDispatchButton orderId={order.id} hasDispatch={!!dispatch} />
+          </div>
+          {dispatch ? (
+            <div className="text-xs text-slate-600 grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+              <div><span className="text-slate-400">Status:</span> <span className="font-mono">{dispatch.status}</span></div>
+              <div><span className="text-slate-400">Carrier:</span> {dispatch.carrier ?? 'fedex'}</div>
+              <div><span className="text-slate-400">Tracking:</span> {dispatch.tracking_number ?? 'unassigned'}</div>
+              <div>
+                <span className="text-slate-400">Last event:</span>{' '}
+                {dispatch.delivered_at ?? dispatch.in_transit_at ?? dispatch.picked_up_at ?? dispatch.packed_at ?? '—'}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 italic mt-2">No dispatch row yet. Initialize to track packing + shipping.</p>
+          )}
+        </section>
 
         {/* Refund: existing + trigger */}
         <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">

@@ -357,23 +357,73 @@ async function execDiscountRuleCreate(
   };
 }
 
-// TODO[refund.create executor missing]: Wire to the existing refund pipeline.
-// On Facu approval this should call /api/refunds/[id]/execute OR insert a
-// refund_approvals row and let the existing quorum flow handle the Stripe call.
-// For now the executor records the intent only -- approval will fail with
-// 'refund.create executor not implemented yet' so no Stripe refund is issued.
-// /admin/orders/[id] surfaces this via a TODO badge next to the proposed
-// refund. Payload shape: { order_id, order_number, amount, currency, reason }.
+// refund.create: on Facu approval, insert a row into refund_approvals so the
+// existing JJ/Facu quorum + Stripe-execute flow takes over. We don't call
+// Stripe directly here -- that's still gated by quorum_met=true in
+// /admin/refunds. Payload shape: { order_id, order_number, amount, currency, reason }.
 async function execRefundCreate(
   proposal: AdminProposal,
+  service: SupabaseClient,
 ): Promise<ExecutorResult> {
   const payload = payloadObject(proposal);
   if (!payload) return fail('invalid_payload');
+
+  const orderId = Number(payload.order_id);
+  if (!Number.isFinite(orderId) || orderId <= 0) return fail('invalid_order_id');
+  const amount = Number(payload.amount);
+  if (!Number.isFinite(amount) || amount <= 0) return fail('invalid_amount');
+  const currency = typeof payload.currency === 'string' && payload.currency.length === 3
+    ? payload.currency
+    : 'USD';
+  const reason = typeof payload.reason === 'string' ? payload.reason.trim() : '';
+  if (reason.length < 3) return fail('invalid_reason');
+
+  const proposedBy = proposal.proposed_by ?? null;
+  if (!proposedBy) return fail('missing_proposed_by');
+
+  // Look up parent payment_id (latest captured payment for this order, if any)
+  const { data: pay } = await service
+    .from('payments')
+    .select('id')
+    .eq('order_id', orderId)
+    .eq('status', 'succeeded')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { data: inserted, error: insertErr } = await service
+    .from('refund_approvals')
+    .insert({
+      order_id: orderId,
+      payment_id: pay?.id ?? null,
+      proposed_amount: amount,
+      currency,
+      status: 'pending',
+      proposed_by: proposedBy,
+      reason,
+    })
+    .select('id')
+    .single();
+  if (insertErr) return fail(`insert_failed: ${insertErr.message}`);
+
   return {
-    ok: false,
-    error:
-      'refund.create executor not implemented yet -- TODO: call /api/refunds/[id]/execute or insert a refund_approvals row to route through Stripe',
-    auditEntries: [],
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'refund_approvals',
+        target_id: String(inserted.id),
+        before_jsonb: null,
+        after_jsonb: {
+          order_id: orderId,
+          proposed_amount: amount,
+          currency,
+          status: 'pending',
+          reason,
+        },
+        applied_by_function: 'execRefundCreate',
+      },
+    ],
   };
 }
 
@@ -469,7 +519,7 @@ export async function executeProposal(
     case 'discount_rule.create':
       return execDiscountRuleCreate(proposal, service);
     case 'refund.create':
-      return execRefundCreate(proposal);
+      return execRefundCreate(proposal, service);
     case 'sku_mapping.confirm':
       return execSkuMappingConfirm(proposal, service);
     default:
