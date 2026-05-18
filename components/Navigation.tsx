@@ -208,8 +208,7 @@ export default function Navigation() {
             <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
               Free Sample Box
             </Link>
-            {/* PROPOSAL: backup-project auth surface (Sign in / My orders).
-                Sits next to the legacy AuthWidget so neither flow regresses. */}
+            {/* Backup-project auth (the only auth surface now -- legacy AuthWidget removed 2026-05-17) */}
             {!backupAuth.loading && (
               backupAuth.user ? (
                 <Link
@@ -230,7 +229,6 @@ export default function Navigation() {
                 </Link>
               )
             )}
-            <AuthWidget />
           </div>
 
           {/* Mobile: search + cart + menu button */}
@@ -335,35 +333,7 @@ export default function Navigation() {
                 </Link>
               )
             )}
-            {/* Mobile auth (legacy /shop session) */}
-            {!loading && (
-              user ? (
-                <>
-                  <Link
-                    href="/account"
-                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    My Account {profile?.business_name ? `— ${profile.business_name}` : ''} →
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => { setMobileMenuOpen(false); handleSignOut(); }}
-                    className="block w-full text-left px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-red-600 transition-colors rounded-lg font-medium text-sm"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="https://eshops.kometsales.com/762172"
-                  className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign In →
-                </Link>
-              )
-            )}
+            {/* Legacy mobile auth removed 2026-05-17 — backup-auth widget above handles Sign in + My orders */}
           </div>
         )}
       </div>
