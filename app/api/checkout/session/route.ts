@@ -480,9 +480,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       {
         error: 'stripe_customer_failed',
-        detail: stripeErr.message ?? stripeErr.raw?.message ?? 'unknown',
-        stripe_type: stripeErr.type,
-        stripe_code: stripeErr.code,
+        // 'message' so the existing /checkout page displays it inline.
+        message: `${stripeErr.type ?? 'StripeError'}/${stripeErr.code ?? 'unknown'}: ${stripeErr.message ?? stripeErr.raw?.message ?? 'unknown'}`,
       },
       { status: 500 },
     );
