@@ -81,7 +81,14 @@ function LoginContent() {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo },
+        options: {
+          redirectTo,
+          // Force Google account chooser every time so users can switch
+          // identities without going to incognito. Critical for admin who
+          // needs facu@floropolis.com (Workspace) while gmail.com is the
+          // browser default.
+          queryParams: { prompt: "select_account" },
+        },
       });
       if (error) {
         console.error("[auth/login] OAuth init error:", error);
