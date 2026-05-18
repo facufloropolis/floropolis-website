@@ -247,11 +247,13 @@ function formatChargeDate(deliveryISO: string, daysBefore: number): string {
 
 function StripePayForm({
   session,
+  billingAddress,
   onError,
   busy,
   setBusy,
 }: {
   session: SessionResponse;
+  billingAddress: AddressForm;
   onError: (msg: string) => void;
   busy: boolean;
   setBusy: (b: boolean) => void;
@@ -271,9 +273,27 @@ function StripePayForm({
           ? `${window.location.origin}/order-confirmation/${session.order_id}`
           : `/order-confirmation/${session.order_id}`;
 
+      // We opt out of Stripe's address collection (fields.billingDetails.address='never')
+      // because we collect address in our own form. Stripe REQUIRES we pass it back here.
       const { error } = await stripe.confirmSetup({
         elements,
-        confirmParams: { return_url: returnUrl },
+        confirmParams: {
+          return_url: returnUrl,
+          payment_method_data: {
+            billing_details: {
+              name: billingAddress.recipient_name || undefined,
+              phone: billingAddress.phone || undefined,
+              address: {
+                line1: billingAddress.line1 || undefined,
+                line2: billingAddress.line2 || undefined,
+                city: billingAddress.city || undefined,
+                state: billingAddress.state || undefined,
+                postal_code: billingAddress.postal_code || undefined,
+                country: "US",
+              },
+            },
+          },
+        },
       });
 
       // If no redirect happens, confirmSetup returned with an error (validation
@@ -675,6 +695,7 @@ function CheckoutContent() {
                 >
                   <StripePayForm
                     session={session}
+                    billingAddress={billingSame ? shipping : billing}
                     onError={setSubmitError}
                     busy={paying}
                     setBusy={setPaying}

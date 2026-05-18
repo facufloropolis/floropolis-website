@@ -54,43 +54,44 @@ export async function middleware(request: NextRequest) {
   // Refresh BACKUP session so it doesn't expire during browsing
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Guard: /admin -- must have client_profiles.status='admin' in BACKUP.
+  // Guard: /admin -- must be in ADMIN_EMAILS allowlist OR have
+  // client_profiles.status='admin' in BACKUP. We check email first because
+  // the Edge runtime fetch to backup has been unreliable on this Vercel
+  // project (verified via /api/debug/whoami: Node sees admin, middleware
+  // doesn't). Email allowlist is the deterministic path.
   if (request.nextUrl.pathname.startsWith("/admin")) {
     if (!user) {
       return NextResponse.redirect(new URL("/auth/login?next=" + request.nextUrl.pathname, request.url));
     }
     let isAdmin = false;
-    // Use SERVICE KEY for the admin lookup (bypasses RLS). The anon key
-    // alone returns no rows because middleware doesn't pass the user JWT
-    // to the REST call -- RLS sees auth.uid() = NULL and rejects.
-    const serviceKey = process.env.BACKUP_SUPABASE_SERVICE_KEY;
-    if (serviceKey) {
-      try {
-        const adminRes = await fetch(
-          `${backupUrl}/rest/v1/client_profiles?user_id=eq.${user.id}&select=status`,
-          {
-            headers: {
-              apikey: serviceKey,
-              Authorization: `Bearer ${serviceKey}`,
-              Accept: "application/json",
-            },
-          },
-        );
-        if (adminRes.ok) {
-          const rows: Array<{ status?: string }> = await adminRes.json();
-          isAdmin = rows.some((r) => r.status === "admin");
-        } else {
-          console.warn("[middleware] admin status lookup HTTP", adminRes.status);
-        }
-      } catch (e) {
-        console.warn("[middleware] admin status lookup failed:", e);
-      }
-    } else {
-      console.warn("[middleware] BACKUP_SUPABASE_SERVICE_KEY missing -- falling back to email allowlist");
-    }
-    // Fallback to allowlist if REST failed OR profile query returned no admin row.
-    if (!isAdmin && user.email && ADMIN_EMAILS.includes(user.email)) {
+    // PRIMARY: email allowlist (always works, no network call)
+    if (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) {
       isAdmin = true;
+    }
+    // SECONDARY: status='admin' via service-role REST (catches admins not in
+    // the hardcoded list, e.g. future admins added via DB only)
+    if (!isAdmin) {
+      const serviceKey = process.env.BACKUP_SUPABASE_SERVICE_KEY;
+      if (serviceKey) {
+        try {
+          const adminRes = await fetch(
+            `${backupUrl}/rest/v1/client_profiles?user_id=eq.${user.id}&select=status`,
+            {
+              headers: {
+                apikey: serviceKey,
+                Authorization: `Bearer ${serviceKey}`,
+                Accept: "application/json",
+              },
+            },
+          );
+          if (adminRes.ok) {
+            const rows: Array<{ status?: string }> = await adminRes.json();
+            isAdmin = rows.some((r) => r.status === "admin");
+          }
+        } catch {
+          // network failure -- already gave up via email check
+        }
+      }
     }
     if (!isAdmin) {
       return NextResponse.redirect(new URL("/shop", request.url));
