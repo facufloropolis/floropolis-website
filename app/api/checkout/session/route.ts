@@ -458,12 +458,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (priorOrder?.stripe_customer_id) {
       stripeCustomerId = priorOrder.stripe_customer_id;
     } else {
+      // Idempotency key includes a v2 suffix so an earlier diagnostic test
+      // (which consumed `customer:${userId}` with potentially different params)
+      // doesn't collide with this real request. Bump on any breaking schema change.
       const customer = await stripe.customers.create(
         {
           email: userEmail ?? undefined,
           metadata: { floropolis_user_id: userId },
         },
-        { idempotencyKey: `customer:${userId}` },
+        { idempotencyKey: `customer:${userId}:v2` },
       );
       stripeCustomerId = customer.id;
     }
@@ -471,8 +474,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     Sentry.captureException(err, {
       tags: { route: 'checkout/session', step: 'stripe_customer' },
     });
+    // Surface the actual Stripe error message so we can debug from the frontend
+    // (kept terse; full stack goes to Sentry).
+    const stripeErr = err as { message?: string; type?: string; code?: string; raw?: { message?: string } };
     return NextResponse.json(
-      { error: 'stripe_customer_failed' },
+      {
+        error: 'stripe_customer_failed',
+        detail: stripeErr.message ?? stripeErr.raw?.message ?? 'unknown',
+        stripe_type: stripeErr.type,
+        stripe_code: stripeErr.code,
+      },
       { status: 500 },
     );
   }
