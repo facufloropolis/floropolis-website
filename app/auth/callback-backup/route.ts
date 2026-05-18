@@ -1,5 +1,13 @@
 // Auth callback handler for the BACKUP project (Phase 4 transactional auth).
-// v3 | 2026-05-18 | Job_PM AUTH-FIX [V8 SHADOW]
+// v4 | 2026-05-18 | Job_PM AUTH-FIX round 2 [V8 SHADOW]
+//
+// v4 NOTE: with browser client now on IMPLICIT flow (backup-client.ts), OAuth
+// returns session in URL hash NOT a query-string code. Browser-side supabase-js
+// processes the hash on page load. This callback handler still exists for
+// safety (covers magic link & any provider still using PKCE) but the typical
+// Google OAuth round-trip will go straight from Supabase to /shop (or wherever
+// emailRedirectTo / redirectTo points) and the browser client handles the
+// hash there.
 //
 // v3 fix: replace the two-response pattern with a single response object.
 // The previous v2 built a SECOND NextResponse.redirect() when the profile
