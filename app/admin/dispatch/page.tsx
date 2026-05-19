@@ -1,16 +1,26 @@
-// Admin dispatch manifest.
-// v1 | 2026-05-18 | Job_PM admin-port DISP [V8 SHADOW]
+// Admin dispatch manifest + Phase F 4-panel completion.
+// v2 | 2026-05-19 | Job_PM Phase F [V8 SHADOW]
 //
-// Lists orders that need fulfillment, joined with their dispatches row.
-// Groups by target ship date (requested_delivery_date - lead_time_days).
-// Tabs: Today / Tomorrow / This week / Late.
+// BRD: catalog_BRD_PRD_v0.3 §5.3 Block 4 (UC-O-181..195) and Block 5
+// (UC-O-196..203). Phase F adds:
+//   - 4-panel layout per /mockups/admin-dispatch (Manifest, Comms, Labels, Pipeline)
+//   - Date navigation (?date=YYYY-MM-DD)
+//   - Stage filter via DispatchPipelineWidget (?stage=quote..shipped)
+//   - FedEx CSV export header button
+//   - Insert Sample Box CTA + modal
+//   - Post-delivery feedback form (visible when status='delivered')
+//
+// Constraints from sub-agent brief:
+//   - Do NOT write to n8n_dispatch_queue (Rose-owned, JOB_READ_OK only).
+//     Admin cancel of a Rose-vendor email = create admin_proposals row of
+//     type='dispatch_cancel' (out of scope; documented but not implemented).
+//   - All DB writes go through service-role; admin gate enforced both at the
+//     page boundary (this file) and per-route under /api/admin/dispatch/*.
 //
 // Access:
 //   - Middleware guards /admin and restricts to facu@floropolis.com.
 //   - Server-side belt-and-suspenders: re-check session + client_profiles.status='admin'.
 //   - Non-admin -> redirect('/').
-//
-// Style: emerald-600 primary, Plus Jakarta Sans (inherited), ASCII-clean copy.
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +33,12 @@ import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
 
 import DispatchRowActions from './DispatchRowActions';
+import DispatchCommunicationsPanel, { CommRow } from './DispatchCommunicationsPanel';
+import DispatchLabelsPanel from './DispatchLabelsPanel';
+import DispatchPipelineWidget, { PipelineStage, PipelineCounts } from './DispatchPipelineWidget';
+import DispatchSampleBoxButton, { ProspectOption } from './DispatchSampleBoxButton';
+import DispatchDateNav from './DispatchDateNav';
+import DispatchFeedbackForm from './DispatchFeedbackForm';
 
 type DispatchStatus =
   | 'awaiting_pack'
@@ -38,8 +54,17 @@ type DispatchTab = 'today' | 'tomorrow' | 'week' | 'late';
 interface AddressSnapshot {
   recipient_name?: string | null;
   business_name?: string | null;
+  phone?: string | null;
   city?: string | null;
   state?: string | null;
+  email?: string | null;
+}
+
+interface OrderLineSnap {
+  sku_id?: number | null;
+  quantity?: number | null;
+  sku_name_snapshot?: string | null;
+  sku_vendor_snapshot?: string | null;
 }
 
 interface OrderRow {
@@ -51,7 +76,7 @@ interface OrderRow {
   shipping_address_snapshot: AddressSnapshot | null;
   paid_at: string | null;
   created_at: string;
-  order_lines?: { quantity: number }[] | null;
+  order_lines?: OrderLineSnap[] | null;
 }
 
 interface DispatchRow {
@@ -69,20 +94,27 @@ interface DispatchRow {
   assigned_to: string | null;
   created_at: string;
   updated_at: string;
+  // Phase F additions
+  driver_pickup_confirmed: boolean;
+  driver_pickup_confirmed_at: string | null;
+  fedex_confirmed: boolean;
+  fedex_confirmed_at: string | null;
+  dispatch_date: string | null;
 }
 
 interface ManifestRow {
   order: OrderRow;
   dispatch: DispatchRow | null;
-  targetShipDate: string; // YYYY-MM-DD in UTC
+  targetShipDate: string;
   boxesCount: number;
   totalQty: number;
   businessName: string;
+  // Phase F: ancillary data per row
+  comms: CommRow[];
+  feedbackCount: number;
+  labelSignedUrl: string | null;
 }
 
-// Orders eligible for fulfillment. 'paid' = D1 status after charge has cleared
-// and the order is awaiting pack/ship. 'fulfilled' is included so finished
-// dispatches still appear under "This week" until they age off.
 const FULFILLABLE_STATUSES = ['paid', 'fulfilled'];
 
 const STATUS_BADGE: Record<DispatchStatus, { cls: string; label: string }> = {
@@ -129,13 +161,25 @@ function fmtDate(iso: string | null): string {
   });
 }
 
+function stageForRow(r: ManifestRow): PipelineStage {
+  const d = r.dispatch;
+  if (!d) {
+    // No dispatch row yet -> Quote (or Cost confirmed if order is paid/fulfilled).
+    if (r.order.status === 'paid' || r.order.status === 'fulfilled') return 'cost_confirmed';
+    return 'quote';
+  }
+  if (d.status === 'in_transit' || d.status === 'delivered') return 'shipped';
+  if (d.status === 'packed' || d.status === 'label_printed' || d.status === 'picked_up') return 'packed';
+  return 'procured';
+}
+
 export const metadata = {
   title: 'Dispatch | Floropolis Admin',
   robots: { index: false, follow: false },
 };
 
 interface PageProps {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; date?: string; stage?: string }>;
 }
 
 export default async function AdminDispatchPage({ searchParams }: PageProps) {
@@ -157,17 +201,29 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   }
 
   const sp = await searchParams;
+
+  const todayIso = todayUtcIso();
+  const dateParam =
+    sp.date && /^\d{4}-\d{2}-\d{2}$/.test(sp.date) ? sp.date : null;
+  const activeDate = dateParam ?? todayIso;
+
   const activeTab: DispatchTab =
     sp.tab === 'tomorrow' || sp.tab === 'week' || sp.tab === 'late'
       ? sp.tab
       : 'today';
+
+  const validStages: PipelineStage[] = ['quote', 'cost_confirmed', 'procured', 'packed', 'shipped'];
+  const activeStage: PipelineStage | null =
+    sp.stage && (validStages as string[]).includes(sp.stage)
+      ? (sp.stage as PipelineStage)
+      : null;
 
   // Fetch orders that need dispatch ----------------------------------------
   const backup = getBackupServiceClient();
   const { data: ordersRaw, error: ordersErr } = await backup
     .from('orders')
     .select(
-      'id, order_number, status, lead_time_days, requested_delivery_date, shipping_address_snapshot, paid_at, created_at, order_lines ( quantity )',
+      'id, order_number, status, lead_time_days, requested_delivery_date, shipping_address_snapshot, paid_at, created_at, order_lines ( sku_id, quantity, sku_name_snapshot, sku_vendor_snapshot )',
     )
     .in('status', FULFILLABLE_STATUSES)
     .order('requested_delivery_date', { ascending: true })
@@ -193,16 +249,71 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
       {} as Record<number, DispatchRow>,
     );
   }
+  const dispatchIds = Object.values(dispatchesByOrderId).map((d) => d.id);
 
-  // Build manifest rows ----------------------------------------------------
-  const todayIso = todayUtcIso();
+  // Fetch communications + feedback counts for those dispatches -----------
+  let commsByDispatchId: Record<string, CommRow[]> = {};
+  let feedbackCountByDispatchId: Record<string, number> = {};
+  if (dispatchIds.length > 0) {
+    const { data: commsRaw } = await backup
+      .from('dispatch_communications')
+      .select('id, dispatch_id, channel, direction, subject, recipient, sent_at, notes')
+      .in('dispatch_id', dispatchIds)
+      .order('sent_at', { ascending: false });
+    commsByDispatchId = ((commsRaw ?? []) as unknown as (CommRow & { dispatch_id: string })[]).reduce(
+      (acc, c) => {
+        (acc[c.dispatch_id] ??= []).push({
+          id: c.id,
+          channel: c.channel,
+          direction: c.direction,
+          subject: c.subject,
+          recipient: c.recipient,
+          sent_at: c.sent_at,
+          notes: c.notes,
+        });
+        return acc;
+      },
+      {} as Record<string, CommRow[]>,
+    );
+
+    const { data: fbRaw } = await backup
+      .from('dispatch_feedback')
+      .select('dispatch_id')
+      .in('dispatch_id', dispatchIds);
+    feedbackCountByDispatchId = ((fbRaw ?? []) as { dispatch_id: string }[]).reduce(
+      (acc, r) => {
+        acc[r.dispatch_id] = (acc[r.dispatch_id] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+  }
+
+  // Signed URLs for uploaded labels --------------------------------------
+  const labelSignedUrlByDispatchId: Record<string, string | null> = {};
+  const dispatchesWithLabels = Object.values(dispatchesByOrderId).filter((d) => !!d.label_url);
+  if (dispatchesWithLabels.length > 0) {
+    for (const d of dispatchesWithLabels) {
+      // label_url stores the storage path (set by the label-upload route).
+      // We treat http(s) URLs as already-public and pass through.
+      const v = d.label_url ?? '';
+      if (/^https?:\/\//.test(v)) {
+        labelSignedUrlByDispatchId[d.id] = v;
+      } else if (v) {
+        const { data: signed } = await backup.storage
+          .from('dispatch-labels')
+          .createSignedUrl(v, 60 * 60); // 1h
+        labelSignedUrlByDispatchId[d.id] = signed?.signedUrl ?? null;
+      }
+    }
+  }
+
+  // Build manifest rows --------------------------------------------------
   const weekEndIso = addDaysIso(todayIso, 6);
 
-  const rows: ManifestRow[] = orders.map((o) => {
+  const rowsAll: ManifestRow[] = orders.map((o) => {
     const dispatch = dispatchesByOrderId[o.id] ?? null;
     const totalQty = (o.order_lines ?? []).reduce((s, l) => s + (l.quantity ?? 0), 0);
-    // Boxes is computed in real ops by box_plan; here we approximate as
-    // ceil(totalQty / 125) which is the typical Ecuador rose carton fill.
     const boxesCount = totalQty > 0 ? Math.max(1, Math.ceil(totalQty / 125)) : 0;
     const businessName =
       o.shipping_address_snapshot?.business_name ??
@@ -215,34 +326,73 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
       boxesCount,
       totalQty,
       businessName,
+      comms: dispatch ? (commsByDispatchId[dispatch.id] ?? []) : [],
+      feedbackCount: dispatch ? (feedbackCountByDispatchId[dispatch.id] ?? 0) : 0,
+      labelSignedUrl: dispatch ? (labelSignedUrlByDispatchId[dispatch.id] ?? null) : null,
     };
   });
 
-  // Group + filter ---------------------------------------------------------
+  // Pipeline counts (across the entire fetched window, NOT filtered) -----
+  const pipelineCounts: PipelineCounts = {
+    quote: 0,
+    cost_confirmed: 0,
+    procured: 0,
+    packed: 0,
+    shipped: 0,
+  };
+  for (const r of rowsAll) {
+    pipelineCounts[stageForRow(r)] += 1;
+  }
+
+  // Tab counts (for the tab strip; ignores date/stage filters) -----------
   const counts: Record<DispatchTab, number> = { today: 0, tomorrow: 0, week: 0, late: 0 };
-  for (const r of rows) {
+  for (const r of rowsAll) {
     const dispatched =
       r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
     const t = tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched);
     counts[t] += 1;
   }
 
-  const visible = rows.filter((r) => {
-    const dispatched =
-      r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
-    return tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched) === activeTab;
-  });
+  // Apply filters: date wins over tab; stage refines whichever is active.
+  let visible: ManifestRow[];
+  if (dateParam) {
+    visible = rowsAll.filter((r) => {
+      const rDate = r.dispatch?.dispatch_date ?? r.targetShipDate;
+      return rDate === dateParam;
+    });
+  } else {
+    visible = rowsAll.filter((r) => {
+      const dispatched =
+        r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
+      return tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched) === activeTab;
+    });
+  }
+  if (activeStage) {
+    visible = visible.filter((r) => stageForRow(r) === activeStage);
+  }
 
-  // Group visible rows by date for display.
   const byDate = visible.reduce(
     (acc, r) => {
-      const k = r.targetShipDate;
+      const k = r.dispatch?.dispatch_date ?? r.targetShipDate;
       (acc[k] ??= []).push(r);
       return acc;
     },
     {} as Record<string, ManifestRow[]>,
   );
   const sortedDates = Object.keys(byDate).sort();
+
+  // Load eligible prospects for the sample-box modal ---------------------
+  const { data: prospectsRaw } = await backup
+    .from('sample_box_prospects')
+    .select('id, business_name, contact_name, city, state, status')
+    .in('status', ['eligible', 'sent'])
+    .order('business_name', { ascending: true })
+    .limit(50);
+  const prospects = (prospectsRaw ?? []) as unknown as ProspectOption[];
+
+  // First visible dispatch_id (for the sample-box default attach point).
+  const defaultDispatchId =
+    visible.find((r) => r.dispatch != null)?.dispatch?.id ?? null;
 
   const tabs: { key: DispatchTab; label: string }[] = [
     { key: 'today', label: 'Today' },
@@ -251,53 +401,78 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
     { key: 'late', label: 'Late' },
   ];
 
+  const exportHref = `/api/admin/dispatch/export?date=${activeDate}`;
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">Dispatch manifest</h1>
-          <p className="text-slate-500 text-sm mt-1">
-            Orders awaiting pack, pickup, or carrier handoff. Target ship date =
-            requested delivery - lead time. Late = target date passed without a
-            dispatch leaving awaiting_pack.
-          </p>
+        {/* Header */}
+        <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Dispatch manifest</h1>
+            <p className="text-slate-500 text-sm mt-1">
+              4 panels: today&apos;s shipments, communications log, labels &amp; confirmations,
+              Rose dispatch pipeline. Late = target date passed without a dispatch leaving
+              awaiting_pack.
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <DispatchDateNav date={activeDate} todayIso={todayIso} />
+            <div className="flex items-center gap-2">
+              <a
+                href={exportHref}
+                className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-3 py-1.5 rounded-lg"
+              >
+                Download FedEx CSV
+              </a>
+              <DispatchSampleBoxButton
+                prospects={prospects}
+                defaultDispatchId={defaultDispatchId}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 border-b border-slate-200 mb-6 overflow-x-auto">
-          {tabs.map((t) => {
-            const active = t.key === activeTab;
-            return (
-              <a
-                key={t.key}
-                href={`/admin/dispatch?tab=${t.key}`}
-                className={`px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
-                  active
-                    ? 'border-emerald-600 text-emerald-700'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                {t.label}
-                <span
-                  className={`ml-2 text-xs ${active ? 'text-emerald-700' : 'text-slate-400'}`}
-                >
-                  ({counts[t.key]})
-                </span>
-              </a>
-            );
-          })}
+        {/* Pipeline widget (Panel 4) */}
+        <div className="mb-6">
+          <DispatchPipelineWidget counts={pipelineCounts} activeStage={activeStage} />
         </div>
+
+        {/* Tabs (hidden when explicit date filter is set) */}
+        {!dateParam && (
+          <div className="flex gap-2 border-b border-slate-200 mb-6 overflow-x-auto">
+            {tabs.map((t) => {
+              const active = t.key === activeTab;
+              return (
+                <a
+                  key={t.key}
+                  href={`/admin/dispatch?tab=${t.key}`}
+                  className={`px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
+                    active
+                      ? 'border-emerald-600 text-emerald-700'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {t.label}
+                  <span
+                    className={`ml-2 text-xs ${active ? 'text-emerald-700' : 'text-slate-400'}`}
+                  >
+                    ({counts[t.key]})
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        )}
 
         {visible.length === 0 ? (
           <div className="text-center py-20 text-slate-400 border border-dashed border-slate-200 rounded-xl">
-            <p className="font-semibold text-slate-600">
-              No orders in this bucket
-            </p>
+            <p className="font-semibold text-slate-600">No orders in this view</p>
             <p className="text-sm mt-1">
-              New orders move into Today once requested delivery minus lead time = today.
+              Try a different date, clear the stage filter, or check the Today tab.
             </p>
           </div>
         ) : (
@@ -315,25 +490,22 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                   <table className="w-full text-sm">
                     <thead className="bg-slate-50 border-b border-slate-200">
                       <tr>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                        <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
                           Order
                         </th>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                        <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
                           Customer
                         </th>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                          Boxes
-                        </th>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                          Stems
-                        </th>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                        <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
                           Status
                         </th>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                          Carrier / tracking
+                        <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">
+                          Communications
                         </th>
-                        <th className="text-left px-4 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                        <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">
+                          Labels &amp; confirmations
+                        </th>
+                        <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
                           Actions
                         </th>
                       </tr>
@@ -342,27 +514,31 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                       {byDate[d].map((r) => {
                         const status: DispatchStatus = r.dispatch?.status ?? 'awaiting_pack';
                         const badge = STATUS_BADGE[status];
+                        const isDelivered = status === 'delivered';
+                        const skus = (r.order.order_lines ?? [])
+                          .filter((l) => l.sku_id != null)
+                          .map((l) => ({
+                            sku_id: String(l.sku_id),
+                            sku_name: l.sku_name_snapshot ?? `SKU ${l.sku_id}`,
+                          }));
                         return (
-                          <tr key={r.order.id} className="hover:bg-slate-50">
-                            <td className="px-4 py-3 font-mono text-xs font-semibold text-slate-700">
+                          <tr key={r.order.id} className="hover:bg-slate-50 align-top">
+                            <td className="px-3 py-3 font-mono text-xs font-semibold text-slate-700">
                               {r.order.order_number}
+                              <div className="text-slate-400 font-normal mt-0.5">
+                                {r.boxesCount} box{r.boxesCount === 1 ? '' : 'es'} · {r.totalQty} stems
+                              </div>
                             </td>
-                            <td className="px-4 py-3 text-slate-700">
+                            <td className="px-3 py-3 text-slate-700 text-xs">
                               <div className="font-medium">{r.businessName}</div>
                               {r.order.shipping_address_snapshot?.city && (
-                                <div className="text-xs text-slate-400">
+                                <div className="text-slate-400">
                                   {r.order.shipping_address_snapshot.city},{' '}
                                   {r.order.shipping_address_snapshot.state ?? ''}
                                 </div>
                               )}
                             </td>
-                            <td className="px-4 py-3 text-slate-700 font-mono">
-                              {r.boxesCount}
-                            </td>
-                            <td className="px-4 py-3 text-slate-500 font-mono">
-                              {r.totalQty}
-                            </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-3">
                               <span
                                 className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold border ${badge.cls}`}
                               >
@@ -373,24 +549,56 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                                   {r.dispatch.exception_note}
                                 </div>
                               )}
-                            </td>
-                            <td className="px-4 py-3 text-xs text-slate-500">
                               {r.dispatch ? (
-                                <>
-                                  <div className="uppercase">
-                                    {r.dispatch.carrier}
-                                  </div>
+                                <div className="text-xs text-slate-500 mt-1">
+                                  <div className="uppercase">{r.dispatch.carrier}</div>
                                   <div className="font-mono text-slate-700">
                                     {r.dispatch.tracking_number ?? '-'}
                                   </div>
-                                </>
+                                </div>
+                              ) : null}
+                              {isDelivered && r.dispatch && (
+                                <div className="mt-2">
+                                  <DispatchFeedbackForm
+                                    dispatchId={r.dispatch.id}
+                                    existingFeedbackCount={r.feedbackCount}
+                                    skus={skus}
+                                  />
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-3 py-3">
+                              {r.dispatch ? (
+                                <DispatchCommunicationsPanel
+                                  dispatchId={r.dispatch.id}
+                                  orderNumber={r.order.order_number}
+                                  businessName={r.businessName}
+                                  recipientEmail={r.order.shipping_address_snapshot?.email ?? null}
+                                  comms={r.comms}
+                                />
                               ) : (
-                                <span className="italic text-slate-400">
-                                  Not initialized
+                                <span className="text-xs text-slate-400 italic">
+                                  Initialize dispatch to enable
                                 </span>
                               )}
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-3">
+                              {r.dispatch ? (
+                                <DispatchLabelsPanel
+                                  dispatchId={r.dispatch.id}
+                                  labelStoragePath={r.dispatch.label_url}
+                                  labelSignedUrl={r.labelSignedUrl}
+                                  driverPickupConfirmed={r.dispatch.driver_pickup_confirmed}
+                                  driverPickupAt={r.dispatch.driver_pickup_confirmed_at}
+                                  fedexConfirmed={r.dispatch.fedex_confirmed}
+                                  fedexAt={r.dispatch.fedex_confirmed_at}
+                                  driverWhatsappPhone={r.order.shipping_address_snapshot?.phone ?? null}
+                                />
+                              ) : (
+                                <span className="text-xs text-slate-400 italic">-</span>
+                              )}
+                            </td>
+                            <td className="px-3 py-3">
                               {r.dispatch ? (
                                 <DispatchRowActions
                                   dispatchId={r.dispatch.id}
@@ -415,11 +623,13 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
         )}
 
         <p className="text-xs text-slate-400 mt-8">
-          Data source: supabase-backup orders + dispatches. Status updates POST to
-          /api/admin/dispatch/[id]/status with allowed forward transitions and
-          timestamp stamping. To initialize a dispatch for a paid order, open the
-          order detail page and click &quot;Initialize dispatch&quot; (TODO: button
-          lives on /admin/orders/[id]).
+          Data source: supabase-backup orders + dispatches + dispatch_communications +
+          dispatch_feedback + sample_box_prospects. Service-role writes; admin gate on
+          every /api/admin/dispatch/* route. To initialize a dispatch for a paid order,
+          open the order detail page and click &quot;Initialize dispatch&quot;.
+          {' '}n8n_dispatch_queue is Rose-owned (JOB_READ_OK only); admin cancel of a
+          Rose-vendor email is an admin_proposals row of type=&apos;dispatch_cancel&apos;
+          (Phase G).
         </p>
       </main>
 
