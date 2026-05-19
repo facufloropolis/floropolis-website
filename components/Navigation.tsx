@@ -67,15 +67,9 @@ export default function Navigation() {
     }
 
     if (!user) {
-      return (
-        <Link
-          href="https://eshops.kometsales.com/762172"
-          className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
-        >
-          <User className="w-3.5 h-3.5" />
-          Sign In
-        </Link>
-      );
+      // Sign In CTA hidden on prod 2026-05-19 per Facu — prod is stable + quote-only,
+      // no user-facing login. New auth/checkout flow lives on proposal branch only.
+      return null;
     }
 
     // Signed in — show avatar + dropdown
@@ -273,15 +267,7 @@ export default function Navigation() {
                     Sign Out
                   </button>
                 </>
-              ) : (
-                <Link
-                  href="https://eshops.kometsales.com/762172"
-                  className="block px-4 py-2 text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign In →
-                </Link>
-              )
+              ) : null /* Mobile Sign In hidden on prod 2026-05-19 per Facu */
             )}
           </div>
         )}

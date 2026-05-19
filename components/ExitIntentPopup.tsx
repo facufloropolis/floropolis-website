@@ -3,14 +3,19 @@
 import { useState, useEffect } from 'react'
 import { X, Gift, Percent, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { pushEvent, CTA_EVENTS } from '@/lib/gtm'
 import { getCartItems, getSubtotal } from '@/lib/quote-cart'
+
+// Paths where the exit popup must NEVER fire — basket/checkout/auth flows where
+// the user is mid-funnel and shouldn't be interrupted. Added 2026-05-19 per Facu.
+const SUPPRESS_PATHS = ['/quote', '/sample-box', '/auth', '/account', '/checkout', '/signup', '/order-confirmation', '/admin']
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
 export default function ExitIntentPopup() {
   const router = useRouter()
+  const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(false)
   const [email, setEmail] = useState('')
   const [selectedOption, setSelectedOption] = useState<'discount' | 'sample' | null>(null)
@@ -24,6 +29,9 @@ export default function ExitIntentPopup() {
   useEffect(() => {
     if (localStorage.getItem('exitPopupSubmitted') === 'true') setAlreadySubmitted(true)
   }, [])
+
+  // Path-based suppression: never fire in basket/checkout/auth/admin flows.
+  const isSuppressed = SUPPRESS_PATHS.some((p) => pathname?.startsWith(p))
 
   // Track cart state so exit popup knows whether to show cart abandonment or generic
   useEffect(() => {
@@ -40,6 +48,10 @@ export default function ExitIntentPopup() {
   useEffect(() => {
     // Check if already shown or submitted - if so, don't set up listener at all
     if (sessionStorage.getItem('exitPopupShown') || localStorage.getItem('exitPopupSubmitted')) {
+      return
+    }
+    // Path-suppressed pages: don't even install the mouseleave listener.
+    if (isSuppressed) {
       return
     }
 
@@ -117,8 +129,8 @@ export default function ExitIntentPopup() {
     }
   }
 
-  // Don't render if already submitted or dismissed
-  if (!isVisible || alreadySubmitted) {
+  // Don't render if already submitted or dismissed, OR path-suppressed
+  if (!isVisible || alreadySubmitted || isSuppressed) {
     return null
   }
 
