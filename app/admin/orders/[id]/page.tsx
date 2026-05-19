@@ -41,6 +41,8 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
 import RefundProposalForm from './RefundProposalForm';
 import InitDispatchButton from './InitDispatchButton';
+import EmailLogSection from './_components/EmailLogSection';
+import ConversationsSection from './_components/ConversationsSection';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -589,8 +591,15 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             </section>
             </WiringSection>
 
-            {/* W5: EMAIL_LOG slot -- Brevo email events stream lands here. */}
-            {/* W5: CONVERSATIONS slot -- customer email + WhatsApp threads land here. */}
+            {/* W5: EMAIL_LOG slot -- Brevo transactional events for this order. */}
+            <EmailLogSection orderId={order.id} customerEmail={customerEmail} />
+
+            {/* W5: CONVERSATIONS slot -- dispatch_communications + Brevo events interleaved. */}
+            <ConversationsSection
+              orderId={order.id}
+              clientId={order.user_id}
+              customerEmail={customerEmail}
+            />
 
             {/* Line items */}
             <WiringSection level={wm('order-lines').level} note={wm('order-lines').note} id="order-lines">

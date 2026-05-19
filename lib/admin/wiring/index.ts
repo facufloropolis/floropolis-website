@@ -155,8 +155,8 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
       { id: 'timeline', level: 'LIVE', note: 'Derived from orders.* timestamps + payments ledger.' },
       { id: 'addresses', level: 'LIVE', note: 'shipping/billing snapshot jsonb with addresses-row fallback.' },
       { id: 'invoice', level: 'LIVE', note: 'invoices.pdf_url signed link or download proxy.' },
-      { id: 'email-log', level: 'PLAN', note: 'W5 slot in the left column: Brevo email events stream (sends / opens / clicks). Placeholder comment only today.' },
-      { id: 'conversations', level: 'PLAN', note: 'W5 slot in the left column: customer email + WhatsApp threads. Placeholder comment only today.' },
+      { id: 'email-log', level: 'LIVE', note: 'Brevo /v3/smtp/statistics/events filtered by recipient + order tag/subject. Server component (EmailLogSection) degrades to a friendly placeholder when BREVO_API_KEY is unset; the LIVE badge represents wired, not data-present.' },
+      { id: 'conversations', level: 'LIVE', note: 'dispatch_communications (joined via dispatches.order_id) + Brevo events interleaved DESC by timestamp. Server component (ConversationsSection). LIVE = wired; Brevo subset degrades gracefully when key unset.' },
     ],
   },
   {
