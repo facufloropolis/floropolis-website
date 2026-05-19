@@ -52,7 +52,9 @@ export default async function AdminIndexPage() {
     { count: clientsPending },
   ] = await Promise.all([
     svc.from('catalog_classifications').select('*', { count: 'exact', head: true }),
-    svc.from('catalog_classifications').select('*', { count: 'exact', head: true }).eq('publishable', true),
+    // Publishable = catalog_classifications.status='publishable' (text column, not a boolean).
+    // Fix 2026-05-19: was .eq('publishable', true) which crashed prod with "column does not exist".
+    svc.from('catalog_classifications').select('*', { count: 'exact', head: true }).eq('status', 'publishable'),
     svc.from('admin_proposals').select('*', { count: 'exact', head: true }).eq('status', 'awaiting_facu').then(
       (r) => ({ count: r.count }),
       () => ({ count: null }),
