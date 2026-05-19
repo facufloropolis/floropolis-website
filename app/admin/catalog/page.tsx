@@ -635,7 +635,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           <span className="text-slate-700 font-medium">Catalog</span>
         </nav>
 
-        {/* Header row */}
+        {/* Header row -- subtitle collapses summary into a single line per mockup */}
+        <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">
         <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Unified Catalog</h1>
@@ -650,24 +651,40 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               <span className="text-emerald-700">{counts.live} live</span> /{' '}
               <span className="text-slate-500">{counts.hidden} hidden</span> /{' '}
               <span className="text-amber-700">{counts.draft} draft</span>
+              {(counts.noCost > 0 || counts.noBoxDims > 0) && (
+                <>
+                  {' . '}
+                  <span className="text-amber-700">
+                    {counts.noCost} missing cost / {counts.noBoxDims} no box dims
+                  </span>
+                </>
+              )}
               {totalAwaiting > 0 && (
                 <>
                   {' . '}
-                  <span className="text-orange-700">
+                  <Link
+                    href={buildUrl(rawFilters, { flags: 'awaiting_facu', page: undefined })}
+                    className="text-orange-700 hover:underline"
+                  >
                     {totalAwaiting} awaiting Facu
-                  </span>
+                  </Link>
                 </>
               )}
             </p>
           </div>
 
+          {/* WIRING:state-toggle */}
+          <WiringSection level={wm('state-toggle').level} note={wm('state-toggle').note} id="state-toggle">
           <div className="flex flex-col items-end gap-2">
-            <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
+            <div
+              className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5"
+              title={stateMode === 'today' ? undefined : 'Target mode -- coming soon'}
+            >
               <Link
                 href={buildUrl(rawFilters, { state: undefined, page: undefined })}
                 className={
                   stateMode === 'today'
-                    ? 'px-3 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white'
+                    ? 'px-3 py-1 text-xs font-semibold rounded-md bg-violet-600 text-white'
                     : 'px-3 py-1 text-xs font-medium rounded-md text-slate-600 hover:bg-slate-50'
                 }
               >
@@ -675,72 +692,24 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               </Link>
               <Link
                 href={buildUrl(rawFilters, { state: 'target', page: undefined })}
+                title="Target mode -- coming soon"
                 className={
                   stateMode === 'target'
-                    ? 'px-3 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white'
+                    ? 'px-3 py-1 text-xs font-semibold rounded-md bg-violet-600 text-white'
                     : 'px-3 py-1 text-xs font-medium rounded-md text-slate-600 hover:bg-slate-50'
                 }
               >
-                Target state
+                Target
               </Link>
             </div>
             <p className="text-[11px] text-slate-400 max-w-xs text-right">
               {stateMode === 'today'
-                ? "Today: reality from Rose's mirror -- gaps visible, ghost still alive."
-                : 'Target: post-ghost K2K live + DB T2/T3 only. (Currently same data as Today; will diverge when classifications populate.)'}
+                ? "Reality per Rose's layer plan: gaps visible, ghost still alive"
+                : 'Target mode -- coming soon (post-ghost: K2K live + DB T2/T3 only)'}
             </p>
           </div>
+          </WiringSection>
         </div>
-
-        {/* Morning Queue summary widgets ----------------------------- */}
-        {/* WIRING:summary-tiles */}
-        <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">
-        <section
-          aria-label="Morning Queue summary"
-          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"
-        >
-          <SummaryCard
-            label="By source"
-            href={buildUrl(rawFilters, { source: 'k2k_live', page: undefined })}
-            rows={[
-              { k: 'K2K live', v: counts.liveK2K, tone: 'emerald' },
-              { k: 'T2', v: counts.t2, tone: 'blue' },
-              { k: 'T3', v: counts.t3, tone: 'slate' },
-            ]}
-          />
-          <SummaryCard
-            label="By visibility"
-            href={buildUrl(rawFilters, { visibility: 'live', page: undefined })}
-            rows={[
-              { k: 'Live', v: counts.live, tone: 'emerald' },
-              { k: 'Hidden', v: counts.hidden, tone: 'slate' },
-              { k: 'Draft', v: counts.draft, tone: 'amber' },
-            ]}
-          />
-          <SummaryCard
-            label="Publishability"
-            href={buildUrl(rawFilters, { flags: 'awaiting_facu', page: undefined })}
-            rows={[
-              { k: 'Publishable', v: counts.publishable, tone: 'emerald' },
-              { k: 'Needs data fix', v: counts.needsDataFix, tone: 'amber' },
-              { k: 'Awaiting Facu', v: totalAwaiting, tone: 'orange' },
-            ]}
-          />
-          <SummaryCard
-            label="Data gaps"
-            href={buildUrl(rawFilters, { flags: 'no_cost', page: undefined })}
-            rows={[
-              { k: 'Missing cost', v: counts.noCost, tone: 'amber' },
-              { k: 'No box dims', v: counts.noBoxDims, tone: 'amber' },
-              {
-                k: 'DoD delta',
-                v: inventoryDelta.available ? inventoryDelta.delta : 'n/a',
-                tone: 'slate',
-              },
-            ]}
-          />
-        </section>
-
         </WiringSection>
 
         <WiringSection level={wm('dod-delta').level} note={wm('dod-delta').note} id="dod-delta">
@@ -868,16 +837,22 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
         </WiringSection>
 
-        {/* Filter chip row ------------------------------------------ */}
+        {/* Filter chip row -- compact single-line layout per mockup ------ */}
         <WiringSection level={wm('filter-chips').level} note={wm('filter-chips').note} id="filter-chips">
-        <section aria-label="Filter chips" className="mb-3 flex flex-wrap gap-1.5">
+        <section
+          aria-label="Filter chips"
+          className="mb-3 flex flex-wrap items-center gap-1 text-[11px]"
+        >
+          <span className="text-slate-400 uppercase tracking-wide font-semibold mr-1">
+            Source
+          </span>
           <FilterChip
             label="All"
             active={!sourceFilter || sourceFilter === 'all'}
             href={buildUrl(rawFilters, { source: undefined, page: undefined })}
           />
           <FilterChip
-            label={`K2K live (${counts.liveK2K})`}
+            label={`K2K (${counts.liveK2K})`}
             active={sourceFilter === 'k2k_live'}
             href={buildUrl(rawFilters, { source: 'k2k_live', page: undefined })}
           />
@@ -891,7 +866,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             active={sourceFilter === 't3'}
             href={buildUrl(rawFilters, { source: 't3', page: undefined })}
           />
-          <span className="text-slate-300 mx-1">|</span>
+          <span className="text-slate-400 uppercase tracking-wide font-semibold mx-2">
+            Visibility
+          </span>
           <FilterChip
             label={`Live (${counts.live})`}
             active={visibilityFilter === 'live'}
@@ -907,14 +884,16 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             active={visibilityFilter === 'draft'}
             href={buildUrl(rawFilters, { visibility: 'draft', page: undefined })}
           />
-          <span className="text-slate-300 mx-1">|</span>
+          <span className="text-slate-400 uppercase tracking-wide font-semibold mx-2">
+            Flags
+          </span>
           <FilterChip
-            label={`Missing cost (${counts.noCost})`}
+            label={`No cost (${counts.noCost})`}
             active={flagsFilter === 'no_cost'}
             href={buildUrl(rawFilters, { flags: 'no_cost', page: undefined })}
           />
           <FilterChip
-            label={`No box dims (${counts.noBoxDims})`}
+            label={`No box (${counts.noBoxDims})`}
             active={flagsFilter === 'no_box_dims'}
             href={buildUrl(rawFilters, { flags: 'no_box_dims', page: undefined })}
           />
@@ -926,7 +905,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             />
           )}
           <FilterChip
-            label="With override"
+            label="Override"
             active={flagsFilter === 'has_override'}
             href={buildUrl(rawFilters, { flags: 'has_override', page: undefined })}
           />
@@ -1408,51 +1387,6 @@ function SelectField({
   );
 }
 
-type SummaryRowTone = 'emerald' | 'blue' | 'slate' | 'amber' | 'orange';
-
-function SummaryCard({
-  label,
-  rows,
-  href,
-}: {
-  label: string;
-  rows: { k: string; v: number | string; tone: SummaryRowTone }[];
-  href?: string;
-}) {
-  const TONE_CLS: Record<SummaryRowTone, string> = {
-    emerald: 'text-emerald-700',
-    blue: 'text-blue-700',
-    slate: 'text-slate-700',
-    amber: 'text-amber-700',
-    orange: 'text-orange-700',
-  };
-  const body = (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 h-full">
-      <div className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-1">
-        {label}
-      </div>
-      <ul className="space-y-0.5">
-        {rows.map((r) => (
-          <li key={r.k} className="flex items-baseline justify-between text-sm">
-            <span className="text-slate-600 text-xs">{r.k}</span>
-            <span className={`font-semibold ${TONE_CLS[r.tone]}`}>
-              {typeof r.v === 'number' ? r.v.toLocaleString() : r.v}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-  if (href) {
-    return (
-      <Link href={href} className="block hover:opacity-90">
-        {body}
-      </Link>
-    );
-  }
-  return body;
-}
-
 function FilterChip({
   label,
   active,
@@ -1467,8 +1401,8 @@ function FilterChip({
       href={href}
       className={
         active
-          ? 'text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-600 text-white'
-          : 'text-[11px] font-medium px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          ? 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-600 text-white'
+          : 'text-[11px] font-medium px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
       }
     >
       {label}

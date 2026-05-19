@@ -49,9 +49,10 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
     pageLabel: 'Catalog list',
     mockupHref: '/mockups/admin-catalog',
     sections: [
-      { id: 'summary-tiles', level: 'LIVE', note: 'Totals + per-source counts pulled from floropolis_inventory_mirror.' },
+      { id: 'summary-tiles', level: 'LIVE', note: 'Collapsed into header subtitle line per mockup (SKUs / vendors / K2K / T2 / T3 / live / hidden / draft / missing-cost / no-box-dims / awaiting-Facu); same floropolis_inventory_mirror counts, no tiles.' },
+      { id: 'state-toggle', level: 'MOCK', note: 'Today | Target button group at top right. Today is the only real view; Target is informational with a "Target mode -- coming soon" tooltip (no diverging data path yet).' },
       { id: 'tier-visibility-banner', level: 'LIVE', note: 'tier_visibility_windows read.' },
-      { id: 'filter-chips', level: 'LIVE', note: 'Filter chips drive URL state.' },
+      { id: 'filter-chips', level: 'LIVE', note: 'Compact single-line chip row grouped by Source / Visibility / Flags; drives URL state.' },
       { id: 'filter-form', level: 'LIVE', note: 'Multi-dimension filter form (vendor/source/category/visibility/GPM/flags). Export CSV button in the form footer streams /api/admin/catalog/export.' },
       { id: 'bulk-actions', level: 'LIVE', note: 'Bulk hide/export/flag-to-CEO via admin_proposals; server-rendered table with override/awaiting badges per SKU.' },
       { id: 'dod-delta', level: 'PLAN', note: 'DoD delta widget awaits mirror_snapshot_daily.' },
