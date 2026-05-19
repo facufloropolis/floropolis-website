@@ -1,6 +1,6 @@
 'use client';
 // Rose Dispatch Pipeline widget — 5-step pipeline for the current view.
-// v1 | 2026-05-19 | Job_PM Phase F [V8 SHADOW]
+// v2 | 2026-05-19 | Job_PM disp-chrome [V8 SHADOW]
 //
 // Derives each step's count from the dispatch + order state already loaded
 // server-side. Clicking a step pushes a query param ?stage=<key> that the
@@ -12,6 +12,11 @@
 //   Procured       = dispatch.status >= 'awaiting_pack' (i.e. row exists)
 //   Packed         = dispatch.status >= 'packed'
 //   Shipped        = dispatch.status >= 'in_transit'
+//
+// v2: status pill in the header — green if total boxes for the active date
+// meets the 2-box FedEx minimum, amber if below. Total boxes are computed
+// server-side from the same orders+dispatches join already feeding the manifest,
+// so the pill always agrees with what the table shows. No new query.
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -36,9 +41,10 @@ const STAGES: { key: PipelineStage; label: string; desc: string }[] = [
 interface Props {
   counts: PipelineCounts;
   activeStage: PipelineStage | null;
+  totalBoxes: number; // total boxes scheduled for the active date
 }
 
-export default function DispatchPipelineWidget({ counts, activeStage }: Props) {
+export default function DispatchPipelineWidget({ counts, activeStage, totalBoxes }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -52,12 +58,25 @@ export default function DispatchPipelineWidget({ counts, activeStage }: Props) {
     router.push(`/admin/dispatch?${sp.toString()}`);
   }
 
+  const meetsMinimum = totalBoxes >= 2;
+
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
-          Rose Dispatch Pipeline
-        </h2>
+      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
+            Rose Dispatch Pipeline
+          </h2>
+          {meetsMinimum ? (
+            <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+              {'✓'} 2-box minimum met ({totalBoxes} boxes)
+            </div>
+          ) : (
+            <div className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-medium">
+              {'⚠'} Below 2-box minimum ({totalBoxes} box{totalBoxes === 1 ? '' : 'es'})
+            </div>
+          )}
+        </div>
         <span className="text-xs text-slate-400">
           5 stages - click a stage to filter the manifest
         </span>

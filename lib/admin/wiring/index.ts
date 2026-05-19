@@ -159,7 +159,9 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
     pageLabel: 'Dispatch',
     mockupHref: '/mockups/admin-dispatch',
     sections: [
-      { id: 'pipeline-widget', level: 'READ', note: 'Derived stage counts only; widget is display-only, no write actions.' },
+      { id: 'date-nav', level: 'LIVE', note: 'Prev / today / next date picker drives ?date=YYYY-MM-DD which filters the manifest by dispatches.dispatch_date (fallback: derived ship date). Mon/Tue/Thu/Fri primary; weekends skipped in nav buttons, still selectable via calendar input.' },
+      { id: 'pipeline-widget', level: 'LIVE', note: 'Derived stage counts only; widget is display-only, no write actions. Includes box-count-pill subsection.' },
+      { id: 'box-count-pill', level: 'LIVE', note: 'Sum of boxesCount (derived: ceil(totalQty / 125)) across non-shipped rows whose dispatch_date matches the active date. Emerald >=2, amber <2. No new query — reuses the same orders+dispatches join feeding the manifest.' },
       { id: 'manifest-table', level: 'LIVE', note: 'orders + dispatches joined per row. Inline cells: Communications (READ - dispatch_communications log only, outbound email still through n8n), Labels (LIVE - upload + signed URL + driver/FedEx confirm writeable), Actions (LIVE - status transitions + tracking via /api/admin/dispatch/*), Feedback (LIVE - per-SKU delivery feedback). FedEx CSV export + Sample Box modal in the page header (Sample Box backend partial).' },
     ],
   },

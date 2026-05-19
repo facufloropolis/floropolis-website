@@ -379,6 +379,19 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
     pipelineCounts[stageForRow(r)] += 1;
   }
 
+  // Total boxes scheduled for the active date — drives the 2-box-minimum pill
+  // in the pipeline widget header. Counts every row whose dispatch_date (or, if
+  // null, derived ship date) matches the active date AND that hasn't already
+  // shipped (in_transit / delivered are out of the loading-truck count).
+  const totalBoxesForActiveDate = rowsAll.reduce((sum, r) => {
+    const rDate = r.dispatch?.dispatch_date ?? r.targetShipDate;
+    if (rDate !== activeDate) return sum;
+    const shipped =
+      r.dispatch?.status === 'in_transit' || r.dispatch?.status === 'delivered';
+    if (shipped) return sum;
+    return sum + (r.boxesCount ?? 0);
+  }, 0);
+
   const counts: Record<DispatchInnerTab, number> = { today: 0, tomorrow: 0, week: 0, late: 0 };
   for (const r of rowsAll) {
     const dispatched =
@@ -513,7 +526,11 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
             {/* Pipeline widget (Panel 4) */}
             <WiringSection level={wm('pipeline-widget').level} note={wm('pipeline-widget').note} id="pipeline-widget">
               <div className="mb-6">
-                <DispatchPipelineWidget counts={pipelineCounts} activeStage={activeStage} />
+                <DispatchPipelineWidget
+                  counts={pipelineCounts}
+                  activeStage={activeStage}
+                  totalBoxes={totalBoxesForActiveDate}
+                />
               </div>
             </WiringSection>
 
