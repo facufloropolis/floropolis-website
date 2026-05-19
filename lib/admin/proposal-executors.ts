@@ -754,6 +754,47 @@ async function execTierVisibilityWindowUpdate(
   };
 }
 
+// canonical_cost.* executors — these proposals come FROM Rose (source_agent='rose')
+// per her 2026-05-19 plan to push inventory data cleanup through admin_proposals.
+// Per Rose audit Section 1: canonical_cost.facu_approved is JOB cannot touch (AUDIT).
+// So my executor records audit ONLY with verification_passed=null. Rose's verifier
+// reads admin_approvals where source_table='canonical_cost' AND status='approved' and
+// flips facu_approved / DELETEs the row server-side, then updates override_audit.
+//
+// Types: delete_cost_row | approve_cost_row | reject_cost_row | resolve_conflict
+// Payload: { cost_id, ... varies by type }
+async function execCanonicalCostAuditOnly(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const costId = payload.cost_id;
+  if (!costId) return fail('missing_cost_id');
+
+  // Read the canonical_cost row for before-snapshot (Job has READ permission)
+  const { data: before } = await service
+    .from('canonical_cost')
+    .select('*')
+    .eq('cost_id', costId)
+    .maybeSingle();
+  if (!before) return fail('canonical_cost_row_not_found');
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'canonical_cost',
+        target_id: String(costId),
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: null,  // intentional — Rose's verifier sets this post-execution
+        applied_by_function: `proposal-executors.execCanonicalCostAuditOnly[${proposal.type}]`,
+      },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -798,6 +839,13 @@ export async function executeProposal(
       return execTierVisibilityWindowAcceptCountry(proposal, service);
     case 'tier_visibility_window.update':
       return execTierVisibilityWindowUpdate(proposal, service);
+    // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
+    // audit-only on our side; Rose's verifier does the real canonical_cost write.
+    case 'delete_cost_row':
+    case 'approve_cost_row':
+    case 'reject_cost_row':
+    case 'resolve_conflict':
+      return execCanonicalCostAuditOnly(proposal, service);
     default:
       return fail(`unknown_proposal_type: ${proposal.type}`);
   }
@@ -810,6 +858,11 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'discount_rule.status_change',
   'tier_visibility_window.accept_country',
   'tier_visibility_window.update',
+  // Rose-originated canonical_cost cleanup (audit-only; Rose verifier handles write):
+  'delete_cost_row',
+  'approve_cost_row',
+  'reject_cost_row',
+  'resolve_conflict',
   'pricing_constants.update',
   'shipping_config.create',
   'client_profiles.status_change',
