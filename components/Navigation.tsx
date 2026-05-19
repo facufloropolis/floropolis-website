@@ -87,15 +87,10 @@ export default function Navigation() {
     }
 
     if (!user) {
-      return (
-        <Link
-          href="https://eshops.kometsales.com/762172"
-          className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
-        >
-          <User className="w-3.5 h-3.5" />
-          Sign In
-        </Link>
-      );
+      // Sign In CTA hidden 2026-05-19 per CEO directive (BRD §5.5, UC-L-230):
+      // "The experience is NOT gated. We offer login only after they add to cart."
+      // Login surface lives ONLY at /checkout. Mirrors prod main pattern.
+      return null;
     }
 
     // Signed in — show avatar + dropdown
@@ -252,15 +247,11 @@ export default function Navigation() {
                     </div>
                   )}
                 </div>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="flex items-center gap-1.5 text-slate-700 hover:text-emerald-600 transition-colors text-xs font-medium whitespace-nowrap"
-                >
-                  <User className="w-3.5 h-3.5" />
-                  Sign in
-                </Link>
-              )
+              ) : null
+              // Anonymous: Sign-in CTA hidden 2026-05-19 per CEO (BRD §5.5,
+              // UC-L-230). Login surface lives ONLY at /checkout. Visitors
+              // browse + add to cart freely; they encounter login only after
+              // clicking Checkout.
             )}
           </div>
 
@@ -346,27 +337,20 @@ export default function Navigation() {
             >
               Contact Us
             </Link>
-            {/* PROPOSAL (2026-05-17): mobile backup-auth surface */}
-            {!backupAuth.loading && (
-              backupAuth.user ? (
-                <Link
-                  href="/account/orders"
-                  className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  My orders →
-                </Link>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign in →
-                </Link>
-              )
+            {/* PROPOSAL (2026-05-17): mobile backup-auth surface
+                2026-05-19 update (CEO directive, BRD §5.5 UC-L-230): when
+                signed in, keep "My orders" entry. When anonymous, render
+                NOTHING — login surface lives only at /checkout. */}
+            {!backupAuth.loading && backupAuth.user && (
+              <Link
+                href="/account/orders"
+                className="block px-4 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors rounded-lg font-medium text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                My orders →
+              </Link>
             )}
-            {/* Legacy mobile auth removed 2026-05-17 — backup-auth widget above handles Sign in + My orders */}
+            {/* Legacy mobile auth removed 2026-05-17 — backup-auth widget above handles My orders when signed in */}
           </div>
         )}
       </div>
