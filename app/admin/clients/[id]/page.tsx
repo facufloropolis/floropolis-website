@@ -29,6 +29,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
+import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
 import ActionButtons from './ActionButtons';
 import ClientDetailTabs from './ClientDetailTabs';
 import ProfileEditForm from './ProfileEditForm';
@@ -277,74 +278,67 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
         {/* Header */}
         <WiringSection level={wm('header').level} note={wm('header').note} id="header">
         <div className="rounded-2xl border border-slate-200 p-5 mb-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-slate-900 truncate">
-                {cp.business_name ?? <span className="italic text-slate-400">No business name</span>}
-              </h1>
-              <div className="text-sm text-slate-500 mt-1">
-                {email ?? <span className="text-slate-400">no email</span>}
-                {cp.phone && <span className="ml-3">{cp.phone}</span>}
-              </div>
-              <div className="flex flex-wrap items-center gap-2 mt-3">
-                <span
-                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${headerStatusCls}`}
-                >
-                  {status}
-                </span>
-                <span
-                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                    role === 'admin'
-                      ? 'bg-indigo-100 text-indigo-800 border-indigo-200'
-                      : role === 'sales'
-                        ? 'bg-blue-100 text-blue-800 border-blue-200'
-                        : 'bg-slate-100 text-slate-700 border-slate-200'
-                  }`}
-                >
-                  role: {role}
-                </span>
-                <span
-                  className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                    b2b === 'B2B'
-                      ? 'bg-blue-50 text-blue-800 border-blue-200'
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-slate-900 truncate">
+              {cp.business_name ?? <span className="italic text-slate-400">No business name</span>}
+            </h1>
+            <div className="text-sm text-slate-500 mt-1">
+              {email ?? <span className="text-slate-400">no email</span>}
+              {cp.phone && <span className="ml-3">{cp.phone}</span>}
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mt-3">
+              <span
+                className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${headerStatusCls}`}
+              >
+                {status}
+              </span>
+              <span
+                className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                  role === 'admin'
+                    ? 'bg-indigo-100 text-indigo-800 border-indigo-200'
+                    : role === 'sales'
+                      ? 'bg-blue-100 text-blue-800 border-blue-200'
                       : 'bg-slate-100 text-slate-700 border-slate-200'
-                  }`}
-                >
-                  {b2b}
-                </span>
+                }`}
+              >
+                role: {role}
+              </span>
+              <span
+                className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                  b2b === 'B2B'
+                    ? 'bg-blue-50 text-blue-800 border-blue-200'
+                    : 'bg-slate-100 text-slate-700 border-slate-200'
+                }`}
+              >
+                {b2b}
+              </span>
+              <span className="text-xs text-slate-500">
+                member since {fmtDate(cp.created_at)}
+              </span>
+              {cp.last_login_at && (
                 <span className="text-xs text-slate-500">
-                  member since {fmtDate(cp.created_at)}
+                  last login {fmtDateTime(cp.last_login_at)}
                 </span>
-                {cp.last_login_at && (
-                  <span className="text-xs text-slate-500">
-                    last login {fmtDateTime(cp.last_login_at)}
-                  </span>
-                )}
-                {cp.koronet_id && (
-                  <span className="text-xs font-mono text-slate-400">
-                    Koronet: {cp.koronet_id}
-                  </span>
-                )}
-              </div>
-              {cp.suspended_at && cp.suspended_reason && (
-                <div className="mt-3 text-xs rounded-lg border border-red-200 bg-red-50 text-red-800 px-3 py-2 max-w-2xl">
-                  <span className="font-semibold">Suspended {fmtDate(cp.suspended_at)}:</span>{' '}
-                  {cp.suspended_reason}
-                </div>
+              )}
+              {cp.koronet_id && (
+                <span className="text-xs font-mono text-slate-400">
+                  Koronet: {cp.koronet_id}
+                </span>
               )}
             </div>
-            <div className="shrink-0">
-              <ActionButtons
-                userId={cp.user_id}
-                currentStatus={status}
-                currentRole={role}
-                orderCount={orderCount}
-              />
-            </div>
+            {cp.suspended_at && cp.suspended_reason && (
+              <div className="mt-3 text-xs rounded-lg border border-red-200 bg-red-50 text-red-800 px-3 py-2 max-w-2xl">
+                <span className="font-semibold">Suspended {fmtDate(cp.suspended_at)}:</span>{' '}
+                {cp.suspended_reason}
+              </div>
+            )}
           </div>
         </div>
 
         </WiringSection>
+
+        <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+          <div className="min-w-0">
 
         {/* Tabs */}
         <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
@@ -507,6 +501,26 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
           }
         />
         </WiringSection>
+
+          </div>
+
+          {/* Right column: sticky action panel */}
+          <DetailActionPanel
+            title="Client actions"
+            subtitle={`Status: ${status} . Role: ${role}`}
+          >
+            <ActionButtons
+              userId={cp.user_id}
+              currentStatus={status}
+              currentRole={role}
+              orderCount={orderCount}
+            />
+            <p className="text-[11px] text-slate-500 -mt-1">
+              Approve / Suspend / Promote route through admin_proposals. Force
+              logout hits /api/admin/auth-sessions directly (no proposal).
+            </p>
+          </DetailActionPanel>
+        </div>
       </main>
     </>
   );

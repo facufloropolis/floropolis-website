@@ -70,7 +70,8 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
       { id: 'gate-status', level: 'LIVE', note: '16-gate panel preserved from v1.' },
       { id: 'raw-mirror', level: 'LIVE', note: 'Direct mirror fields, editable via POST /api/admin/catalog/sku/[id]/update.' },
       { id: 'admin-actions', level: 'LIVE', note: 'catalog_classifications status writes.' },
-      { id: 'propose-cluster', level: 'LIVE', note: 'All propose forms POST /api/admin/proposals.' },
+      { id: 'propose-cluster', level: 'LIVE', note: 'All propose forms POST /api/admin/proposals. Rendered inside DetailActionPanel (sticky right column on desktop, bottom on mobile) as of DETAIL-2COL.' },
+      { id: 'right-action-panel', level: 'LIVE', note: 'Sticky right-side DetailActionPanel wrapping the propose-cluster forms (HideSku / DiscountSku / ProposeMirrorField x3 / UnsupportedPropose x2). All endpoints unchanged from inline version.' },
     ],
   },
   {
@@ -146,13 +147,16 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
     mockupHref: '/mockups/admin-order-detail',
     sections: [
       { id: 'header', level: 'LIVE', note: 'Order number, status, total, customer.' },
-      { id: 'init-dispatch', level: 'LIVE', note: 'POST /api/admin/dispatch/init creates dispatch row in awaiting_pack.' },
-      { id: 'refund-proposal', level: 'READ', note: 'Form POSTs refund.create proposal + lists existing refund_approvals inline. Executor for refund.create is a TODO stub today; refund_approvals display is LIVE.' },
+      { id: 'init-dispatch', level: 'LIVE', note: 'Display card on the left (dispatch status). InitDispatchButton moved into right-action-panel as of DETAIL-2COL. POST /api/admin/dispatch/init unchanged.' },
+      { id: 'refund-proposal', level: 'READ', note: 'Display card on the left (existing refund_approvals + pending refund proposals). RefundProposalForm trigger moved into right-action-panel as of DETAIL-2COL. Executor for refund.create is a TODO stub today; refund_approvals display is LIVE.' },
+      { id: 'right-action-panel', level: 'LIVE', note: 'Sticky right-side DetailActionPanel wrapping InitDispatchButton + RefundProposalForm. All endpoints unchanged (/api/admin/dispatch/init and /api/admin/proposals refund.create).' },
       { id: 'order-lines', level: 'LIVE', note: 'order_lines table read.' },
       { id: 'payments-ledger', level: 'LIVE', note: 'payments table read.' },
       { id: 'timeline', level: 'LIVE', note: 'Derived from orders.* timestamps + payments ledger.' },
       { id: 'addresses', level: 'LIVE', note: 'shipping/billing snapshot jsonb with addresses-row fallback.' },
       { id: 'invoice', level: 'LIVE', note: 'invoices.pdf_url signed link or download proxy.' },
+      { id: 'email-log', level: 'PLAN', note: 'W5 slot in the left column: Brevo email events stream (sends / opens / clicks). Placeholder comment only today.' },
+      { id: 'conversations', level: 'PLAN', note: 'W5 slot in the left column: customer email + WhatsApp threads. Placeholder comment only today.' },
     ],
   },
   {
@@ -191,8 +195,9 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
     pageLabel: 'Client detail',
     mockupHref: '/mockups/v2-admin',
     sections: [
-      { id: 'header', level: 'LIVE', note: 'Business name, status, role, email, phone, member since. Inline ActionButtons: Approve / Suspend / Promote / Force-logout all route through admin_proposals.' },
+      { id: 'header', level: 'LIVE', note: 'Business name, status, role, email, phone, member since. ActionButtons (Approve / Suspend / Promote / Force-logout) moved into right-action-panel as of DETAIL-2COL.' },
       { id: 'tabs', level: 'READ', note: 'ClientDetailTabs wraps 4 tabs: Profile (LIVE - editable fields routed through proposals), Orders (LIVE - orders by user_id), Communications (READ - dispatch_communications + phone notes; Brevo degrades gracefully), Audit (LIVE - override_audit). Mixed-level surface; communications is the weakest.' },
+      { id: 'right-action-panel', level: 'LIVE', note: 'Sticky right-side DetailActionPanel wrapping ActionButtons (Approve / Suspend / Unsuspend / Promote / Force-logout). Approve / Suspend / Promote route through admin_proposals; Force-logout hits /api/admin/auth-sessions/[user_id]/force-logout directly.' },
     ],
   },
 ];

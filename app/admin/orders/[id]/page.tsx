@@ -38,6 +38,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
+import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
 import RefundProposalForm from './RefundProposalForm';
 import InitDispatchButton from './InitDispatchButton';
 
@@ -461,144 +462,136 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
         </WiringSection>
 
-        {/* Dispatch */}
-        <WiringSection level={wm('init-dispatch').level} note={wm('init-dispatch').note} id="init-dispatch">
-        <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
-          <div className="flex items-start justify-between flex-wrap gap-3 mb-2">
-            <div>
-              <h2 className="font-semibold text-slate-900">Dispatch</h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Once initialized, manage status + tracking on{' '}
-                <Link href="/admin/dispatch" className="underline text-emerald-700 hover:text-emerald-900">
-                  /admin/dispatch
-                </Link>.
-              </p>
-            </div>
-            <InitDispatchButton orderId={order.id} hasDispatch={!!dispatch} />
-          </div>
-          {dispatch ? (
-            <div className="text-xs text-slate-600 grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-              <div><span className="text-slate-400">Status:</span> <span className="font-mono">{dispatch.status}</span></div>
-              <div><span className="text-slate-400">Carrier:</span> {dispatch.carrier ?? 'fedex'}</div>
-              <div><span className="text-slate-400">Tracking:</span> {dispatch.tracking_number ?? 'unassigned'}</div>
-              <div>
-                <span className="text-slate-400">Last event:</span>{' '}
-                {dispatch.delivered_at ?? dispatch.in_transit_at ?? dispatch.picked_up_at ?? dispatch.packed_at ?? '—'}
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-slate-500 italic mt-2">No dispatch row yet. Initialize to track packing + shipping.</p>
-          )}
-        </section>
-
-        </WiringSection>
-
-        {/* Refund: existing + trigger */}
-        <WiringSection level={wm('refund-proposal').level} note={wm('refund-proposal').note} id="refund-proposal">
-        <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
-          <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
-            <div>
-              <h2 className="font-semibold text-slate-900">Refunds</h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Refunds route through{' '}
-                <Link
-                  href="/admin/catalog/approval-queue"
-                  className="underline text-emerald-700 hover:text-emerald-900"
-                >
-                  Facu&apos;s approval queue
-                </Link>
-                . Quorum: JJ or Facu &lt;=$200, Facu only $200-$500, both &gt;$500.
-              </p>
-            </div>
-            {canTriggerRefund && (
-              <RefundProposalForm
-                orderId={order.id}
-                orderNumber={order.order_number}
-                grandTotal={grandTotalNum}
-                currency={order.currency}
-              />
-            )}
-          </div>
-
-          {refundProposals.length === 0 && approvals.length === 0 && (
-            <p className="text-sm text-slate-500 italic">
-              No refund activity on this order yet.
-            </p>
-          )}
-
-          {refundProposals.length > 0 && (
-            <div className="space-y-2 mb-3">
-              <p className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
-                Pending refund proposals (admin_proposals)
-              </p>
-              {refundProposals.map((p) => {
-                const amt = (p.payload?.amount as number | undefined) ?? null;
-                const reason = (p.payload?.reason as string | undefined) ?? '(no reason)';
-                return (
-                  <div
-                    key={p.id}
-                    className="border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-sm"
-                  >
-                    <div className="flex justify-between items-start gap-3 flex-wrap">
-                      <div>
-                        <p className="font-semibold text-amber-900">
-                          {amt != null ? fmtCurrency(amt, order.currency) : '(amount missing)'}{' '}
-                          -- {p.status}
-                        </p>
-                        <p className="text-xs text-amber-900/80 mt-0.5">{reason}</p>
-                      </div>
-                      <p className="text-xs text-amber-900/60 font-mono">
-                        {fmtDate(p.proposed_at)} -- proposal #{p.id.slice(0, 8)}
-                      </p>
-                    </div>
-                    <p className="text-[11px] text-amber-900/60 mt-2">
-                      TODO: refund.create executor is a stub; Facu approval won&apos;t
-                      issue the Stripe refund yet. See proposal-executors.ts.
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {approvals.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
-                refund_approvals
-              </p>
-              {approvals.map((a) => (
-                <div
-                  key={a.id}
-                  className="border border-slate-200 rounded-xl px-4 py-3 text-sm flex justify-between flex-wrap gap-3"
-                >
-                  <div>
-                    <p className="font-semibold text-slate-900">
-                      {fmtCurrency(a.proposed_amount, a.currency)} -- {a.status}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5">{a.reason}</p>
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      JJ {voteLabel(a.jj_approved)} -- Facu {voteLabel(a.facu_approved)} --
-                      {a.quorum_met ? ' quorum met' : ' awaiting quorum'} -- expires{' '}
-                      {fmtDateOnly(a.expires_at)}
-                    </p>
-                  </div>
-                  <Link
-                    href="/admin/refunds"
-                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 self-start"
-                  >
-                    Manage in /admin/refunds &rarr;
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        </WiringSection>
-
         <div className="grid lg:grid-cols-[1fr_320px] gap-6">
           {/* Main column */}
           <div className="space-y-6">
+            {/* Dispatch status (display) */}
+            <WiringSection level={wm('init-dispatch').level} note={wm('init-dispatch').note} id="init-dispatch">
+            <section className="bg-white border border-slate-200 rounded-2xl p-5">
+              <div className="flex items-start justify-between flex-wrap gap-3 mb-2">
+                <div>
+                  <h2 className="font-semibold text-slate-900">Dispatch</h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Once initialized, manage status + tracking on{' '}
+                    <Link href="/admin/dispatch" className="underline text-emerald-700 hover:text-emerald-900">
+                      /admin/dispatch
+                    </Link>.
+                  </p>
+                </div>
+              </div>
+              {dispatch ? (
+                <div className="text-xs text-slate-600 grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                  <div><span className="text-slate-400">Status:</span> <span className="font-mono">{dispatch.status}</span></div>
+                  <div><span className="text-slate-400">Carrier:</span> {dispatch.carrier ?? 'fedex'}</div>
+                  <div><span className="text-slate-400">Tracking:</span> {dispatch.tracking_number ?? 'unassigned'}</div>
+                  <div>
+                    <span className="text-slate-400">Last event:</span>{' '}
+                    {dispatch.delivered_at ?? dispatch.in_transit_at ?? dispatch.picked_up_at ?? dispatch.packed_at ?? '—'}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 italic mt-2">No dispatch row yet. Use &quot;Initialize dispatch&quot; in the action panel to track packing + shipping.</p>
+              )}
+            </section>
+            </WiringSection>
+
+            {/* Refund history (display only; trigger lives in the action panel) */}
+            <WiringSection level={wm('refund-proposal').level} note={wm('refund-proposal').note} id="refund-proposal">
+            <section className="bg-white border border-slate-200 rounded-2xl p-5">
+              <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+                <div>
+                  <h2 className="font-semibold text-slate-900">Refunds</h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Refunds route through{' '}
+                    <Link
+                      href="/admin/catalog/approval-queue"
+                      className="underline text-emerald-700 hover:text-emerald-900"
+                    >
+                      Facu&apos;s approval queue
+                    </Link>
+                    . Quorum: JJ or Facu &lt;=$200, Facu only $200-$500, both &gt;$500.
+                  </p>
+                </div>
+              </div>
+
+              {refundProposals.length === 0 && approvals.length === 0 && (
+                <p className="text-sm text-slate-500 italic">
+                  No refund activity on this order yet. Use the action panel to trigger one.
+                </p>
+              )}
+
+              {refundProposals.length > 0 && (
+                <div className="space-y-2 mb-3">
+                  <p className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
+                    Pending refund proposals (admin_proposals)
+                  </p>
+                  {refundProposals.map((p) => {
+                    const amt = (p.payload?.amount as number | undefined) ?? null;
+                    const reason = (p.payload?.reason as string | undefined) ?? '(no reason)';
+                    return (
+                      <div
+                        key={p.id}
+                        className="border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-sm"
+                      >
+                        <div className="flex justify-between items-start gap-3 flex-wrap">
+                          <div>
+                            <p className="font-semibold text-amber-900">
+                              {amt != null ? fmtCurrency(amt, order.currency) : '(amount missing)'}{' '}
+                              -- {p.status}
+                            </p>
+                            <p className="text-xs text-amber-900/80 mt-0.5">{reason}</p>
+                          </div>
+                          <p className="text-xs text-amber-900/60 font-mono">
+                            {fmtDate(p.proposed_at)} -- proposal #{p.id.slice(0, 8)}
+                          </p>
+                        </div>
+                        <p className="text-[11px] text-amber-900/60 mt-2">
+                          TODO: refund.create executor is a stub; Facu approval won&apos;t
+                          issue the Stripe refund yet. See proposal-executors.ts.
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {approvals.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
+                    refund_approvals
+                  </p>
+                  {approvals.map((a) => (
+                    <div
+                      key={a.id}
+                      className="border border-slate-200 rounded-xl px-4 py-3 text-sm flex justify-between flex-wrap gap-3"
+                    >
+                      <div>
+                        <p className="font-semibold text-slate-900">
+                          {fmtCurrency(a.proposed_amount, a.currency)} -- {a.status}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">{a.reason}</p>
+                        <p className="text-[11px] text-slate-400 mt-1">
+                          JJ {voteLabel(a.jj_approved)} -- Facu {voteLabel(a.facu_approved)} --
+                          {a.quorum_met ? ' quorum met' : ' awaiting quorum'} -- expires{' '}
+                          {fmtDateOnly(a.expires_at)}
+                        </p>
+                      </div>
+                      <Link
+                        href="/admin/refunds"
+                        className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 self-start"
+                      >
+                        Manage in /admin/refunds &rarr;
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+            </WiringSection>
+
+            {/* W5: EMAIL_LOG slot -- Brevo email events stream lands here. */}
+            {/* W5: CONVERSATIONS slot -- customer email + WhatsApp threads land here. */}
+
             {/* Line items */}
             <WiringSection level={wm('order-lines').level} note={wm('order-lines').note} id="order-lines">
             <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -795,6 +788,37 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {/* Sidebar */}
           <aside className="space-y-4">
+            <DetailActionPanel
+              title="Order actions"
+              subtitle={`Status: ${order.status}`}
+            >
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+                  Dispatch
+                </p>
+                <InitDispatchButton orderId={order.id} hasDispatch={!!dispatch} />
+              </div>
+              <div className="border-t border-slate-100 pt-3">
+                <p className="text-[11px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+                  Refund
+                </p>
+                {canTriggerRefund ? (
+                  <RefundProposalForm
+                    orderId={order.id}
+                    orderNumber={order.order_number}
+                    grandTotal={grandTotalNum}
+                    currency={order.currency}
+                  />
+                ) : (
+                  <p className="text-[11px] text-slate-500 italic">
+                    {refundProposals.length > 0 || approvals.filter((a) => a.status === 'pending').length > 0
+                      ? 'A refund is already in flight (see Refunds card on the left).'
+                      : `Cannot trigger refund for status "${order.status}".`}
+                  </p>
+                )}
+              </div>
+            </DetailActionPanel>
+
             <SidebarCard title="Customer">
               <p className="text-sm text-slate-900 font-medium">
                 {customerEmail ?? <span className="italic text-slate-400">unknown email</span>}

@@ -32,6 +32,7 @@ import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import { GATE_LABELS } from '@/lib/catalog-gates';
+import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
 
 import {
   AdminActions,
@@ -461,7 +462,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <main className="max-w-5xl mx-auto px-4 py-10">
+      <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/admin-catalog" pageLabel={`/admin/catalog/${skuId}`} />
         {/* Header */}
         <WiringSection level={wm('header').level} note={wm('header').note} id="header">
@@ -530,6 +531,9 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         </div>
 
         </WiringSection>
+
+        <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+          <div className="space-y-0 min-w-0">
 
         {/* Section: Sources side-by-side */}
         <WiringSection level={wm('sources-side-by-side').level} note={wm('sources-side-by-side').note} id="sources-side-by-side">
@@ -892,53 +896,6 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           )}
         </SectionCard>
 
-        {/* Section: Propose change cluster -- new admin_proposals row */}
-        <WiringSection level={wm('propose-cluster').level} note={wm('propose-cluster').note} id="propose-cluster">
-        <SectionCard
-          title="Propose change from here"
-          subtitle="Inserts an admin_proposals row with source_rationale + source_artifact. Facu must approve in /admin/catalog/approval-queue."
-        >
-          <ProposeChangeCluster>
-            <HideSkuForm skuId={skuId} />
-            <DiscountSkuForm
-              skuId={skuId}
-              currentPrice={toNumOrNull(mirror?.price)}
-            />
-            <ProposeMirrorFieldForm
-              skuId={skuId}
-              field="description"
-              label="description"
-              current={null}
-              helpText="Customer-facing PDP description. Only Job-controlled mirror column."
-            />
-            <ProposeMirrorFieldForm
-              skuId={skuId}
-              field="image_url"
-              label="image_url"
-              current={null}
-              helpText="Hero image URL. Source artifact (where image came from) is required."
-              requireArtifact
-            />
-            <ProposeMirrorFieldForm
-              skuId={skuId}
-              field="category"
-              label="category"
-              current={mirror?.category as string | null}
-              helpText="Taxonomy category. Must match catalog taxonomy."
-            />
-            <UnsupportedProposeButton
-              label="change vendor cost"
-              reason="JOB_LOCKED per Rose contract v1.0. floropolis_inventory.farm_cost is supply truth -- propose via canonical_cost.update which Rose owns, not via this UI."
-            />
-            <UnsupportedProposeButton
-              label="set target price override"
-              reason="No executor for target_price.override yet. Closest available today: propose a discount on this SKU (above), or use the inline price editor."
-            />
-          </ProposeChangeCluster>
-        </SectionCard>
-
-        </WiringSection>
-
         {/* Section 1: Gate status table -- PRESERVED from v1 */}
         <WiringSection level={wm('gate-status').level} note={wm('gate-status').note} id="gate-status">
         <section className="mb-10">
@@ -1110,12 +1067,69 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
 
         </WiringSection>
 
-        <Link
-          href="/admin/catalog"
-          className="text-xs px-3 py-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
-        >
-          Back to catalog
-        </Link>
+          </div>
+
+          {/* Right column: sticky action panel (propose cluster) */}
+          <WiringSection level={wm('propose-cluster').level} note={wm('propose-cluster').note} id="propose-cluster">
+            <DetailActionPanel
+              title="Propose change"
+              subtitle={cls ? `Status: ${cls.status}` : 'No classification row yet'}
+            >
+              <p className="text-[11px] text-slate-500 -mt-1">
+                Each form inserts an admin_proposals row with source_rationale + source_artifact. Facu must approve in{' '}
+                <Link href="/admin/catalog/approval-queue" className="underline text-emerald-700 hover:text-emerald-900">
+                  approval-queue
+                </Link>.
+              </p>
+              <ProposeChangeCluster>
+                <HideSkuForm skuId={skuId} />
+                <DiscountSkuForm
+                  skuId={skuId}
+                  currentPrice={toNumOrNull(mirror?.price)}
+                />
+                <ProposeMirrorFieldForm
+                  skuId={skuId}
+                  field="description"
+                  label="description"
+                  current={null}
+                  helpText="Customer-facing PDP description. Only Job-controlled mirror column."
+                />
+                <ProposeMirrorFieldForm
+                  skuId={skuId}
+                  field="image_url"
+                  label="image_url"
+                  current={null}
+                  helpText="Hero image URL. Source artifact (where image came from) is required."
+                  requireArtifact
+                />
+                <ProposeMirrorFieldForm
+                  skuId={skuId}
+                  field="category"
+                  label="category"
+                  current={mirror?.category as string | null}
+                  helpText="Taxonomy category. Must match catalog taxonomy."
+                />
+                <UnsupportedProposeButton
+                  label="change vendor cost"
+                  reason="JOB_LOCKED per Rose contract v1.0. floropolis_inventory.farm_cost is supply truth -- propose via canonical_cost.update which Rose owns, not via this UI."
+                />
+                <UnsupportedProposeButton
+                  label="set target price override"
+                  reason="No executor for target_price.override yet. Closest available today: propose a discount on this SKU (above), or use the inline price editor."
+                />
+              </ProposeChangeCluster>
+            </DetailActionPanel>
+          </WiringSection>
+        </div>
+
+        <div className="mt-6">
+          <Link
+            href="/admin/catalog"
+            className="text-xs px-3 py-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
+          >
+            Back to catalog
+          </Link>
+        </div>
       </main>
     </>
   );
