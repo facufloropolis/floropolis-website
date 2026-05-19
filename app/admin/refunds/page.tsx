@@ -20,6 +20,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import RefundActions from './RefundActions';
 
 interface RefundApprovalRow {
@@ -135,12 +138,18 @@ export default async function AdminRefundsPage() {
     });
   }
 
+  const wiringEntry = getWiringForPage('/admin/refunds');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-order-detail" pageLabel="/admin/refunds" />
+        <WiringSection level={wm('counters').level} note={wm('counters').note} id="counters">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900">
             Refund approvals - Facu + JJ
@@ -163,6 +172,9 @@ export default async function AdminRefundsPage() {
           </div>
         </div>
 
+        </WiringSection>
+
+        <WiringSection level={wm('approval-list').level} note={wm('approval-list').note} id="approval-list">
         {approvals.length === 0 ? (
           <div className="text-center py-20 text-slate-400 border border-dashed border-slate-200 rounded-xl">
             <p className="font-semibold text-slate-600">No pending refund approvals</p>
@@ -284,6 +296,8 @@ export default async function AdminRefundsPage() {
             })}
           </div>
         )}
+
+        </WiringSection>
 
         <p className="text-xs text-slate-400 mt-8">
           Data source: supabase-backup refund_approvals. Execution calls Stripe directly;

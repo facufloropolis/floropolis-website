@@ -28,6 +28,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
@@ -450,12 +453,17 @@ export default async function AdminCatalogProposalsPage({ searchParams }: PagePr
   };
   for (const c of CONTRACTS) contractsByCategory[c.category].push(c);
 
+  const wiringEntry = getWiringForPage('/admin/catalog/proposals');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog-proposals" pageLabel="/admin/catalog/proposals" />
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Proposals (meta)</h1>
@@ -475,6 +483,7 @@ export default async function AdminCatalogProposalsPage({ searchParams }: PagePr
         </div>
 
         {/* Tab bar */}
+        <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
         <div className="flex flex-wrap gap-1 mb-6 border-b border-slate-200">
           {TAB_VALUES.map((t) => {
             const active = tab === t;
@@ -503,8 +512,11 @@ export default async function AdminCatalogProposalsPage({ searchParams }: PagePr
           })}
         </div>
 
+        </WiringSection>
+
         {/* Tab A: specializations */}
         {tab === 'specializations' && (
+          <WiringSection level={wm('specializations').level} note={wm('specializations').note} id="specializations">
           <div>
             {SPECIALIZATIONS.length === 0 ? (
               <EmptyState
@@ -534,10 +546,12 @@ export default async function AdminCatalogProposalsPage({ searchParams }: PagePr
               })
             )}
           </div>
+          </WiringSection>
         )}
 
         {/* Tab B: contracts + agents */}
         {tab === 'contracts' && (
+          <WiringSection level={wm('contracts').level} note={wm('contracts').note} id="contracts">
           <div>
             {CONTRACTS.length === 0 ? (
               <EmptyState
@@ -565,6 +579,7 @@ export default async function AdminCatalogProposalsPage({ searchParams }: PagePr
               })
             )}
           </div>
+          </WiringSection>
         )}
 
         {/* Footer note */}

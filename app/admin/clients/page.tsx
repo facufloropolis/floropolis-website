@@ -39,6 +39,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import { approveClient, rejectClient } from './actions';
 import BulkApproveForm from './BulkApproveForm';
 import {
@@ -414,12 +417,17 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
   const filtersActive =
     selectedStatuses.length > 0 || !!b2bFilter || !!fromDate || !!toDate || !!q;
 
+  const wiringEntry = getWiringForPage('/admin/clients');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/v2-admin" pageLabel="/admin/clients" />
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between gap-3">
@@ -439,6 +447,7 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
         </div>
 
         {/* Counter tiles */}
+        <WiringSection level={wm('counters').level} note={wm('counters').note} id="counters">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
           {[
             { k: 'total',         label: 'Total',         n: counters.total,        cls: 'text-slate-900' },
@@ -455,7 +464,10 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
           ))}
         </div>
 
+        </WiringSection>
+
         {/* Filter chips + search */}
+        <WiringSection level={wm('filters').level} note={wm('filters').note} id="filters">
         <div className="mb-4 rounded-xl border border-slate-200 px-4 py-3 bg-slate-50">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold text-slate-500 mr-1">Status</span>
@@ -549,12 +561,17 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
           </form>
         </div>
 
+        </WiringSection>
+
         {/* Bulk approve */}
+        <WiringSection level={wm('bulk-approve').level} note={wm('bulk-approve').note} id="bulk-approve">
         <div className="mb-6">
           <BulkApproveForm pendingClients={pendingForBulk} />
         </div>
+        </WiringSection>
 
         {/* Table */}
+        <WiringSection level={wm('table').level} note={wm('table').note} id="table">
         {rows.length === 0 ? (
           <div className="text-center py-20 text-slate-400 border border-dashed border-slate-200 rounded-xl">
             <p className="font-semibold text-slate-600">No clients match these filters</p>
@@ -655,6 +672,8 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
             </table>
           </div>
         )}
+
+        </WiringSection>
 
         <p className="text-xs text-slate-400 mt-6">
           Showing up to 500 rows. Approve / Reject create proposals in awaiting_facu state -- they take effect only after CEO approves in the approval queue.

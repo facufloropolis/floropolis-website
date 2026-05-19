@@ -33,6 +33,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import MappingActions, { type QualityFamilyOption } from './MappingActions';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
@@ -176,12 +179,17 @@ export default async function AdminCatalogMappingPage({
   const qualityFamilies = (qfRows ?? []) as unknown as QualityFamilyOption[];
 
   // Render --------------------------------------------------------------
+  const wiringEntry = getWiringForPage('/admin/catalog/mapping');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog-mapping" pageLabel="/admin/catalog/mapping" />
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">
             SKU mapping queue
@@ -223,6 +231,7 @@ export default async function AdminCatalogMappingPage({
         </div>
 
         {/* Tab bar */}
+        <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
         <div className="flex flex-wrap gap-1 mb-5 border-b border-slate-200">
           {STATUS_VALUES.map((s) => {
             const active = status === s;
@@ -251,7 +260,10 @@ export default async function AdminCatalogMappingPage({
           })}
         </div>
 
+        </WiringSection>
+
         {/* Body */}
+        <WiringSection level={wm('mapping-list').level} note={wm('mapping-list').note} id="mapping-list">
         {rows.length === 0 ? (
           <div className="text-center py-20 text-slate-500 border border-dashed border-slate-200 rounded-xl">
             <p className="font-semibold text-slate-700">
@@ -354,6 +366,8 @@ export default async function AdminCatalogMappingPage({
             </table>
           </div>
         )}
+
+        </WiringSection>
 
         <p className="text-xs text-slate-400 mt-8">
           Data source: supabase-backup sku_mappings. Confirm =&gt; proposal in

@@ -31,6 +31,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import { GATE_LABELS } from '@/lib/catalog-gates';
 
 import {
@@ -455,13 +458,19 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
     ? computeBreakdown(mirror, box, constants)
     : null;
 
+  const wiringEntry = getWiringForPage('/admin/catalog/[id]');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-5xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog" pageLabel={`/admin/catalog/${skuId}`} />
         {/* Header */}
+        <WiringSection level={wm('header').level} note={wm('header').note} id="header">
         <div className="mb-8">
           <nav className="text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
             <Link href="/admin/catalog" className="hover:underline">
@@ -526,7 +535,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           </div>
         </div>
 
+        </WiringSection>
+
         {/* Section: Sources side-by-side */}
+        <WiringSection level={wm('sources-side-by-side').level} note={wm('sources-side-by-side').note} id="sources-side-by-side">
         <SectionCard
           title="Sources side-by-side"
           subtitle="Other SKUs in the same quality_family across vendors"
@@ -622,7 +634,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           )}
         </SectionCard>
 
+        </WiringSection>
+
         {/* Section: Cost breakdown */}
+        <WiringSection level={wm('cost-breakdown').level} note={wm('cost-breakdown').note} id="cost-breakdown">
         <SectionCard
           title="Cost breakdown"
           subtitle={`Rose's formula -- transparent calc per stem (origin: ${breakdown?.origin ?? 'unknown'})`}
@@ -742,7 +757,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           ) : null}
         </SectionCard>
 
+        </WiringSection>
+
         {/* Section: Override audit timeline */}
+        <WiringSection level={wm('audit-timeline').level} note={wm('audit-timeline').note} id="audit-timeline">
         <SectionCard
           title="Override audit timeline"
           subtitle="Every approved proposal that touched this SKU (oldest -> newest)"
@@ -825,6 +843,8 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           )}
         </SectionCard>
 
+        </WiringSection>
+
         {/* Section: Rose escalation queue ---------------------------- */}
         <SectionCard
           title="Rose escalation queue"
@@ -879,6 +899,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         </SectionCard>
 
         {/* Section: Propose change cluster -- new admin_proposals row */}
+        <WiringSection level={wm('propose-cluster').level} note={wm('propose-cluster').note} id="propose-cluster">
         <SectionCard
           title="Propose change from here"
           subtitle="Inserts an admin_proposals row with source_rationale + source_artifact. Facu must approve in /admin/catalog/approval-queue."
@@ -922,7 +943,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           </ProposeChangeCluster>
         </SectionCard>
 
+        </WiringSection>
+
         {/* Section 1: Gate status table -- PRESERVED from v1 */}
+        <WiringSection level={wm('gate-status').level} note={wm('gate-status').note} id="gate-status">
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Gate status (16)
@@ -992,7 +1016,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           </div>
         </section>
 
+        </WiringSection>
+
         {/* Section 2: Raw fields -- PRESERVED from v1 */}
+        <WiringSection level={wm('raw-mirror').level} note={wm('raw-mirror').note} id="raw-mirror">
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Raw fields (floropolis_inventory_mirror)
@@ -1059,7 +1086,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           )}
         </section>
 
+        </WiringSection>
+
         {/* Section 3: Admin actions -- PRESERVED from v1 */}
+        <WiringSection level={wm('admin-actions').level} note={wm('admin-actions').note} id="admin-actions">
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Admin actions
@@ -1083,6 +1113,8 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
             )}
           </div>
         </section>
+
+        </WiringSection>
 
         <Link
           href="/admin/catalog"

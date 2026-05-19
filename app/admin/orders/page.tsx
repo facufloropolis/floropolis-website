@@ -34,6 +34,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -1014,12 +1017,16 @@ function PageShell({
   intro: string;
   children: React.ReactNode;
 }) {
+  const wiringEntry = getWiringForPage('/admin/orders');
+  const wmAll = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-orders" pageLabel="/admin/orders" />
         <div className="mb-6">
           <div className="text-xs uppercase tracking-wide text-emerald-700 font-semibold mb-1">
             Admin
@@ -1052,7 +1059,9 @@ function PageShell({
           })}
         </div>
 
-        {children}
+        <WiringSection level={wmAll('table').level} note={wmAll('table').note} id="table">
+          {children}
+        </WiringSection>
       </main>
 
       <Footer />

@@ -35,6 +35,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 
 import RowsList, { type ProposalRowVm } from './RowsList';
 import type { AuditRow } from './AuditDrillDown';
@@ -377,12 +380,17 @@ export default async function AdminCatalogApprovalQueuePage({
     0,
   );
 
+  const wiringEntry = getWiringForPage('/admin/catalog/approval-queue');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog-approval-queue" pageLabel="/admin/catalog/approval-queue" />
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Approval queue</h1>
           <p className="text-slate-500 text-sm mt-1 max-w-2xl">
@@ -394,6 +402,7 @@ export default async function AdminCatalogApprovalQueuePage({
         </div>
 
         {/* Tab bar */}
+        <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
         <div className="flex flex-wrap gap-1 mb-5 border-b border-slate-200">
           {STATUS_VALUES.map((s) => {
             const active = status === s;
@@ -421,6 +430,8 @@ export default async function AdminCatalogApprovalQueuePage({
             );
           })}
         </div>
+
+        </WiringSection>
 
         {/* Tiles (awaiting tab only) */}
         {status === 'awaiting_facu' && vms.length > 0 && (
@@ -454,6 +465,7 @@ export default async function AdminCatalogApprovalQueuePage({
           </div>
         )}
 
+        <WiringSection level={wm('rows').level} note={wm('rows').note} id="rows">
         <RowsList
           rows={vms}
           auditByProposal={auditByProposal}
@@ -461,6 +473,7 @@ export default async function AdminCatalogApprovalQueuePage({
           typeUniverse={typeUniverse}
           agentUniverse={agentUniverse}
         />
+        </WiringSection>
 
         <p className="text-xs text-slate-400 mt-8">
           Data source: supabase-backup admin_proposals. Approve =&gt; executor

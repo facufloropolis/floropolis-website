@@ -46,3 +46,47 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ============================================================================
+ * Admin wiring overlay -- toggled by ?wiring=on (see components/admin/
+ * WiringToggle.tsx). Off by default so admin pages look clean during normal
+ * use; on for CEO review passes.
+ * v1 | 2026-05-19 | Job_PM AI-CPO
+ * ============================================================================ */
+
+.wiring-section { position: relative; }
+.wiring-section-badge { display: none; }
+.wiring-mockup-banner { display: none; }
+
+/* When wiring overlay is on, reveal badges + dashed borders */
+html.wiring-on .wiring-section-badge {
+  display: inline-flex;
+  align-items: center;
+  position: absolute;
+  top: -10px;
+  right: 8px;
+  z-index: 5;
+  background: white;
+  padding: 0 2px;
+  border-radius: 9999px;
+}
+html.wiring-on .wiring-mockup-banner { display: flex; }
+html.wiring-on .wiring-section {
+  border-radius: 0.5rem;
+  padding-top: 0.25rem;
+  margin-top: 0.75rem;
+}
+html.wiring-on .wiring-section-live    { outline: 1px solid #6ee7b7; outline-offset: 4px; }
+html.wiring-on .wiring-section-read    { outline: 1px solid #93c5fd; outline-offset: 4px; }
+html.wiring-on .wiring-section-mock    { outline: 1px solid #fcd34d; outline-offset: 4px; }
+html.wiring-on .wiring-section-plan {
+  outline: 1px dashed #cbd5e1;
+  outline-offset: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(148, 163, 184, 0.04),
+    rgba(148, 163, 184, 0.04) 8px,
+    rgba(148, 163, 184, 0.08) 8px,
+    rgba(148, 163, 184, 0.08) 16px
+  );
+}

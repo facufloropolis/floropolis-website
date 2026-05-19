@@ -47,6 +47,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import CreateDiscountForm, {
   type ScopeOption,
 } from './CreateDiscountForm';
@@ -405,12 +408,17 @@ export default async function AdminCatalogDiscountsPage() {
     return value;
   }
 
+  const wiringEntry = getWiringForPage('/admin/catalog/discounts');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog-discounts" pageLabel="/admin/catalog/discounts" />
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
@@ -449,6 +457,7 @@ export default async function AdminCatalogDiscountsPage() {
           {/* Left col: pending + active rules ------------------------------ */}
           <div className="lg:col-span-2 space-y-8">
             {/* Pending */}
+            <WiringSection level={wm('pending').level} note={wm('pending').note} id="pending">
             <section>
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="text-sm font-semibold text-orange-900 uppercase tracking-wide">
@@ -550,8 +559,10 @@ export default async function AdminCatalogDiscountsPage() {
                 </div>
               )}
             </section>
+            </WiringSection>
 
             {/* Active */}
+            <WiringSection level={wm('active-rules').level} note={wm('active-rules').note} id="active-rules">
             <section>
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="text-sm font-semibold text-emerald-900 uppercase tracking-wide">
@@ -647,11 +658,13 @@ export default async function AdminCatalogDiscountsPage() {
                 </div>
               )}
             </section>
+            </WiringSection>
           </div>
 
           {/* Right col: create form (sticky on lg+) ------------------------ */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-6">
+              <WiringSection level={wm('create-form').level} note={wm('create-form').note} id="create-form">
               <CreateDiscountForm
                 categories={categoryOptions}
                 vendors={vendorOptions}
@@ -659,6 +672,7 @@ export default async function AdminCatalogDiscountsPage() {
                 clients={clientOptions}
                 gpmTarget={gpmTarget}
               />
+              </WiringSection>
             </div>
           </div>
         </div>

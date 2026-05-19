@@ -26,6 +26,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import {
   BoxFlagCEOForm,
   PricingConstantsProposeForm,
@@ -266,12 +269,17 @@ export default async function AdminCatalogConfigPage({
     visibility: windows.length,
   };
 
+  const wiringEntry = getWiringForPage('/admin/catalog/config');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog-config" pageLabel="/admin/catalog/config" />
         {/* Header */}
         <div className="mb-8">
           <nav className="text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
@@ -310,39 +318,47 @@ export default async function AdminCatalogConfigPage({
         </div>
 
         {panel === 'boxes' && (
-          <BoxPanel
-            tab={tab}
-            boxes={boxes}
-            skuCountByBox={skuCountByBox}
-            fmtDate={fmtDate}
-          />
+          <WiringSection level={wm('box-master').level} note={wm('box-master').note} id="box-master">
+            <BoxPanel
+              tab={tab}
+              boxes={boxes}
+              skuCountByBox={skuCountByBox}
+              fmtDate={fmtDate}
+            />
+          </WiringSection>
         )}
         {panel === 'pricing' && (
-          <PricingPanel
-            tab={tab}
-            constants={constants}
-            proposals={pricingProps}
-            totalSkus={totalSkus}
-            fmtDate={fmtDate}
-          />
+          <WiringSection level={wm('pricing-constants').level} note={wm('pricing-constants').note} id="pricing-constants">
+            <PricingPanel
+              tab={tab}
+              constants={constants}
+              proposals={pricingProps}
+              totalSkus={totalSkus}
+              fmtDate={fmtDate}
+            />
+          </WiringSection>
         )}
         {panel === 'shipping' && (
-          <ShippingPanel
-            tab={tab}
-            ships={ships}
-            proposals={shipProps}
-            totalSkus={totalSkus}
-            fmtDate={fmtDate}
-            fmtShortDate={fmtShortDate}
-          />
+          <WiringSection level={wm('shipping-config').level} note={wm('shipping-config').note} id="shipping-config">
+            <ShippingPanel
+              tab={tab}
+              ships={ships}
+              proposals={shipProps}
+              totalSkus={totalSkus}
+              fmtDate={fmtDate}
+              fmtShortDate={fmtShortDate}
+            />
+          </WiringSection>
         )}
         {panel === 'visibility' && (
-          <VisibilityPanel
-            tab={tab}
-            windows={windows}
-            proposals={windowProps}
-            fmtDate={fmtDate}
-          />
+          <WiringSection level={wm('visibility-windows').level} note={wm('visibility-windows').note} id="visibility-windows">
+            <VisibilityPanel
+              tab={tab}
+              windows={windows}
+              proposals={windowProps}
+              fmtDate={fmtDate}
+            />
+          </WiringSection>
         )}
 
         <p className="text-xs text-slate-400 mt-10">

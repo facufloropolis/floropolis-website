@@ -46,6 +46,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import {
   BulkActionsProvider,
   HeaderCheckbox,
@@ -620,12 +623,17 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     return q ? `/api/admin/catalog/export?${q}` : '/api/admin/catalog/export';
   })();
 
+  const wiringEntry = getWiringForPage('/admin/catalog');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog" pageLabel="/admin/catalog" />
         {/* Breadcrumb */}
         <nav className="text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
           <span>Admin</span>
@@ -691,6 +699,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         </div>
 
         {/* Morning Queue summary widgets ----------------------------- */}
+        {/* WIRING:summary-tiles */}
+        <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">
         <section
           aria-label="Morning Queue summary"
           className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"
@@ -737,12 +747,16 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           />
         </section>
 
+        </WiringSection>
+
+        <WiringSection level={wm('dod-delta').level} note={wm('dod-delta').note} id="dod-delta">
         {!inventoryDelta.available && (
           <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 mb-4 text-[11px] text-slate-600">
             <span className="font-semibold">Inventory delta DoD:</span>{' '}
             {inventoryDelta.note}
           </div>
         )}
+        </WiringSection>
 
         {/* Vendor breakdown (top 6) ---------------------------------- */}
         <section
@@ -779,6 +793,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         </section>
 
         {/* Tier visibility windows banner --------------------------- */}
+        <WiringSection level={wm('tier-visibility-banner').level} note={wm('tier-visibility-banner').note} id="tier-visibility-banner">
         <section
           aria-label="Tier visibility windows"
           className="bg-white border border-slate-200 rounded-xl p-3 mb-4"
@@ -857,7 +872,10 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           )}
         </section>
 
+        </WiringSection>
+
         {/* Filter chip row ------------------------------------------ */}
+        <WiringSection level={wm('filter-chips').level} note={wm('filter-chips').note} id="filter-chips">
         <section aria-label="Filter chips" className="mb-3 flex flex-wrap gap-1.5">
           <FilterChip
             label="All"
@@ -920,7 +938,10 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           />
         </section>
 
+        </WiringSection>
+
         {/* Filter form ---------------------------------------------- */}
+        <WiringSection level={wm('filter-form').level} note={wm('filter-form').note} id="filter-form">
         <form
           action="/admin/catalog"
           method="get"
@@ -1038,7 +1059,10 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           </div>
         </form>
 
+        </WiringSection>
+
         {/* Bulk actions toolbar + table */}
+        <WiringSection level={wm('bulk-actions').level} note={wm('bulk-actions').note} id="bulk-actions">
         <BulkActionsProvider rows={bulkRows}>
           {({ selectedIds, toggleAll, toggleOne, allSelected, anySelected }) => (
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
@@ -1308,6 +1332,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             </div>
           )}
         </BulkActionsProvider>
+        </WiringSection>
 
         {/* Legend */}
         <div className="mt-4 text-xs text-slate-500 flex flex-wrap gap-x-4 gap-y-1">

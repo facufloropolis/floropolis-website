@@ -29,6 +29,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import ActionButtons from './ActionButtons';
 import ClientDetailTabs from './ClientDetailTabs';
 import ProfileEditForm from './ProfileEditForm';
@@ -260,12 +263,17 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
             ? 'bg-red-100 text-red-800 border-red-200'
             : 'bg-slate-100 text-slate-600 border-slate-200';
 
+  const wiringEntry = getWiringForPage('/admin/clients/[id]');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
+        <MockupLinkBanner mockupHref="/mockups/v2-admin" pageLabel={`/admin/clients/${cp.user_id.slice(0, 8)}`} />
         <div className="mb-4 text-xs">
           <Link href="/admin/clients" className="text-slate-500 hover:text-slate-700">
             &lt;- All clients
@@ -273,6 +281,7 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
         </div>
 
         {/* Header */}
+        <WiringSection level={wm('header').level} note={wm('header').note} id="header">
         <div className="rounded-2xl border border-slate-200 p-5 mb-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
@@ -341,7 +350,10 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
           </div>
         </div>
 
+        </WiringSection>
+
         {/* Tabs */}
+        <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
         <ClientDetailTabs
           counts={{
             orders: orders.length,
@@ -500,6 +512,7 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
             </div>
           }
         />
+        </WiringSection>
       </main>
 
       <Footer />

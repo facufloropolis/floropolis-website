@@ -33,6 +33,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 
 import DispatchRowActions from './DispatchRowActions';
 import DispatchCommunicationsPanel, { CommRow } from './DispatchCommunicationsPanel';
@@ -445,12 +448,17 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
 
   const exportHref = `/api/admin/dispatch/export?date=${activeDate}`;
 
+  const wiringEntry = getWiringForPage('/admin/dispatch');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-dispatch" pageLabel="/admin/dispatch" />
         {/* Header */}
         <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
           <div>
@@ -509,9 +517,11 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
         {topTab === 'web' && (
           <>
             {/* Pipeline widget (Panel 4) */}
-            <div className="mb-6">
-              <DispatchPipelineWidget counts={pipelineCounts} activeStage={activeStage} />
-            </div>
+            <WiringSection level={wm('pipeline-widget').level} note={wm('pipeline-widget').note} id="pipeline-widget">
+              <div className="mb-6">
+                <DispatchPipelineWidget counts={pipelineCounts} activeStage={activeStage} />
+              </div>
+            </WiringSection>
 
             {/* Inner status tabs (hidden when explicit date filter is set) */}
             {!dateParam && (
@@ -540,6 +550,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
               </div>
             )}
 
+            <WiringSection level={wm('manifest-table').level} note={wm('manifest-table').note} id="manifest-table">
             {visible.length === 0 ? (
               <div className="text-center py-20 text-slate-400 border border-dashed border-slate-200 rounded-xl">
                 <p className="font-semibold text-slate-600">No orders in this view</p>
@@ -693,6 +704,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                 ))}
               </div>
             )}
+            </WiringSection>
 
             <p className="text-xs text-slate-400 mt-8">
               Data source: supabase-backup orders + dispatches + dispatch_communications +

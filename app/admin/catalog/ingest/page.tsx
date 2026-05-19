@@ -30,6 +30,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import ManualPasteForm from './ManualPasteForm';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
@@ -246,12 +249,17 @@ export default async function AdminCatalogIngestPage({
   const rows = (rowsRaw ?? []) as unknown as IngestionBatchRow[];
 
   // Render --------------------------------------------------------------
+  const wiringEntry = getWiringForPage('/admin/catalog/ingest');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-catalog-ingest" pageLabel="/admin/catalog/ingest" />
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">
             Vendor ingestion staging
@@ -265,6 +273,7 @@ export default async function AdminCatalogIngestPage({
         </div>
 
         {/* Source badges */}
+        <WiringSection level={wm('source-badges').level} note={wm('source-badges').note} id="source-badges">
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
           {SOURCE_VALUES.map((src) => {
             const live = SOURCE_LIVE[src];
@@ -303,7 +312,10 @@ export default async function AdminCatalogIngestPage({
           })}
         </div>
 
-        {/* Status filter tabs */}
+        </WiringSection>
+
+        {/* Status filter tabs + batch list */}
+        <WiringSection level={wm('batch-list').level} note={wm('batch-list').note} id="batch-list">
         <div className="flex flex-wrap gap-1 mb-5 border-b border-slate-200">
           {STATUS_VALUES.map((s) => {
             const active = statusTab === s;
@@ -465,7 +477,10 @@ export default async function AdminCatalogIngestPage({
           </div>
         )}
 
+        </WiringSection>
+
         {/* Manual paste form */}
+        <WiringSection level={wm('manual-paste-form').level} note={wm('manual-paste-form').note} id="manual-paste-form">
         <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
           <h2 className="text-sm font-bold text-amber-900">
             Manual paste -- last-resort ingestion
@@ -480,6 +495,7 @@ export default async function AdminCatalogIngestPage({
             <ManualPasteForm />
           </div>
         </div>
+        </WiringSection>
 
         <p className="text-xs text-slate-400 mt-8">
           Data source: supabase-backup ingestion_batches. Komet API rows are

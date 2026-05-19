@@ -38,6 +38,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import { getWiringForPage } from '@/lib/admin/wiring';
 import RefundProposalForm from './RefundProposalForm';
 import InitDispatchButton from './InitDispatchButton';
 
@@ -410,12 +413,17 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
     approvals.filter((a) => a.status === 'pending').length === 0 &&
     refundProposals.length === 0;
 
+  const wiringEntry = getWiringForPage('/admin/orders/[id]');
+  const wm = (id: string) =>
+    wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
       <Navigation />
 
       <main className="max-w-6xl mx-auto px-4 py-10">
+        <MockupLinkBanner mockupHref="/mockups/admin-order-detail" pageLabel={`/admin/orders/${order.id}`} />
         {/* Back link */}
         <div className="mb-5">
           <Link
@@ -427,6 +435,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
         </div>
 
         {/* Header */}
+        <WiringSection level={wm('header').level} note={wm('header').note} id="header">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-3 flex-wrap mb-1">
@@ -456,7 +465,10 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           </div>
         </div>
 
+        </WiringSection>
+
         {/* Dispatch */}
+        <WiringSection level={wm('init-dispatch').level} note={wm('init-dispatch').note} id="init-dispatch">
         <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
           <div className="flex items-start justify-between flex-wrap gap-3 mb-2">
             <div>
@@ -485,7 +497,10 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           )}
         </section>
 
+        </WiringSection>
+
         {/* Refund: existing + trigger */}
+        <WiringSection level={wm('refund-proposal').level} note={wm('refund-proposal').note} id="refund-proposal">
         <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
           <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
             <div>
@@ -585,10 +600,13 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           )}
         </section>
 
+        </WiringSection>
+
         <div className="grid lg:grid-cols-[1fr_320px] gap-6">
           {/* Main column */}
           <div className="space-y-6">
             {/* Line items */}
+            <WiringSection level={wm('order-lines').level} note={wm('order-lines').note} id="order-lines">
             <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-900">Line items</h2>
@@ -691,7 +709,10 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               )}
             </section>
 
+            </WiringSection>
+
             {/* Payments ledger */}
+            <WiringSection level={wm('payments-ledger').level} note={wm('payments-ledger').note} id="payments-ledger">
             <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 className="font-semibold text-slate-900">Payments ledger</h2>
@@ -753,7 +774,10 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               )}
             </section>
 
+            </WiringSection>
+
             {/* Timeline */}
+            <WiringSection level={wm('timeline').level} note={wm('timeline').note} id="timeline">
             <section className="bg-white rounded-2xl border border-slate-200 p-5">
               <h2 className="font-semibold text-slate-900 mb-3">Timeline</h2>
               <ol className="space-y-2">
@@ -772,6 +796,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                 ))}
               </ol>
             </section>
+            </WiringSection>
           </div>
 
           {/* Sidebar */}
@@ -815,6 +840,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               </div>
             </SidebarCard>
 
+            <WiringSection level={wm('addresses').level} note={wm('addresses').note} id="addresses">
             <SidebarCard title="Shipping address">
               {shipping ? (
                 <AddressBlock snap={shipping} />
@@ -830,7 +856,9 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                 <p className="text-sm text-slate-400 italic">No billing address on file.</p>
               )}
             </SidebarCard>
+            </WiringSection>
 
+            <WiringSection level={wm('invoice').level} note={wm('invoice').note} id="invoice">
             <SidebarCard title="Invoice">
               {invoice ? (
                 <div className="text-sm space-y-2">
@@ -868,6 +896,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                 </p>
               )}
             </SidebarCard>
+            </WiringSection>
 
             <SidebarCard title="Notes">
               {order.customer_note && (

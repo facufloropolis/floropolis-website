@@ -9,9 +9,14 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createBackupServerClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { Suspense } from 'react';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
+import WiringSection from '@/components/admin/WiringSection';
+import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import WiringFooterToggle from '@/components/admin/WiringFooterToggle';
+import { getWiringForPage } from '@/lib/admin/wiring';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
@@ -157,46 +162,57 @@ export default async function AdminIndexPage() {
     { key: 'people', label: 'People' },
   ];
 
+  const wiring = getWiringForPage('/admin');
+  const sectionMeta = (id: string) =>
+    wiring?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
+  const gridMeta = sectionMeta('tool-grid');
+
   return (
     <>
       <TopBanner />
       <Navigation />
       <main className="min-h-screen bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 py-10">
+          <MockupLinkBanner mockupHref="/mockups/v2-admin" pageLabel="/admin" />
           <div className="mb-8">
             <div className="text-xs uppercase tracking-wide text-emerald-700 font-semibold mb-1">Admin</div>
             <h1 className="text-2xl font-bold text-slate-900">Floropolis control plane</h1>
             <p className="text-sm text-slate-500 mt-1">Signed in as {user.email}</p>
           </div>
 
-          {groups.map((g) => (
-            <section key={g.key} className="mb-10">
-              <h2 className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3">{g.label}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {tools.filter((t) => t.group === g.key).map((t) => (
-                  <Link
-                    key={t.href}
-                    href={t.href}
-                    className="block bg-white border border-slate-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-sm transition-all"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl leading-none">{t.emoji}</div>
-                      <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-slate-900 text-sm">{t.title}</div>
-                        <div className="text-xs text-slate-500 mt-0.5">{t.subtitle}</div>
-                        {t.counter && (
-                          <div className="text-xs text-emerald-700 font-medium mt-2">{t.counter}</div>
-                        )}
+          <WiringSection level={gridMeta.level} note={gridMeta.note} id="tool-grid">
+            {groups.map((g) => (
+              <section key={g.key} className="mb-10">
+                <h2 className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3">{g.label}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {tools.filter((t) => t.group === g.key).map((t) => (
+                    <Link
+                      key={t.href}
+                      href={t.href}
+                      className="block bg-white border border-slate-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-sm transition-all"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl leading-none">{t.emoji}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-slate-900 text-sm">{t.title}</div>
+                          <div className="text-xs text-slate-500 mt-0.5">{t.subtitle}</div>
+                          {t.counter && (
+                            <div className="text-xs text-emerald-700 font-medium mt-2">{t.counter}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </WiringSection>
 
           <div className="text-xs text-slate-400 mt-12">
-            v8 shadow · admin-port wave 1 · 2026-05-18
+            v8 shadow . admin-port wave 1 . 2026-05-19
+            <Suspense fallback={null}>
+              <WiringFooterToggle />
+            </Suspense>
           </div>
         </div>
       </main>
