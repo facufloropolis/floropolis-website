@@ -1,5 +1,13 @@
-// Middleware -- v5 | 2026-05-18 | Job_PM [V8 SHADOW]
-// v5 changes:
+// Middleware -- v6 | 2026-05-19 | Job_PM [V8 SHADOW]
+// v6 changes (T1 3-path picker):
+//   - /checkout REMOVED from requiresAuth. Checkout now works for anon
+//     (guest) AND signed-in users. The page itself offers the 3-path picker
+//     (guest / sign in / sign up). API still upgrades guests transparently.
+//   - /order-confirmation remains gated by token-in-URL pattern handled by
+//     the page (it doesn't need a signed-in session because order numbers
+//     are presented to guests in the response too).
+//
+// v5 history:
 //   - Admin gate now checks client_profiles.status='admin' in backup, not
 //     hardcoded email. Lets both Facu accounts + JJ access /admin without
 //     code changes when admin list expands.
@@ -98,11 +106,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Guard: /account, /checkout, /order-confirmation -- must be signed in
+  // Guard: /account must be signed in. /checkout is NOT gated (T1 3-path
+  // picker — guest checkout is now first-class). /order-confirmation also
+  // ungated; the page surfaces the order_id from the URL which a guest sees
+  // immediately after submit.
   const requiresAuth =
-    request.nextUrl.pathname.startsWith("/account") ||
-    request.nextUrl.pathname.startsWith("/checkout") ||
-    request.nextUrl.pathname.startsWith("/order-confirmation");
+    request.nextUrl.pathname.startsWith("/account");
   if (requiresAuth) {
     if (!user) {
       const loginUrl = new URL("/auth/login", request.url);
@@ -118,9 +127,10 @@ export const config = {
   matcher: [
     // ONLY run on routes that need auth -- cuts ~95% of middleware edge invocations.
     // Session refresh still happens any time user hits a protected route.
+    // /checkout removed in v6 (T1 3-path picker — see file header). The
+    // checkout API route does its own auth check inline and falls back to
+    // guest flow when no session is present.
     "/admin/:path*",
     "/account/:path*",
-    "/checkout/:path*",
-    "/order-confirmation/:path*",
   ],
 };

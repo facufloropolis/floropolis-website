@@ -1,25 +1,33 @@
 "use client";
 // /checkout — REAL checkout page (Stripe.js Elements + SetupIntent confirm)
+// v2 | 2026-05-19 | Job_PM [V8 SHADOW] — T1 3-path picker + T2 EIN/B2B tax
 // v1 | 2026-05-17 | Job_PM W4-S11 [V8 SHADOW]
 //
 // Behavior:
 //   1. Read cart from localStorage key `floropolis-cart`:
 //      { items: [{sku_id, quantity}], delivery_date? }
 //   2. Hydrate cart via GET /api/checkout/sku-details?ids=...
-//   3. Collect delivery date + recipient + shipping (+ optional billing) addresses
-//   4. POST /api/checkout/session -> get {client_secret, publishable_key}
-//   5. Mount Stripe PaymentElement, call stripe.confirmSetup(...)
+//   3. Anon user: show 3-path picker (guest / sign in / sign up). Guest is
+//      default — they fill email/phone/business inline. Picker collapses
+//      after selection. Guest state persists in localStorage key
+//      `guest_checkout_state` so reloads don't lose typing.
+//   4. Collect delivery date + recipient + shipping (+ optional billing) addresses
+//   5. Optional EIN field (XX-XXXXXXX). Valid EIN -> B2B mode, tax_total = 0.
+//      Blank EIN -> B2C, state sales tax pulled from us_state_sales_tax.
+//   6. POST /api/checkout/session -> get {client_secret, publishable_key,
+//      tax_treatment, tax_total, ...}. Body includes guest_email/phone if anon.
+//   7. Mount Stripe PaymentElement, call stripe.confirmSetup(...)
 //      with return_url = /order-confirmation/{order_id}
-//   6. On success: Stripe redirects to return_url (which we route here too —
+//   8. On success: Stripe redirects to return_url (which we route here too —
 //      simple "Order confirmed" interstitial that links to /account).
 //
 // Design ref: /app/mockups/checkout/page.tsx (DO NOT EDIT — visual target).
 // We re-use BRAND constants from mockups/_constants/brand.ts.
 //
-// Auth: requires the user be signed in (the POST /api/checkout/session route
-// enforces this with a 401). If unauthenticated we surface the error and link
-// to /auth/login?next=/checkout. We do NOT pre-flight auth.getUser() here to
-// keep the page a static client component — the API does the gating.
+// Auth: NOT required (CEO directive 2026-05-19). The API route accepts a
+// guest_email and provisions a confirmed user record on the fly so the
+// downstream FK + Stripe Customer remain intact. Signed-in users skip the
+// picker entirely.
 
 import {
   useCallback,
@@ -39,6 +47,8 @@ import {
 
 import { BRAND } from "../mockups/_constants/brand";
 import { useAuthBackup } from "@/lib/auth-context-backup";
+import { createBackupClient } from "@/lib/supabase/backup-client";
+import { normalizeEIN, formatEIN } from "@/lib/checkout/totals";
 
 // ============================================================================
 // Types
@@ -93,9 +103,24 @@ interface SessionResponse {
   lead_time_days: number;
   client_secret: string;
   publishable_key: string;
+  subtotal?: number;
+  discount_total?: number;
+  // Phase D: applied discount rules summary, returned by /api/checkout/session.
+  discount_applications?: Array<{
+    scope: string;
+    scope_value: string;
+    discount_pct: number;
+    applied_amount: number;
+    matched_line_sku_id: number | null;
+  }>;
+  tax_total?: number;
+  tax_treatment?: "B2B" | "B2C";
+  tax_rate_pct?: number;
+  tax_state?: string | null;
   grand_total: number;
   currency: string;
   next_step: string;
+  is_guest?: boolean;
   // CHK-POLISH (2026-05-18): present when user has a usable saved card on file.
   saved_payment_method?: SavedPaymentMethod | null;
   // 'succeeded' when the server already confirmed the SetupIntent inline
@@ -104,13 +129,60 @@ interface SessionResponse {
   setup_intent_status?: string;
 }
 
+// T1 3-path picker — the choice the anon user made.
+// "guest" = continue without an account (fills email + phone inline)
+// "signin" = small inline sign-in form
+// "signup" = link to /signup?next=/checkout to come back after
+type AuthPath = "guest" | "signin" | "signup" | null;
+
 // ============================================================================
 // Constants + helpers
 // ============================================================================
 
 const CART_KEY = "floropolis-cart";
+const GUEST_STATE_KEY = "guest_checkout_state"; // T1 — survives page reload
 const US_POSTAL_REGEX = /^\d{5}(-\d{4})?$/;
 const US_PHONE_REGEX = /^\+?1?[\s\-.]?\(?\d{3}\)?[\s\-.]?\d{3}[\s\-.]?\d{4}$/;
+const EIN_DISPLAY_REGEX = /^\d{2}-\d{7}$/;
+
+interface GuestState {
+  path: AuthPath;
+  email: string;
+  phone: string;
+  business_name: string;
+  ein: string;
+}
+
+function emptyGuest(): GuestState {
+  return { path: null, email: "", phone: "", business_name: "", ein: "" };
+}
+
+function readGuestState(): GuestState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(GUEST_STATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<GuestState>;
+    return {
+      path: (parsed.path ?? null) as AuthPath,
+      email: typeof parsed.email === "string" ? parsed.email : "",
+      phone: typeof parsed.phone === "string" ? parsed.phone : "",
+      business_name: typeof parsed.business_name === "string" ? parsed.business_name : "",
+      ein: typeof parsed.ein === "string" ? parsed.ein : "",
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeGuestState(s: GuestState): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(GUEST_STATE_KEY, JSON.stringify(s));
+  } catch {
+    /* quota / private mode — best-effort */
+  }
+}
 
 function emptyAddress(): AddressForm {
   return {
@@ -513,6 +585,27 @@ function CheckoutContent() {
   const [skuLoading, setSkuLoading] = useState(false);
   const [skuError, setSkuError] = useState<string>("");
 
+  // T1 3-path picker state. Loaded from localStorage on mount (so reloads
+  // don't lose typing). Default path: "guest" once cart is hydrated and user
+  // is confirmed anon. Signed-in users never see the picker.
+  const [guest, setGuest] = useState<GuestState>(emptyGuest);
+  const [guestLoaded, setGuestLoaded] = useState(false);
+
+  // Inline sign-in form state (the "signin" path).
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+  const [signinBusy, setSigninBusy] = useState(false);
+  const [signinError, setSigninError] = useState<string>("");
+
+  // T2 EIN state — separate from the localStorage GuestState because signed-in
+  // users also use it (autofilled from client_profiles.ein).
+  const [einInput, setEinInput] = useState<string>("");
+
+  // T2 tax preview — computed locally so we can show "Sales tax: $X (FL B2C 6%)"
+  // before submit. Real authoritative numbers come from /api/checkout/session
+  // after submit and are mirrored back into `session`.
+  const [taxRatePct, setTaxRatePct] = useState<number>(0); // resolved from state, 0 if unknown
+
   const [deliveryDate, setDeliveryDate] = useState<string>("");
   const [shipping, setShipping] = useState<AddressForm>(emptyAddress());
   const [billingSame, setBillingSame] = useState(true);
@@ -535,13 +628,61 @@ function CheckoutContent() {
   // server-side using the saved pm. Triggers redirect to order-confirmation.
   const [savedCardConfirmed, setSavedCardConfirmed] = useState<boolean>(false);
 
-  // ---- 1. Read localStorage cart on mount ----
+  // ---- 1. Read localStorage cart + guest state on mount ----
   useEffect(() => {
     const c = readLocalCart();
     setCart(c);
     setCartLoaded(true);
     setDeliveryDate(c?.delivery_date ?? defaultDeliveryDate());
+    const g = readGuestState();
+    if (g) {
+      setGuest(g);
+      if (g.ein) setEinInput(g.ein);
+    }
+    setGuestLoaded(true);
   }, []);
+
+  // ---- 1b. Persist guest state on every change ----
+  useEffect(() => {
+    if (!guestLoaded) return;
+    writeGuestState({ ...guest, ein: einInput });
+  }, [guest, einInput, guestLoaded]);
+
+  // ---- 1c. Default picker to "guest" once we know user is anon ----
+  useEffect(() => {
+    if (authLoading) return;
+    if (user) return;
+    if (!guestLoaded) return;
+    setGuest((g) => (g.path == null ? { ...g, path: "guest" } : g));
+  }, [authLoading, user, guestLoaded]);
+
+  // ---- 1d. Fetch state sales tax rate when shipping.state changes ----
+  // Public read on us_state_sales_tax (RLS policy in T2 migration).
+  useEffect(() => {
+    const state = (shipping.state ?? "").trim().toUpperCase();
+    if (!state || state.length !== 2) {
+      setTaxRatePct(0);
+      return;
+    }
+    let cancelled = false;
+    try {
+      const supabase = createBackupClient();
+      supabase
+        .from("us_state_sales_tax")
+        .select("rate_pct")
+        .eq("state_code", state)
+        .maybeSingle()
+        .then(({ data }: { data: { rate_pct: number | string } | null }) => {
+          if (cancelled) return;
+          setTaxRatePct(data?.rate_pct != null ? Number(data.rate_pct) : 0);
+        });
+    } catch {
+      setTaxRatePct(0);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [shipping.state]);
 
   // ---- 2. Hydrate SKU details ----
   useEffect(() => {
@@ -617,6 +758,31 @@ function CheckoutContent() {
     };
   }, [authLoading, user]);
 
+  // ---- 2c. Prefill EIN from client_profiles for signed-in users ----
+  // T2: returning customers who entered an EIN in a prior order see it again.
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) return;
+    let cancelled = false;
+    try {
+      const supabase = createBackupClient();
+      supabase
+        .from("client_profiles")
+        .select("ein")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }: { data: { ein: string | null } | null }) => {
+          if (cancelled || !data?.ein) return;
+          setEinInput((cur) => (cur ? cur : data.ein ?? ""));
+        });
+    } catch {
+      /* swallow — empty form stays */
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, user]);
+
   // ---- 3. Totals ----
   const subtotal = useMemo(() => {
     if (!cart) return 0;
@@ -628,10 +794,31 @@ function CheckoutContent() {
     }, 0);
   }, [cart, skuMap]);
 
+  // T2 + Phase D preview: tax computed locally from picked state + EIN flag.
+  // Discount remains 0 here until Phase D wires real consumption from
+  // discount_rules; we read body field passthrough so it's wire-ready.
+  const einDigits = useMemo(() => normalizeEIN(einInput), [einInput]);
+  const isB2B = einDigits != null;
+  const previewDiscount = 0; // Phase D — populated when discount-applier ships
+  const previewTaxable = useMemo(
+    () => Math.max(0, Math.round((subtotal - previewDiscount) * 100) / 100),
+    [subtotal],
+  );
+  const previewTax = useMemo(() => {
+    if (isB2B) return 0;
+    return Math.round(previewTaxable * taxRatePct * 100) / 100;
+  }, [isB2B, previewTaxable, taxRatePct]);
+  const previewGrand = useMemo(
+    () => Math.round((previewTaxable + previewTax) * 100) / 100,
+    [previewTaxable, previewTax],
+  );
+
   const lead = useMemo(() => (deliveryDate ? leadDays(deliveryDate) : 0), [deliveryDate]);
   const modeHint = useMemo(
-    () => modeHintFor(lead, subtotal, deliveryDate),
-    [lead, subtotal, deliveryDate],
+    // Mode hint reads grand_total (with tax) so the customer sees the right
+    // dollar amount in the "we will charge $X" copy.
+    () => modeHintFor(lead, previewGrand, deliveryDate),
+    [lead, previewGrand, deliveryDate],
   );
 
   // ---- 4. Validation ----
@@ -645,6 +832,16 @@ function CheckoutContent() {
   }
 
   function formValid(): string | null {
+    // T1 guest path: require email at minimum (phone optional but encouraged).
+    if (!user && guest.path === "guest") {
+      const e = guest.email.trim();
+      if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+        return "Enter a valid email so we can send your order confirmation";
+      }
+    }
+    if (!user && guest.path !== "guest") {
+      return "Pick how you'd like to check out (guest, sign in, or sign up)";
+    }
     if (!deliveryDate) return "Choose a delivery date";
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -655,6 +852,10 @@ function CheckoutContent() {
     if (!billingSame) {
       const billErr = addressValid(billing);
       if (billErr) return `Billing: ${billErr}`;
+    }
+    // T2: EIN, if provided, must be 9 digits (we accept XX-XXXXXXX or 9 raw digits).
+    if (einInput.trim() && normalizeEIN(einInput) == null) {
+      return "EIN must be 9 digits in the format XX-XXXXXXX";
     }
     return null;
   }
@@ -674,9 +875,25 @@ function CheckoutContent() {
     }
     setSubmitting(true);
     try {
+      // T1: only attach guest_* fields when user is anon (signed-in path
+      // ignores them — API checks session first).
+      const guestPayload = !user && guest.path === "guest"
+        ? {
+            guest_email: guest.email.trim(),
+            guest_phone: guest.phone.trim() || null,
+            guest_business_name: guest.business_name.trim() || null,
+          }
+        : {};
+      // T2: format EIN as XX-XXXXXXX for the API (server re-normalizes).
+      const einNorm = normalizeEIN(einInput);
+      const einPayload = einNorm
+        ? { ein: `${einNorm.slice(0, 2)}-${einNorm.slice(2)}` }
+        : {};
       const body = {
         items: cart.items,
         requested_delivery_date: deliveryDate,
+        ...guestPayload,
+        ...einPayload,
         shipping_address: {
           recipient_name: shipping.recipient_name.trim(),
           business_name: shipping.business_name.trim() || null,
@@ -786,6 +1003,22 @@ function CheckoutContent() {
         <div className="space-y-5">
           {!session ? (
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* T1: 3-path picker — only when anon. Signed-in users skip it. */}
+              {!authLoading && !user && (
+                <AuthPathPicker
+                  guest={guest}
+                  setGuest={setGuest}
+                  signinEmail={signinEmail}
+                  setSigninEmail={setSigninEmail}
+                  signinPassword={signinPassword}
+                  setSigninPassword={setSigninPassword}
+                  signinBusy={signinBusy}
+                  setSigninBusy={setSigninBusy}
+                  signinError={signinError}
+                  setSigninError={setSigninError}
+                />
+              )}
+
               {/* Delivery date */}
               <section className="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 className="font-semibold text-slate-900 mb-4">Delivery date</h2>
@@ -851,6 +1084,15 @@ function CheckoutContent() {
                   onChange={setBilling}
                 />
               )}
+
+              {/* T2: EIN (Tax ID) — optional, switches order to B2B (no sales tax). */}
+              <EinFieldset
+                ein={einInput}
+                setEin={setEinInput}
+                isB2B={isB2B}
+                shippingState={shipping.state}
+                taxRatePct={taxRatePct}
+              />
 
               {/* What happens next — trust + flow transparency before the CTA. */}
               <section className="bg-white rounded-2xl border border-slate-200 p-6">
@@ -1115,13 +1357,61 @@ function CheckoutContent() {
               <span>Subtotal</span>
               <span>{money(subtotal)}</span>
             </div>
+            {/* Phase D: discount line. Only renders after /api/checkout/session
+                returns the matched applications. Each application shows scope +
+                pct so the customer sees WHY the discount applied (June promo,
+                client-VIP, etc.). */}
+            {session?.discount_applications && session.discount_applications.length > 0 && (
+              <>
+                {session.discount_applications.map((a, idx) => (
+                  <div key={idx} className="flex justify-between text-emerald-700">
+                    <span className="truncate pr-2">
+                      Discount{' '}
+                      <span className="text-[10px] uppercase tracking-wide text-emerald-600 ml-1">
+                        {a.scope}
+                      </span>{' '}
+                      <span className="text-[10px] text-slate-400">
+                        ({a.discount_pct}% off)
+                      </span>
+                    </span>
+                    <span className="font-semibold">-{money(a.applied_amount)}</span>
+                  </div>
+                ))}
+                {session.discount_total && session.discount_total > 0 && (
+                  <div className="flex justify-between text-emerald-700 text-xs font-semibold border-t border-emerald-100 pt-1">
+                    <span>Total discount</span>
+                    <span>-{money(session.discount_total)}</span>
+                  </div>
+                )}
+              </>
+            )}
             <div className="flex justify-between text-slate-500">
               <span>Customs and freight</span>
               <span className="text-emerald-600">Included</span>
             </div>
+            {/* T2 tax line. Always shown so customers can see whether B2B mode
+                is active. Authoritative number comes from `session` after submit;
+                before submit we show the local preview. */}
+            <div className="flex justify-between text-slate-500">
+              <span>
+                Sales tax{" "}
+                {isB2B ? (
+                  <span className="text-[10px] uppercase tracking-wide font-semibold text-emerald-700 ml-1">
+                    B2B
+                  </span>
+                ) : shipping.state ? (
+                  <span className="text-[10px] text-slate-400 ml-1">
+                    ({shipping.state} {taxRatePct > 0 ? `${(taxRatePct * 100).toFixed(2)}%` : "0%"})
+                  </span>
+                ) : null}
+              </span>
+              <span>
+                {money(session?.tax_total ?? previewTax)}
+              </span>
+            </div>
             <div className="flex justify-between font-bold text-slate-900 text-base pt-2 border-t border-slate-100">
               <span>Total</span>
-              <span>{money(subtotal)}</span>
+              <span>{money(session?.grand_total ?? previewGrand)}</span>
             </div>
           </div>
 
@@ -1193,19 +1483,9 @@ function AuthStatusBar({
     );
   }
 
-  return (
-    <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
-      <p className="text-sm text-amber-900">
-        Continuing as guest — your order will be linked to your email.
-      </p>
-      <Link
-        href="/auth/login?next=/checkout"
-        className="text-xs text-amber-900 font-semibold underline underline-offset-2 hover:text-amber-700"
-      >
-        Sign in instead
-      </Link>
-    </div>
-  );
+  // T1: anon users get the 3-path picker inside the form. No banner here —
+  // the picker IS the entry point for anon.
+  return null;
 }
 
 // ============================================================================
@@ -1322,6 +1602,295 @@ function LabeledInput({
         className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
       />
     </label>
+  );
+}
+
+// ============================================================================
+// T1: AuthPathPicker — 3-path picker shown only when user is anon.
+// Default selection is "guest" (less friction). Picker collapses after
+// selection but keeps a small radio row so the user can switch paths if they
+// change their mind mid-checkout.
+// ============================================================================
+
+function AuthPathPicker({
+  guest,
+  setGuest,
+  signinEmail,
+  setSigninEmail,
+  signinPassword,
+  setSigninPassword,
+  signinBusy,
+  setSigninBusy,
+  signinError,
+  setSigninError,
+}: {
+  guest: GuestState;
+  setGuest: (next: GuestState | ((cur: GuestState) => GuestState)) => void;
+  signinEmail: string;
+  setSigninEmail: (v: string) => void;
+  signinPassword: string;
+  setSigninPassword: (v: string) => void;
+  signinBusy: boolean;
+  setSigninBusy: (b: boolean) => void;
+  signinError: string;
+  setSigninError: (s: string) => void;
+}) {
+  const path: AuthPath = guest.path ?? "guest";
+
+  async function handleSignin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!signinEmail.trim() || !signinPassword) {
+      setSigninError("Enter your email and password");
+      return;
+    }
+    setSigninBusy(true);
+    setSigninError("");
+    try {
+      const supabase = createBackupClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: signinEmail.trim(),
+        password: signinPassword,
+      });
+      if (error) {
+        setSigninError(error.message);
+      } else {
+        // onAuthStateChange in useAuthBackup fires and the picker disappears.
+        // We do NOT redirect — the same /checkout page keeps the cart + address.
+      }
+    } catch (err) {
+      setSigninError(err instanceof Error ? err.message : "Sign in failed");
+    } finally {
+      setSigninBusy(false);
+    }
+  }
+
+  return (
+    <section className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+      <div>
+        <h2 className="font-semibold text-slate-900">How would you like to check out?</h2>
+        <p className="text-xs text-slate-500 mt-1">
+          You don&apos;t need an account to order. Sign in if you have one to autofill your saved address.
+        </p>
+      </div>
+
+      <div className="grid sm:grid-cols-3 gap-2">
+        <PathRadio
+          checked={path === "guest"}
+          onSelect={() => setGuest((g) => ({ ...g, path: "guest" }))}
+          title="Continue as guest"
+          body="Fastest. No password needed."
+        />
+        <PathRadio
+          checked={path === "signin"}
+          onSelect={() => setGuest((g) => ({ ...g, path: "signin" }))}
+          title="Sign in"
+          body="Use your existing Floropolis account."
+        />
+        <PathRadio
+          checked={path === "signup"}
+          onSelect={() => setGuest((g) => ({ ...g, path: "signup" }))}
+          title="Create account"
+          body="Save your details for next time."
+        />
+      </div>
+
+      {/* GUEST path — inline contact form */}
+      {path === "guest" && (
+        <div className="space-y-3 pt-2">
+          <LabeledInput
+            label="Email"
+            required
+            value={guest.email}
+            onChange={(v) => setGuest((g) => ({ ...g, email: v }))}
+            placeholder="you@yourshop.com"
+          />
+          <LabeledInput
+            label="Phone (optional)"
+            value={guest.phone}
+            onChange={(v) => setGuest((g) => ({ ...g, phone: v }))}
+            placeholder="+1 (305) 555-0199"
+          />
+          <LabeledInput
+            label="Business name (optional)"
+            value={guest.business_name}
+            onChange={(v) => setGuest((g) => ({ ...g, business_name: v }))}
+          />
+          <p className="text-[11px] text-slate-400">
+            We will email your order confirmation here. You can claim a full account from the link in that email.
+          </p>
+        </div>
+      )}
+
+      {/* SIGN IN path — inline form */}
+      {path === "signin" && (
+        <form onSubmit={handleSignin} className="space-y-3 pt-2">
+          <LabeledInput
+            label="Email"
+            required
+            value={signinEmail}
+            onChange={setSigninEmail}
+            placeholder="you@yourshop.com"
+          />
+          <label className="block">
+            <span className="text-xs font-medium text-slate-500 block mb-1">Password</span>
+            <input
+              type="password"
+              value={signinPassword}
+              onChange={(e) => setSigninPassword(e.target.value)}
+              required
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
+            />
+          </label>
+          {signinError && (
+            <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              {signinError}
+            </p>
+          )}
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={signinBusy}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold ${
+                signinBusy
+                  ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                  : "bg-emerald-600 text-white hover:bg-emerald-700"
+              }`}
+            >
+              {signinBusy ? "Signing in..." : "Sign in"}
+            </button>
+            <Link
+              href="/auth/login?next=/checkout"
+              className="text-xs text-emerald-700 underline underline-offset-2"
+            >
+              Use Google or email code instead
+            </Link>
+          </div>
+        </form>
+      )}
+
+      {/* SIGN UP path — links out, comes back via ?next=/checkout */}
+      {path === "signup" && (
+        <div className="pt-2 space-y-3">
+          <p className="text-sm text-slate-700">
+            Creating an account takes about 30 seconds. After you finish, you&apos;ll come back here with your cart intact.
+          </p>
+          <Link
+            href="/signup?next=/checkout"
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-emerald-700"
+          >
+            Create my account
+          </Link>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function PathRadio({
+  checked,
+  onSelect,
+  title,
+  body,
+}: {
+  checked: boolean;
+  onSelect: () => void;
+  title: string;
+  body: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`text-left rounded-xl border px-4 py-3 transition-colors ${
+        checked
+          ? "border-emerald-500 bg-emerald-50"
+          : "border-slate-200 bg-white hover:border-slate-300"
+      }`}
+    >
+      <div className="flex items-center gap-2 mb-1">
+        <span
+          className={`w-4 h-4 rounded-full border ${
+            checked ? "border-emerald-600 bg-emerald-600" : "border-slate-300"
+          }`}
+        />
+        <span className="text-sm font-semibold text-slate-900">{title}</span>
+      </div>
+      <p className="text-xs text-slate-500">{body}</p>
+    </button>
+  );
+}
+
+// ============================================================================
+// T2: EinFieldset — optional EIN field. When valid, order flips to B2B mode
+// (no sales tax). Reuses LabeledInput for consistency.
+// ============================================================================
+
+function EinFieldset({
+  ein,
+  setEin,
+  isB2B,
+  shippingState,
+  taxRatePct,
+}: {
+  ein: string;
+  setEin: (v: string) => void;
+  isB2B: boolean;
+  shippingState: string;
+  taxRatePct: number;
+}) {
+  const norm = normalizeEIN(ein);
+  const valid = norm != null;
+  const formatBlur = () => {
+    if (norm) setEin(formatEIN(norm));
+  };
+  const stateLabel = shippingState.trim().toUpperCase();
+
+  let helper: string;
+  if (isB2B) {
+    helper = `B2B — EIN ${formatEIN(norm ?? ein)}. No state sales tax.`;
+  } else if (stateLabel && taxRatePct > 0) {
+    helper = `B2C — ${stateLabel} sales tax ${(taxRatePct * 100).toFixed(2)}% will apply. Add your EIN to switch to B2B.`;
+  } else if (stateLabel) {
+    helper = `B2C — no sales tax configured for ${stateLabel} yet. Add your EIN to lock B2B treatment.`;
+  } else {
+    helper = "B2C until you add your EIN. Sales tax is calculated from your shipping state.";
+  }
+
+  return (
+    <section className="bg-white rounded-2xl border border-slate-200 p-6">
+      <h2 className="font-semibold text-slate-900 mb-1">Tax ID (optional)</h2>
+      <p className="text-xs text-slate-500 mb-3">
+        If you have a US Tax ID / EIN we will skip state sales tax and treat this order as B2B.
+      </p>
+      <label className="block">
+        <span className="text-xs font-medium text-slate-500 block mb-1">EIN (XX-XXXXXXX)</span>
+        <input
+          type="text"
+          value={ein}
+          onChange={(e) => setEin(e.target.value)}
+          onBlur={formatBlur}
+          placeholder="12-3456789"
+          inputMode="numeric"
+          className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-1 outline-none ${
+            ein && !valid
+              ? "border-red-300 focus:border-red-400 focus:ring-red-400"
+              : "border-slate-200 focus:border-emerald-400 focus:ring-emerald-400"
+          }`}
+        />
+      </label>
+      {ein && !valid && (
+        <p className="text-xs text-red-700 mt-2">
+          EIN must be 9 digits. Format: XX-XXXXXXX.
+        </p>
+      )}
+      <p
+        className={`text-xs mt-2 ${
+          isB2B ? "text-emerald-700 font-medium" : "text-slate-500"
+        }`}
+      >
+        {helper}
+      </p>
+    </section>
   );
 }
 
