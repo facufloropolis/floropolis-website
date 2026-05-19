@@ -726,42 +726,134 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
             </p>
           ) : (
             <ol className="space-y-2">
-              {audit.map((a) => (
-                <li
-                  key={a.id}
-                  className="border border-slate-200 rounded-lg p-3 bg-white"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[11px] font-mono text-slate-500">
-                      {fmtDate(a.applied_at)} . {a.applied_by_function ?? '-'}
-                    </span>
-                    {a.proposal_id && (
-                      <Link
-                        href={`/admin/catalog/approval-queue#${a.proposal_id}`}
-                        className="text-[11px] text-emerald-700 font-mono hover:underline"
-                      >
-                        proposal #{a.proposal_id.slice(0, 8)}
-                      </Link>
+              {audit.map((a) => {
+                const verifyTone =
+                  a.verification_passed === true
+                    ? 'text-emerald-700 border-emerald-200 bg-emerald-50'
+                    : a.verification_passed === false
+                      ? 'text-red-700 border-red-200 bg-red-50'
+                      : 'text-slate-500 border-slate-200 bg-slate-50';
+                const verifyLabel =
+                  a.verification_passed === true
+                    ? 'verified'
+                    : a.verification_passed === false
+                      ? 'verification_failed'
+                      : 'pending_verification';
+                return (
+                  <li
+                    key={a.id}
+                    className="border border-slate-200 rounded-lg p-3 bg-white"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-[11px] font-mono text-slate-500">
+                        {fmtDate(a.applied_at)} . {a.applied_by_function ?? '-'}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-[10px] font-semibold border rounded-full px-2 py-0.5 ${verifyTone}`}
+                          title={a.verification_notes ?? undefined}
+                        >
+                          {verifyLabel}
+                        </span>
+                        {a.proposal_id && (
+                          <Link
+                            href={`/admin/catalog/approval-queue#${a.proposal_id}`}
+                            className="text-[11px] text-emerald-700 font-mono hover:underline"
+                          >
+                            proposal #{a.proposal_id.slice(0, 8)}
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-xs text-slate-600 mb-1">
+                      target: <span className="font-mono">{a.target_table}</span>{' '}
+                      / <span className="font-mono">{a.target_id ?? '-'}</span>
+                    </div>
+                    {(a.verified_by || a.verified_at || a.verification_notes) && (
+                      <div className="text-[11px] text-slate-600 mb-2 bg-slate-50 border border-slate-200 rounded p-2">
+                        <span className="font-semibold text-slate-700">Verifier:</span>{' '}
+                        <span className="font-mono">{a.verified_by ?? '(unknown)'}</span>
+                        {a.verified_at && (
+                          <>
+                            {' '}at{' '}
+                            <span className="font-mono">{fmtDate(a.verified_at)}</span>
+                          </>
+                        )}
+                        {a.verification_notes && (
+                          <div className="mt-1 text-slate-500 italic">
+                            {a.verification_notes}
+                          </div>
+                        )}
+                      </div>
                     )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                      <JsonBlock label="before" value={a.before_jsonb} />
+                      <JsonBlock label="after" value={a.after_jsonb} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </SectionCard>
+
+        {/* Section: Rose escalation queue ---------------------------- */}
+        <SectionCard
+          title="Rose escalation queue"
+          subtitle="Issues admin flagged on this SKU that need Rose / CEO attention."
+        >
+          {roseQueue.length === 0 ? (
+            <p className="text-xs text-slate-500 italic">
+              No rose_queue entries for SKU {skuId}.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {roseQueue.map((q) => (
+                <li
+                  key={q.id}
+                  className={`border rounded-lg p-3 ${
+                    q.status === 'resolved'
+                      ? 'border-emerald-200 bg-emerald-50/40'
+                      : q.status === 'wont_fix'
+                        ? 'border-slate-200 bg-slate-50'
+                        : 'border-amber-200 bg-amber-50/40'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-[11px] mb-1">
+                    <span className="font-mono text-slate-600">
+                      {q.reason_code} . flagged {fmtDate(q.flagged_at)} by{' '}
+                      <span className="font-semibold">{q.flagged_by}</span>
+                    </span>
+                    <span
+                      className={
+                        q.status === 'open'
+                          ? 'text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded font-semibold'
+                          : q.status === 'rose_working'
+                            ? 'text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded font-semibold'
+                            : q.status === 'resolved'
+                              ? 'text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded font-semibold'
+                              : 'text-slate-700 bg-slate-200 px-1.5 py-0.5 rounded font-semibold'
+                      }
+                    >
+                      {q.status}
+                    </span>
                   </div>
-                  <div className="text-xs text-slate-600 mb-1">
-                    target: <span className="font-mono">{a.target_table}</span>{' '}
-                    / <span className="font-mono">{a.target_id ?? '-'}</span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                    <JsonBlock label="before" value={a.before_jsonb} />
-                    <JsonBlock label="after" value={a.after_jsonb} />
-                  </div>
+                  <div className="text-xs text-slate-700">{q.reason_text}</div>
+                  {q.resolution_notes && (
+                    <div className="text-[11px] text-slate-500 mt-1 italic">
+                      resolution: {q.resolution_notes}
+                    </div>
+                  )}
                 </li>
               ))}
-            </ol>
+            </ul>
           )}
         </SectionCard>
 
         {/* Section: Propose change cluster -- new admin_proposals row */}
         <SectionCard
           title="Propose change from here"
-          subtitle="Inserts an admin_proposals row. Facu must approve in /admin/catalog/approval-queue."
+          subtitle="Inserts an admin_proposals row with source_rationale + source_artifact. Facu must approve in /admin/catalog/approval-queue."
         >
           <ProposeChangeCluster>
             <HideSkuForm skuId={skuId} />
@@ -769,9 +861,31 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
               skuId={skuId}
               currentPrice={toNumOrNull(mirror?.price)}
             />
+            <ProposeMirrorFieldForm
+              skuId={skuId}
+              field="description"
+              label="description"
+              current={null}
+              helpText="Customer-facing PDP description. Only Job-controlled mirror column."
+            />
+            <ProposeMirrorFieldForm
+              skuId={skuId}
+              field="image_url"
+              label="image_url"
+              current={null}
+              helpText="Hero image URL. Source artifact (where image came from) is required."
+              requireArtifact
+            />
+            <ProposeMirrorFieldForm
+              skuId={skuId}
+              field="category"
+              label="category"
+              current={mirror?.category as string | null}
+              helpText="Taxonomy category. Must match catalog taxonomy."
+            />
             <UnsupportedProposeButton
               label="change vendor cost"
-              reason="No executor for floropolis_inventory_mirror.update yet. Lives in lib/admin/proposal-executors.ts (different agent owns that). Use the farm_cost field inline above for now."
+              reason="JOB_LOCKED per Rose contract v1.0. floropolis_inventory.farm_cost is supply truth -- propose via canonical_cost.update which Rose owns, not via this UI."
             />
             <UnsupportedProposeButton
               label="set target price override"
@@ -1025,6 +1139,96 @@ function JsonBlock({
 }
 
 // ---------------------------------------------------------------------------
+// CostSourcePanel -- "where did this cost come from?" attribution view.
+// Renders cost_source + cost_verified_at, classifies into K2K live / email /
+// whatsapp / manual / unknown so CEO can trace provenance per Rose contract P3.
+// ---------------------------------------------------------------------------
+
+function CostSourcePanel({
+  mirror,
+  skuId,
+}: {
+  mirror: MirrorRow | null;
+  skuId: number;
+}) {
+  if (!mirror) {
+    return (
+      <p className="text-xs text-slate-500 italic">
+        No mirror row -- cannot resolve cost source.
+      </p>
+    );
+  }
+  const cs = (mirror.cost_source as string | null) ?? null;
+  const verified = (mirror.cost_verified_at as string | null) ?? null;
+
+  let bucket: 'k2k_live' | 'email' | 'whatsapp' | 'manual' | 'unknown';
+  let bucketLabel: string;
+  let toneCls: string;
+  if (!cs) {
+    bucket = 'unknown';
+    bucketLabel = 'No cost_source recorded';
+    toneCls = 'border-red-200 bg-red-50 text-red-800';
+  } else if (/_k2k_/i.test(cs)) {
+    bucket = 'k2k_live';
+    bucketLabel = 'K2K live (vendor ghost upload)';
+    toneCls = 'border-emerald-200 bg-emerald-50 text-emerald-800';
+  } else if (/(email|gmail|outlook)/i.test(cs)) {
+    bucket = 'email';
+    bucketLabel = 'Email injection';
+    toneCls = 'border-blue-200 bg-blue-50 text-blue-800';
+  } else if (/(whatsapp|wa)/i.test(cs)) {
+    bucket = 'whatsapp';
+    bucketLabel = 'WhatsApp injection';
+    toneCls = 'border-violet-200 bg-violet-50 text-violet-800';
+  } else if (/(manual|paste|csv)/i.test(cs)) {
+    bucket = 'manual';
+    bucketLabel = 'Manual entry / CSV paste';
+    toneCls = 'border-amber-200 bg-amber-50 text-amber-800';
+  } else {
+    bucket = 'unknown';
+    bucketLabel = 'Unclassified source';
+    toneCls = 'border-slate-200 bg-slate-50 text-slate-700';
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+      <div className={`rounded-md border p-3 ${toneCls}`}>
+        <div className="text-[10px] uppercase tracking-wide font-semibold opacity-70 mb-1">
+          Bucket
+        </div>
+        <div className="text-sm font-semibold">{bucketLabel}</div>
+        <div className="text-[11px] mt-1 font-mono opacity-80">{cs ?? '(null)'}</div>
+      </div>
+      <div className="rounded-md border border-slate-200 bg-white p-3">
+        <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+          Verification
+        </div>
+        <div className="text-sm">
+          {verified ? (
+            <>
+              verified at{' '}
+              <span className="font-mono text-slate-800">{fmtDate(verified)}</span>
+            </>
+          ) : (
+            <span className="text-red-700">cost_verified_at is null -- unverified</span>
+          )}
+        </div>
+        <div className="text-[11px] text-slate-500 mt-1">
+          For K2K live, ghost_upload_log carries the upload reference. For
+          email / whatsapp / manual, the proposal that landed this cost must
+          include source_artifact (per Rose contract v1.0).
+        </div>
+      </div>
+      <p className="md:col-span-2 text-[11px] text-slate-500 italic">
+        Bucketing key: {bucket}. SKU id: {skuId}. farm_cost is JOB_LOCKED -- to
+        change the cost itself, propose via canonical_cost.update (Rose owns
+        that path).
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Per-gate inline fixer dispatch -- PRESERVED from v1
 // ---------------------------------------------------------------------------
 
@@ -1112,13 +1316,16 @@ function GateFixer({
       );
     case 'missing_box_dims':
       return (
-        <FixerWrap hint="Box type weight is not validated. Fix in box_master -- this page does not edit box_master.">
-          <Link
-            href="/admin/catalog/config"
-            className="text-xs font-semibold text-emerald-700 underline"
-          >
-            Open /admin/catalog/config
-          </Link>
+        <FixerWrap hint="box_master is READ-ONLY for Job per Rose contract v1.0 PB-1. If the box weight here looks wrong, escalate to CEO directly -- do NOT submit a proposal.">
+          <div className="flex flex-col gap-2">
+            <Link
+              href="/admin/catalog/config"
+              className="text-xs font-semibold text-emerald-700 underline w-fit"
+            >
+              View box_master in /admin/catalog/config (read-only)
+            </Link>
+            <FlagBoxDimToCeoButton skuId={skuId} boxType={mirror.box_type ?? null} />
+          </div>
         </FixerWrap>
       );
     case 'missing_vendor_name':

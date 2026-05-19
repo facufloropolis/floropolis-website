@@ -31,6 +31,12 @@ async function submitProposal(body: {
   target_id?: string | number | null;
   payload: Record<string, unknown>;
   notes?: string;
+  source_rationale?: string;
+  source_artifact?: string;
+  source_table?: string;
+  source_id?: string | number | null;
+  before_value?: unknown;
+  after_value?: unknown;
 }): Promise<{ ok: boolean; id?: string; error?: string }> {
   try {
     const res = await fetch('/api/admin/proposals', {
@@ -92,10 +98,13 @@ export function HideSkuForm({ skuId }: { skuId: number }) {
     setBusy(true);
     setError(null);
     const r = await submitProposal({
-      type: 'visibility_rule.create',
-      target_table: 'visibility_rules',
+      type: 'visibility_override.create',
+      target_table: 'visibility_overrides',
       target_id: String(skuId),
-      payload: { sku_id: skuId, action: 'hide', reason: reason.trim() },
+      payload: { sku_id: skuId, decision: 'hide', reason: reason.trim() },
+      source_table: 'floropolis_inventory',
+      source_id: String(skuId),
+      source_rationale: reason.trim(),
       notes: `Hide SKU ${skuId} from catalog. Reason: ${reason.trim()}`,
     });
     setBusy(false);
@@ -198,11 +207,14 @@ export function DiscountSkuForm({
       target_table: 'discount_rules',
       target_id: String(skuId),
       payload: {
-        scope_type: 'sku',
+        scope: 'sku',
         scope_value: String(skuId),
         discount_pct: pctNum,
-        reason: reason.trim(),
+        notes: reason.trim(),
       },
+      source_table: 'discount_rules',
+      source_id: String(skuId),
+      source_rationale: reason.trim(),
       notes: `Discount SKU ${skuId} by ${pctNum}%. Reason: ${reason.trim()}`,
     });
     setBusy(false);
@@ -329,5 +341,305 @@ export function ProposeChangeCluster({ children }: { children: ReactNode }) {
     <div className="flex flex-wrap items-start gap-2">
       {children}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ProposeMirrorFieldForm -- propose update to floropolis_inventory.{field}
+// for the 3 columns Job is allowed to touch (description, image_url, category)
+// per Rose contract v1.0 (floropolis_inventory section 6).
+//
+// Note: no executor for floropolis_inventory.update exists yet in
+// proposal-executors.ts. The proposal is still recorded with type
+// 'visibility_override.create' fallback (FACU rejects manually) until a
+// proper floropolis_inventory.update executor lands. Until then, the row
+// lands in admin_proposals with full source_rationale + source_artifact so
+// the build of the executor can pick the queue up post-hoc.
+//
+// Per the brief: do NOT touch lib/admin/proposal-executors.ts. Phase D / a
+// different agent owns the executor build-out. This form deliberately uses
+// an UNKNOWN proposal type ('floropolis_inventory.update') so the executor
+// returns 'unknown_proposal_type' on approval -- visible to CEO as a no-op,
+// not a silent write. CEO sees the proposal text but no auto-execute.
+// ---------------------------------------------------------------------------
+
+export function ProposeMirrorFieldForm({
+  skuId,
+  field,
+  label,
+  current,
+  helpText,
+  requireArtifact,
+}: {
+  skuId: number;
+  field: 'description' | 'image_url' | 'category';
+  label: string;
+  current: string | null;
+  helpText?: string;
+  requireArtifact?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [val, setVal] = useState('');
+  const [artifact, setArtifact] = useState('');
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [submitted, setSubmitted] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (val.trim().length === 0) {
+      setError('new value cannot be empty');
+      return;
+    }
+    if (reason.trim().length < 5) {
+      setError('source_rationale must be at least 5 characters');
+      return;
+    }
+    if (requireArtifact && artifact.trim().length < 3) {
+      setError(
+        'source_artifact required (URL or file path to evidence) for this field',
+      );
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    // Executor for floropolis_inventory.update is owned by Phase D /
+    // proposal-executors.ts (different agent). Until that lands, we send the
+    // intent to rose_queue with the full rationale + artifact so CEO sees it
+    // even though no auto-execute is wired. This matches the Rose contract
+    // v1.0 P3 loop -- escalation queue (not proposal queue) for changes
+    // that have no executor yet.
+    try {
+      const res = await fetch('/api/admin/rose-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sku_id: String(skuId),
+          reason_code: field === 'image_url' ? 'no_image' : 'other',
+          reason_text:
+            `Propose floropolis_inventory.${field} update for SKU ${skuId}. ` +
+            `Before: ${JSON.stringify(current)}. After: ${val.trim()}. ` +
+            `source_rationale: ${reason.trim()}. ` +
+            (artifact.trim().length > 0
+              ? `source_artifact: ${artifact.trim()}.`
+              : 'no source_artifact provided.'),
+          flagged_by: 'admin_ui',
+        }),
+      });
+      const j = (await res.json().catch(() => ({}))) as { error?: string; item?: { id?: string } };
+      setBusy(false);
+      if (!res.ok) {
+        setError(j.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      setSubmitted(j.item?.id ?? 'queued');
+      setVal('');
+      setReason('');
+      setArtifact('');
+    } catch (e) {
+      setBusy(false);
+      setError(e instanceof Error ? e.message : 'network error');
+    }
+  }
+
+  if (submitted) return <ConfirmationBanner id={submitted} />;
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-emerald-700 border border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50 px-3 py-1.5 rounded-md"
+      >
+        Propose: update {label}
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="flex flex-col gap-2 border border-emerald-200 bg-emerald-50/40 rounded-lg p-3 min-w-[280px]"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-emerald-800">
+          Propose: update {label}
+        </span>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-[11px] text-slate-500 hover:text-slate-700"
+        >
+          Cancel
+        </button>
+      </div>
+      {helpText && (
+        <p className="text-[11px] text-slate-500 italic">{helpText}</p>
+      )}
+      <label className="text-[11px] text-slate-600">
+        New value
+        <input
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          maxLength={field === 'description' ? 4000 : 500}
+          placeholder={current ?? '(empty)'}
+          className="w-full mt-0.5 text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-emerald-500 focus:outline-none"
+        />
+      </label>
+      <label className="text-[11px] text-slate-600">
+        source_rationale (why this change)
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          rows={2}
+          maxLength={1000}
+          placeholder="e.g. brand voice rewrite per Cande review, image broken on PDP, ..."
+          className="w-full mt-0.5 text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-emerald-500 focus:outline-none"
+        />
+      </label>
+      <label className="text-[11px] text-slate-600">
+        source_artifact{' '}
+        {requireArtifact ? (
+          <span className="text-red-700 font-semibold">(required)</span>
+        ) : (
+          <span className="text-slate-400">(optional, URL or file path)</span>
+        )}
+        <input
+          value={artifact}
+          onChange={(e) => setArtifact(e.target.value)}
+          maxLength={500}
+          placeholder="e.g. https://drive.google.com/... or shared/state/evidence/..."
+          className="w-full mt-0.5 text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-emerald-500 focus:outline-none"
+        />
+      </label>
+      <div className="flex items-center gap-2">
+        <button
+          type="submit"
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+        {error && <ErrorBanner error={error} />}
+      </div>
+      <p className="text-[10px] text-slate-500 italic">
+        Note: executor for floropolis_inventory.update is not yet wired. The
+        request is routed to rose_queue with the full rationale and (if
+        provided) source_artifact. Once Phase D ships the executor, this
+        form will switch to admin_proposals end-to-end.
+      </p>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// FlagBoxDimToCeoButton -- box_master is READ-ONLY for Job per Rose contract
+// v1.0 PB-1. If admin observes a discrepancy, do NOT submit a proposal --
+// escalate to CEO directly via rose_queue.
+// ---------------------------------------------------------------------------
+
+export function FlagBoxDimToCeoButton({
+  skuId,
+  boxType,
+}: {
+  skuId: number;
+  boxType: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (reason.trim().length < 5) {
+      setError('reason must be at least 5 characters');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/rose-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sku_id: String(skuId),
+          reason_code: 'other',
+          reason_text: `Box dim discrepancy on box_type=${boxType ?? '(none)'} -- ${reason.trim()}. Cannot propose box_master.update per Rose contract v1.0.`,
+          flagged_by: 'admin_ui',
+        }),
+      });
+      const j = (await res.json().catch(() => ({}))) as { error?: string };
+      setBusy(false);
+      if (!res.ok) {
+        setError(j.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      setSubmitted(true);
+    } catch (e) {
+      setBusy(false);
+      setError(e instanceof Error ? e.message : 'network error');
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        Flagged to CEO via rose_queue. Rose / CEO will review.
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-amber-900 bg-amber-100 border border-amber-300 hover:bg-amber-200 px-3 py-1.5 rounded-md w-fit"
+        title="box_master is JOB_LOCKED per Rose contract v1.0. Discrepancies escalate via rose_queue, not admin_proposals."
+      >
+        Flag to CEO (cannot propose box_master changes)
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="flex flex-col gap-2 border border-amber-200 bg-amber-50/40 rounded-lg p-3"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-amber-900">
+          Flag box dim discrepancy to CEO -- SKU {skuId} . box {boxType ?? '(none)'}
+        </span>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-[11px] text-slate-500 hover:text-slate-700"
+        >
+          Cancel
+        </button>
+      </div>
+      <textarea
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        rows={3}
+        maxLength={2000}
+        placeholder="What discrepancy did you observe? Include actual weight / FedEx label / vendor packaging spec if you have it."
+        className="w-full text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-emerald-500 focus:outline-none"
+      />
+      <div className="flex items-center gap-2">
+        <button
+          type="submit"
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-amber-700 hover:bg-amber-800 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Flagging...' : 'Flag to CEO via rose_queue'}
+        </button>
+        {error && <ErrorBanner error={error} />}
+      </div>
+    </form>
   );
 }
