@@ -33,6 +33,14 @@ export interface AdminProposal {
   proposed_by: string | null;
   proposed_at: string;
   notes: string | null;
+  // Contract v1.1 fields (2026-05-19):
+  source_agent?: string | null;
+  source_table?: string | null;
+  source_id?: string | null;
+  source_rationale?: string | null;
+  source_artifact?: string | null;  // URL/path to physical evidence (mandatory for box_master.update)
+  before_value?: unknown;
+  after_value?: unknown;
 }
 
 export interface AuditEntry {
@@ -357,6 +365,66 @@ async function execDiscountRuleCreate(
   };
 }
 
+// visibility_override.create: admin force-show or force-hide a SKU on /shop.
+// 2026-05-19 per Rose contract v1.0 (PB-1 counter):
+//   - floropolis_inventory.live stays 100% Komet-driven (Job NEVER writes there)
+//   - Admin override goes to visibility_overrides table with mandatory reason + expires_at
+//   - /shop publication query reads both: live AND no active hide-override, OR active show-override
+//   - Override expires after 30 days default (admin can specify shorter)
+// Payload shape: { sku_id: bigint, decision: 'show'|'hide', reason: string, expires_at?: ISO date }
+async function execVisibilityOverrideCreate(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+
+  const skuIdRaw = payload.sku_id;
+  const skuId = typeof skuIdRaw === 'number' ? skuIdRaw : Number(skuIdRaw);
+  if (!Number.isFinite(skuId) || skuId <= 0) return fail('invalid_sku_id');
+
+  const decision = payload.decision;
+  if (decision !== 'show' && decision !== 'hide') return fail('invalid_decision');
+
+  const reason = typeof payload.reason === 'string' ? payload.reason.trim() : '';
+  if (reason.length < 5) return fail('invalid_reason: must be at least 5 chars');
+
+  const proposedBy = proposal.proposed_by;
+  if (!proposedBy) return fail('missing_proposed_by');
+
+  const insertRow: Record<string, unknown> = {
+    sku_id: skuId,
+    decision,
+    reason,
+    set_by: proposedBy,
+    proposal_id: proposal.id,
+  };
+  if (typeof payload.expires_at === 'string' && payload.expires_at.length > 0) {
+    insertRow.expires_at = payload.expires_at;
+  }
+
+  const { data: after, error: insErr } = await service
+    .from('visibility_overrides')
+    .insert(insertRow)
+    .select('*')
+    .maybeSingle();
+  if (insErr) return fail(`insert_failed: ${insErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'visibility_overrides',
+        target_id: String((after as Record<string, unknown> | null)?.id ?? ''),
+        before_jsonb: null,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execVisibilityOverrideCreate',
+      },
+    ],
+  };
+}
+
 // refund.create: on Facu approval, insert a row into refund_approvals so the
 // existing JJ/Facu quorum + Stripe-execute flow takes over. We don't call
 // Stripe directly here -- that's still gated by quorum_met=true in
@@ -497,6 +565,195 @@ async function execSkuMappingConfirm(
   };
 }
 
+// client_profiles.update: update editable fields (business_name, phone, ein, notes, sales_owner_id)
+// on a client_profiles row. Status changes flow through client_profiles.status_change separately.
+// 2026-05-19 wired post Phase E (Phase E shipped UI but flagged exec gap).
+async function execClientProfilesUpdate(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  if (!proposal.target_id) return fail('missing_target_id');
+
+  const allowed = ['business_name', 'phone', 'ein', 'notes', 'sales_owner_id', 'role'] as const;
+  const update: Record<string, unknown> = {};
+  for (const k of allowed) {
+    if (payload[k] !== undefined) update[k] = payload[k];
+  }
+  if (Object.keys(update).length === 0) return fail('no_allowed_fields_in_payload');
+
+  // Hard guard: no_florist_as_admin
+  if (update.role === 'admin') {
+    const { data: existing } = await service
+      .from('client_profiles')
+      .select('status')
+      .eq('user_id', proposal.target_id)
+      .maybeSingle();
+    const hasOrders = await service
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', proposal.target_id)
+      .then((r) => (r.count ?? 0) > 0);
+    if (existing?.status === 'approved' && hasOrders && !payload.allow_florist_promotion) {
+      return fail('no_florist_as_admin: target is an active florist; requires explicit allow_florist_promotion flag + rationale');
+    }
+  }
+
+  const { data: before, error: readErr } = await service
+    .from('client_profiles')
+    .select('*')
+    .eq('user_id', proposal.target_id)
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!before) return fail('target_not_found');
+
+  const { data: after, error: updErr } = await service
+    .from('client_profiles')
+    .update(update)
+    .eq('user_id', proposal.target_id)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'client_profiles',
+        target_id: proposal.target_id,
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execClientProfilesUpdate',
+      },
+    ],
+  };
+}
+
+// discount_rule.status_change: pause/expire an active rule
+async function execDiscountRuleStatusChange(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const ruleId = typeof payload.rule_id === 'string' ? payload.rule_id : null;
+  if (!ruleId) return fail('invalid_rule_id');
+  const newStatus = payload.new_status;
+  if (newStatus !== 'paused' && newStatus !== 'expired' && newStatus !== 'active') {
+    return fail('invalid_new_status: must be paused|expired|active');
+  }
+
+  const { data: before } = await service.from('discount_rules').select('*').eq('id', ruleId).maybeSingle();
+  if (!before) return fail('target_not_found');
+
+  const { data: after, error: updErr } = await service
+    .from('discount_rules')
+    .update({ status: newStatus })
+    .eq('id', ruleId)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'discount_rules',
+        target_id: ruleId,
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execDiscountRuleStatusChange',
+      },
+    ],
+  };
+}
+
+// tier_visibility_window.accept_country: flip accepted=true for 1 or more rows in tier_visibility_windows
+// Payload: { origin_country, pipeline_checks, row_ids: string[] }
+async function execTierVisibilityWindowAcceptCountry(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const rowIds = payload.row_ids;
+  if (!Array.isArray(rowIds) || rowIds.length === 0) return fail('invalid_row_ids: must be non-empty array');
+
+  const { data: before } = await service
+    .from('tier_visibility_windows')
+    .select('*')
+    .in('id', rowIds as string[]);
+
+  const { data: after, error: updErr } = await service
+    .from('tier_visibility_windows')
+    .update({
+      accepted: true,
+      pipeline_checks: payload.pipeline_checks ?? {},
+      accepted_at: new Date().toISOString(),
+      accepted_by_proposal_id: proposal.id,
+    })
+    .in('id', rowIds as string[])
+    .select('*');
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'tier_visibility_windows',
+        target_id: (rowIds as string[]).join(','),
+        before_jsonb: { rows: before } as Record<string, unknown>,
+        after_jsonb: { rows: after } as Record<string, unknown>,
+        applied_by_function: 'proposal-executors.execTierVisibilityWindowAcceptCountry',
+      },
+    ],
+  };
+}
+
+// tier_visibility_window.update: change earliest/latest days for a window row
+async function execTierVisibilityWindowUpdate(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  if (!proposal.target_id) return fail('missing_target_id');
+
+  const update: Record<string, unknown> = {};
+  if (payload.earliest_delivery_days !== undefined) update.earliest_delivery_days = Number(payload.earliest_delivery_days);
+  if (payload.latest_delivery_days !== undefined) update.latest_delivery_days = Number(payload.latest_delivery_days);
+  if (Object.keys(update).length === 0) return fail('no_fields_to_update');
+
+  const { data: before } = await service.from('tier_visibility_windows').select('*').eq('id', proposal.target_id).maybeSingle();
+  if (!before) return fail('target_not_found');
+
+  const { data: after, error: updErr } = await service
+    .from('tier_visibility_windows')
+    .update(update)
+    .eq('id', proposal.target_id)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'tier_visibility_windows',
+        target_id: proposal.target_id,
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execTierVisibilityWindowUpdate',
+      },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -506,8 +763,17 @@ export async function executeProposal(
   service: SupabaseClient,
 ): Promise<ExecutorResult> {
   switch (proposal.type) {
-    case 'box_master.update':
+    // box_master.update RE-ENABLED 2026-05-19 per Nahua contract v1.1 (CEO directive)
+    // Reverted Rose v1.0 delta 1: CEO prefers proposal loop + audit trail over direct escalation.
+    // Pre-check: source_artifact (physical evidence URL/path) is MANDATORY. Server-side enforcement
+    // here + Rose's verify_inventory_proposal_scope.py enforces the same at DB-level.
+    case 'box_master.update': {
+      const artifact = proposal.source_artifact;
+      if (!artifact || typeof artifact !== 'string' || artifact.trim().length === 0) {
+        return fail('box_master.update_requires_source_artifact: physical evidence (FedEx label / vendor packaging / Komet snapshot / scale photo) is mandatory per contract v1.1');
+      }
       return execBoxMasterUpdate(proposal, service);
+    }
     case 'pricing_constants.update':
       return execPricingConstantsUpdate(proposal, service);
     case 'shipping_config.create':
@@ -516,23 +782,39 @@ export async function executeProposal(
       return execClientProfileStatusChange(proposal, service);
     case 'visibility_rule.create':
       return execVisibilityRuleCreate(proposal);
+    case 'visibility_override.create':
+      return execVisibilityOverrideCreate(proposal, service);
     case 'discount_rule.create':
       return execDiscountRuleCreate(proposal, service);
     case 'refund.create':
       return execRefundCreate(proposal, service);
     case 'sku_mapping.confirm':
       return execSkuMappingConfirm(proposal, service);
+    case 'client_profiles.update':
+      return execClientProfilesUpdate(proposal, service);
+    case 'discount_rule.status_change':
+      return execDiscountRuleStatusChange(proposal, service);
+    case 'tier_visibility_window.accept_country':
+      return execTierVisibilityWindowAcceptCountry(proposal, service);
+    case 'tier_visibility_window.update':
+      return execTierVisibilityWindowUpdate(proposal, service);
     default:
       return fail(`unknown_proposal_type: ${proposal.type}`);
   }
 }
 
 export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
+  // 'box_master.update' re-enabled per Nahua contract v1.1 (2026-05-19) — requires source_artifact
   'box_master.update',
+  'client_profiles.update',
+  'discount_rule.status_change',
+  'tier_visibility_window.accept_country',
+  'tier_visibility_window.update',
   'pricing_constants.update',
   'shipping_config.create',
   'client_profiles.status_change',
   'visibility_rule.create',
+  'visibility_override.create',
   'discount_rule.create',
   // TODO[refund.create executor]: see execRefundCreate. Until then approval
   // surfaces an explicit error and no Stripe refund is issued.

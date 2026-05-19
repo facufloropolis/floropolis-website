@@ -54,6 +54,8 @@ import {
   HideSkuForm,
   ProposeChangeCluster,
   UnsupportedProposeButton,
+  ProposeMirrorFieldForm,
+  FlagBoxDimToCeoButton,
 } from './ProposeForms';
 
 interface PageProps {
@@ -133,6 +135,23 @@ interface OverrideAuditRow {
   after_jsonb: Record<string, unknown> | null;
   applied_at: string;
   applied_by_function: string | null;
+  // Contract v1.0 P5 verification fields:
+  verified_by: string | null;
+  verified_at: string | null;
+  verification_passed: boolean | null;
+  verification_notes: string | null;
+}
+
+interface RoseQueueRow {
+  id: string;
+  sku_id: string;
+  reason_code: string;
+  reason_text: string;
+  flagged_by: string;
+  flagged_at: string;
+  status: string;
+  resolved_at: string | null;
+  resolution_notes: string | null;
 }
 
 interface SiblingSkuRow {
@@ -410,12 +429,21 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
   const { data: auditRows } = await backup
     .from('override_audit')
     .select(
-      'id, proposal_id, target_table, target_id, before_jsonb, after_jsonb, applied_at, applied_by_function',
+      'id, proposal_id, target_table, target_id, before_jsonb, after_jsonb, applied_at, applied_by_function, verified_by, verified_at, verification_passed, verification_notes',
     )
     .eq('target_id', String(skuId))
     .order('applied_at', { ascending: true })
     .limit(50);
   const audit = (auditRows ?? []) as OverrideAuditRow[];
+
+  // Rose escalation queue for this SKU
+  const { data: roseQueueRows } = await backup
+    .from('rose_queue')
+    .select('id, sku_id, reason_code, reason_text, flagged_by, flagged_at, status, resolved_at, resolution_notes')
+    .eq('sku_id', String(skuId))
+    .order('flagged_at', { ascending: false })
+    .limit(20);
+  const roseQueue = (roseQueueRows ?? []) as RoseQueueRow[];
 
   const failingSet = new Set<string>(
     Array.isArray(cls?.failing_gates) ? (cls!.failing_gates as string[]) : [],
