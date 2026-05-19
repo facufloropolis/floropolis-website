@@ -451,22 +451,70 @@ export function LiveToggleButton({
   skuId: number;
   current: boolean | null;
 }) {
-  const { state, save } = useSaver(skuId);
-  const target = !current;
+  // 2026-05-19 — per Rose contract v1.0 PB-1: this button NO LONGER writes to
+  // floropolis_inventory.live (Komet-driven, JOB_LOCKED). It now proposes a
+  // visibility_override (sibling table with mandatory reason + 30d expiry).
+  // The live=Komet badge stays as read-only state. The override is a separate badge.
+  const target = current ? 'hide' : 'show';
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+  const router = useRouter();
+
+  const propose = async () => {
+    const reason = window.prompt(
+      `Reason for ${target === 'show' ? 'force-publishing' : 'admin-hiding'} this SKU? (min 5 chars, will be in audit log)`,
+      '',
+    );
+    if (!reason || reason.trim().length < 5) {
+      if (reason !== null) setErr('Reason must be at least 5 characters');
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    setOk(false);
+    try {
+      const res = await fetch('/api/admin/proposals', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          type: 'visibility_override.create',
+          target_table: 'visibility_overrides',
+          target_id: String(skuId),
+          payload: { sku_id: skuId, decision: target, reason: reason.trim() },
+          source_rationale: reason.trim(),
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; id?: string; error?: string };
+      if (!res.ok) {
+        setErr(json.error ?? `HTTP ${res.status}`);
+      } else {
+        setOk(true);
+        setTimeout(() => router.refresh(), 600);
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs text-slate-600">
-        live = <span className="font-mono">{String(Boolean(current))}</span>
+        Komet live = <span className="font-mono">{String(Boolean(current))}</span>
       </span>
       <button
         type="button"
-        disabled={state.busy}
-        onClick={() => save('live', target)}
-        className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        disabled={busy}
+        onClick={propose}
+        className="text-xs font-semibold text-amber-900 bg-amber-100 border border-amber-300 hover:bg-amber-200 px-3 py-1.5 rounded-md disabled:opacity-50"
+        title="Creates a proposal that, once approved, inserts a visibility_override row. Does NOT write to floropolis_inventory.live (Komet-driven per Rose contract)."
       >
-        Set live = {String(target)}
+        {busy ? 'Proposing…' : `Propose admin ${target === 'show' ? 'force-publish' : 'hide'}`}
       </button>
-      <Status state={state} />
+      {ok && <span className="text-xs text-emerald-700">✓ proposed</span>}
+      {err && <span className="text-xs text-red-600">{err}</span>}
     </div>
   );
 }
