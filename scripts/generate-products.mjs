@@ -19,7 +19,18 @@ const envContent = readFileSync(envPath, "utf-8");
 const env = {};
 for (const line of envContent.split("\n")) {
   const match = line.match(/^([^#=]+)=(.*)$/);
-  if (match) env[match[1].trim()] = match[2].trim();
+  if (match) {
+    let v = match[2].trim();
+    // Vercel `vercel env pull` writes values wrapped in double-quotes; strip
+    // a single surrounding pair so URL parsing doesn't break.
+    if (
+      (v.startsWith('"') && v.endsWith('"')) ||
+      (v.startsWith("'") && v.endsWith("'"))
+    ) {
+      v = v.slice(1, -1);
+    }
+    env[match[1].trim()] = v;
+  }
 }
 
 const SUPABASE_URL = env.NEXT_PUBLIC_SUPABASE_URL;
@@ -29,6 +40,51 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error("Missing SUPABASE_URL or SUPABASE_KEY in .env.local");
   process.exit(1);
 }
+
+// ============================================================================
+// BACKUP project (supabase-backup, ibckhcjvyxzrhvdiazbx) — owns the 16-gate
+// validator output: catalog_classifications, visibility_overrides,
+// tier_visibility_windows. These tables are the source of truth for what is
+// allowed to ship to /shop, /shop/[slug], and the homepage carousel.
+//
+// Prior to 2026-05-19 the generator queried floropolis_inventory directly and
+// ignored these gate tables — non-publishable SKUs were leaking to the site.
+// This is Contract P2: catalog publishability is enforced HERE, in the
+// generator, before the static catalog file is written.
+// ============================================================================
+const BACKUP_URL =
+  env.BACKUP_SUPABASE_URL || env.NEXT_PUBLIC_BACKUP_SUPABASE_URL;
+const BACKUP_KEY =
+  env.BACKUP_SUPABASE_SERVICE_KEY || env.NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY;
+
+if (!BACKUP_URL || !BACKUP_KEY) {
+  console.error(
+    "\n!! MISSING BACKUP_SUPABASE_* env — cannot enforce publishability gate.",
+  );
+  console.error(
+    "   Need one of: BACKUP_SUPABASE_URL + BACKUP_SUPABASE_SERVICE_KEY",
+  );
+  console.error(
+    "        or:    NEXT_PUBLIC_BACKUP_SUPABASE_URL + NEXT_PUBLIC_BACKUP_SUPABASE_ANON_KEY",
+  );
+  console.error("   Refusing to regenerate catalog (would ship leaky data).\n");
+  process.exit(1);
+}
+
+// Vendor -> origin_country mapping. tier_visibility_windows is keyed by
+// (tier, origin_country) but floropolis_inventory carries no country column,
+// so we map via vendor. Per BRD 2026-05-19 every active Floropolis vendor is
+// Ecuador-based; Colombia + US-domestic windows are seeded but `accepted=false`.
+// If a new non-Ecuador vendor is onboarded, add it here OR a row will be
+// dropped in the tier-window stage (fail-closed is correct).
+const VENDOR_ORIGIN_COUNTRY = {
+  Ecoroses: "Ecuador",
+  Flodecol: "Ecuador",
+  "Magic Flowers": "Ecuador",
+  Megaflor: "Ecuador",
+  // "Unknown" intentionally omitted — already filtered out upstream by
+  // the missing-vendor guard, but explicit absence here also fails closed.
+};
 
 async function fetchAll() {
   // Supabase REST API has a default limit of 1000, so paginate
@@ -189,10 +245,165 @@ function toProduct(row) {
   };
 }
 
+// Generic paginated GET against a Supabase REST endpoint.
+async function fetchAllRest(baseUrl, key, table, params = {}) {
+  const out = [];
+  let offset = 0;
+  const limit = 1000;
+  while (true) {
+    const usp = new URLSearchParams({
+      ...params,
+      offset: String(offset),
+      limit: String(limit),
+    });
+    const url = `${baseUrl}/rest/v1/${table}?${usp}`;
+    const res = await fetch(url, {
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) {
+      throw new Error(
+        `Supabase REST ${table} ${res.status}: ${await res.text()}`,
+      );
+    }
+    const data = await res.json();
+    out.push(...data);
+    if (data.length < limit) break;
+    offset += limit;
+  }
+  return out;
+}
+
+// ============================================================================
+// 16-GATE GUARD — fetch publishable SKUs, hide overrides, tier windows from
+// supabase-backup. Returns three Sets/Maps the main filter chain consumes.
+// ============================================================================
+async function fetchBackupGate() {
+  console.log("\n=== BACKUP GATE FETCH (supabase-backup) ===");
+
+  // Publishable SKUs from catalog_classifications (status='publishable').
+  const clsRows = await fetchAllRest(BACKUP_URL, BACKUP_KEY, "catalog_classifications", {
+    select: "sku_id,status",
+    status: "eq.publishable",
+  });
+  const publishableSet = new Set();
+  for (const r of clsRows) {
+    if (r.sku_id != null) publishableSet.add(Number(r.sku_id));
+  }
+  console.log(`  catalog_classifications publishable: ${publishableSet.size}`);
+
+  // Active hide overrides from visibility_overrides.
+  // Active = decision='hide' AND (expires_at IS NULL OR expires_at > now()).
+  // Supabase REST: use `or=(expires_at.is.null,expires_at.gt.<iso>)`.
+  const nowIso = new Date().toISOString();
+  const ovrRows = await fetchAllRest(BACKUP_URL, BACKUP_KEY, "visibility_overrides", {
+    select: "sku_id,decision,expires_at",
+    decision: "eq.hide",
+    or: `(expires_at.is.null,expires_at.gt.${nowIso})`,
+  });
+  const hideSet = new Set();
+  for (const r of ovrRows) {
+    if (r.sku_id != null) hideSet.add(Number(r.sku_id));
+  }
+  console.log(`  visibility_overrides hide (active): ${hideSet.size}`);
+
+  // Tier windows accepted=true. effective_from <= today AND
+  // (effective_until IS NULL OR effective_until >= today).
+  const tvwRows = await fetchAllRest(BACKUP_URL, BACKUP_KEY, "tier_visibility_windows", {
+    select: "tier,origin_country,accepted,effective_from,effective_until",
+    accepted: "eq.true",
+  });
+  const today = new Date().toISOString().slice(0, 10);
+  const openWindows = new Set();
+  for (const r of tvwRows) {
+    if (r.effective_from && r.effective_from > today) continue;
+    if (r.effective_until && r.effective_until < today) continue;
+    openWindows.add(`${r.tier}|${r.origin_country}`);
+  }
+  console.log(`  tier_visibility_windows accepted+in-range: ${openWindows.size}`);
+  for (const w of openWindows) console.log(`    open: ${w}`);
+  console.log("=== END BACKUP GATE FETCH ===\n");
+
+  return { publishableSet, hideSet, openWindows };
+}
+
+// Apply the 16-gate + override + tier-window filter chain. Logs diagnostics
+// per stage, including the first 5 dropped SKUs at each stage for spot checks.
+function applyPublishabilityFilter(rows, gate) {
+  const { publishableSet, hideSet, openWindows } = gate;
+
+  const stage = (label, before, predicate) => {
+    const kept = [];
+    const dropped = [];
+    for (const r of before) {
+      if (predicate(r)) kept.push(r);
+      else dropped.push(r);
+    }
+    console.log(
+      `  ${label}: kept ${kept.length}, dropped ${dropped.length}`,
+    );
+    if (dropped.length > 0) {
+      console.log(`    first 5 dropped:`);
+      for (const r of dropped.slice(0, 5)) {
+        console.log(
+          `      - [${r.id}] [${r.tier}] "${r.name}" (vendor=${r.vendor || "?"})`,
+        );
+      }
+    }
+    return kept;
+  };
+
+  console.log("\n=== PUBLISHABILITY FILTER CHAIN ===");
+  console.log(`  input: ${rows.length} rows from floropolis_inventory`);
+
+  // Stage 1: must be in publishable set.
+  const afterPublishable = stage(
+    "stage 1 publishable (catalog_classifications.status='publishable')",
+    rows,
+    (r) => publishableSet.has(Number(r.id)),
+  );
+
+  // Stage 2: must NOT be in active hide-override set.
+  const afterHide = stage(
+    "stage 2 not-hidden (visibility_overrides.decision!='hide')",
+    afterPublishable,
+    (r) => !hideSet.has(Number(r.id)),
+  );
+
+  // Stage 3: must match an open (tier, origin_country) window.
+  const afterTier = stage(
+    "stage 3 tier-window open (tier_visibility_windows.accepted=true)",
+    afterHide,
+    (r) => {
+      const country = VENDOR_ORIGIN_COUNTRY[r.vendor];
+      if (!country) return false; // fail closed on unmapped vendor
+      return openWindows.has(`${r.tier}|${country}`);
+    },
+  );
+
+  console.log(`  final: ${afterTier.length} rows pass all gates`);
+  console.log("=== END FILTER CHAIN ===\n");
+
+  return afterTier;
+}
+
 async function main() {
   console.log("Fetching products from Supabase...");
   const rows = await fetchAll();
   console.log(`Total products fetched: ${rows.length}`);
+
+  // === 16-GATE PUBLISHABILITY ENFORCEMENT (Contract P2) ===
+  // Must run BEFORE downstream quality scans / image validation / TS emit so
+  // we never write a non-publishable SKU into floropolis_products.ts.
+  const gate = await fetchBackupGate();
+  const gatedRows = applyPublishabilityFilter(rows, gate);
+  // Replace `rows` for the remainder of main() — keeps the rest of the
+  // pipeline (zero-price filter, image validation, etc.) untouched.
+  rows.length = 0;
+  rows.push(...gatedRows);
 
   // Filter: skip products with $0 price or missing vendor — they show "Price pending" which hurts conversion
   // RACI: Job decides what to show, Alvar fixes the data, Rose provides pricing data to Alvar
