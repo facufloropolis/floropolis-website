@@ -227,8 +227,8 @@ export default async function OrderConfirmationPage({
 
   const o = order as OrderRow;
 
-  // Lines, payments, invoice in parallel
-  const [linesRes, paymentsRes, invoiceRes] = await Promise.all([
+  // Lines, payments, invoice, discount applications in parallel
+  const [linesRes, paymentsRes, invoiceRes, discAppsRes] = await Promise.all([
     backup
       .from('order_lines')
       .select(`
@@ -253,11 +253,27 @@ export default async function OrderConfirmationPage({
       .select('id, invoice_number, pdf_url, pdf_storage_path, issued_at')
       .eq('order_id', orderIdNum)
       .maybeSingle(),
+    // Phase D: applied discount rules for this order. Each row = one rule
+    // hit. order_line_id is null for order-level (client-scoped) applications.
+    backup
+      .from('discount_applications')
+      .select('id, rule_id, order_line_id, scope, scope_value, discount_pct, applied_amount')
+      .eq('order_id', orderIdNum)
+      .order('id', { ascending: true }),
   ]);
 
   const lines = (linesRes.data ?? []) as OrderLineRow[];
   const payments = (paymentsRes.data ?? []) as PaymentRow[];
   const invoice = (invoiceRes.data ?? null) as InvoiceRow | null;
+  const discountApplications = (discAppsRes.data ?? []) as Array<{
+    id: string;
+    rule_id: string;
+    order_line_id: number | null;
+    scope: string;
+    scope_value: string;
+    discount_pct: number | string;
+    applied_amount: number | string;
+  }>;
 
   // Latest payment_method id (for last4 lookup — we only have the id; show ending)
   const paymentMethodId =
@@ -384,10 +400,38 @@ export default async function OrderConfirmationPage({
               <span>{fmtCurrency(o.tax_total, o.currency)}</span>
             </div>
             {Number(o.discount_total) > 0 && (
-              <div className="flex justify-between text-sm text-emerald-700">
-                <span>Discount</span>
-                <span>- {fmtCurrency(o.discount_total, o.currency)}</span>
-              </div>
+              <>
+                {/* Phase D: per-rule breakdown when applications were recorded. */}
+                {discountApplications.length > 0 ? (
+                  <div className="border-t border-emerald-100 pt-1 mt-1 space-y-1">
+                    {discountApplications.map((a) => (
+                      <div key={a.id} className="flex justify-between text-xs text-emerald-700">
+                        <span className="truncate pr-2">
+                          Discount{' '}
+                          <span className="text-[10px] uppercase tracking-wide text-emerald-600 ml-1">
+                            {a.scope}
+                          </span>{' '}
+                          <span className="text-[10px] text-slate-400">
+                            ({Number(a.discount_pct)}% off)
+                          </span>
+                        </span>
+                        <span className="font-semibold">
+                          - {fmtCurrency(a.applied_amount, o.currency)}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between text-sm font-semibold text-emerald-800 pt-1 border-t border-emerald-100">
+                      <span>Total discount</span>
+                      <span>- {fmtCurrency(o.discount_total, o.currency)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-between text-sm text-emerald-700">
+                    <span>Discount</span>
+                    <span>- {fmtCurrency(o.discount_total, o.currency)}</span>
+                  </div>
+                )}
+              </>
             )}
             <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200 mt-2">
               <span>Total</span>

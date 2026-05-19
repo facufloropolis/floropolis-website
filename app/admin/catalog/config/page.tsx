@@ -1,12 +1,17 @@
 // Admin Catalog Configuration -- multi-country, propose -> approve flow.
-// v2 | 2026-05-18 | Job_PM admin-port X3 [V8 SHADOW]
+// v3 | 2026-05-19 | Job_PM Phase D [V8 SHADOW]
 //
-// Three sub-panels, each with Active / Proposed tabs (?panel=, ?tab=):
-//   1. Box master       -- box_master rows, edits via box_master.update proposal
+// Four sub-panels, each with Active / Proposed tabs (?panel=, ?tab=):
+//   1. Box master       -- READ-ONLY per Rose contract v1.0 (Section 1).
+//                          "Flag to CEO" button creates a rose_queue row.
 //   2. Pricing constants -- pricing_constants rows, pricing_constants.update proposal
+//                          form now carries source_artifact + urgency_tier.
 //   3. Shipping config   -- shipping_config_v2 rows, shipping_config.create proposal
+//   4. Visibility windows -- NEW. tier_visibility_windows rows; per-country
+//                          accept-toggle gated by 5 pipeline-check booleans.
 //
-// All writes route through POST /api/admin/proposals (KNOWN_PROPOSAL_TYPES).
+// All writes route through POST /api/admin/proposals (KNOWN_PROPOSAL_TYPES),
+// except box flags which write to /api/admin/catalog/config/flag-rose (rose_queue).
 // Proposed-tab approve/reject buttons hit POST /api/admin/proposals/[id]/{approve,reject}.
 // Service-role reads via getBackupServiceClient(). Force-dynamic.
 //
@@ -22,10 +27,12 @@ import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
 import {
-  BoxMasterProposeForm,
+  BoxFlagCEOForm,
   PricingConstantsProposeForm,
   ShippingConfigCreateForm,
   ProposalDecisionButtons,
+  TierVisibilityAcceptCountryForm,
+  TierVisibilityWindowEditForm,
 } from './ProposalForms';
 
 export const metadata = {
@@ -66,6 +73,19 @@ export interface ShippingConfigRow {
   effective_until: string | null;
 }
 
+export interface TierVisibilityWindowRow {
+  id: string;
+  tier: string;
+  origin_country: string;
+  accepted: boolean;
+  earliest_delivery_days: number;
+  latest_delivery_days: number;
+  pipeline_checks: Record<string, unknown> | null;
+  effective_from: string;
+  effective_until: string | null;
+  notes: string | null;
+}
+
 export interface AdminProposalRow {
   id: string;
   type: string;
@@ -101,12 +121,12 @@ function fmtShortDate(iso: string | null): string {
   });
 }
 
-type PanelKey = 'boxes' | 'pricing' | 'shipping';
+type PanelKey = 'boxes' | 'pricing' | 'shipping' | 'visibility';
 type TabKey = 'active' | 'proposed';
 
 function parsePanel(v: string | string[] | undefined): PanelKey {
   const s = Array.isArray(v) ? v[0] : v;
-  if (s === 'pricing' || s === 'shipping') return s;
+  if (s === 'pricing' || s === 'shipping' || s === 'visibility') return s;
   return 'boxes';
 }
 function parseTab(v: string | string[] | undefined): TabKey {
@@ -154,9 +174,10 @@ export default async function AdminCatalogConfigPage({
     boxesRes,
     constantsRes,
     shipsRes,
-    boxPropsRes,
+    windowsRes,
     pricingPropsRes,
     shipPropsRes,
+    windowPropsRes,
     skuByBoxRes,
     totalSkusRes,
   ] = await Promise.all([
@@ -175,11 +196,10 @@ export default async function AdminCatalogConfigPage({
       .order('dest_port', { ascending: true })
       .order('effective_from', { ascending: false }),
     backup
-      .from('admin_proposals')
-      .select('id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes')
-      .eq('type', 'box_master.update')
-      .eq('status', 'awaiting_facu')
-      .order('proposed_at', { ascending: false }),
+      .from('tier_visibility_windows')
+      .select('id, tier, origin_country, accepted, earliest_delivery_days, latest_delivery_days, pipeline_checks, effective_from, effective_until, notes')
+      .order('origin_country', { ascending: true })
+      .order('tier', { ascending: true }),
     backup
       .from('admin_proposals')
       .select('id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes')
@@ -190,6 +210,12 @@ export default async function AdminCatalogConfigPage({
       .from('admin_proposals')
       .select('id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes')
       .eq('type', 'shipping_config.create')
+      .eq('status', 'awaiting_facu')
+      .order('proposed_at', { ascending: false }),
+    backup
+      .from('admin_proposals')
+      .select('id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes')
+      .in('type', ['tier_visibility_window.accept_country', 'tier_visibility_window.update'])
       .eq('status', 'awaiting_facu')
       .order('proposed_at', { ascending: false }),
     backup
@@ -204,16 +230,18 @@ export default async function AdminCatalogConfigPage({
   if (boxesRes.error) console.error('[admin/catalog/config] box_master:', boxesRes.error);
   if (constantsRes.error) console.error('[admin/catalog/config] pricing_constants:', constantsRes.error);
   if (shipsRes.error) console.error('[admin/catalog/config] shipping_config_v2:', shipsRes.error);
-  if (boxPropsRes.error) console.error('[admin/catalog/config] box proposals:', boxPropsRes.error);
+  if (windowsRes.error) console.error('[admin/catalog/config] tier_visibility_windows:', windowsRes.error);
   if (pricingPropsRes.error) console.error('[admin/catalog/config] pricing proposals:', pricingPropsRes.error);
   if (shipPropsRes.error) console.error('[admin/catalog/config] shipping proposals:', shipPropsRes.error);
+  if (windowPropsRes.error) console.error('[admin/catalog/config] window proposals:', windowPropsRes.error);
 
   const boxes = (boxesRes.data ?? []) as BoxMasterRow[];
   const constants = (constantsRes.data ?? []) as PricingConstantRow[];
   const ships = (shipsRes.data ?? []) as ShippingConfigRow[];
-  const boxProps = (boxPropsRes.data ?? []) as AdminProposalRow[];
+  const windows = (windowsRes.data ?? []) as TierVisibilityWindowRow[];
   const pricingProps = (pricingPropsRes.data ?? []) as AdminProposalRow[];
   const shipProps = (shipPropsRes.data ?? []) as AdminProposalRow[];
+  const windowProps = (windowPropsRes.data ?? []) as AdminProposalRow[];
 
   // Cascade-impact SKU counts ---------------------------------------------
   const skuByBoxRows = (skuByBoxRes.data ?? []) as { box_type: string | null }[];
@@ -226,14 +254,16 @@ export default async function AdminCatalogConfigPage({
 
   // tab counts for header summary -----------------------------------------
   const proposedByPanel: Record<PanelKey, number> = {
-    boxes: boxProps.length,
+    boxes: 0, // boxes are READ-ONLY now -- no proposal pipeline
     pricing: pricingProps.length,
     shipping: shipProps.length,
+    visibility: windowProps.length,
   };
   const activeByPanel: Record<PanelKey, number> = {
     boxes: boxes.length,
     pricing: constants.length,
     shipping: ships.length,
+    visibility: windows.length,
   };
 
   return (
@@ -260,8 +290,8 @@ export default async function AdminCatalogConfigPage({
         </div>
 
         {/* Panel switcher --------------------------------------------------- */}
-        <div className="flex gap-1 mb-6 border-b border-slate-200">
-          {(['boxes', 'pricing', 'shipping'] as const).map((p) => (
+        <div className="flex gap-1 mb-6 border-b border-slate-200 flex-wrap">
+          {(['boxes', 'pricing', 'shipping', 'visibility'] as const).map((p) => (
             <PanelTabLink
               key={p}
               panel={p}
@@ -283,7 +313,6 @@ export default async function AdminCatalogConfigPage({
           <BoxPanel
             tab={tab}
             boxes={boxes}
-            proposals={boxProps}
             skuCountByBox={skuCountByBox}
             fmtDate={fmtDate}
           />
@@ -307,11 +336,21 @@ export default async function AdminCatalogConfigPage({
             fmtShortDate={fmtShortDate}
           />
         )}
+        {panel === 'visibility' && (
+          <VisibilityPanel
+            tab={tab}
+            windows={windows}
+            proposals={windowProps}
+            fmtDate={fmtDate}
+          />
+        )}
 
         <p className="text-xs text-slate-400 mt-10">
           Data sources: supabase-backup public.box_master, public.pricing_constants,
-          public.shipping_config_v2, public.admin_proposals. Writes route through
-          POST /api/admin/proposals; approve/reject via /api/admin/proposals/[id].
+          public.shipping_config_v2, public.tier_visibility_windows,
+          public.admin_proposals. Writes route through POST /api/admin/proposals;
+          approve/reject via /api/admin/proposals/[id]. Box flags route to
+          /api/admin/catalog/config/flag-rose (rose_queue).
         </p>
       </main>
 
@@ -336,7 +375,13 @@ function PanelTabLink({
   proposedCount: number;
 }) {
   const label =
-    panel === 'boxes' ? 'Box master' : panel === 'pricing' ? 'Pricing constants' : 'Shipping (country/port)';
+    panel === 'boxes'
+      ? 'Box master'
+      : panel === 'pricing'
+        ? 'Pricing constants'
+        : panel === 'shipping'
+          ? 'Shipping (country/port)'
+          : 'Visibility windows';
   const href = `/admin/catalog/config?panel=${panel}&tab=${tab}`;
   const cls = active
     ? 'px-4 py-2 text-sm font-semibold text-emerald-700 border-b-2 border-emerald-600 -mb-px'
@@ -381,60 +426,28 @@ function SubTabLink({
   );
 }
 
-// ----- BOX MASTER panel ----------------------------------------------------
+// ----- BOX MASTER panel (READ-ONLY -- Rose contract v1.0) -----------------
 
 function BoxPanel({
   tab,
   boxes,
-  proposals,
   skuCountByBox,
   fmtDate,
 }: {
   tab: TabKey;
   boxes: BoxMasterRow[];
-  proposals: AdminProposalRow[];
   skuCountByBox: Record<string, number>;
   fmtDate: (iso: string | null) => string;
 }) {
   if (tab === 'proposed') {
-    if (proposals.length === 0) {
-      return (
-        <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
-          <p className="text-sm">No pending box_master proposals.</p>
-        </div>
-      );
-    }
     return (
-      <div className="space-y-3">
-        {proposals.map((p) => {
-          const payload = p.payload ?? {};
-          const targetBox = p.target_id ?? '(none)';
-          const cascade = p.target_id ? skuCountByBox[p.target_id] ?? 0 : 0;
-          return (
-            <div key={p.id} className="border border-orange-200 bg-orange-50 rounded-xl p-4">
-              <div className="flex justify-between items-start gap-3 flex-wrap">
-                <div>
-                  <p className="text-xs font-semibold text-slate-900">
-                    box_master.update <span className="font-mono ml-1 text-slate-600">{targetBox}</span>
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Proposed {fmtDate(p.proposed_at)} - cascade impact:{' '}
-                    <span className="font-semibold text-orange-800">{cascade} SKUs</span>
-                  </p>
-                </div>
-                <ProposalDecisionButtons id={p.id} />
-              </div>
-              <pre className="text-[11px] font-mono bg-white border border-slate-200 rounded-md p-3 mt-3 overflow-x-auto">
-{JSON.stringify(payload, null, 2)}
-              </pre>
-              {p.notes && (
-                <p className="text-xs text-slate-700 mt-2">
-                  <span className="font-semibold">Reason:</span> {p.notes}
-                </p>
-              )}
-            </div>
-          );
-        })}
+      <div className="text-center py-12 border border-dashed border-amber-200 bg-amber-50/40 rounded-xl">
+        <p className="text-sm font-semibold text-slate-700">No box_master proposals possible</p>
+        <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+          Per Rose contract v1.0 (Section 1), box_master is read-only for Job.
+          Use the &quot;Flag to CEO&quot; button on the Active tab to escalate a
+          discrepancy via rose_queue.
+        </p>
       </div>
     );
   }
@@ -505,7 +518,7 @@ function BoxPanel({
                     )}
                   </td>
                   <td className="px-4 py-2.5 text-right">
-                    <BoxMasterProposeForm row={b} cascadeSkus={cascade} />
+                    <BoxFlagCEOForm row={b} cascadeSkus={cascade} />
                   </td>
                 </tr>
               );
@@ -514,8 +527,9 @@ function BoxPanel({
         </table>
       </div>
       <div className="px-4 py-2 bg-amber-50 border-t border-amber-200 text-xs text-amber-900">
-        <strong>Rule:</strong> Box edits propose -&gt; Facu approves -&gt; executor cascades to every SKU
-        using that box_type on the next validator run.
+        <strong>READ-ONLY:</strong> box_master is Rose-owned (contract v1.0,
+        Section 1). Job has no independent source for box dim corrections.
+        Use &quot;Flag to CEO&quot; to escalate via rose_queue.
       </div>
     </div>
   );
@@ -763,6 +777,161 @@ function ShippingPanel({
         New configs are created via proposal -&gt; approve. Updates to existing rows are
         not yet wired (use a new effective_from row to supersede).
       </p>
+    </div>
+  );
+}
+
+// ----- VISIBILITY WINDOWS panel -------------------------------------------
+
+function VisibilityPanel({
+  tab,
+  windows,
+  proposals,
+  fmtDate,
+}: {
+  tab: TabKey;
+  windows: TierVisibilityWindowRow[];
+  proposals: AdminProposalRow[];
+  fmtDate: (iso: string | null) => string;
+}) {
+  if (tab === 'proposed') {
+    if (proposals.length === 0) {
+      return (
+        <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+          <p className="text-sm">No pending tier_visibility_window proposals.</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-3">
+        {proposals.map((p) => {
+          const payload = (p.payload ?? {}) as Record<string, unknown>;
+          return (
+            <div key={p.id} className="border border-orange-200 bg-orange-50 rounded-xl p-4">
+              <div className="flex justify-between items-start gap-3 flex-wrap">
+                <div>
+                  <p className="text-xs font-semibold text-slate-900">
+                    {p.type}{' '}
+                    <span className="font-mono ml-1 text-slate-600">
+                      {String(payload.origin_country ?? p.target_id ?? '?')}
+                    </span>
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Proposed {fmtDate(p.proposed_at)}
+                  </p>
+                </div>
+                <ProposalDecisionButtons id={p.id} />
+              </div>
+              <pre className="text-[11px] font-mono bg-white border border-slate-200 rounded-md p-3 mt-3 overflow-x-auto">
+{JSON.stringify(payload, null, 2)}
+              </pre>
+              {p.notes && (
+                <p className="text-xs text-slate-700 mt-2">
+                  <span className="font-semibold">Reason:</span> {p.notes}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (windows.length === 0) {
+    return (
+      <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+        <p className="text-sm">No tier_visibility_window rows seeded.</p>
+      </div>
+    );
+  }
+
+  // Group by origin_country.
+  const byOrigin: Record<string, TierVisibilityWindowRow[]> = {};
+  for (const w of windows) {
+    if (!byOrigin[w.origin_country]) byOrigin[w.origin_country] = [];
+    byOrigin[w.origin_country].push(w);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-md border border-emerald-200 bg-emerald-50/50 px-3 py-2 text-xs text-emerald-900">
+        BRD UC-V-1..7 surface. Visibility windows gate which tiers a customer
+        sees on /shop based on their requested delivery date. accepted=false
+        means the origin is OFF -- /shop hides those SKUs, vendor inventory
+        lands in rose_queue.
+      </div>
+      {Object.keys(byOrigin)
+        .sort()
+        .map((origin) => {
+          const rows = byOrigin[origin];
+          const anyAccepted = rows.some((r) => r.accepted);
+          const allAccepted = rows.every((r) => r.accepted);
+          return (
+            <div key={origin} className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                    Origin: {origin}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    {allAccepted
+                      ? `All ${rows.length} tier rows ACCEPTED`
+                      : anyAccepted
+                        ? `${rows.filter((r) => r.accepted).length}/${rows.length} ACCEPTED`
+                        : `OFF -- ${rows.length} tier row(s) pending pipeline`}
+                  </p>
+                </div>
+                {!allAccepted && (
+                  <TierVisibilityAcceptCountryForm origin={origin} rows={rows} />
+                )}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-white border-b border-slate-200">
+                    <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                      <th className="px-4 py-2">Tier</th>
+                      <th className="px-4 py-2">Accepted</th>
+                      <th className="px-4 py-2 text-right">Earliest (days)</th>
+                      <th className="px-4 py-2 text-right">Latest (days)</th>
+                      <th className="px-4 py-2">Notes</th>
+                      <th className="px-4 py-2 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((w) => (
+                      <tr key={w.id} className="border-b border-slate-100 last:border-b-0">
+                        <td className="px-4 py-2 font-mono text-xs text-slate-900">{w.tier}</td>
+                        <td className="px-4 py-2">
+                          {w.accepted ? (
+                            <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200">
+                              accepted
+                            </span>
+                          ) : (
+                            <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-100 text-slate-600 border-slate-200">
+                              off
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 text-right font-mono text-sm text-slate-900">
+                          {w.earliest_delivery_days}
+                        </td>
+                        <td className="px-4 py-2 text-right font-mono text-sm text-slate-900">
+                          {w.latest_delivery_days}
+                        </td>
+                        <td className="px-4 py-2 text-xs text-slate-500 max-w-md truncate">
+                          {w.notes ?? '-'}
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          <TierVisibilityWindowEditForm row={w} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })}
     </div>
   );
 }

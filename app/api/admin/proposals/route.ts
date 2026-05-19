@@ -26,6 +26,27 @@ import { computeCascadeSummary } from '@/lib/admin/proposal-cascade';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
+// Phase D (2026-05-19): stub proposal types. The UI submits these so CEO sees
+// them in the approval queue, but the executor for each is not yet wired in
+// lib/admin/proposal-executors.ts. Approval will surface "unknown_proposal_type"
+// from the executor until AI-CPO wires them in a follow-up commit. Listing
+// them here lets the API ACCEPT the proposal row (it's a write-only stub).
+// Document for each type:
+//   - discount_rule.status_change: pause/expire an active discount_rules row
+//   - tier_visibility_window.accept_country: flip 3 rows in tier_visibility_windows
+//     to accepted=true after 5 pipeline checks pass
+//   - tier_visibility_window.update: edit earliest/latest_delivery_days on a row
+const PHASE_D_STUB_TYPES: readonly string[] = [
+  'discount_rule.status_change',
+  'tier_visibility_window.accept_country',
+  'tier_visibility_window.update',
+];
+
+const ALL_ACCEPTED_TYPES: readonly string[] = [
+  ...KNOWN_PROPOSAL_TYPES,
+  ...PHASE_D_STUB_TYPES,
+];
+
 const VALID_STATUSES = ['awaiting_facu', 'approved', 'rejected', 'withdrawn'] as const;
 type ProposalStatus = (typeof VALID_STATUSES)[number];
 
@@ -164,11 +185,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 400 },
     );
   }
-  if (!KNOWN_PROPOSAL_TYPES.includes(type)) {
+  if (!ALL_ACCEPTED_TYPES.includes(type)) {
     return NextResponse.json(
       {
         error: 'unknown_type',
-        detail: `must be one of ${KNOWN_PROPOSAL_TYPES.join(', ')}`,
+        detail: `must be one of ${ALL_ACCEPTED_TYPES.join(', ')}`,
       },
       { status: 400 },
     );

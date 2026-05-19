@@ -1,4 +1,12 @@
 // Admin catalog -- discount rules.
+// v3 | 2026-05-19 | Job_PM Phase D [V8 SHADOW]
+//
+// Phase D changes:
+//   - Active rules: Pause/Expire button next to each row creates a
+//     discount_rule.status_change admin_proposal. Executor not yet wired
+//     (stub flagged on the page).
+//   - Active rules: usage stats per rule -- N orders, $X revenue -- joined
+//     from public.discount_applications (new in Phase D).
 // v2 | 2026-05-18 | Job_PM admin-port X6 [V8 SHADOW]
 //
 // Rewritten per mockup /mockups/admin-catalog-discounts. Drives a real
@@ -43,6 +51,7 @@ import CreateDiscountForm, {
   type ScopeOption,
 } from './CreateDiscountForm';
 import PendingActions from './PendingActions';
+import StatusChangeAction from './StatusChangeAction';
 
 interface DiscountRuleRow {
   id: string;
@@ -205,6 +214,41 @@ export default async function AdminCatalogDiscountsPage() {
     console.error('[admin/catalog/discounts] active fetch:', activeErr);
   }
   const active = (activeRaw ?? []) as unknown as DiscountRuleRow[];
+
+  // Usage stats per active rule -- Phase D ------------------------------
+  // Aggregate from public.discount_applications: count distinct orders +
+  // sum applied_amount per rule_id. One fetch + JS bucket so we don't N+1.
+  const activeIds = active.map((r) => r.id);
+  const usageByRule: Record<string, { orders: number; revenue: number }> = {};
+  if (activeIds.length > 0) {
+    const { data: appRows, error: appErr } = await backup
+      .from('discount_applications')
+      .select('rule_id, order_id, applied_amount')
+      .in('rule_id', activeIds);
+    if (appErr) {
+      console.error('[admin/catalog/discounts] usage fetch:', appErr);
+    }
+    const seenOrdersByRule: Record<string, Set<number>> = {};
+    for (const row of (appRows ?? []) as Array<{
+      rule_id: string;
+      order_id: number;
+      applied_amount: number | string;
+    }>) {
+      if (!usageByRule[row.rule_id]) {
+        usageByRule[row.rule_id] = { orders: 0, revenue: 0 };
+        seenOrdersByRule[row.rule_id] = new Set();
+      }
+      const amt = Number(row.applied_amount);
+      if (Number.isFinite(amt)) {
+        usageByRule[row.rule_id].revenue += amt;
+      }
+      const oid = Number(row.order_id);
+      if (Number.isFinite(oid) && !seenOrdersByRule[row.rule_id].has(oid)) {
+        seenOrdersByRule[row.rule_id].add(oid);
+        usageByRule[row.rule_id].orders += 1;
+      }
+    }
+  }
 
   // Pending discount proposals -------------------------------------------
   const { data: pendingRaw, error: pendingErr } = await backup
@@ -539,39 +583,65 @@ export default async function AdminCatalogDiscountsPage() {
                           Min qty
                         </th>
                         <th className="px-4 py-2 font-semibold">Valid range</th>
+                        <th className="px-4 py-2 font-semibold text-right">Usage</th>
                         <th className="px-4 py-2 font-semibold">Status</th>
+                        <th className="px-4 py-2 font-semibold text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {active.map((r) => (
-                        <tr key={r.id}>
-                          <td className="px-4 py-3 align-top">
-                            <ScopePill scope={r.scope} />
-                          </td>
-                          <td className="px-4 py-3 align-top text-slate-900">
-                            <div className="font-medium">
-                              {renderScopeValueLabel(r.scope, r.scope_value)}
-                            </div>
-                            {r.notes && (
-                              <div className="text-xs text-slate-500 italic mt-1">
-                                {r.notes}
+                      {active.map((r) => {
+                        const usage = usageByRule[r.id] ?? { orders: 0, revenue: 0 };
+                        return (
+                          <tr key={r.id}>
+                            <td className="px-4 py-3 align-top">
+                              <ScopePill scope={r.scope} />
+                            </td>
+                            <td className="px-4 py-3 align-top text-slate-900">
+                              <div className="font-medium">
+                                {renderScopeValueLabel(r.scope, r.scope_value)}
                               </div>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 align-top text-right font-semibold text-emerald-700">
-                            {fmtPct(r.discount_pct)}
-                          </td>
-                          <td className="px-4 py-3 align-top text-right text-slate-700">
-                            {r.min_qty}
-                          </td>
-                          <td className="px-4 py-3 align-top text-slate-700">
-                            {validRangeLabel(r.valid_from, r.valid_until)}
-                          </td>
-                          <td className="px-4 py-3 align-top">
-                            <StatusPill status={r.status} />
-                          </td>
-                        </tr>
-                      ))}
+                              {r.notes && (
+                                <div className="text-xs text-slate-500 italic mt-1">
+                                  {r.notes}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 align-top text-right font-semibold text-emerald-700">
+                              {fmtPct(r.discount_pct)}
+                            </td>
+                            <td className="px-4 py-3 align-top text-right text-slate-700">
+                              {r.min_qty}
+                            </td>
+                            <td className="px-4 py-3 align-top text-slate-700">
+                              {validRangeLabel(r.valid_from, r.valid_until)}
+                            </td>
+                            <td className="px-4 py-3 align-top text-right text-slate-700">
+                              {usage.orders > 0 ? (
+                                <div>
+                                  <div className="text-sm font-semibold text-slate-900">
+                                    {usage.orders} {usage.orders === 1 ? 'order' : 'orders'}
+                                  </div>
+                                  <div className="text-[11px] text-slate-500">
+                                    ${usage.revenue.toFixed(2)}
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-[11px] text-slate-400">never used</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 align-top">
+                              <StatusPill status={r.status} />
+                            </td>
+                            <td className="px-4 py-3 align-top text-right">
+                              <StatusChangeAction
+                                ruleId={r.id}
+                                scope={r.scope}
+                                scopeValue={r.scope_value}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

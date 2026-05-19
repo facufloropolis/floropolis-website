@@ -1,9 +1,21 @@
 // Client-side proposal forms for /admin/catalog/config.
-// v1 | 2026-05-18 | Job_PM admin-port X3 [V8 SHADOW]
+// v2 | 2026-05-19 | Job_PM Phase D [V8 SHADOW]
 //
 // All forms POST to /api/admin/proposals with the matching `type` and refresh
 // the server component on success. Approve/reject buttons hit
 // /api/admin/proposals/[id]/{approve,reject}.
+//
+// Phase D changes:
+//   - Box panel: BoxMasterProposeForm removed in favor of BoxFlagCEOForm.
+//     Per Rose contract v1.0 (Section 1 / PB-1 family), box_master is
+//     JOB_READ_ONLY -- discrepancies escalate to CEO via public.rose_queue,
+//     NOT via admin_proposals. New form POSTs to
+//     /api/admin/catalog/config/flag-rose.
+//   - Pricing form: added source_artifact (URL/path to evidence) +
+//     urgency_tier selector (routine / urgent / critical).
+//   - New tier-visibility forms: TierVisibilityWindowEditForm +
+//     TierVisibilityAcceptCountryForm. Both submit admin_proposals rows;
+//     accept-country shows the 5 pipeline-check booleans.
 
 'use client';
 
@@ -12,6 +24,7 @@ import { useRouter } from 'next/navigation';
 import type {
   BoxMasterRow,
   PricingConstantRow,
+  TierVisibilityWindowRow,
 } from './page';
 
 // ----- shared post helper --------------------------------------------------
@@ -22,6 +35,15 @@ interface ProposalBody {
   target_id?: string | number | null;
   payload: Record<string, unknown>;
   notes?: string | null;
+  // Phase D / Rose contract v1.0 P3 fields (all optional at the wire level --
+  // the server falls back to notes when source_rationale is missing).
+  source_rationale?: string | null;
+  source_artifact?: string | null;
+  source_table?: string | null;
+  source_id?: string | number | null;
+  source_agent?: string | null;
+  before_value?: unknown;
+  after_value?: unknown;
 }
 
 async function postProposal(body: ProposalBody): Promise<{ ok: boolean; error?: string }> {
@@ -42,9 +64,13 @@ async function postProposal(body: ProposalBody): Promise<{ ok: boolean; error?: 
   }
 }
 
-// ----- Box master: propose update -----------------------------------------
+// ----- Box master: Flag to CEO --------------------------------------------
+// 2026-05-19 (Phase D): Rose contract v1.0 says box_master is JOB_READ_OK with
+// NO proposals. Job has no independent source for dim corrections, so the only
+// safe action is to escalate to CEO via rose_queue. This button replaces the
+// old BoxMasterProposeForm.
 
-export function BoxMasterProposeForm({
+export function BoxFlagCEOForm({
   row,
   cascadeSkus,
 }: {
@@ -53,52 +79,45 @@ export function BoxMasterProposeForm({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [weight, setWeight] = useState(String(row.weight_kg));
-  const [description, setDescription] = useState(row.description ?? '');
-  const [notes, setNotes] = useState(row.notes ?? '');
-  const [active, setActive] = useState(row.active);
-  const [reason, setReason] = useState('');
+  const [reasonText, setReasonText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  function reset() {
-    setWeight(String(row.weight_kg));
-    setDescription(row.description ?? '');
-    setNotes(row.notes ?? '');
-    setActive(row.active);
-    setReason('');
-    setError(null);
-  }
+  const [success, setSuccess] = useState(false);
 
   async function submit() {
-    const w = Number(weight);
-    if (!Number.isFinite(w) || w <= 0) {
-      setError('weight_kg must be > 0');
+    if (reasonText.trim().length < 5) {
+      setError('Describe the discrepancy (>=5 chars).');
       return;
     }
-    const payload: Record<string, unknown> = {
-      weight_kg: w,
-      description: description.trim() || null,
-      notes: notes.trim() || null,
-      active,
-    };
     setBusy(true);
     setError(null);
-    const r = await postProposal({
-      type: 'box_master.update',
-      target_table: 'box_master',
-      target_id: row.box_type,
-      payload,
-      notes: reason.trim() ? reason.trim() : null,
-    });
-    setBusy(false);
-    if (!r.ok) {
-      setError(r.error ?? 'proposal failed');
-      return;
+    try {
+      const res = await fetch('/api/admin/catalog/config/flag-rose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sku_id: row.box_type,
+          reason_code: 'box_dim_discrepancy',
+          reason_text: reasonText.trim(),
+        }),
+      });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string; detail?: string };
+        setError(j.detail ? `${j.error ?? 'error'}: ${j.detail}` : (j.error ?? `HTTP ${res.status}`));
+        return;
+      }
+      setSuccess(true);
+      setReasonText('');
+      setTimeout(() => {
+        setOpen(false);
+        setSuccess(false);
+        router.refresh();
+      }, 1200);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'fetch failed');
+    } finally {
+      setBusy(false);
     }
-    setOpen(false);
-    reset();
-    router.refresh();
   }
 
   if (!open) {
@@ -106,73 +125,45 @@ export function BoxMasterProposeForm({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-3 py-1.5 rounded-md transition-colors"
+        className="text-xs font-semibold text-amber-700 hover:text-amber-900 border border-amber-300 hover:border-amber-500 px-3 py-1.5 rounded-md transition-colors"
+        title="Flag to CEO via rose_queue (box_master is read-only per Rose contract)"
       >
-        Propose edit
+        Flag to CEO
       </button>
     );
   }
 
   return (
-    <div className="text-left bg-white border border-emerald-300 rounded-lg p-3 shadow-sm w-80">
-      <p className="text-xs font-semibold text-slate-900 mb-2">
-        Propose edit to <span className="font-mono">{row.box_type}</span>
+    <div className="text-left bg-white border border-amber-300 rounded-lg p-3 shadow-sm w-80">
+      <p className="text-xs font-semibold text-slate-900 mb-1">
+        Flag <span className="font-mono">{row.box_type}</span> to CEO
+      </p>
+      <p className="text-[11px] text-slate-600 mb-2">
+        box_master is read-only (Rose contract). Lands in rose_queue, CEO triages.
       </p>
       <p className="text-[11px] text-orange-700 mb-3">
-        Cascade impact: {cascadeSkus} SKUs use this box_type.
+        {cascadeSkus} SKUs use this box_type -- fix cascades after CEO resolves.
       </p>
-      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Weight (kg)</label>
-      <input
-        type="number"
-        step="0.01"
-        min="0.01"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
-        disabled={busy}
-        className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-      />
-      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Description</label>
-      <input
-        type="text"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        disabled={busy}
-        className="w-full text-sm border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-      />
-      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Notes</label>
-      <input
-        type="text"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        disabled={busy}
-        className="w-full text-sm border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-      />
-      <label className="flex items-center gap-2 text-xs text-slate-700 mb-2">
-        <input
-          type="checkbox"
-          checked={active}
-          onChange={(e) => setActive(e.target.checked)}
-          disabled={busy}
-        />
-        Active
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        What's wrong with this box row?
       </label>
-      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Reason (for Facu)</label>
       <textarea
-        rows={2}
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        disabled={busy}
-        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-        placeholder="Why this change?"
+        rows={3}
+        value={reasonText}
+        onChange={(e) => setReasonText(e.target.value)}
+        disabled={busy || success}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50"
+        placeholder="e.g. Vendor invoice shows actual weight 8.2kg, mirror says 7.5kg. Need dim correction."
       />
       <div className="flex justify-end gap-2 mt-2">
         <button
           type="button"
           onClick={() => {
             setOpen(false);
-            reset();
+            setReasonText('');
+            setError(null);
           }}
-          disabled={busy}
+          disabled={busy || success}
           className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
         >
           Cancel
@@ -180,13 +171,18 @@ export function BoxMasterProposeForm({
         <button
           type="button"
           onClick={submit}
-          disabled={busy}
-          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+          disabled={busy || success}
+          className="text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-md disabled:opacity-50"
         >
-          {busy ? 'Submitting...' : 'Submit proposal'}
+          {success ? 'Flagged' : busy ? 'Sending...' : 'Send to CEO'}
         </button>
       </div>
       {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+      {success && (
+        <div className="text-[11px] text-emerald-700 font-medium mt-2">
+          Row added to rose_queue. CEO will see it on next triage.
+        </div>
+      )}
     </div>
   );
 }
@@ -205,12 +201,17 @@ export function PricingConstantsProposeForm({
   const initial = row.value_numeric == null ? '' : String(row.value_numeric);
   const [value, setValue] = useState(initial);
   const [reason, setReason] = useState('');
+  // Phase D: Rose contract P3/P4 fields.
+  const [sourceArtifact, setSourceArtifact] = useState('');
+  const [urgencyTier, setUrgencyTier] = useState<'routine' | 'urgent' | 'critical'>('routine');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function reset() {
     setValue(initial);
     setReason('');
+    setSourceArtifact('');
+    setUrgencyTier('routine');
     setError(null);
   }
 
@@ -220,14 +221,25 @@ export function PricingConstantsProposeForm({
       setError('value_numeric must be a number');
       return;
     }
+    if (reason.trim().length < 5) {
+      setError('Reason / rationale is mandatory (>=5 chars).');
+      return;
+    }
     setBusy(true);
     setError(null);
     const r = await postProposal({
       type: 'pricing_constants.update',
       target_table: 'pricing_constants',
       target_id: row.id,
-      payload: { value_numeric: n },
-      notes: reason.trim() ? reason.trim() : null,
+      payload: { value_numeric: n, urgency_tier: urgencyTier },
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_artifact: sourceArtifact.trim() ? sourceArtifact.trim() : null,
+      source_table: 'pricing_constants',
+      source_id: row.id,
+      source_agent: 'job',
+      before_value: { value_numeric: row.value_numeric ?? null },
+      after_value: { value_numeric: n },
     });
     setBusy(false);
     if (!r.ok) {
@@ -270,15 +282,41 @@ export function PricingConstantsProposeForm({
         disabled={busy}
         className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
       />
-      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Reason (for Facu)</label>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Reason / rationale (mandatory)
+      </label>
       <textarea
         rows={2}
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         disabled={busy}
         className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-        placeholder="Why this change?"
+        placeholder="Why this change? (Rose contract P4)"
       />
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Source artifact (URL or path, optional)
+      </label>
+      <input
+        type="text"
+        value={sourceArtifact}
+        onChange={(e) => setSourceArtifact(e.target.value)}
+        disabled={busy}
+        placeholder="e.g. https://drive.google.com/... or s3://invoices/..."
+        className="w-full text-xs font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+      />
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Urgency tier
+      </label>
+      <select
+        value={urgencyTier}
+        onChange={(e) => setUrgencyTier(e.target.value as 'routine' | 'urgent' | 'critical')}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+      >
+        <option value="routine">Routine (72h SLA)</option>
+        <option value="urgent">Urgent (12h SLA)</option>
+        <option value="critical">Critical (4h SLA)</option>
+      </select>
       <div className="flex justify-end gap-2 mt-2">
         <button
           type="button"
@@ -579,6 +617,319 @@ export function ProposalDecisionButtons({ id }: { id: string }) {
         </button>
       </div>
       {error && <div className="text-[11px] text-red-600 font-mono">{error}</div>}
+    </div>
+  );
+}
+
+// ----- Tier visibility: accept-country form -------------------------------
+// 2026-05-19 (Phase D) BRD UC-V-5: CEO flips accepted=true for a non-Ecuador
+// origin. Form shows the 5 pipeline-check booleans -- all-green required to
+// enable submit. Submits as type='tier_visibility_window.accept_country'.
+
+const PIPELINE_CHECKS: Array<{ key: string; label: string }> = [
+  { key: 'dispatch_ready', label: 'Dispatch pipeline live (FedEx labels + tracking)' },
+  { key: 'customs_ready', label: 'Customs config done (HTS codes + broker)' },
+  { key: 'pricing_ready', label: 'Pricing engine has shipping_config + zone' },
+  { key: 'tax_ready', label: 'Tax matrix (US sales / intl duty) ready' },
+  { key: 'vendors_ready', label: 'At least 1 vendor onboarded with verified cost' },
+];
+
+export function TierVisibilityAcceptCountryForm({
+  origin,
+  rows,
+}: {
+  origin: string;
+  rows: TierVisibilityWindowRow[];
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [checks, setChecks] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(PIPELINE_CHECKS.map((c) => [c.key, false])),
+  );
+  const [reason, setReason] = useState('');
+  const [sourceArtifact, setSourceArtifact] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const allGreen = PIPELINE_CHECKS.every((c) => checks[c.key]);
+
+  async function submit() {
+    if (!allGreen) {
+      setError('All 5 pipeline checks must be green.');
+      return;
+    }
+    if (reason.trim().length < 10) {
+      setError('Rationale must be at least 10 chars (Rose P4).');
+      return;
+    }
+    const payload = {
+      origin_country: origin,
+      pipeline_checks: checks,
+      tiers_to_accept: rows.map((r) => r.tier),
+      row_ids: rows.map((r) => r.id),
+    };
+    setBusy(true);
+    setError(null);
+    const r = await postProposal({
+      type: 'tier_visibility_window.accept_country',
+      target_table: 'tier_visibility_windows',
+      target_id: origin,
+      payload,
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_artifact: sourceArtifact.trim() ? sourceArtifact.trim() : null,
+      source_table: 'tier_visibility_windows',
+      source_agent: 'job',
+      before_value: { accepted: false, origin_country: origin },
+      after_value: { accepted: true, origin_country: origin },
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setError(r.error ?? 'proposal failed');
+      return;
+    }
+    setOpen(false);
+    setReason('');
+    setSourceArtifact('');
+    setChecks(Object.fromEntries(PIPELINE_CHECKS.map((c) => [c.key, false])));
+    router.refresh();
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md transition-colors"
+      >
+        Propose: accept {origin}
+      </button>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-emerald-300 rounded-xl p-4 shadow-sm w-full max-w-xl">
+      <p className="text-sm font-semibold text-slate-900 mb-1">
+        Activate origin: <span className="font-mono">{origin}</span>
+      </p>
+      <p className="text-[11px] text-slate-600 mb-3">
+        All-green required. Flips {rows.length} tier row(s): {rows.map((r) => r.tier).join(', ')}.
+      </p>
+      <div className="space-y-1.5 mb-3 border border-slate-200 rounded-md p-3 bg-slate-50">
+        <p className="text-[11px] font-semibold text-slate-700 uppercase tracking-wide mb-1">
+          Pipeline pre-flight ({Object.values(checks).filter(Boolean).length}/5)
+        </p>
+        {PIPELINE_CHECKS.map((c) => (
+          <label key={c.key} className="flex items-start gap-2 text-xs text-slate-800 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={checks[c.key] ?? false}
+              onChange={(e) =>
+                setChecks((prev) => ({ ...prev, [c.key]: e.target.checked }))
+              }
+              disabled={busy}
+              className="mt-0.5"
+            />
+            <span>{c.label}</span>
+          </label>
+        ))}
+      </div>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Rationale (mandatory, &gt;=10 chars)
+      </label>
+      <textarea
+        rows={2}
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+        placeholder="Why is this origin ready now?"
+      />
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Source artifact (verifier output URL, optional)
+      </label>
+      <input
+        type="text"
+        value={sourceArtifact}
+        onChange={(e) => setSourceArtifact(e.target.value)}
+        disabled={busy}
+        placeholder="e.g. https://.../verifier_pipeline_checks_2026-05-19.json"
+        className="w-full text-xs font-mono border border-slate-300 rounded-md px-2 py-1 mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+      />
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            setReason('');
+            setSourceArtifact('');
+            setError(null);
+          }}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || !allGreen}
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+          title={!allGreen ? 'All 5 pipeline checks must be green' : ''}
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+    </div>
+  );
+}
+
+// ----- Tier visibility: edit window form ----------------------------------
+// 2026-05-19 (Phase D) BRD §7.B: edit earliest/latest delivery_days for a tier
+// row. Submits as type='tier_visibility_window.update'. Note: executor is NOT
+// wired in lib/admin/proposal-executors.ts in this commit -- only the proposal
+// row is created; approval will surface "unknown_proposal_type" until the
+// executor lands. AI-CPO wires the executor in a follow-up commit.
+
+export function TierVisibilityWindowEditForm({
+  row,
+}: {
+  row: TierVisibilityWindowRow;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [earliest, setEarliest] = useState(String(row.earliest_delivery_days));
+  const [latest, setLatest] = useState(String(row.latest_delivery_days));
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit() {
+    const e1 = Number.parseInt(earliest, 10);
+    const e2 = Number.parseInt(latest, 10);
+    if (!Number.isFinite(e1) || e1 < 0) return setError('earliest_delivery_days must be >= 0');
+    if (!Number.isFinite(e2) || e2 < e1) return setError('latest_delivery_days must be >= earliest');
+    if (reason.trim().length < 5) return setError('Rationale mandatory (>=5 chars).');
+
+    setBusy(true);
+    setError(null);
+    const r = await postProposal({
+      type: 'tier_visibility_window.update',
+      target_table: 'tier_visibility_windows',
+      target_id: row.id,
+      payload: {
+        earliest_delivery_days: e1,
+        latest_delivery_days: e2,
+      },
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_table: 'tier_visibility_windows',
+      source_id: row.id,
+      source_agent: 'job',
+      before_value: {
+        earliest_delivery_days: row.earliest_delivery_days,
+        latest_delivery_days: row.latest_delivery_days,
+      },
+      after_value: {
+        earliest_delivery_days: e1,
+        latest_delivery_days: e2,
+      },
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setError(r.error ?? 'proposal failed');
+      return;
+    }
+    setOpen(false);
+    setReason('');
+    router.refresh();
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-2 py-1 rounded transition-colors"
+      >
+        Edit
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-left bg-white border border-emerald-300 rounded-lg p-3 shadow-sm w-72">
+      <p className="text-xs font-semibold text-slate-900 mb-2">
+        Edit window <span className="font-mono">{row.tier}</span> /{' '}
+        <span className="font-mono">{row.origin_country}</span>
+      </p>
+      <div className="grid grid-cols-2 gap-2 mb-2">
+        <div>
+          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+            Earliest (days)
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={earliest}
+            onChange={(e) => setEarliest(e.target.value)}
+            disabled={busy}
+            className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+          />
+        </div>
+        <div>
+          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+            Latest (days)
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={latest}
+            onChange={(e) => setLatest(e.target.value)}
+            disabled={busy}
+            className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+          />
+        </div>
+      </div>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Reason</label>
+      <textarea
+        rows={2}
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+        placeholder="Why widen / tighten this window?"
+      />
+      <p className="text-[10px] text-amber-700 mb-2">
+        Note: executor not wired yet -- this proposal will land in queue but
+        approval will surface "unknown_proposal_type" until follow-up commit.
+      </p>
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            setReason('');
+            setError(null);
+          }}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
     </div>
   );
 }
