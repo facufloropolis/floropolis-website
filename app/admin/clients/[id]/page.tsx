@@ -26,9 +26,6 @@ import { notFound, redirect } from 'next/navigation';
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import Navigation from '@/components/Navigation';
-import TopBanner from '@/components/TopBanner';
-import Footer from '@/components/Footer';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
@@ -268,10 +265,7 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
   return (
-    <div className="min-h-screen bg-white">
-      <TopBanner />
-      <Navigation />
-
+    <>
       <main className="max-w-7xl mx-auto px-4 py-8">
         <MockupLinkBanner mockupHref="/mockups/v2-admin" pageLabel={`/admin/clients/${cp.user_id.slice(0, 8)}`} />
         <div className="mb-4 text-xs">
@@ -514,8 +508,6 @@ export default async function AdminClientDetailPage({ params }: PageProps) {
         />
         </WiringSection>
       </main>
-
-      <Footer />
-    </div>
+    </>
   );
 }

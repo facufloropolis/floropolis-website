@@ -36,9 +36,6 @@ import { redirect } from 'next/navigation';
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import Navigation from '@/components/Navigation';
-import TopBanner from '@/components/TopBanner';
-import Footer from '@/components/Footer';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
@@ -422,10 +419,7 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
   return (
-    <div className="min-h-screen bg-white">
-      <TopBanner />
-      <Navigation />
-
+    <>
       <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/v2-admin" pageLabel="/admin/clients" />
         {/* Header */}
@@ -679,8 +673,6 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
           Showing up to 500 rows. Approve / Reject create proposals in awaiting_facu state -- they take effect only after CEO approves in the approval queue.
         </p>
       </main>
-
-      <Footer />
-    </div>
+    </>
   );
 }

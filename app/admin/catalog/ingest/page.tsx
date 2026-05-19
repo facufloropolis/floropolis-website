@@ -27,9 +27,6 @@ export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import Navigation from '@/components/Navigation';
-import TopBanner from '@/components/TopBanner';
-import Footer from '@/components/Footer';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
@@ -254,10 +251,7 @@ export default async function AdminCatalogIngestPage({
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
   return (
-    <div className="min-h-screen bg-white">
-      <TopBanner />
-      <Navigation />
-
+    <>
       <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/admin-catalog-ingest" pageLabel="/admin/catalog/ingest" />
         <div className="mb-6">
@@ -505,8 +499,6 @@ export default async function AdminCatalogIngestPage({
           adapters that don&apos;t exist yet.
         </p>
       </main>
-
-      <Footer />
-    </div>
+    </>
   );
 }
