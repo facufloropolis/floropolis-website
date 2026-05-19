@@ -17,6 +17,7 @@
 // (which is owned by another agent and we are blocked from touching during Phase C).
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { getProdReadClient } from '@/lib/supabase/prod-server';
 
 export interface CascadeSummary {
   affected_sku_count: number;
@@ -163,6 +164,104 @@ export async function computeCascadeSummary(
   // No direct SKU join key today. Document as TBD.
   if (t === 'shipping_config.create') {
     return empty('shipping_config has no SKU join key yet (TBD)');
+  }
+
+  // ----- canonical_cost: approve / reject / delete -----------------------
+  // Rose v1.0 cascade (inbox 2026-05-20 00:10Z): join canonical_cost_sku_link
+  // to floropolis_inventory on PROD project. PostgREST doesn't do COUNT(DISTINCT)
+  // cleanly so we fetch sku_id list + headcount the live rows separately.
+  if (
+    t === 'approve_cost_row' ||
+    t === 'reject_cost_row' ||
+    t === 'delete_cost_row'
+  ) {
+    const costId =
+      (input.payload.cost_id as number | string | undefined) ?? input.target_id;
+    if (costId == null) return empty('missing cost_id in payload + target_id');
+    const prod = getProdReadClient();
+    if (!prod) return empty('prod_supabase_unset — set PROD_SUPABASE_SERVICE_KEY in Vercel');
+
+    const { data: links, error: linkErr } = await prod
+      .from('canonical_cost_sku_link')
+      .select('sku_id')
+      .eq('cost_id', costId);
+    if (linkErr) return empty(`link_query_failed: ${linkErr.message}`);
+    const skuIds = (links ?? [])
+      .map((r) => (r as { sku_id?: number | null }).sku_id)
+      .filter((v): v is number => typeof v === 'number');
+
+    let liveCount = 0;
+    if (skuIds.length > 0) {
+      const { count, error: invErr } = await prod
+        .from('floropolis_inventory')
+        .select('id', { count: 'exact', head: true })
+        .in('id', skuIds)
+        .eq('live', true);
+      if (invErr) return empty(`inventory_count_failed: ${invErr.message}`);
+      liveCount = count ?? 0;
+    }
+
+    const warnings: string[] = [];
+    if (skuIds.length === 0) warnings.push('no linked SKUs (likely PRELIMINARY cost row with sku_id=null)');
+    if (liveCount > 0) warnings.push(`${liveCount} live inventory rows`);
+    if (t === 'delete_cost_row' && skuIds.length > 0) {
+      warnings.push(`WARN: deleting cost with ${skuIds.length} linked SKUs`);
+    }
+
+    return {
+      affected_sku_count: skuIds.length,
+      affected_skus_sample: skuIds.slice(0, 10),
+      warnings,
+      computed_at,
+      computed_by: COMPUTED_BY,
+    };
+  }
+
+  // ----- canonical_cost: resolve_conflict --------------------------------
+  // Two conflicting cost_ids come in payload.before_cost_id + after_cost_id
+  // (or payload.cost_ids[]). Show linked + live count per side so Facu picks.
+  if (t === 'resolve_conflict') {
+    const beforeId = input.payload.before_cost_id as number | undefined;
+    const afterId = input.payload.after_cost_id as number | undefined;
+    const listed = input.payload.cost_ids as unknown;
+    const ids: number[] = Array.isArray(listed)
+      ? listed.filter((v): v is number => typeof v === 'number')
+      : [beforeId, afterId].filter((v): v is number => typeof v === 'number');
+    if (ids.length < 2) return empty('missing both cost_ids for conflict');
+
+    const prod = getProdReadClient();
+    if (!prod) return empty('prod_supabase_unset — set PROD_SUPABASE_SERVICE_KEY in Vercel');
+
+    const perSide: Array<{ cost_id: number; linked: number; live: number }> = [];
+    for (const id of ids) {
+      const { data: links, error: linkErr } = await prod
+        .from('canonical_cost_sku_link')
+        .select('sku_id')
+        .eq('cost_id', id);
+      if (linkErr) return empty(`link_query_failed cost_id=${id}: ${linkErr.message}`);
+      const skuIds = (links ?? [])
+        .map((r) => (r as { sku_id?: number | null }).sku_id)
+        .filter((v): v is number => typeof v === 'number');
+      let live = 0;
+      if (skuIds.length > 0) {
+        const { count } = await prod
+          .from('floropolis_inventory')
+          .select('id', { count: 'exact', head: true })
+          .in('id', skuIds)
+          .eq('live', true);
+        live = count ?? 0;
+      }
+      perSide.push({ cost_id: id, linked: skuIds.length, live });
+    }
+
+    const total = perSide.reduce((s, r) => s + r.linked, 0);
+    return {
+      affected_sku_count: total,
+      affected_skus_sample: [],
+      warnings: perSide.map((r) => `cost_id=${r.cost_id}: ${r.linked} linked SKU(s), ${r.live} live`),
+      computed_at,
+      computed_by: COMPUTED_BY,
+    };
   }
 
   // ----- refund.create / sku_mapping.confirm / client_profiles.status_change
