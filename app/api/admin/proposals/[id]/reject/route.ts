@@ -46,6 +46,8 @@ async function requireAdmin(): Promise<AuthOk | AuthFail> {
 
 interface RejectBody {
   reason?: unknown;
+  // Phase C (2026-05-19): Rose contract v1.0 P4 — facu_rationale required.
+  facu_rationale?: unknown;
 }
 
 export async function POST(
@@ -76,6 +78,26 @@ export async function POST(
     reason = trimmed.length > 0 ? trimmed.slice(0, 2000) : null;
   }
 
+  // facu_rationale is NOT NULL on admin_approvals. Min 5 chars.
+  // If client only sent {reason}, accept that as the rationale for back-compat.
+  let facuRationale: string | null = null;
+  if (
+    typeof body.facu_rationale === 'string' &&
+    body.facu_rationale.trim().length >= 5
+  ) {
+    facuRationale = body.facu_rationale.trim().slice(0, 4000);
+  } else if (reason && reason.length >= 5) {
+    facuRationale = reason;
+  } else {
+    return NextResponse.json(
+      {
+        error: 'invalid_facu_rationale',
+        detail: 'facu_rationale (or reason) is required, min 5 chars',
+      },
+      { status: 400 },
+    );
+  }
+
   const service = getBackupServiceClient();
 
   const { data: proposal, error: readErr } = await service
@@ -102,6 +124,7 @@ export async function POST(
     decision: 'reject',
     decided_by: auth.userId,
     reason,
+    facu_rationale: facuRationale,
   });
   if (apprErr) {
     Sentry.captureException(apprErr, {

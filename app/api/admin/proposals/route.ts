@@ -22,6 +22,7 @@ import * as Sentry from '@sentry/nextjs';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { KNOWN_PROPOSAL_TYPES } from '@/lib/admin/proposal-executors';
+import { computeCascadeSummary } from '@/lib/admin/proposal-cascade';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
@@ -133,6 +134,15 @@ interface CreateBody {
   payload?: unknown;
   warnings?: unknown;
   notes?: unknown;
+  // 2026-05-19 v0.4 (Phase B) — Rose contract v1.0 P3 requirements:
+  // every proposal must carry source_rationale + (where applicable) source_artifact.
+  source_rationale?: unknown;
+  source_artifact?: unknown;
+  source_table?: unknown;
+  source_id?: unknown;
+  source_agent?: unknown;
+  before_value?: unknown;
+  after_value?: unknown;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -226,7 +236,85 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     notes = trimmed.length > 0 ? trimmed.slice(0, 4000) : null;
   }
 
+  // Optional Phase-B fields (Rose contract v1.0).
+  // source_rationale is REQUIRED for any proposal touching a Rose-owned table.
+  // Catalog UI clients are required to send it; we default to notes if missing
+  // but log a soft warning so we can audit which surfaces still need wiring.
+  let sourceRationale: string | null = null;
+  if (typeof body.source_rationale === 'string' && body.source_rationale.trim().length > 0) {
+    sourceRationale = body.source_rationale.trim().slice(0, 4000);
+  } else if (notes) {
+    sourceRationale = notes;
+  }
+
+  let sourceArtifact: string | null = null;
+  if (typeof body.source_artifact === 'string' && body.source_artifact.trim().length > 0) {
+    sourceArtifact = body.source_artifact.trim().slice(0, 1024);
+  }
+
+  let sourceTable: string | null = null;
+  if (typeof body.source_table === 'string' && body.source_table.trim().length > 0) {
+    sourceTable = body.source_table.trim().slice(0, 128);
+  } else {
+    // Fall back to target_table for traceability — every UI today already
+    // submits target_table, so source_table mirrors it unless explicitly set.
+    sourceTable = targetTable;
+  }
+
+  let sourceId: string | null = null;
+  if (typeof body.source_id === 'string' && body.source_id.length > 0) {
+    sourceId = body.source_id.slice(0, 256);
+  } else if (typeof body.source_id === 'number') {
+    sourceId = String(body.source_id);
+  } else {
+    sourceId = targetId;
+  }
+
+  let sourceAgent: string = 'job';
+  if (typeof body.source_agent === 'string' && body.source_agent.length > 0) {
+    sourceAgent = body.source_agent.trim().slice(0, 32);
+  }
+
+  const beforeValue =
+    body.before_value !== undefined && body.before_value !== null
+      ? body.before_value
+      : null;
+  const afterValue =
+    body.after_value !== undefined && body.after_value !== null
+      ? body.after_value
+      : null;
+
   const service = getBackupServiceClient();
+
+  // Phase C / BRD UC-D-128: cascade impact (N SKUs affected) is computed AT
+  // proposal-creation time and stored on the row in admin_proposals.cascade_summary.
+  // The approval queue read-side then renders directly with zero recomputation.
+  // computeCascadeSummary is best-effort: failures are caught + logged but the
+  // proposal still inserts (with an empty cascade) so the UI can fall back.
+  let cascadeSummary: Record<string, unknown> = {};
+  try {
+    cascadeSummary = (await computeCascadeSummary(
+      {
+        type,
+        target_table: targetTable,
+        target_id: targetId,
+        payload: body.payload as Record<string, unknown>,
+      },
+      service,
+    )) as unknown as Record<string, unknown>;
+  } catch (e) {
+    Sentry.captureException(e, {
+      tags: { route: 'admin/proposals', step: 'cascade_compute' },
+    });
+    cascadeSummary = {
+      affected_sku_count: 0,
+      affected_skus_sample: [],
+      warnings: ['cascade_compute_threw'],
+      computed_at: new Date().toISOString(),
+      computed_by: 'api/admin/proposals POST (Phase C, errored)',
+    };
+  }
+
   const { data, error } = await service
     .from('admin_proposals')
     .insert({
@@ -238,6 +326,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       status: 'awaiting_facu',
       proposed_by: auth.userId,
       notes,
+      source_agent: sourceAgent,
+      source_table: sourceTable,
+      source_id: sourceId,
+      source_rationale: sourceRationale,
+      source_artifact: sourceArtifact,
+      before_value: beforeValue,
+      after_value: afterValue,
+      filter_status: 'passed',
+      cascade_summary: cascadeSummary,
     })
     .select('*')
     .maybeSingle();
@@ -251,6 +348,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 500 },
     );
   }
+
+  // TODO: Brevo email to CEO + Co-Admin on insert (Phase G -- deferred per CEO
+  // directive 2026-05-19). When wired, send transactional template with
+  // proposal.id, type, target_table, source_agent, source_rationale,
+  // cascade_summary.affected_sku_count, and a deep link to
+  // /admin/catalog/approval-queue. Recipient list = ADMIN_EMAILS (+ BCC
+  // facu@floropolis.com per the BCC standing rule). Trigger is right here,
+  // post-insert, before returning the response.
 
   return NextResponse.json({ proposal: data }, { status: 201 });
 }

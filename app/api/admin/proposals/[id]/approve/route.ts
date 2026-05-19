@@ -51,7 +51,14 @@ async function requireAdmin(): Promise<AuthOk | AuthFail> {
 
 interface ApproveBody {
   reason?: unknown;
+  // Phase C (2026-05-19): Rose contract v1.0 P4 -- facu_rationale is mandatory.
+  // urgency_tier drives SLA (routine 72h / urgent 12h / critical 4h).
+  facu_rationale?: unknown;
+  urgency_tier?: unknown;
 }
+
+const VALID_URGENCY_TIERS = ['routine', 'urgent', 'critical'] as const;
+type UrgencyTier = (typeof VALID_URGENCY_TIERS)[number];
 
 export async function POST(
   req: NextRequest,
@@ -79,6 +86,49 @@ export async function POST(
     }
     const trimmed = body.reason.trim();
     reason = trimmed.length > 0 ? trimmed.slice(0, 2000) : null;
+  }
+
+  // facu_rationale (NOT NULL on admin_approvals per Rose contract). Min 5 chars.
+  if (
+    typeof body.facu_rationale !== 'string' ||
+    body.facu_rationale.trim().length < 5
+  ) {
+    return NextResponse.json(
+      {
+        error: 'invalid_facu_rationale',
+        detail: 'facu_rationale is required, min 5 chars',
+      },
+      { status: 400 },
+    );
+  }
+  const facuRationale = body.facu_rationale.trim().slice(0, 4000);
+
+  // urgency_tier (admin_approvals NOT NULL DEFAULT 'routine'). Optional in body.
+  let urgencyTier: UrgencyTier = 'routine';
+  if (body.urgency_tier !== undefined && body.urgency_tier !== null) {
+    if (
+      typeof body.urgency_tier !== 'string' ||
+      !VALID_URGENCY_TIERS.includes(body.urgency_tier as UrgencyTier)
+    ) {
+      return NextResponse.json(
+        {
+          error: 'invalid_urgency_tier',
+          detail: `must be one of ${VALID_URGENCY_TIERS.join(', ')}`,
+        },
+        { status: 400 },
+      );
+    }
+    urgencyTier = body.urgency_tier as UrgencyTier;
+    // Bumping above routine requires the rationale to specifically justify it.
+    if (urgencyTier !== 'routine' && facuRationale.length < 20) {
+      return NextResponse.json(
+        {
+          error: 'invalid_facu_rationale',
+          detail: `urgency_tier=${urgencyTier} requires a rationale of at least 20 chars`,
+        },
+        { status: 400 },
+      );
+    }
   }
 
   const service = getBackupServiceClient();
@@ -138,6 +188,8 @@ export async function POST(
     decision: 'approve',
     decided_by: auth.userId,
     reason,
+    facu_rationale: facuRationale,
+    urgency_tier: urgencyTier,
   });
   if (apprErr) {
     Sentry.captureException(apprErr, {

@@ -1,20 +1,23 @@
 // Admin catalog -- approval queue (Facu triage for admin_proposals).
-// v2 | 2026-05-18 | Job_PM admin-port X7 [V8 SHADOW]
+// v3 | 2026-05-19 | Job_PM Phase C [V8 SHADOW]
 //
-// Reads admin_proposals from supabase-backup and lets Facu approve or reject
-// each one. Three tabs: awaiting_facu (default), approved, rejected. Tab state
-// via search param ?status=.
+// BRD UCs in scope: UC-3, UC-4, UC-D-114, UC-D-128 (cascade computation),
+// UC-O-204 (audit verification status), Section 5.M (multi-user collab).
 //
-// For each row we render:
-//   - type badge + target table/id + short payload summary
-//   - cascade impact: count of SKUs affected (computed from payload)
-//     - box_master.update      -> SKUs in floropolis_inventory_mirror with that box_type
-//     - pricing_constants.*    -> all SKUs (single global pricing constant)
-//     - shipping_config.create -> TBD (no join key in mirror today)
-//     - stub types             -> TBD
-//   - warnings rendered as red (critical) / amber (warn) / slate pills
-//   - proposed_by email (resolved via get_client_emails RPC) + proposed_at
-//   - awaiting tab: Approve (green) + Reject (with reason prompt) buttons
+// Reads admin_proposals from supabase-backup. Three tabs: awaiting_facu
+// (default), approved, rejected. Tab state via ?status=.
+//
+// Phase C upgrades vs v2:
+//   1. Reject reason is captured via RejectModal -> facu_rationale (NOT NULL).
+//   2. Approve picks urgency_tier (routine / urgent / critical) in ApproveModal
+//      and writes admin_approvals.urgency_tier.
+//   3. Cascade impact is read directly from admin_proposals.cascade_summary
+//      (pre-computed at proposal-creation time, see lib/admin/proposal-cascade.ts).
+//      Old rows without cascade_summary fall back to legacy runtime compute.
+//   4. Audit drill-down (UC-O-204): clicking an approved/rejected row opens a
+//      side panel showing the override_audit rows for that proposal.
+//   5. Replay button on approved rows with verification_passed=false.
+//   6. Filter chips by proposal type and source_agent.
 //
 // Access:
 //   - Middleware guards /admin and restricts to ADMIN_EMAILS or
@@ -32,7 +35,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import Navigation from '@/components/Navigation';
 import TopBanner from '@/components/TopBanner';
 import Footer from '@/components/Footer';
-import ProposalActions from './Actions';
+
+import RowsList, { type ProposalRowVm } from './RowsList';
+import type { AuditRow } from './AuditDrillDown';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
@@ -55,6 +60,9 @@ interface ProposalRow {
   proposed_by: string | null;
   proposed_at: string;
   notes: string | null;
+  source_agent: string | null;
+  source_rationale: string | null;
+  cascade_summary: Record<string, unknown> | null;
 }
 
 interface WarningPill {
@@ -96,13 +104,13 @@ function payloadSummary(p: ProposalRow): string {
   if (!payload || typeof payload !== 'object') return '(no payload)';
   const keys = Object.keys(payload);
   if (keys.length === 0) return '(empty payload)';
-  // Render up to 3 fields as key=value, truncating long values.
   const parts: string[] = [];
   for (const k of keys.slice(0, 3)) {
     const v = (payload as Record<string, unknown>)[k];
     let s: string;
     if (v == null) s = 'null';
-    else if (typeof v === 'string') s = v.length > 40 ? v.slice(0, 40) + '...' : v;
+    else if (typeof v === 'string')
+      s = v.length > 40 ? v.slice(0, 40) + '...' : v;
     else if (typeof v === 'number' || typeof v === 'boolean') s = String(v);
     else s = JSON.stringify(v).slice(0, 40);
     parts.push(`${k}=${s}`);
@@ -111,22 +119,31 @@ function payloadSummary(p: ProposalRow): string {
   return parts.join(', ') + suffix;
 }
 
-function fmtDate(iso: string | null): string {
-  if (!iso) return '-';
-  const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) return iso;
-  return d.toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
 function tabHref(s: Status): string {
   if (s === 'awaiting_facu') return '/admin/catalog/approval-queue';
   return `/admin/catalog/approval-queue?status=${s}`;
+}
+
+// Read pre-computed cascade_summary from the row. If empty (old rows) we
+// expose a legacy fallback flag the caller uses to drive a single follow-up
+// query against floropolis_inventory_mirror. New rows skip that path entirely.
+function cascadeFromSummary(
+  cs: Record<string, unknown> | null,
+): { value: number | null; label: string } | null {
+  if (!cs || typeof cs !== 'object') return null;
+  const cnt = cs.affected_sku_count;
+  if (typeof cnt !== 'number') return null;
+  const warnings = Array.isArray(cs.warnings)
+    ? (cs.warnings.filter((w) => typeof w === 'string') as string[])
+    : [];
+  const isAll = warnings.some((w) => w.toLowerCase().includes('all skus'));
+  if (cnt === 0 && warnings.length > 0) {
+    // 0 + a warning means "no SKU footprint" or "TBD" -- show the warning text.
+    const first = warnings[0];
+    return { value: null, label: first };
+  }
+  const noun = `${cnt.toLocaleString()} SKU${cnt === 1 ? '' : 's'}`;
+  return { value: cnt, label: isAll ? `${noun} (all)` : noun };
 }
 
 export const metadata = {
@@ -165,8 +182,9 @@ export default async function AdminCatalogApprovalQueuePage({
     ? requested
     : 'awaiting_facu';
 
-  // Counts for tab badges (single round trip per status; small table) ----
   const backup = getBackupServiceClient();
+
+  // Counts for tab badges ------------------------------------------------
   const countResults = await Promise.all(
     STATUS_VALUES.map(async (s) => {
       const { count } = await backup
@@ -187,7 +205,7 @@ export default async function AdminCatalogApprovalQueuePage({
   const { data: rowsRaw, error: rowsErr } = await backup
     .from('admin_proposals')
     .select(
-      'id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes',
+      'id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes, source_agent, source_rationale, cascade_summary',
     )
     .eq('status', status)
     .order('proposed_at', { ascending: false })
@@ -211,24 +229,22 @@ export default async function AdminCatalogApprovalQueuePage({
     });
   }
 
-  // Cascade impact pre-compute ------------------------------------------
-  //   - box_master.update    -> SKUs with that box_type
-  //   - pricing_constants.*  -> total SKU count (single global constant)
-  //   - shipping_config.*    -> TBD
-  //   - everything else      -> TBD (stubs)
-  const needsBoxCounts = rows.some(
+  // Cascade fallback (only for old rows without cascade_summary) --------
+  // Group SKU-by-box_type into a single query, and a single count() for the
+  // total. This matches the v2 behavior for any legacy rows still without
+  // pre-computed cascade.
+  const legacyRows = rows.filter((r) => cascadeFromSummary(r.cascade_summary) === null);
+  const legacyNeedsBoxCounts = legacyRows.some(
     (r) => r.type === 'box_master.update' && !!r.target_id,
   );
-  const needsTotal = rows.some((r) =>
+  const legacyNeedsTotal = legacyRows.some((r) =>
     r.type.startsWith('pricing_constants.'),
   );
-
   const boxTypeCounts: Record<string, number> = {};
-  if (needsBoxCounts) {
-    // Group SKU counts by box_type in a single query.
+  if (legacyNeedsBoxCounts) {
     const wantedBoxTypes = Array.from(
       new Set(
-        rows
+        legacyRows
           .filter((r) => r.type === 'box_master.update' && !!r.target_id)
           .map((r) => r.target_id as string),
       ),
@@ -244,22 +260,27 @@ export default async function AdminCatalogApprovalQueuePage({
       }
     }
   }
-
-  let totalSkuCount: number | null = null;
-  if (needsTotal) {
+  let legacyTotalSkuCount: number | null = null;
+  if (legacyNeedsTotal) {
     const { count } = await backup
       .from('floropolis_inventory_mirror')
       .select('id', { count: 'exact', head: true });
-    totalSkuCount = count ?? 0;
+    legacyTotalSkuCount = count ?? 0;
   }
 
-  function cascadeFor(p: ProposalRow): { value: number | null; label: string } {
+  function legacyCascadeFor(p: ProposalRow): {
+    value: number | null;
+    label: string;
+  } {
     if (p.type === 'box_master.update' && p.target_id) {
       const n = boxTypeCounts[p.target_id] ?? 0;
-      return { value: n, label: `${n.toLocaleString()} SKU${n === 1 ? '' : 's'}` };
+      return {
+        value: n,
+        label: `${n.toLocaleString()} SKU${n === 1 ? '' : 's'}`,
+      };
     }
     if (p.type.startsWith('pricing_constants.')) {
-      const n = totalSkuCount ?? 0;
+      const n = legacyTotalSkuCount ?? 0;
       return {
         value: n,
         label: `${n.toLocaleString()} SKU${n === 1 ? '' : 's'} (all)`,
@@ -268,24 +289,94 @@ export default async function AdminCatalogApprovalQueuePage({
     return { value: null, label: 'TBD' };
   }
 
-  // Cascade total across the awaiting tab (for the top tile).
-  let cascadeTotal = 0;
-  let cascadeHasUnknown = false;
-  if (status === 'awaiting_facu') {
-    for (const r of rows) {
-      const c = cascadeFor(r);
-      if (c.value == null) cascadeHasUnknown = true;
-      else cascadeTotal += c.value;
+  // Audit drill-down data (approved/rejected tabs only) -----------------
+  // Approved tabs: we want override_audit rows. Rejected tabs: we still allow
+  // drill-down to show the rejection rationale and any audit history (usually
+  // none, but we render the row so the panel is consistent).
+  const proposalIds = rows.map((r) => r.id);
+  const auditByProposal: Record<string, AuditRow[]> = {};
+  // Track which proposals have a "stale" or "failed" verification on their
+  // most-recent audit row so we can badge them in the card list.
+  const staleByProposal = new Set<string>();
+  const failedByProposal = new Set<string>();
+  if (proposalIds.length > 0 && status !== 'awaiting_facu') {
+    const { data: auditRowsRaw } = await backup
+      .from('override_audit')
+      .select(
+        'id, proposal_id, target_table, target_id, before_jsonb, after_jsonb, applied_at, applied_by_function, verified_by, verified_at, verification_passed, verification_notes',
+      )
+      .in('proposal_id', proposalIds)
+      .order('applied_at', { ascending: false });
+    const auditRows = (auditRowsRaw ?? []) as Array<
+      AuditRow & { proposal_id: string }
+    >;
+    for (const a of auditRows) {
+      if (!auditByProposal[a.proposal_id]) auditByProposal[a.proposal_id] = [];
+      auditByProposal[a.proposal_id].push(a);
+    }
+    // For each proposal, look at its most-recent audit (already sorted desc)
+    // to determine staleness / failure.
+    for (const [pid, arr] of Object.entries(auditByProposal)) {
+      const newest = arr[0];
+      if (!newest) continue;
+      if (newest.verification_passed === false) failedByProposal.add(pid);
+      if (
+        newest.verification_passed == null &&
+        newest.applied_at &&
+        Date.now() - new Date(newest.applied_at).getTime() >
+          24 * 60 * 60 * 1000
+      ) {
+        staleByProposal.add(pid);
+      }
     }
   }
 
-  // Critical-warning count for the top tile.
-  const criticalCount = rows.reduce((acc, r) => {
-    const ws = asWarnings(r.warnings);
-    return acc + (ws.some((w) => w.severity === 'critical') ? 1 : 0);
-  }, 0);
+  // Build view models ---------------------------------------------------
+  const vms: ProposalRowVm[] = rows.map((p) => {
+    const cascade =
+      cascadeFromSummary(p.cascade_summary) ?? legacyCascadeFor(p);
+    return {
+      id: p.id,
+      type: p.type,
+      target_table: p.target_table,
+      target_id: p.target_id,
+      payload_summary: payloadSummary(p),
+      warnings: asWarnings(p.warnings),
+      status: p.status,
+      proposer_email: p.proposed_by
+        ? (emailMap[p.proposed_by] ?? p.proposed_by.slice(0, 8) + '...')
+        : 'unknown',
+      proposed_at: p.proposed_at,
+      notes: p.notes,
+      source_agent: p.source_agent,
+      source_rationale: p.source_rationale,
+      cascade,
+      has_stale_verification: staleByProposal.has(p.id),
+      has_failed_verification: failedByProposal.has(p.id),
+    };
+  });
 
-  // Render --------------------------------------------------------------
+  // Filter chip universes ----------------------------------------------
+  const typeUniverse = Array.from(new Set(vms.map((v) => v.type))).sort();
+  const agentUniverse = Array.from(
+    new Set(vms.map((v) => v.source_agent ?? 'unknown')),
+  ).sort();
+
+  // Cascade total + critical for the top tile (awaiting tab) -----------
+  let cascadeTotal = 0;
+  let cascadeHasUnknown = false;
+  if (status === 'awaiting_facu') {
+    for (const v of vms) {
+      if (v.cascade.value == null) cascadeHasUnknown = true;
+      else cascadeTotal += v.cascade.value;
+    }
+  }
+  const criticalCount = vms.reduce(
+    (acc, v) =>
+      acc + (v.warnings.some((w) => w.severity === 'critical') ? 1 : 0),
+    0,
+  );
+
   return (
     <div className="min-h-screen bg-white">
       <TopBanner />
@@ -296,8 +387,9 @@ export default async function AdminCatalogApprovalQueuePage({
           <h1 className="text-2xl font-bold text-slate-900">Approval queue</h1>
           <p className="text-slate-500 text-sm mt-1 max-w-2xl">
             Every proposal from across the catalog control plane lands here.
-            Approve or reject each. Cascade impact and warnings are shown
-            inline. Data source: admin_proposals on supabase-backup.
+            Approve or reject each. Cascade impact is pre-computed and shown
+            inline. Click any approved or rejected row to see its audit trail.
+            Data source: admin_proposals on supabase-backup.
           </p>
         </div>
 
@@ -331,7 +423,7 @@ export default async function AdminCatalogApprovalQueuePage({
         </div>
 
         {/* Tiles (awaiting tab only) */}
-        {status === 'awaiting_facu' && rows.length > 0 && (
+        {status === 'awaiting_facu' && vms.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
             <Tile
               label="Awaiting your sign-off"
@@ -362,169 +454,20 @@ export default async function AdminCatalogApprovalQueuePage({
           </div>
         )}
 
-        {/* Body */}
-        {rows.length === 0 ? (
-          <div className="text-center py-20 text-slate-500 border border-dashed border-slate-200 rounded-xl">
-            {status === 'awaiting_facu' ? (
-              <>
-                <p className="font-semibold text-slate-700">
-                  No proposals awaiting your sign-off.
-                </p>
-                <p className="text-sm mt-1">
-                  The catalog is in steady state.
-                </p>
-              </>
-            ) : status === 'approved' ? (
-              <>
-                <p className="font-semibold text-slate-700">
-                  No approved proposals yet.
-                </p>
-                <p className="text-sm mt-1">
-                  Once you approve one it will show up here.
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="font-semibold text-slate-700">
-                  No rejected proposals.
-                </p>
-                <p className="text-sm mt-1">
-                  Anything you reject will land here with the reason you gave.
-                </p>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {rows.map((p) => {
-              const warnings = asWarnings(p.warnings);
-              const hasCritical = warnings.some((w) => w.severity === 'critical');
-              const hasWarn = warnings.some((w) => w.severity === 'warn');
-              const cardBorder = hasCritical
-                ? 'border-red-300'
-                : hasWarn
-                  ? 'border-amber-300'
-                  : 'border-slate-200';
-              const cascade = cascadeFor(p);
-              const proposerEmail = p.proposed_by
-                ? (emailMap[p.proposed_by] ?? p.proposed_by.slice(0, 8) + '...')
-                : 'unknown';
-
-              return (
-                <div
-                  key={p.id}
-                  className={`bg-white rounded-xl border ${cardBorder} p-5 hover:border-slate-300 transition-colors`}
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-[10px] text-slate-400">
-                          {p.id.slice(0, 8)}
-                        </span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold uppercase tracking-wide">
-                          {p.type}
-                        </span>
-                        <span className="font-semibold text-slate-900 text-sm break-all">
-                          {p.target_table}
-                          {p.target_id ? ` / ${p.target_id}` : ''}
-                        </span>
-                        {hasCritical && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-semibold">
-                            CRITICAL
-                          </span>
-                        )}
-                        {hasWarn && !hasCritical && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">
-                            WARN
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-500 mt-1">
-                        Proposed by {proposerEmail} on {fmtDate(p.proposed_at)}
-                      </p>
-                    </div>
-                    {status === 'awaiting_facu' && (
-                      <ProposalActions id={p.id} />
-                    )}
-                  </div>
-
-                  {/* Payload summary */}
-                  <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 p-3">
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">
-                      Payload
-                    </div>
-                    <div className="text-xs text-slate-700 font-mono break-words">
-                      {payloadSummary(p)}
-                    </div>
-                  </div>
-
-                  {/* Cascade impact */}
-                  <div className="border-t border-slate-100 pt-3 mb-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-semibold text-slate-700">
-                        Cascade impact:{' '}
-                        <span
-                          className={
-                            cascade.value == null
-                              ? 'font-mono text-slate-500'
-                              : 'font-mono text-slate-900'
-                          }
-                        >
-                          {cascade.label}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Warnings */}
-                  {warnings.length > 0 && (
-                    <div className="border-t border-slate-100 pt-3 space-y-1.5">
-                      {warnings.map((w, i) => {
-                        const pill =
-                          w.severity === 'critical'
-                            ? 'bg-red-100 text-red-800 border-red-200'
-                            : w.severity === 'warn'
-                              ? 'bg-amber-100 text-amber-800 border-amber-200'
-                              : 'bg-slate-100 text-slate-700 border-slate-200';
-                        return (
-                          <div
-                            key={i}
-                            className={`text-xs flex items-start gap-2 px-2.5 py-1.5 rounded border ${pill}`}
-                          >
-                            <span className="font-bold shrink-0">
-                              {w.severity === 'critical'
-                                ? '!!'
-                                : w.severity === 'warn'
-                                  ? '!'
-                                  : '.'}
-                            </span>
-                            <span>{w.text}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Notes (if any) */}
-                  {p.notes && (
-                    <div className="border-t border-slate-100 pt-3 mt-3 text-xs text-slate-600">
-                      <span className="font-semibold text-slate-700">
-                        Notes:
-                      </span>{' '}
-                      {p.notes}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <RowsList
+          rows={vms}
+          auditByProposal={auditByProposal}
+          status={status}
+          typeUniverse={typeUniverse}
+          agentUniverse={agentUniverse}
+        />
 
         <p className="text-xs text-slate-400 mt-8">
           Data source: supabase-backup admin_proposals. Approve =&gt; executor
           runs against the target table, override_audit row written, status
           flips to approved. Reject =&gt; no executor, status flips to rejected
-          with the reason you give.
+          with the rationale you give. Cascade impact is pre-computed at
+          proposal-creation time (admin_proposals.cascade_summary).
         </p>
       </main>
 
