@@ -33,10 +33,15 @@ export interface WiringPageEntry {
 export const ADMIN_WIRING: WiringPageEntry[] = [
   {
     page: '/admin',
-    pageLabel: 'Admin index',
+    pageLabel: 'Admin index (v2 shell)',
     mockupHref: '/mockups/v2-admin',
     sections: [
-      { id: 'tool-grid', level: 'LIVE', note: 'Live counts inline per card via supabase-backup; real navigation to all admin tools.' },
+      { id: 'today-panel',     level: 'LIVE', note: 'admin_proposals where status=awaiting_facu, top 8 by proposed_at desc; per-row priority badge from payload.urgency_tier; Open button deep-links into approval-queue.' },
+      { id: 'kpi-tiles',       level: 'LIVE', note: 'Reused counter queries (catalog_classifications total/publishable, admin_proposals awaiting_facu, orders open, refund_approvals pending, client_profiles pending) -- moved verbatim from W2 /admin index.' },
+      { id: 'recent-activity', level: 'LIVE', note: 'Last 5 admin_proposals (any status) by proposed_at desc. Stream expands to executor + audit feed in W4.' },
+      { id: 'health-bar',      level: 'MOCK', note: '6 J.x dimension pills hardcoded from the mockup -- awaiting J.x metric queries (Round 3).' },
+      { id: 'sidebar',         level: 'LIVE', note: 'Persistent left nav (w-56) across all /admin/* via app/admin/layout.tsx. Active state via usePathname prefix match.' },
+      { id: 'command-palette', level: 'LIVE', note: 'Cmd+K / Ctrl+K modal. Server-side autocomplete via POST /api/admin/search (SKU + order ilike). Screen list filtered client-side.' },
     ],
   },
   {
