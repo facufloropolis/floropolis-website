@@ -9,7 +9,9 @@ import { getCartItems, getSubtotal } from '@/lib/quote-cart'
 
 // Conversion paths where popups must NEVER fire — interrupting a user mid-checkout
 // or mid-signup tanks completion rate. Add new flows here as they ship.
-const SUPPRESS_PATHS = ['/checkout', '/signup', '/order-confirmation', '/admin', '/account', '/auth']
+// 2026-05-19 (Facu): added /quote (the basket) and /sample-box — popups in the
+// cart/basket interrupt purchase intent. Same SUPPRESS_PATHS now applied on prod.
+const SUPPRESS_PATHS = ['/checkout', '/signup', '/order-confirmation', '/admin', '/account', '/auth', '/quote', '/sample-box']
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
