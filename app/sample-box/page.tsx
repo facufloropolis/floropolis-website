@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { Truck, CheckCircle2, ArrowRight, Package } from "lucide-react";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
+import { validateUSPhone } from "@/lib/phone-utils";
 
 // US states only (50 states + DC) – value = abbreviation for sheet
 const US_STATES = [
@@ -90,6 +91,9 @@ function SampleBoxContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  // Audit #57 (2026-05-19): field-level phone validation. Phone is OPTIONAL
+  // on /sample-box, so we only validate when the user provided a value.
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   // EXP-069: Pre-fill from localStorage (shared key with /quote form — cross-form pre-fill)
   useEffect(() => {
@@ -127,6 +131,14 @@ function SampleBoxContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Phone is optional on /sample-box; only validate when provided.
+    setPhoneError(null);
+    if (formData.phone.trim() && !validateUSPhone(formData.phone)) {
+      setPhoneError("Enter a 10-digit US phone number or leave blank.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     // EXP-069: Save contact info so quote form pre-fills for same visitor
@@ -501,10 +513,11 @@ function SampleBoxContent() {
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      onChange={(e) => { setFormData({...formData, phone: e.target.value}); if (phoneError) setPhoneError(null); }}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${phoneError ? "border-red-300" : "border-slate-300"}`}
                       placeholder="For delivery updates"
                     />
+                    {phoneError && <p className="text-xs text-red-600 mt-1">{phoneError}</p>}
                   </div>
                 </div>
 

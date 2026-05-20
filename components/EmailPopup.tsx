@@ -1,5 +1,14 @@
 'use client'
 
+// ============================================================================
+// EmailPopup — timers loosened 2026-05-19 (Audit #57).
+//
+// Prior behavior: desktop 15s, mobile 45s. Audit found 15s on desktop was too
+// aggressive (the original file comment already noted 10s caused bounces).
+// Current behavior: desktop 60s, mobile 90s. Scroll-50% trigger preserved.
+// Session cap: once shown OR dismissed in a session, do not re-trigger.
+// ============================================================================
+
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
@@ -18,13 +27,20 @@ export default function EmailPopup() {
   const [hasBeenDismissed, setHasBeenDismissed] = useState(false)
 
   useEffect(() => {
-    // Check if already dismissed in this session
-    if (sessionStorage.getItem('emailPopupDismissed')) {
+    // Session-cap check (Audit #57, 2026-05-19): once shown OR dismissed
+    // OR submitted in this session, do not show again. Uses the existing
+    // `emailPopupDismissed` key plus a new `email_popup_shown` key for the
+    // "already opened, then user navigated" case (prior code only capped on
+    // explicit dismiss, so an SPA route change could re-trigger).
+    if (
+      sessionStorage.getItem('emailPopupDismissed') ||
+      sessionStorage.getItem('email_popup_shown')
+    ) {
       setHasBeenDismissed(true)
       return
     }
 
-    // Check if already submitted
+    // Check if already submitted (persisted across sessions)
     if (localStorage.getItem('emailPopupSubmitted')) {
       setHasBeenDismissed(true)
       return
@@ -32,26 +48,30 @@ export default function EmailPopup() {
 
     let hasTriggered = false
 
-    // Timer trigger: 45s on mobile (was 10s — too aggressive, caused bounces), 15s on desktop
+    const markShown = (trigger: 'timer' | 'scroll') => {
+      setIsVisible(true)
+      hasTriggered = true
+      sessionStorage.setItem('email_popup_shown', '1')
+      pushEvent('email_popup_shown', { trigger, page: window.location.pathname })
+    }
+
+    // Timer trigger (Audit #57, 2026-05-19): desktop 60s (was 15s),
+    // mobile 90s (was 45s). Both interrupts loosened to reduce bounce.
     const isMobile = window.innerWidth < 768
     const timer = setTimeout(() => {
       if (!hasTriggered && !hasBeenDismissed) {
-        setIsVisible(true)
-        hasTriggered = true
-        pushEvent('email_popup_shown', { trigger: 'timer', page: window.location.pathname })
+        markShown('timer')
       }
-    }, isMobile ? 45000 : 15000)
+    }, isMobile ? 90000 : 60000)
 
-    // Scroll trigger: 50% of page
+    // Scroll trigger: 50% of page (unchanged — high-intent signal)
     const handleScroll = () => {
       if (hasTriggered || hasBeenDismissed) return
 
       const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
 
       if (scrollPercent >= 50) {
-        setIsVisible(true)
-        hasTriggered = true
-        pushEvent('email_popup_shown', { trigger: 'scroll', page: window.location.pathname })
+        markShown('scroll')
       }
     }
 

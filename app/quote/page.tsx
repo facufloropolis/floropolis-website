@@ -21,6 +21,7 @@ import {
 import { addItem } from "@/lib/quote-cart";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-engine";
+import { validateUSPhone } from "@/lib/phone-utils";
 import { type Product } from "@/lib/data/products";
 import { PRODUCT_IMAGES_BASE_URL } from "@/lib/catalog-constants";
 import { getProductImage } from "@/lib/product-images";
@@ -254,14 +255,25 @@ export default function QuotePage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
+    const phoneRaw = (formData.get("phone") as string) || "";
+
+    // Phone is REQUIRED on /quote (the field has `required` + a "*" label).
+    // Audit #57 (2026-05-19): validate format here so /api/notify-quote
+    // doesn't receive obviously-malformed numbers. Shared validator: @/lib/phone-utils.
+    if (!validateUSPhone(phoneRaw)) {
+      setError("Please enter a valid 10-digit US phone number.");
+      return;
+    }
+
+    setSubmitting(true);
+
     const payload = {
       business_name: formData.get("business_name") as string,
       contact_name: formData.get("contact_name") as string,
       email: formData.get("email") as string,
-      phone: (formData.get("phone") as string) || null,
+      phone: phoneRaw || null,
       is_existing_client: isExistingClient,
       shipping_address: (formData.get("shipping_address") as string) || null,
       shipping_city: (formData.get("shipping_city") as string) || null,

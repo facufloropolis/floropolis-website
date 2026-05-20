@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createBackupClient } from "@/lib/supabase/backup-client";
+import { formatUSPhone, digitsOnly, validateUSPhone } from "@/lib/phone-utils";
 import { Mail, Lock, ArrowRight, ArrowLeft, Loader2, CheckCircle, Phone, Instagram, Building2 } from "lucide-react";
 
 // ----- constants -----
@@ -31,18 +32,8 @@ function GoogleIcon() {
   );
 }
 
-// Format raw digits as (XXX) XXX-XXXX while typing
-function formatUsPhone(raw: string): string {
-  const digits = raw.replace(/\D/g, "").slice(0, 10);
-  if (digits.length === 0) return "";
-  if (digits.length <= 3) return `(${digits}`;
-  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-}
-
-function digitsOnly(s: string): string {
-  return s.replace(/\D/g, "");
-}
+// Phone helpers (formatUSPhone, digitsOnly, validateUSPhone) moved to
+// @/lib/phone-utils — see Audit #57 (2026-05-19), shared with /quote + /sample-box.
 
 function isValidEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
@@ -197,8 +188,7 @@ function SignupWizard() {
       setBusinessNameError("Required");
       ok = false;
     }
-    const rawPhone = digitsOnly(phone);
-    if (rawPhone.length !== 10) {
+    if (!validateUSPhone(phone)) {
       setPhoneError("Enter a 10-digit US phone number");
       ok = false;
     }
@@ -421,7 +411,7 @@ function SignupWizard() {
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => { setPhone(formatUsPhone(e.target.value)); if (phoneError) setPhoneError(null); }}
+                  onChange={(e) => { setPhone(formatUSPhone(e.target.value)); if (phoneError) setPhoneError(null); }}
                   placeholder="(786) 930-8463"
                   required
                   inputMode="tel"

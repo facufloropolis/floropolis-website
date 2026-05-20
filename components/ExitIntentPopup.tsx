@@ -1,11 +1,27 @@
 'use client'
 
+// ============================================================================
+// KILLED 2026-05-19 (Audit #57) — feature-flagged OFF by default.
+//
+// Rationale: This popup fires silently — there is NO `exit_popup_shown` event
+// pushed to GTM/dataLayer when the modal opens (only on click/submit). That
+// makes it unmeasurable: we cannot tell impressions, dismissal rate, or true
+// conversion lift. Killed pending instrumentation + A/B test.
+//
+// To re-enable: set NEXT_PUBLIC_EXIT_INTENT_ENABLED=true in Vercel (and wire
+// `exit_popup_shown` into the open paths around lines 60 and 138 before the
+// A/B test starts). Component code is preserved below for re-enable.
+// ============================================================================
+
 import { useState, useEffect } from 'react'
 import { X, Gift, Percent, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { pushEvent, CTA_EVENTS } from '@/lib/gtm'
 import { getCartItems, getSubtotal } from '@/lib/quote-cart'
+
+// Feature flag: OFF unless explicitly set in env. Default OFF.
+const EXIT_INTENT_ENABLED = process.env.NEXT_PUBLIC_EXIT_INTENT_ENABLED === 'true'
 
 // Conversion paths where popups must NEVER fire — interrupting a user mid-checkout
 // or mid-signup tanks completion rate. Add new flows here as they ship.
@@ -16,6 +32,15 @@ const SUPPRESS_PATHS = ['/checkout', '/signup', '/order-confirmation', '/admin',
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/floropolis.com/s/AKfycbx9xMMu0u_CCuh7TTD0d45HBYK05YwjV1jZeKzyk4tCApGuedSQvVQFAistwAEPIOmY/exec'
 
 export default function ExitIntentPopup() {
+  // Feature-flag gate (Audit #57, 2026-05-19): default OFF until instrumented.
+  // Constant value across the component lifecycle, so hooks-order is preserved.
+  if (!EXIT_INTENT_ENABLED) {
+    return null
+  }
+  return <ExitIntentPopupImpl />
+}
+
+function ExitIntentPopupImpl() {
   const router = useRouter()
   const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(false)
