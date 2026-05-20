@@ -796,6 +796,154 @@ async function execCanonicalCostAuditOnly(
 }
 
 // ---------------------------------------------------------------------------
+// catalog_quality_weight.update / catalog_quality_threshold.update
+// ---------------------------------------------------------------------------
+//
+// Catalog-v2 (2026-05-19) introduces two new config tables editable by Facu via
+// /admin/catalog/config: catalog_quality_weights (per-gate weight 0..100, sum=100)
+// and catalog_quality_thresholds (perfect_min_score etc.). Edits flow through
+// admin_proposals just like pricing_constants.update.
+//
+// catalog_quality_weight.update:
+//   target_id = gate_id
+//   payload = { weight: number, evaluated?: boolean }
+//   Enforces sum(weight)=100 AFTER the proposed change. If the sum drifts, the
+//   executor fails and the audit row is not written.
+//
+// catalog_quality_threshold.update:
+//   target_id = threshold_id ('perfect_min_score', 'competitive_min_comp_adv')
+//   payload = { value: number }
+
+async function execCatalogQualityWeightUpdate(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  if (!proposal.target_id) return fail('missing_target_id');
+
+  const rawWeight = payload.weight;
+  const weightNum =
+    typeof rawWeight === 'number' ? rawWeight : Number(rawWeight);
+  if (!Number.isFinite(weightNum) || weightNum < 0 || weightNum > 100) {
+    return fail('invalid_weight: must be number 0..100');
+  }
+  const weightInt = Math.round(weightNum);
+
+  const update: Record<string, unknown> = {
+    weight: weightInt,
+    updated_at: new Date().toISOString(),
+  };
+  if (typeof payload.evaluated === 'boolean') update.evaluated = payload.evaluated;
+  if (proposal.proposed_by) update.updated_by = proposal.proposed_by;
+
+  const { data: before, error: readErr } = await service
+    .from('catalog_quality_weights')
+    .select('*')
+    .eq('gate_id', proposal.target_id)
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!before) return fail('target_not_found');
+
+  // Verify the post-update sum stays at 100.
+  const { data: allWeights, error: allErr } = await service
+    .from('catalog_quality_weights')
+    .select('gate_id, weight');
+  if (allErr) return fail(`sum_check_read_failed: ${allErr.message}`);
+  const projected = (allWeights ?? []).reduce<number>((acc, row) => {
+    const w =
+      row.gate_id === proposal.target_id
+        ? weightInt
+        : typeof row.weight === 'number'
+          ? row.weight
+          : Number(row.weight) || 0;
+    return acc + w;
+  }, 0);
+  if (projected !== 100) {
+    return fail(
+      `weights_sum_drift: post-update sum=${projected}, expected 100. Adjust other weights first.`,
+    );
+  }
+
+  const { data: after, error: updErr } = await service
+    .from('catalog_quality_weights')
+    .update(update)
+    .eq('gate_id', proposal.target_id)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'catalog_quality_weights',
+        target_id: proposal.target_id,
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execCatalogQualityWeightUpdate',
+      },
+    ],
+  };
+}
+
+async function execCatalogQualityThresholdUpdate(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  if (!proposal.target_id) return fail('missing_target_id');
+
+  const rawValue = payload.value;
+  const valueNum = typeof rawValue === 'number' ? rawValue : Number(rawValue);
+  if (!Number.isFinite(valueNum)) {
+    return fail('invalid_value: must be a finite number');
+  }
+  // Sanity-clamp for perfect_min_score so a typo can't render the queue empty.
+  if (proposal.target_id === 'perfect_min_score' && (valueNum < 50 || valueNum > 100)) {
+    return fail('perfect_min_score must be between 50 and 100');
+  }
+
+  const { data: before, error: readErr } = await service
+    .from('catalog_quality_thresholds')
+    .select('*')
+    .eq('threshold_id', proposal.target_id)
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!before) return fail('target_not_found');
+
+  const update: Record<string, unknown> = {
+    value: valueNum,
+    updated_at: new Date().toISOString(),
+  };
+  if (proposal.proposed_by) update.updated_by = proposal.proposed_by;
+
+  const { data: after, error: updErr } = await service
+    .from('catalog_quality_thresholds')
+    .update(update)
+    .eq('threshold_id', proposal.target_id)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'catalog_quality_thresholds',
+        target_id: proposal.target_id,
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execCatalogQualityThresholdUpdate',
+      },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
@@ -839,6 +987,10 @@ export async function executeProposal(
       return execTierVisibilityWindowAcceptCountry(proposal, service);
     case 'tier_visibility_window.update':
       return execTierVisibilityWindowUpdate(proposal, service);
+    case 'catalog_quality_weight.update':
+      return execCatalogQualityWeightUpdate(proposal, service);
+    case 'catalog_quality_threshold.update':
+      return execCatalogQualityThresholdUpdate(proposal, service);
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -858,6 +1010,8 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'discount_rule.status_change',
   'tier_visibility_window.accept_country',
   'tier_visibility_window.update',
+  'catalog_quality_weight.update',
+  'catalog_quality_threshold.update',
   // Rose-originated canonical_cost cleanup (audit-only; Rose verifier handles write):
   'delete_cost_row',
   'approve_cost_row',

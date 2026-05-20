@@ -1,0 +1,466 @@
+// Catalog-v2 model: weighted quality_score + importance_score + priority_to_fix.
+// v1 | 2026-05-19 | Job_PM catalog-v2 [V8 SHADOW]
+//
+// Why this exists:
+//   Round 2 W2 SHOP-FILTER dropped the admin catalog from 707 to 110 SKUs by
+//   treating the 16-gate threshold as a per-SKU publishable filter. Facu called
+//   it a "DESASTRE": the 16 gates are a DATA QUALITY signal, not a binary
+//   publish-or-hide. This module replaces the filter with a weighted 0-100
+//   score per SKU computed against catalog_quality_weights, plus an importance
+//   score from the featured-products framework. The admin page renders the FULL
+//   universe (T2 + T3 + K2K live) with priority_to_fix sorting.
+//
+// Inputs:
+//   - mirror rows  (floropolis_inventory_mirror)
+//   - validator classifications  (catalog_classifications.failing_gates[])
+//   - weights      (catalog_quality_weights)
+//   - thresholds   (catalog_quality_thresholds.perfect_min_score)
+//   - importance seed (lib/admin/featured-scores-seed.ts)
+//
+// Universe definition (per feedback_admin_design_principles section 1):
+//   "T2 vendor agreements" + "T3 vendor agreements" + "K2K live SKUs"
+//   In today's mirror schema:
+//     - tier='T2'  -> T2 commitment
+//     - tier='T3'  -> T3 sourceable
+//     - cost_source ILIKE '%_k2k_%' AND live=true  -> K2K live
+//   De-dupe by SKU id (the same row can satisfy multiple buckets).
+//
+// quality_score:
+//   sum(weight WHERE gate is PASSING) -- 0..100.
+//   When validator emits a failing_gate, that gate's weight is SUBTRACTED.
+//   Gates with evaluated=false in the weights table are PRESUMED PASSING today
+//   (we don't have data to fail them on); their weight still counts toward 100
+//   so the perfect threshold remains correctly calibrated.
+//
+// status_band derives from quality_score:
+//   100: perfect
+//   90-99: almost_perfect
+//   75-89: needs_minor_fix
+//   50-74: has_issues
+//   <50:   broken
+//
+// importance_score:
+//   Lookup against FEATURED_SCORE_SEED (7 SKUs today). null = no seed match.
+//
+// priority_to_fix:
+//   (importance_score ?? 0) * (100 - quality_score)
+//   importance=null -> 0 (don't elevate ungraded SKUs in the queue).
+
+import { lookupImportanceScore } from './featured-scores-seed';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface QualityWeightRow {
+  gate_id: string;
+  display_label: string;
+  category: string;
+  weight: number;
+  description: string | null;
+  evaluated: boolean;
+  updated_at: string | null;
+  updated_by: string | null;
+}
+
+export interface QualityThresholdRow {
+  threshold_id: string;
+  value: number;
+  description: string | null;
+  updated_at: string | null;
+  updated_by: string | null;
+}
+
+export interface ClassificationRow {
+  sku_id: number;
+  status: string;
+  failing_gates: string[] | null;
+  gate_score: number;
+  vendor: string | null;
+  tier: string | null;
+  variety: string | null;
+}
+
+export interface MirrorRow {
+  id: number;
+  name: string;
+  vendor: string | null;
+  tier: string | null;
+  category: string | null;
+  variety: string | null;
+  length: string | null;
+  unit: string | null;
+  price: number | string | null;
+  farm_cost: number | string | null;
+  cost_source: string | null;
+  cost_verified_at: string | null;
+  stock: number | string | null;
+  total_stems: number | null;
+  units_per_box: number | string | null;
+  box_type: string | null;
+  margin_status: string | null;
+  live: boolean;
+  active: boolean;
+  arrival_date: string | null;
+}
+
+export type StatusBand =
+  | 'perfect'
+  | 'almost_perfect'
+  | 'needs_minor_fix'
+  | 'has_issues'
+  | 'broken'
+  | 'unscored';
+
+export type UniverseBucket = 't2' | 't3' | 'k2k_live';
+
+export interface FailedGateDetail {
+  gate_id: string;
+  display_label: string;
+  weight: number;
+  category: string;
+}
+
+export interface CatalogV2Row {
+  // Identity
+  id: number;
+  name: string;
+  vendor: string;
+  tier: string;
+  category: string;
+  variety: string;
+  length: string;
+  unit: string;
+  // Universe membership
+  buckets: UniverseBucket[];
+  // Scores
+  quality_score: number | null; // null = no classification row yet
+  status_band: StatusBand;
+  importance_score: number | null;
+  priority_to_fix: number;
+  // Diagnostic
+  failed_gates: FailedGateDetail[];
+  unevaluated_gate_ids: string[];
+  // Surfaced raw data for the table
+  price: number | null;
+  farm_cost: number | null;
+  stock: number;
+  live: boolean;
+  active: boolean;
+  cost_source: string | null;
+  arrival_date: string | null;
+}
+
+export interface UniverseCounts {
+  t2: number;
+  t3: number;
+  k2k_live: number;
+  total: number; // distinct SKUs across all 3 buckets
+}
+
+export interface CatalogSummary {
+  universe: UniverseCounts;
+  perfect_count: number;
+  perfect_pct: number;
+  scored_count: number;
+  unscored_count: number;
+  importance_covered_count: number;
+  perfect_min_score: number;
+  histogram: {
+    lt_50: number;
+    band_50_74: number;
+    band_75_89: number;
+    band_90_99: number;
+    eq_100: number;
+    unscored: number;
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function asNum(v: number | string | null | undefined): number | null {
+  if (v == null) return null;
+  const n = typeof v === 'number' ? v : parseFloat(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+export function bandFor(score: number | null): StatusBand {
+  if (score == null) return 'unscored';
+  if (score >= 100) return 'perfect';
+  if (score >= 90) return 'almost_perfect';
+  if (score >= 75) return 'needs_minor_fix';
+  if (score >= 50) return 'has_issues';
+  return 'broken';
+}
+
+export const STATUS_BAND_LABEL: Record<StatusBand, string> = {
+  perfect: 'Perfect',
+  almost_perfect: 'Almost perfect',
+  needs_minor_fix: 'Needs minor fix',
+  has_issues: 'Has issues',
+  broken: 'Broken',
+  unscored: 'Unscored',
+};
+
+export const STATUS_BAND_CLS: Record<StatusBand, string> = {
+  perfect: 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+  almost_perfect: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  needs_minor_fix: 'bg-amber-50 text-amber-700 border border-amber-200',
+  has_issues: 'bg-orange-50 text-orange-700 border border-orange-200',
+  broken: 'bg-red-50 text-red-700 border border-red-200',
+  unscored: 'bg-slate-50 text-slate-500 border border-slate-200',
+};
+
+function deriveBuckets(row: MirrorRow): UniverseBucket[] {
+  const out: UniverseBucket[] = [];
+  if (row.tier === 'T2') out.push('t2');
+  if (row.tier === 'T3') out.push('t3');
+  if (row.cost_source && /_k2k_/i.test(row.cost_source) && row.live) {
+    out.push('k2k_live');
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Build catalog rows
+// ---------------------------------------------------------------------------
+
+export interface BuildCatalogInputs {
+  mirror: MirrorRow[];
+  classifications: ClassificationRow[];
+  weights: QualityWeightRow[];
+  thresholds: QualityThresholdRow[];
+}
+
+export interface BuildCatalogOutput {
+  rows: CatalogV2Row[];
+  summary: CatalogSummary;
+  weights_by_gate: Map<string, QualityWeightRow>;
+  perfect_min_score: number;
+}
+
+export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
+  const { mirror, classifications, weights, thresholds } = inputs;
+
+  // Index helpers ---------------------------------------------------------
+  const weightsByGate = new Map<string, QualityWeightRow>();
+  for (const w of weights) {
+    if (w && typeof w.gate_id === 'string') weightsByGate.set(w.gate_id, w);
+  }
+  const classBySku = new Map<number, ClassificationRow>();
+  for (const c of classifications) {
+    if (c && c.sku_id != null) classBySku.set(c.sku_id, c);
+  }
+
+  const perfectThresholdRow = thresholds.find((t) => t.threshold_id === 'perfect_min_score');
+  // Default to 100 if missing/malformed (Facu spec: weights table is the model;
+  // threshold is the gate).
+  const perfectMinRaw = perfectThresholdRow?.value;
+  const perfect_min_score =
+    typeof perfectMinRaw === 'number' && Number.isFinite(perfectMinRaw)
+      ? perfectMinRaw
+      : 100;
+
+  // Restrict to the universe (T2 + T3 + K2K live). Anything else falls out.
+  const universeRows = mirror.filter((r) => deriveBuckets(r).length > 0);
+
+  // Compute per-row ------------------------------------------------------
+  const rows: CatalogV2Row[] = universeRows.map((r) => {
+    const buckets = deriveBuckets(r);
+    const cls = classBySku.get(r.id) ?? null;
+
+    // Quality score
+    let quality_score: number | null = null;
+    let failed_gates: FailedGateDetail[] = [];
+    const unevaluated_gate_ids: string[] = [];
+
+    if (cls) {
+      // Normalize failing_gates -- can be jsonb array or null. Also includes
+      // formula_deviation_<pct> variants which we normalize back to base id.
+      const rawFails = Array.isArray(cls.failing_gates) ? cls.failing_gates : [];
+      const normalized = new Set<string>();
+      for (const g of rawFails) {
+        if (typeof g !== 'string') continue;
+        if (g.startsWith('formula_deviation_')) normalized.add('formula_deviation');
+        else if (
+          g === 't2_outside_5d_window' ||
+          g === 't3_outside_14d_window' ||
+          g === 'missing_arrival_date'
+        ) {
+          // All three fold into the "lead_time" weight bucket.
+          normalized.add('lead_time');
+        } else {
+          normalized.add(g);
+        }
+      }
+
+      let score = 0;
+      for (const [gate_id, w] of weightsByGate.entries()) {
+        if (!w.evaluated) {
+          unevaluated_gate_ids.push(gate_id);
+          // Presumed passing -- credit the weight (perfect_min_score = 100 still attainable).
+          score += w.weight;
+          continue;
+        }
+        if (normalized.has(gate_id)) {
+          // failing -- record detail, do NOT credit weight
+          failed_gates.push({
+            gate_id,
+            display_label: w.display_label,
+            weight: w.weight,
+            category: w.category,
+          });
+        } else {
+          score += w.weight;
+        }
+      }
+      // Clamp 0..100 (the seed guarantees sum=100, but be defensive).
+      quality_score = Math.max(0, Math.min(100, score));
+      // Sort failures by weight desc -- most impactful first in the UI.
+      failed_gates.sort((a, b) => b.weight - a.weight);
+    }
+
+    const importance_score = lookupImportanceScore(r.name);
+    const priority_to_fix =
+      quality_score == null
+        ? (importance_score ?? 0) * 100 // worst case: ungraded but flagged important
+        : (importance_score ?? 0) * (100 - quality_score);
+
+    return {
+      id: r.id,
+      name: r.name,
+      vendor: r.vendor ?? 'Unknown',
+      tier: r.tier ?? '',
+      category: r.category ?? '',
+      variety: r.variety ?? '',
+      length: r.length ?? '',
+      unit: r.unit ?? '',
+      buckets,
+      quality_score,
+      status_band: bandFor(quality_score),
+      importance_score,
+      priority_to_fix,
+      failed_gates,
+      unevaluated_gate_ids,
+      price: asNum(r.price),
+      farm_cost: asNum(r.farm_cost),
+      stock:
+        r.total_stems != null
+          ? r.total_stems
+          : Math.max(0, Math.round(asNum(r.stock) ?? 0)),
+      live: r.live === true,
+      active: r.active === true,
+      cost_source: r.cost_source,
+      arrival_date: r.arrival_date,
+    };
+  });
+
+  // Summary ---------------------------------------------------------------
+  const universe: UniverseCounts = {
+    t2: rows.filter((r) => r.buckets.includes('t2')).length,
+    t3: rows.filter((r) => r.buckets.includes('t3')).length,
+    k2k_live: rows.filter((r) => r.buckets.includes('k2k_live')).length,
+    total: rows.length,
+  };
+
+  const histogram = {
+    lt_50: 0,
+    band_50_74: 0,
+    band_75_89: 0,
+    band_90_99: 0,
+    eq_100: 0,
+    unscored: 0,
+  };
+  let perfect_count = 0;
+  let scored_count = 0;
+  let importance_covered_count = 0;
+  for (const r of rows) {
+    if (r.importance_score != null) importance_covered_count += 1;
+    if (r.quality_score == null) {
+      histogram.unscored += 1;
+      continue;
+    }
+    scored_count += 1;
+    if (r.quality_score >= perfect_min_score) perfect_count += 1;
+    if (r.quality_score < 50) histogram.lt_50 += 1;
+    else if (r.quality_score < 75) histogram.band_50_74 += 1;
+    else if (r.quality_score < 90) histogram.band_75_89 += 1;
+    else if (r.quality_score < 100) histogram.band_90_99 += 1;
+    else histogram.eq_100 += 1;
+  }
+  const summary: CatalogSummary = {
+    universe,
+    perfect_count,
+    perfect_pct:
+      universe.total > 0 ? Math.round((perfect_count / universe.total) * 1000) / 10 : 0,
+    scored_count,
+    unscored_count: universe.total - scored_count,
+    importance_covered_count,
+    perfect_min_score,
+    histogram,
+  };
+
+  return { rows, summary, weights_by_gate: weightsByGate, perfect_min_score };
+}
+
+// ---------------------------------------------------------------------------
+// Recommended action for "Action" column
+// ---------------------------------------------------------------------------
+
+export interface RecommendedAction {
+  label: string;
+  hint: string;
+  href: string | null; // null = "no single-page action" (escalate)
+  escalate: boolean;
+}
+
+/**
+ * Pick the single most impactful action for this row, based on the
+ * highest-weight failed gate. Lead time + formula deviation route to
+ * Rose escalation (data quality cycle); the others route to the SKU's
+ * /admin/catalog/[id] page where ProposeForms surface the relevant edit.
+ */
+export function recommendAction(row: CatalogV2Row): RecommendedAction {
+  if (row.status_band === 'perfect') {
+    return {
+      label: 'Already perfect',
+      hint: 'No action needed.',
+      href: `/admin/catalog/${row.id}`,
+      escalate: false,
+    };
+  }
+  if (row.failed_gates.length === 0) {
+    return {
+      label: 'Open SKU',
+      hint: 'No failing gates surfaced; review SKU page.',
+      href: `/admin/catalog/${row.id}`,
+      escalate: false,
+    };
+  }
+  const top = row.failed_gates[0];
+  // Gates Rose owns (data quality cycle).
+  const roseGates = new Set([
+    'formula_deviation',
+    'lead_time',
+    'open_price_alert',
+    'cost_unverified',
+    'missing_cost_source',
+    'missing_box_dims',
+  ]);
+  if (roseGates.has(top.gate_id)) {
+    return {
+      label: `Escalate: ${top.display_label}`,
+      hint: 'Routes to Rose via rose_queue (price/cost/lead-time owned upstream).',
+      href: `/admin/catalog/${row.id}`,
+      escalate: true,
+    };
+  }
+  return {
+    label: `Fix: ${top.display_label}`,
+    hint: 'Opens SKU detail with proposal form pre-targeted.',
+    href: `/admin/catalog/${row.id}`,
+    escalate: false,
+  };
+}

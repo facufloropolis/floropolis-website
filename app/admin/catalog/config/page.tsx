@@ -33,6 +33,8 @@ import {
   ProposalDecisionButtons,
   TierVisibilityAcceptCountryForm,
   TierVisibilityWindowEditForm,
+  QualityWeightProposeForm,
+  QualityThresholdProposeForm,
 } from './ProposalForms';
 
 export const metadata = {
@@ -99,6 +101,29 @@ export interface AdminProposalRow {
   notes: string | null;
 }
 
+// Catalog-v2 (2026-05-19): per-gate quality weight + thresholds, editable
+// through admin_proposals (catalog_quality_weight.update,
+// catalog_quality_threshold.update). Live on /admin/catalog as the per-SKU
+// weighted quality_score.
+export interface QualityWeightRow {
+  gate_id: string;
+  display_label: string;
+  category: string;
+  weight: number;
+  description: string | null;
+  evaluated: boolean;
+  updated_at: string | null;
+  updated_by: string | null;
+}
+
+export interface QualityThresholdRow {
+  threshold_id: string;
+  value: number;
+  description: string | null;
+  updated_at: string | null;
+  updated_by: string | null;
+}
+
 // ----- helpers --------------------------------------------------------------
 
 function fmtDate(iso: string | null): string {
@@ -121,12 +146,12 @@ function fmtShortDate(iso: string | null): string {
   });
 }
 
-type PanelKey = 'boxes' | 'pricing' | 'shipping' | 'visibility';
+type PanelKey = 'boxes' | 'pricing' | 'shipping' | 'visibility' | 'quality';
 type TabKey = 'active' | 'proposed';
 
 function parsePanel(v: string | string[] | undefined): PanelKey {
   const s = Array.isArray(v) ? v[0] : v;
-  if (s === 'pricing' || s === 'shipping' || s === 'visibility') return s;
+  if (s === 'pricing' || s === 'shipping' || s === 'visibility' || s === 'quality') return s;
   return 'boxes';
 }
 function parseTab(v: string | string[] | undefined): TabKey {
@@ -180,6 +205,9 @@ export default async function AdminCatalogConfigPage({
     windowPropsRes,
     skuByBoxRes,
     totalSkusRes,
+    qualityWeightsRes,
+    qualityThresholdsRes,
+    qualityPropsRes,
   ] = await Promise.all([
     backup
       .from('box_master')
@@ -225,6 +253,21 @@ export default async function AdminCatalogConfigPage({
     backup
       .from('floropolis_inventory_mirror')
       .select('*', { count: 'exact', head: true }),
+    backup
+      .from('catalog_quality_weights')
+      .select('gate_id, display_label, category, weight, description, evaluated, updated_at, updated_by')
+      .order('weight', { ascending: false })
+      .order('gate_id', { ascending: true }),
+    backup
+      .from('catalog_quality_thresholds')
+      .select('threshold_id, value, description, updated_at, updated_by')
+      .order('threshold_id', { ascending: true }),
+    backup
+      .from('admin_proposals')
+      .select('id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes')
+      .in('type', ['catalog_quality_weight.update', 'catalog_quality_threshold.update'])
+      .eq('status', 'awaiting_facu')
+      .order('proposed_at', { ascending: false }),
   ]);
 
   if (boxesRes.error) console.error('[admin/catalog/config] box_master:', boxesRes.error);
@@ -234,6 +277,9 @@ export default async function AdminCatalogConfigPage({
   if (pricingPropsRes.error) console.error('[admin/catalog/config] pricing proposals:', pricingPropsRes.error);
   if (shipPropsRes.error) console.error('[admin/catalog/config] shipping proposals:', shipPropsRes.error);
   if (windowPropsRes.error) console.error('[admin/catalog/config] window proposals:', windowPropsRes.error);
+  if (qualityWeightsRes.error) console.error('[admin/catalog/config] quality_weights:', qualityWeightsRes.error);
+  if (qualityThresholdsRes.error) console.error('[admin/catalog/config] quality_thresholds:', qualityThresholdsRes.error);
+  if (qualityPropsRes.error) console.error('[admin/catalog/config] quality proposals:', qualityPropsRes.error);
 
   const boxes = (boxesRes.data ?? []) as BoxMasterRow[];
   const constants = (constantsRes.data ?? []) as PricingConstantRow[];
@@ -242,6 +288,9 @@ export default async function AdminCatalogConfigPage({
   const pricingProps = (pricingPropsRes.data ?? []) as AdminProposalRow[];
   const shipProps = (shipPropsRes.data ?? []) as AdminProposalRow[];
   const windowProps = (windowPropsRes.data ?? []) as AdminProposalRow[];
+  const qualityWeights = (qualityWeightsRes.data ?? []) as QualityWeightRow[];
+  const qualityThresholds = (qualityThresholdsRes.data ?? []) as QualityThresholdRow[];
+  const qualityProps = (qualityPropsRes.data ?? []) as AdminProposalRow[];
 
   // Cascade-impact SKU counts ---------------------------------------------
   const skuByBoxRows = (skuByBoxRes.data ?? []) as { box_type: string | null }[];
@@ -258,12 +307,14 @@ export default async function AdminCatalogConfigPage({
     pricing: pricingProps.length,
     shipping: shipProps.length,
     visibility: windowProps.length,
+    quality: qualityProps.length,
   };
   const activeByPanel: Record<PanelKey, number> = {
     boxes: boxes.length,
     pricing: constants.length,
     shipping: ships.length,
     visibility: windows.length,
+    quality: qualityWeights.length + qualityThresholds.length,
   };
 
   const wiringEntry = getWiringForPage('/admin/catalog/config');
@@ -293,7 +344,7 @@ export default async function AdminCatalogConfigPage({
 
         {/* Panel switcher --------------------------------------------------- */}
         <div className="flex gap-1 mb-6 border-b border-slate-200 flex-wrap">
-          {(['boxes', 'pricing', 'shipping', 'visibility'] as const).map((p) => (
+          {(['boxes', 'pricing', 'shipping', 'visibility', 'quality'] as const).map((p) => (
             <PanelTabLink
               key={p}
               panel={p}
@@ -354,6 +405,17 @@ export default async function AdminCatalogConfigPage({
             />
           </WiringSection>
         )}
+        {panel === 'quality' && (
+          <WiringSection level={wm('quality-weights').level} note={wm('quality-weights').note} id="quality-weights">
+            <QualityPanel
+              tab={tab}
+              weights={qualityWeights}
+              thresholds={qualityThresholds}
+              proposals={qualityProps}
+              fmtDate={fmtDate}
+            />
+          </WiringSection>
+        )}
 
         <p className="text-xs text-slate-400 mt-10">
           Data sources: supabase-backup public.box_master, public.pricing_constants,
@@ -389,7 +451,9 @@ function PanelTabLink({
         ? 'Pricing constants'
         : panel === 'shipping'
           ? 'Shipping (country/port)'
-          : 'Visibility windows';
+          : panel === 'visibility'
+            ? 'Visibility windows'
+            : 'Quality weights';
   const href = `/admin/catalog/config?panel=${panel}&tab=${tab}`;
   const cls = active
     ? 'px-4 py-2 text-sm font-semibold text-emerald-700 border-b-2 border-emerald-600 -mb-px'
@@ -940,6 +1004,216 @@ function VisibilityPanel({
             </div>
           );
         })}
+    </div>
+  );
+}
+
+// ----- QUALITY WEIGHTS panel (catalog-v2, 2026-05-19) ---------------------
+//
+// Surfaces /admin/catalog model knobs:
+//   - 16-gate weights table (sum must == 100)
+//   - perfect_min_score + competitive_min_comp_adv thresholds
+//
+// Edits flow through admin_proposals (catalog_quality_weight.update,
+// catalog_quality_threshold.update). The executor enforces sum=100 server-side
+// so a partial edit cannot drift the model.
+
+function QualityPanel({
+  tab,
+  weights,
+  thresholds,
+  proposals,
+  fmtDate,
+}: {
+  tab: TabKey;
+  weights: QualityWeightRow[];
+  thresholds: QualityThresholdRow[];
+  proposals: AdminProposalRow[];
+  fmtDate: (iso: string | null) => string;
+}) {
+  const totalWeight = weights.reduce((acc, w) => acc + (Number(w.weight) || 0), 0);
+  const sumOk = totalWeight === 100;
+
+  if (tab === 'proposed') {
+    if (proposals.length === 0) {
+      return (
+        <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+          <p className="text-sm">No quality weight / threshold proposals awaiting Facu.</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-2">
+        {proposals.map((p) => (
+          <div key={p.id} className="border border-slate-200 rounded-lg p-3 bg-white text-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <span className="font-mono text-[11px] text-slate-500">{p.type}</span>
+                <div className="text-slate-900 font-semibold mt-0.5">{p.target_id}</div>
+                <pre className="text-[11px] text-slate-600 mt-1 whitespace-pre-wrap break-all">
+                  {JSON.stringify(p.payload, null, 2)}
+                </pre>
+                {p.notes && (
+                  <p className="text-[11px] text-slate-500 mt-1">{p.notes}</p>
+                )}
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Proposed {fmtDate(p.proposed_at)} by {p.proposed_by ?? 'unknown'}
+                </p>
+              </div>
+              <ProposalDecisionButtons id={p.id} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Active tab -- show weights and thresholds.
+  return (
+    <div className="space-y-6">
+      {/* Thresholds card */}
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+          <h3 className="text-sm font-semibold text-slate-900">Thresholds</h3>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Gates between &quot;Perfect&quot; and the improvement queue on /admin/catalog.
+            Default 100 = strict; lower to 95/90 to relax.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-white border-b border-slate-200">
+              <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                <th className="px-4 py-2">Threshold</th>
+                <th className="px-4 py-2 text-right">Value</th>
+                <th className="px-4 py-2">Description</th>
+                <th className="px-4 py-2">Last edit</th>
+                <th className="px-4 py-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {thresholds.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-slate-400">
+                    No thresholds seeded.
+                  </td>
+                </tr>
+              ) : (
+                thresholds.map((t) => (
+                  <tr key={t.threshold_id} className="border-b border-slate-100 last:border-b-0">
+                    <td className="px-4 py-2.5 font-mono text-xs text-slate-900">
+                      {t.threshold_id}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
+                      {Number(t.value).toString()}
+                    </td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
+                      {t.description ?? '-'}
+                    </td>
+                    <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                      {fmtDate(t.updated_at)}
+                      {t.updated_by && (
+                        <div className="text-[10px] text-slate-400">{t.updated_by}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">
+                      <QualityThresholdProposeForm row={t} />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Weights card */}
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Per-gate weights</h3>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Sum must equal 100. Gates marked unevaluated are aspirational
+              (perfect_inventory_bar.md spec) but not yet emitted by the
+              validator -- their weight is credited automatically.
+            </p>
+          </div>
+          <div className="text-right">
+            <span
+              className={
+                sumOk
+                  ? 'inline-block px-2 py-1 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200'
+                  : 'inline-block px-2 py-1 rounded-full text-[11px] font-semibold border bg-red-100 text-red-800 border-red-200'
+              }
+            >
+              sum = {totalWeight} / 100
+            </span>
+            {!sumOk && (
+              <p className="text-[10px] text-red-700 mt-1">
+                Weights have drifted. Use a proposal to rebalance.
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-white border-b border-slate-200">
+              <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                <th className="px-4 py-2">Gate</th>
+                <th className="px-4 py-2">Category</th>
+                <th className="px-4 py-2 text-right">Weight</th>
+                <th className="px-4 py-2">Description</th>
+                <th className="px-4 py-2">Evaluated</th>
+                <th className="px-4 py-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {weights.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-6 text-center text-xs text-slate-400">
+                    No quality weights seeded.
+                  </td>
+                </tr>
+              ) : (
+                weights.map((w) => (
+                  <tr key={w.gate_id} className="border-b border-slate-100 last:border-b-0">
+                    <td className="px-4 py-2.5">
+                      <div className="font-mono text-[11px] text-slate-500">{w.gate_id}</div>
+                      <div className="text-slate-900 text-xs">{w.display_label}</div>
+                    </td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">
+                      {w.category}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
+                      {w.weight}
+                    </td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
+                      {w.description ?? '-'}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      {w.evaluated ? (
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200">
+                          evaluated
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-100 text-slate-600 border-slate-200"
+                          title="Validator does not yet emit this gate; weight is credited as passing."
+                        >
+                          pending schema
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">
+                      <QualityWeightProposeForm row={w} currentTotal={totalWeight} />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

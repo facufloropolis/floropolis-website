@@ -25,6 +25,8 @@ import type {
   BoxMasterRow,
   PricingConstantRow,
   TierVisibilityWindowRow,
+  QualityWeightRow,
+  QualityThresholdRow,
 } from './page';
 
 // ----- shared post helper --------------------------------------------------
@@ -914,6 +916,282 @@ export function TierVisibilityWindowEditForm({
             setOpen(false);
             setReason('');
             setError(null);
+          }}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+    </div>
+  );
+}
+
+// ----- Catalog quality weight: propose edit -------------------------------
+// Edits catalog_quality_weights.weight. Executor enforces sum(weight)==100
+// after the change; the form surfaces the implied delta so Facu knows what
+// to rebalance elsewhere.
+
+export function QualityWeightProposeForm({
+  row,
+  currentTotal,
+}: {
+  row: QualityWeightRow;
+  currentTotal: number;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(String(row.weight));
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const parsed = Number(value);
+  const delta = Number.isFinite(parsed) ? parsed - row.weight : 0;
+  const projectedTotal = currentTotal + delta;
+  const sumOk = projectedTotal === 100;
+
+  function reset() {
+    setValue(String(row.weight));
+    setReason('');
+    setError(null);
+  }
+
+  async function submit() {
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+      setError('Weight must be 0..100.');
+      return;
+    }
+    if (reason.trim().length < 5) {
+      setError('Reason / rationale is mandatory (>=5 chars).');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const r = await postProposal({
+      type: 'catalog_quality_weight.update',
+      target_table: 'catalog_quality_weights',
+      target_id: row.gate_id,
+      payload: { weight: Math.round(parsed) },
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_table: 'catalog_quality_weights',
+      source_id: row.gate_id,
+      source_agent: 'job',
+      before_value: { weight: row.weight },
+      after_value: { weight: Math.round(parsed) },
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setError(r.error ?? 'proposal failed');
+      return;
+    }
+    setOpen(false);
+    reset();
+    router.refresh();
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-3 py-1.5 rounded-md transition-colors"
+      >
+        Propose edit
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-left bg-white border border-emerald-300 rounded-lg p-3 shadow-sm w-72">
+      <p className="text-xs font-semibold text-slate-900 mb-2">
+        Propose weight for <span className="font-mono">{row.gate_id}</span>
+      </p>
+      <p className="text-[11px] text-slate-500 mb-2">
+        Current weight: <span className="font-mono">{row.weight}</span>. Total
+        weights across all gates must equal 100; the executor rejects any
+        proposal that drifts the sum.
+      </p>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        New weight (0-100)
+      </label>
+      <input
+        type="number"
+        min={0}
+        max={100}
+        step={1}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={busy}
+        className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+      />
+      <p
+        className={
+          sumOk
+            ? 'text-[11px] text-emerald-700 mb-2'
+            : 'text-[11px] text-red-700 mb-2'
+        }
+      >
+        Projected sum: {projectedTotal} / 100{' '}
+        {!sumOk && delta !== 0 && (
+          <span>
+            (rebalance {delta > 0 ? '-' : '+'}
+            {Math.abs(delta)} elsewhere first)
+          </span>
+        )}
+      </p>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Reason / rationale (mandatory)
+      </label>
+      <textarea
+        rows={2}
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+        placeholder="Why this change?"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            reset();
+          }}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+    </div>
+  );
+}
+
+// ----- Catalog quality threshold: propose edit -----------------------------
+
+export function QualityThresholdProposeForm({
+  row,
+}: {
+  row: QualityThresholdRow;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(String(row.value));
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function reset() {
+    setValue(String(row.value));
+    setReason('');
+    setError(null);
+  }
+
+  async function submit() {
+    const n = Number(value);
+    if (!Number.isFinite(n)) {
+      setError('Value must be a number.');
+      return;
+    }
+    if (row.threshold_id === 'perfect_min_score' && (n < 50 || n > 100)) {
+      setError('perfect_min_score must be between 50 and 100.');
+      return;
+    }
+    if (reason.trim().length < 5) {
+      setError('Reason / rationale is mandatory (>=5 chars).');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const r = await postProposal({
+      type: 'catalog_quality_threshold.update',
+      target_table: 'catalog_quality_thresholds',
+      target_id: row.threshold_id,
+      payload: { value: n },
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_table: 'catalog_quality_thresholds',
+      source_id: row.threshold_id,
+      source_agent: 'job',
+      before_value: { value: row.value },
+      after_value: { value: n },
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setError(r.error ?? 'proposal failed');
+      return;
+    }
+    setOpen(false);
+    reset();
+    router.refresh();
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-3 py-1.5 rounded-md transition-colors"
+      >
+        Propose edit
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-left bg-white border border-emerald-300 rounded-lg p-3 shadow-sm w-72">
+      <p className="text-xs font-semibold text-slate-900 mb-2">
+        Propose value for <span className="font-mono">{row.threshold_id}</span>
+      </p>
+      <p className="text-[11px] text-slate-500 mb-2">{row.description ?? ''}</p>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        New value
+      </label>
+      <input
+        type="number"
+        step="0.01"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={busy}
+        className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+      />
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Reason / rationale (mandatory)
+      </label>
+      <textarea
+        rows={2}
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+        placeholder="Why this change?"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            reset();
           }}
           disabled={busy}
           className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
