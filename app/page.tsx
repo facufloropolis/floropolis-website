@@ -8,7 +8,9 @@ import TopBanner from "@/components/TopBanner";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
 import { getFeaturedProducts, getProductBySlug } from "@/lib/data/product-helpers";
-import type { Product } from "@/lib/data/products";
+import { products as ALL_PRODUCTS, type Product } from "@/lib/data/products";
+
+const VARIETIES_COUNT = ALL_PRODUCTS.length;
 import { getProductImage } from "@/lib/product-images";
 
 // Homepage carousel -- v2 framework picks (2026-05-17, Facu + Job).
@@ -44,7 +46,7 @@ export default function Home() {
     "@type": "Organization",
     name: "Floropolis",
     url: "https://www.floropolis.com",
-    description: "Farm-direct wholesale flowers from Ecuador. 270+ varieties, transparent pricing, no minimum order. Delivery included.",
+    description: `Farm-direct wholesale flowers from Ecuador. ${VARIETIES_COUNT}+ varieties, transparent pricing, no minimum order. Delivery included.`,
     sameAs: [
       "https://www.instagram.com/floropolisdirect",
       "https://www.tiktok.com/@floropolisdirect",
@@ -80,11 +82,11 @@ export default function Home() {
         </div>
         <div className="relative z-10 max-w-4xl text-center px-6">
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white leading-[1.1] mb-3 sm:mb-4 tracking-tight drop-shadow-2xl">
-            Farm-Direct Wholesale Flowers — 270+ Varieties
+            Farm-Direct Wholesale Flowers — {VARIETIES_COUNT}+ Varieties
           </h1>
           {/* EXP-036: Stronger wholesale signal — "no login required" is #1 differentiator vs Koronet */}
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 font-light mb-4 sm:mb-6 max-w-2xl mx-auto">
-            270+ varieties with transparent per-stem pricing. No login required to see prices.
+            {VARIETIES_COUNT}+ varieties with transparent per-stem pricing. No login required to see prices.
           </p>
           {/* EXP-035: Flip CTA hierarchy — catalog/prices is primary for florists in discovery mode, sample box is hesitation handler */}
           <div className="flex gap-3 justify-center flex-wrap">
@@ -128,7 +130,7 @@ export default function Home() {
               <div className="text-xs sm:text-sm text-slate-600">farm-to-door</div>
             </div>
             <div className="text-center">
-              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">270+ Varieties</div>
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600 mb-1">{VARIETIES_COUNT}+ Varieties</div>
               <div className="text-xs sm:text-sm text-slate-600">roses, tropicals & specialty</div>
             </div>
           </div>
@@ -152,7 +154,7 @@ export default function Home() {
               { img: "/images/shop/ranunculus/amandine-pink.png", label: "Ranunculus", sub: "Spring favorites", href: "/shop?category=Ranunculus" },
               { img: "/images/shop/shop-all-greens.jpg", label: "Greens", sub: "Foliage & fillers", href: "/shop/greens" },
               { img: "/images/shop/anemone/anemones-pink.jpg", label: "Spring Collection", sub: "Ranunculus, anemone & more", href: "/shop/spring-collection" },
-              { img: "/images/shop/Summer-Flowers-Valentines.png", label: "All Varieties →", sub: "270+ varieties in stock", href: "/shop" },
+              { img: "/images/shop/Summer-Flowers-Valentines.png", label: "All Varieties →", sub: `${VARIETIES_COUNT}+ varieties in stock`, href: "/shop" },
             ].map(({ img, label, sub, href }) => (
               <Link
                 key={label}
@@ -232,7 +234,7 @@ export default function Home() {
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-5 text-lg font-bold rounded-lg shadow-xl hover:scale-105 transition-all inline-flex items-center gap-2"
               onClick={() => pushEvent(CTA_EVENTS.valentine_shop_click, { cta_location: "promo_section" })}
             >
-              Browse All 270+ Varieties →
+              Browse All {VARIETIES_COUNT}+ Varieties →
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -317,7 +319,7 @@ export default function Home() {
                 <span className="text-2xl font-bold text-emerald-600">1</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-1">You Order</h3>
-              <p className="text-slate-600 text-sm">270+ varieties, transparent pricing -- no login, no minimum</p>
+              <p className="text-slate-600 text-sm">{VARIETIES_COUNT}+ varieties, transparent pricing -- no login, no minimum</p>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
