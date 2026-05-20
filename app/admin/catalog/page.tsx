@@ -1,30 +1,41 @@
-// Admin Unified Catalog -- catalog-v2 model (weighted quality + importance + priority).
-// v4 | 2026-05-19 | Job_PM catalog-v2 [V8 SHADOW]
+// Admin Unified Catalog -- catalog-v5: mockup-faithful 12-column rebuild.
+// v5 | 2026-05-19 | Job_PM catalog-v5 [V8 SHADOW]
 //
-// What changed (vs v3):
-//   - REPLACED the W2-era "publishable filter" model that dropped the catalog
-//     from 707 to 110 SKUs. Facu called that DESASTRE. The 16-gate threshold
-//     is a per-SKU DATA QUALITY signal, not a per-SKU publish filter. This
-//     rewrite shows the FULL UNIVERSE (T2 + T3 + K2K live, de-duped) with a
-//     weighted 0-100 quality_score per SKU and an importance_score from the
-//     featured-products framework.
+// What changed (vs v4 / commit ae662dc9):
+//   v4 shipped a 7-column "Improvement queue" surface (SKU / Tier+Vendor /
+//   Importance / Quality / Priority / What's needed / Action). Facu rated the
+//   /mockups/admin-catalog version "100 veces mejor" -- 12 mockup columns,
+//   summary banner, filter row, bulk-actions row, tabs. v5 rebuilds the page to
+//   match the mockup visually while preserving the v4 model (universe + weighted
+//   quality_score + importance_score from the featured framework).
 //
-// Universe (per feedback_admin_design_principles section 1):
-//   tier='T2'                 -> T2 commitments
-//   tier='T3'                 -> T3 sourceable
-//   cost_source ILIKE '%_k2k_%' AND live=true -> K2K live
-//   De-dupe by SKU id; the same row can satisfy multiple buckets.
+// Visual source-of-truth: app/mockups/admin-catalog/page.tsx
+// Spec: catalog_BRD_v0.3_section_discovery_2026-05-19.md UC-104 (14 cols
+//   collapsed to 12 because mockup merged Margin $/% into a single GPM column).
 //
-// Tabs (no chip row; single table):
-//   improvement-queue (default, priority_to_fix DESC) -- excludes Perfect
-//   perfect           (quality_score >= perfect_min_score)
-//   all               (universe)
+// Universe + model: lib/admin/catalog-model.ts (buildCatalog).
+// Importance seed: lib/admin/featured-scores-seed.ts.
 //
-// Quality compute / importance / priority: lib/admin/catalog-model.ts.
-// Featured-score seed (7 SKUs): lib/admin/featured-scores-seed.ts.
+// Columns (left-to-right, mockup parity):
+//   1.  SKU              -- mono id link + name + IMPORTANCE STAR badge below (7 seeded)
+//   2.  Quality Family   -- variety + length + unit
+//   3.  Vendor           -- vendor name + country (when present)
+//   4.  Box              -- box_type + verified|needs-verify
+//   5.  Cost             -- farm_cost ($X.XX, right-aligned)
+//   6.  Delivery         -- per-stem shipping cost (NOT arrival date; mockup
+//                           col 6 shows a $ value, confirmed by reading the
+//                           mockup's cell rendering at line 302:
+//                           `formatPrice(sku.delivery_per_stem)`)
+//   7.  Price            -- actual_price ($X.XX, bold)
+//   8.  GPM              -- computed (price - cost - shipping)/price, colored
+//   9.  Sources          -- K2K live | T2 | T3 badges
+//   10. Avail            -- total_stems + boxes_available (when units_per_box)
+//   11. Visibility       -- live|hidden|draft pill + QUALITY SCORE numeric badge inline
+//   12. Flags            -- up to 3 failing gates as small pills + "+N more"
 //
-// Each fetch stage is wrapped in try/catch so a single failing table cannot 500
-// the page (same defensive pattern as v3, kept).
+// Tabs above the table: Improvement queue (default) | Perfect | All.
+// Bulk-action buttons render disabled (UI intent only -- executors don't exist
+// yet for override-price / change-vendor / add-to-campaign).
 
 export const dynamic = 'force-dynamic';
 
@@ -37,12 +48,13 @@ import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import {
   buildCatalog,
-  recommendAction,
-  STATUS_BAND_CLS,
-  STATUS_BAND_LABEL,
+  GPM_BAND_CLS,
+  VISIBILITY_BADGE_CLS,
+  type BoxMasterRow,
   type CatalogV2Row,
   type ClassificationRow,
   type MirrorRow,
+  type PricingConstantRow,
   type QualityThresholdRow,
   type QualityWeightRow,
 } from '@/lib/admin/catalog-model';
@@ -52,7 +64,16 @@ import {
 // ---------------------------------------------------------------------------
 
 type TabKey = 'improvement-queue' | 'perfect' | 'all';
-type SortKey = 'priority' | 'quality' | 'importance' | 'vendor' | 'name';
+type SortKey =
+  | 'priority'
+  | 'quality'
+  | 'importance'
+  | 'vendor'
+  | 'name'
+  | 'cost'
+  | 'price'
+  | 'gpm'
+  | 'avail';
 type SortDir = 'asc' | 'desc';
 
 interface PageProps {
@@ -60,7 +81,11 @@ interface PageProps {
     tab?: string;
     q?: string;
     vendor?: string;
-    tier?: string;
+    source?: string;
+    category?: string;
+    visibility?: string;
+    gpm?: string;
+    flag?: string;
     sort?: string;
     page?: string;
   }>;
@@ -71,6 +96,30 @@ interface PageProps {
 // ---------------------------------------------------------------------------
 
 const PAGE_SIZE = 100;
+
+const SOURCE_BADGE_CLS = {
+  k2k_live: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  t2: 'bg-blue-50 text-blue-700 border-blue-200',
+  t3: 'bg-slate-50 text-slate-600 border-slate-200',
+} as const;
+
+const SOURCE_LABELS = {
+  k2k_live: 'K2K live',
+  t2: 'T2',
+  t3: 'T3',
+} as const;
+
+// Quality score badge color thresholds (green/amber/red embedded inline with
+// Visibility pill, per the spec's "embed quality_score inline" rule).
+function qualityBadgeCls(score: number | null, perfectMin: number): string {
+  if (score == null)
+    return 'bg-slate-100 text-slate-500 border border-slate-200';
+  if (score >= perfectMin)
+    return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+  if (score >= 75)
+    return 'bg-amber-100 text-amber-800 border border-amber-200';
+  return 'bg-red-100 text-red-800 border border-red-200';
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -83,14 +132,15 @@ function parseTab(v: string | undefined): TabKey {
 
 function parseSort(raw: string | undefined, tab: TabKey): { key: SortKey; dir: SortDir } {
   if (!raw) {
-    // Default sort depends on tab.
     if (tab === 'improvement-queue') return { key: 'priority', dir: 'desc' };
     return { key: 'vendor', dir: 'asc' };
   }
   const [keyRaw, dirRaw] = raw.split(':');
-  const key: SortKey = (
-    ['priority', 'quality', 'importance', 'vendor', 'name'] as const
-  ).includes(keyRaw as SortKey)
+  const allowed: SortKey[] = [
+    'priority', 'quality', 'importance', 'vendor', 'name',
+    'cost', 'price', 'gpm', 'avail',
+  ];
+  const key: SortKey = (allowed as string[]).includes(keyRaw)
     ? (keyRaw as SortKey)
     : 'priority';
   const dir: SortDir = dirRaw === 'asc' ? 'asc' : 'desc';
@@ -100,6 +150,11 @@ function parseSort(raw: string | undefined, tab: TabKey): { key: SortKey; dir: S
 function fmtUsd(n: number | null): string {
   if (n == null) return '--';
   return `$${n.toFixed(2)}`;
+}
+
+function fmtGpm(n: number | null): string {
+  if (n == null) return '--';
+  return `${(n * 100).toFixed(0)}%`;
 }
 
 function buildUrl(
@@ -119,18 +174,16 @@ function sortRows(rows: CatalogV2Row[], key: SortKey, dir: SortDir): CatalogV2Ro
   const sign = dir === 'asc' ? 1 : -1;
   const accessor = (r: CatalogV2Row): number | string => {
     switch (key) {
-      case 'priority':
-        return r.priority_to_fix;
-      case 'quality':
-        return r.quality_score ?? -1;
-      case 'importance':
-        return r.importance_score ?? -1;
-      case 'vendor':
-        return r.vendor.toLowerCase();
-      case 'name':
-        return r.name.toLowerCase();
-      default:
-        return 0;
+      case 'priority': return r.priority_to_fix;
+      case 'quality': return r.quality_score ?? -1;
+      case 'importance': return r.importance_score ?? -1;
+      case 'vendor': return r.vendor.toLowerCase();
+      case 'name': return r.name.toLowerCase();
+      case 'cost': return r.farm_cost ?? -1;
+      case 'price': return r.price ?? -1;
+      case 'gpm': return r.gpm ?? -1;
+      case 'avail': return r.total_stems;
+      default: return 0;
     }
   };
   return [...rows].sort((a, b) => {
@@ -177,7 +230,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const tab = parseTab(sp.tab);
   const search = (sp.q ?? '').trim();
   const vendorFilter = (sp.vendor ?? 'all').trim();
-  const tierFilter = (sp.tier ?? 'all').trim();
+  const sourceFilter = (sp.source ?? 'all').trim();
+  const categoryFilter = (sp.category ?? 'all').trim();
+  const visibilityFilter = (sp.visibility ?? 'all').trim();
+  const gpmFilter = (sp.gpm ?? 'all').trim();
+  const flagFilter = (sp.flag ?? 'all').trim();
   const pageNum = Math.max(1, parseInt(sp.page ?? '1', 10) || 1);
   const sort = parseSort(sp.sort, tab);
 
@@ -185,7 +242,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     tab: tab !== 'improvement-queue' ? tab : undefined,
     q: search || undefined,
     vendor: vendorFilter !== 'all' ? vendorFilter : undefined,
-    tier: tierFilter !== 'all' ? tierFilter : undefined,
+    source: sourceFilter !== 'all' ? sourceFilter : undefined,
+    category: categoryFilter !== 'all' ? categoryFilter : undefined,
+    visibility: visibilityFilter !== 'all' ? visibilityFilter : undefined,
+    gpm: gpmFilter !== 'all' ? gpmFilter : undefined,
+    flag: flagFilter !== 'all' ? flagFilter : undefined,
     sort: sp.sort,
   };
 
@@ -207,7 +268,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   }
 
   // Fetch classifications ------------------------------------------------
-  let classifications: ClassificationRow[] = [];
+  const classifications: ClassificationRow[] = [];
   try {
     if (mirrorRows.length > 0) {
       const ids = mirrorRows.map((r) => r.id).filter((id) => Number.isFinite(id));
@@ -251,24 +312,52 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     console.error('[admin/catalog] thresholds threw:', err);
   }
 
+  // Fetch box_master + pricing_constants (for GPM compute) --------------
+  let boxMaster: BoxMasterRow[] = [];
+  try {
+    const { data, error } = await backup
+      .from('box_master')
+      .select('box_type, weight_kg, description, validated_by, validated_at, active');
+    if (error) console.error('[admin/catalog] box_master error:', error);
+    boxMaster = (data ?? []) as unknown as BoxMasterRow[];
+  } catch (err) {
+    console.error('[admin/catalog] box_master threw:', err);
+  }
+  let pricingConstants: PricingConstantRow[] = [];
+  try {
+    const { data, error } = await backup
+      .from('pricing_constants')
+      .select('id, value_numeric');
+    if (error) console.error('[admin/catalog] pricing_constants error:', error);
+    pricingConstants = (data ?? []) as unknown as PricingConstantRow[];
+  } catch (err) {
+    console.error('[admin/catalog] pricing_constants threw:', err);
+  }
+
   // Build catalog rows ---------------------------------------------------
   const built = buildCatalog({
     mirror: mirrorRows,
     classifications,
     weights,
     thresholds,
+    boxMaster,
+    pricingConstants,
   });
   const { rows: universeRows, summary, perfect_min_score } = built;
 
-  // Vendor + tier facets (computed from universe so they reflect the truth) -
+  // Facets ---------------------------------------------------------------
   const vendorSet = new Set<string>();
-  const tierSet = new Set<string>();
+  const categorySet = new Set<string>();
   for (const r of universeRows) {
     if (r.vendor) vendorSet.add(r.vendor);
-    if (r.tier) tierSet.add(r.tier);
+    if (r.category) categorySet.add(r.category);
   }
   const allVendors = Array.from(vendorSet).sort();
-  const allTiers = Array.from(tierSet).sort();
+  const allCategories = Array.from(categorySet).sort();
+
+  // Distinct countries (best-effort -- mirror schema doesn't carry country
+  // today; the count surfaces vendor count instead).
+  const countryCount = 0; // TODO: when mirror.country exists, count distinct.
 
   // Tab filter -----------------------------------------------------------
   const inTab = (r: CatalogV2Row): boolean => {
@@ -294,7 +383,27 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   let filtered = universeRows.filter((r) => {
     if (!inTab(r)) return false;
     if (vendorFilter !== 'all' && r.vendor !== vendorFilter) return false;
-    if (tierFilter !== 'all' && r.tier !== tierFilter) return false;
+    if (categoryFilter !== 'all' && r.category !== categoryFilter) return false;
+    if (visibilityFilter !== 'all' && r.visibility !== visibilityFilter) return false;
+
+    if (sourceFilter !== 'all') {
+      const hasSource = r.buckets.includes(sourceFilter as 'k2k_live' | 't2' | 't3');
+      if (!hasSource) return false;
+    }
+
+    if (gpmFilter !== 'all') {
+      if (gpmFilter === 'green' && r.gpm_band !== 'green') return false;
+      if (gpmFilter === 'amber' && r.gpm_band !== 'amber') return false;
+      if (gpmFilter === 'red' && r.gpm_band !== 'red') return false;
+      if (gpmFilter === 'none' && r.gpm_band !== null) return false;
+    }
+
+    if (flagFilter !== 'all') {
+      if (flagFilter === 'missing_cost' && r.farm_cost != null) return false;
+      if (flagFilter === 'no_box_dims' && r.box_verified) return false;
+      if (flagFilter === 'failed_gates' && r.failed_gates.length === 0) return false;
+    }
+
     if (search) {
       const blob = `${r.name} ${r.vendor} ${r.variety} ${r.category} ${r.id}`.toLowerCase();
       if (!blob.includes(search.toLowerCase())) return false;
@@ -315,9 +424,6 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const wm = (id: string) =>
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
-  // Importance seed gap copy --------------------------------------------
-  const importanceGap = summary.universe.total - summary.importance_covered_count;
-
   return (
     <>
       <main className="max-w-7xl mx-auto px-4 py-10">
@@ -329,40 +435,61 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           <span className="text-slate-700 font-medium">Catalog</span>
         </nav>
 
+        {/* Header + state toggle */}
         <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold text-slate-900">Unified Catalog</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Universe{' '}
-              <span className="font-semibold text-slate-900">
-                {summary.universe.total.toLocaleString()}
-              </span>{' '}
-              SKUs (
-              <span className="text-blue-700 font-medium">{summary.universe.t2} T2</span>
-              {' . '}
-              <span className="text-slate-600 font-medium">{summary.universe.t3} T3</span>
-              {' . '}
-              <span className="text-emerald-700 font-medium">
-                {summary.universe.k2k_live} K2K live
-              </span>
-              ). Perfect{' '}
-              <span className="font-semibold text-emerald-700">
-                {summary.perfect_count}
-              </span>{' '}
-              / {summary.universe.total} ({summary.perfect_pct}%). Improvement queue{' '}
-              <span className="font-semibold text-orange-700">
-                {tabCounts['improvement-queue'].toLocaleString()}
-              </span>
-              .
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Quality threshold = {perfect_min_score}/100. Importance score covers{' '}
-              {summary.importance_covered_count}/{summary.universe.total} SKUs (seed of
-              7; pipeline TBD; {importanceGap} ungraded).{' '}
-              <Link href="/admin/catalog/config?panel=quality" className="text-emerald-700 hover:underline">
-                Edit weights / threshold
-              </Link>
-            </p>
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Unified Catalog</h1>
+              <p className="text-sm text-slate-500 mt-0.5">
+                {summary.universe.total.toLocaleString()} SKUs across {allVendors.length}{' '}
+                vendors{countryCount > 0 ? ` / ${countryCount} countries` : ''}.{' '}
+                <span className="text-emerald-700 font-medium">
+                  {summary.universe.k2k_live} K2K live
+                </span>{' / '}
+                <span className="text-blue-700 font-medium">
+                  {summary.universe.t2} T2
+                </span>{' / '}
+                <span className="text-slate-600 font-medium">
+                  {summary.universe.t3} T3
+                </span>{' . '}
+                <span className="text-emerald-700">
+                  {universeRows.filter((r) => r.visibility === 'live').length} live
+                </span>{' / '}
+                <span className="text-slate-500">
+                  {universeRows.filter((r) => r.visibility === 'hidden').length} hidden
+                </span>{' / '}
+                <span className="text-amber-700">
+                  {universeRows.filter((r) => r.visibility === 'draft').length} draft
+                </span>
+              </p>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Reality per Rose&apos;s layer state: gaps visible, ghost still alive
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
+                <button
+                  type="button"
+                  className="px-3 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white cursor-default"
+                  aria-pressed="true"
+                  title="Today: live mirror state."
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  className="px-3 py-1 text-xs font-medium rounded-md text-slate-400 cursor-not-allowed"
+                  disabled
+                  title="Target state -- coming soon (no diverging data path yet)."
+                >
+                  Target state
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400 max-w-xs text-right">
+                Importance covers {summary.importance_covered_count}/
+                {summary.universe.total} SKUs (seed of 7; pipeline TBD).
+              </p>
+            </div>
           </div>
         </WiringSection>
 
@@ -404,15 +531,15 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               <input type="hidden" name="tab" value={tab} />
             )}
             {sp.sort && <input type="hidden" name="sort" value={sp.sort} />}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div className="lg:col-span-2">
                 <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Search
                 </label>
                 <input
                   name="q"
                   defaultValue={search}
-                  placeholder="SKU id, name, variety, vendor..."
+                  placeholder="SKU, name, variety, vendor..."
                   className="w-full px-2 py-1.5 text-sm rounded-md border border-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
@@ -426,12 +553,59 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 ]}
               />
               <SelectField
-                label="Tier"
-                name="tier"
-                defaultValue={tierFilter}
+                label="Source"
+                name="source"
+                defaultValue={sourceFilter}
                 options={[
-                  { value: 'all', label: 'All tiers' },
-                  ...allTiers.map((t) => ({ value: t, label: t })),
+                  { value: 'all', label: 'All sources' },
+                  { value: 'k2k_live', label: 'K2K live' },
+                  { value: 't2', label: 'T2' },
+                  { value: 't3', label: 'T3' },
+                ]}
+              />
+              <SelectField
+                label="Category"
+                name="category"
+                defaultValue={categoryFilter}
+                options={[
+                  { value: 'all', label: 'All categories' },
+                  ...allCategories.map((c) => ({ value: c, label: c })),
+                ]}
+              />
+              <SelectField
+                label="Visibility"
+                name="visibility"
+                defaultValue={visibilityFilter}
+                options={[
+                  { value: 'all', label: 'All' },
+                  { value: 'live', label: 'Live' },
+                  { value: 'hidden', label: 'Hidden' },
+                  { value: 'draft', label: 'Draft' },
+                ]}
+              />
+              <SelectField
+                label="GPM band"
+                name="gpm"
+                defaultValue={gpmFilter}
+                options={[
+                  { value: 'all', label: 'All' },
+                  { value: 'green', label: 'Green (>=33%)' },
+                  { value: 'amber', label: 'Amber (25-33%)' },
+                  { value: 'red', label: 'Red (<25%)' },
+                  { value: 'none', label: 'No GPM (missing data)' },
+                ]}
+              />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mt-3">
+              <SelectField
+                label="Flags"
+                name="flag"
+                defaultValue={flagFilter}
+                options={[
+                  { value: 'all', label: 'All' },
+                  { value: 'missing_cost', label: 'Missing cost' },
+                  { value: 'no_box_dims', label: 'Box not verified' },
+                  { value: 'failed_gates', label: 'Has failing gates' },
                 ]}
               />
             </div>
@@ -439,10 +613,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               <p className="text-xs text-slate-500">
                 Showing{' '}
                 <span className="font-semibold text-slate-900">{pageRows.length}</span>{' '}
-                on this page .{' '}
+                of{' '}
                 <span className="font-semibold text-slate-900">{filteredTotal}</span>{' '}
-                match filters .{' '}
-                <span className="text-slate-400">{summary.universe.total} universe</span>
+                SKUs (universe {summary.universe.total.toLocaleString()})
               </p>
               <div className="flex gap-2">
                 <button
@@ -457,9 +630,55 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 >
                   Reset
                 </Link>
+                <a
+                  href="/api/admin/catalog/export"
+                  className="text-xs px-3 py-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
+                >
+                  Export CSV
+                </a>
               </div>
             </div>
           </form>
+        </WiringSection>
+
+        {/* Bulk-actions row -- UI intent surfaced, executors not yet built */}
+        <WiringSection level={wm('bulk-actions').level} note={wm('bulk-actions').note} id="bulk-actions">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <p className="text-xs text-slate-500">
+              Bulk actions (selection UI deferred -- coming with Context-based island)
+            </p>
+            <div className="flex gap-2">
+              {/*
+                TODO: when per-row checkboxes ship, wrap the table in a Context
+                provider client island and enable these. Right now the buttons
+                render disabled to surface intent.
+              */}
+              <button
+                type="button"
+                disabled
+                title="Coming Round 5 -- override-price executor not yet wired"
+                className="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-400 cursor-not-allowed"
+              >
+                Bulk: override price
+              </button>
+              <button
+                type="button"
+                disabled
+                title="Coming Round 5 -- change-vendor executor not yet wired"
+                className="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-400 cursor-not-allowed"
+              >
+                Bulk: change vendor
+              </button>
+              <button
+                type="button"
+                disabled
+                title="Coming Round 5 -- campaigns table does not exist yet"
+                className="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-400 cursor-not-allowed"
+              >
+                Bulk: add to campaign
+              </button>
+            </div>
+          </div>
         </WiringSection>
 
         {/* Table */}
@@ -469,171 +688,210 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
-                    <th className="px-3 py-2.5">SKU</th>
-                    <th className="px-3 py-2.5">Tier / Vendor</th>
-                    <SortHeader
-                      label="Importance"
-                      sortKey="importance"
-                      current={sort}
-                      rawFilters={rawFilters}
-                      align="right"
-                    />
-                    <SortHeader
-                      label="Quality"
-                      sortKey="quality"
-                      current={sort}
-                      rawFilters={rawFilters}
-                      align="right"
-                    />
-                    {tab === 'improvement-queue' && (
-                      <SortHeader
-                        label="Priority"
-                        sortKey="priority"
-                        current={sort}
-                        rawFilters={rawFilters}
-                        align="right"
-                      />
-                    )}
-                    <th className="px-3 py-2.5">What&apos;s needed</th>
-                    <th className="px-3 py-2.5">Action</th>
+                    <SortHeader label="SKU"            sortKey="name"       current={sort} rawFilters={rawFilters} />
+                    <th className="px-3 py-2.5">Quality Family</th>
+                    <SortHeader label="Vendor"         sortKey="vendor"     current={sort} rawFilters={rawFilters} />
+                    <th className="px-3 py-2.5">Box</th>
+                    <SortHeader label="Cost"           sortKey="cost"       current={sort} rawFilters={rawFilters} align="right" />
+                    <th className="px-3 py-2.5 text-right">Delivery</th>
+                    <SortHeader label="Price"          sortKey="price"      current={sort} rawFilters={rawFilters} align="right" />
+                    <SortHeader label="GPM"            sortKey="gpm"        current={sort} rawFilters={rawFilters} align="right" />
+                    <th className="px-3 py-2.5">Sources</th>
+                    <SortHeader label="Avail"          sortKey="avail"      current={sort} rawFilters={rawFilters} align="right" />
+                    <th className="px-3 py-2.5">Visibility</th>
+                    <th className="px-3 py-2.5">Flags</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {pageRows.map((r) => {
-                    const action = recommendAction(r);
-                    return (
-                      <tr
-                        key={r.id}
-                        className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors"
-                      >
-                        <td className="px-3 py-2.5 align-top">
-                          <Link
-                            href={`/admin/catalog/${r.id}`}
-                            className="font-mono text-[11px] text-emerald-700 hover:underline"
-                          >
-                            {r.id}
-                          </Link>
-                          <div
-                            className="text-[11px] text-slate-700 mt-0.5 max-w-[240px] truncate"
-                            title={r.name}
-                          >
-                            {r.name}
-                          </div>
-                          {r.variety && (
-                            <div className="text-[10px] text-slate-400">
-                              {r.variety}
-                              {r.length ? ` . ${r.length}` : ''}
-                              {r.unit ? ` . ${r.unit}` : ''}
-                            </div>
-                          )}
-                          <div className="text-[10px] text-slate-400 mt-0.5">
-                            {fmtUsd(r.price)} . stock {r.stock}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2.5 align-top">
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-[11px] font-mono text-slate-600">
-                              {r.tier || '--'}
-                            </span>
-                            <span className="text-slate-700 text-[12px]">{r.vendor}</span>
-                            <div className="flex flex-wrap gap-1 mt-0.5">
-                              {r.buckets.map((b) => (
-                                <span
-                                  key={b}
-                                  className={
-                                    b === 'k2k_live'
-                                      ? 'text-[9px] px-1 py-0.5 rounded border font-medium bg-emerald-50 text-emerald-700 border-emerald-200'
-                                      : b === 't2'
-                                        ? 'text-[9px] px-1 py-0.5 rounded border font-medium bg-blue-50 text-blue-700 border-blue-200'
-                                        : 'text-[9px] px-1 py-0.5 rounded border font-medium bg-slate-50 text-slate-600 border-slate-200'
-                                  }
-                                >
-                                  {b === 'k2k_live' ? 'K2K live' : b.toUpperCase()}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-3 py-2.5 align-top text-right">
-                          {r.importance_score == null ? (
+                  {pageRows.map((r) => (
+                    <tr
+                      key={r.id}
+                      className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors align-top"
+                    >
+                      {/* 1. SKU */}
+                      <td className="px-3 py-2.5">
+                        <Link
+                          href={`/admin/catalog/${r.id}`}
+                          className="font-mono text-[11px] text-emerald-700 hover:underline"
+                        >
+                          {r.id}
+                        </Link>
+                        <div
+                          className="text-[11px] text-slate-700 mt-0.5 max-w-[220px] truncate"
+                          title={r.name}
+                        >
+                          {r.name}
+                        </div>
+                        {r.importance_score != null && (
+                          <div className="mt-1">
                             <span
-                              className="text-slate-300 text-base"
-                              title="No featured-score seed match. Pipeline TBD."
+                              className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 font-semibold"
+                              title="Importance from featured-products framework (seed of 7)."
                             >
-                              --
+                              <span aria-hidden="true">*</span>{r.importance_score}
                             </span>
-                          ) : (
-                            <span className="font-semibold text-slate-900">
-                              {r.importance_score}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 align-top text-right">
-                          {r.quality_score == null ? (
-                            <span className="text-slate-300 text-base">--</span>
-                          ) : (
-                            <div className="flex flex-col items-end">
-                              <span className="font-semibold text-slate-900">
-                                {r.quality_score}
-                              </span>
-                              <span
-                                className={`mt-0.5 text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${STATUS_BAND_CLS[r.status_band]}`}
-                              >
-                                {STATUS_BAND_LABEL[r.status_band]}
-                              </span>
-                            </div>
-                          )}
-                        </td>
-                        {tab === 'improvement-queue' && (
-                          <td className="px-3 py-2.5 align-top text-right">
-                            <span className="font-semibold text-orange-700">
-                              {Math.round(r.priority_to_fix).toLocaleString()}
-                            </span>
-                          </td>
+                          </div>
                         )}
-                        <td className="px-3 py-2.5 align-top">
-                          {r.failed_gates.length === 0 ? (
-                            <span className="text-[11px] text-emerald-700">
-                              All gates clean
-                            </span>
-                          ) : (
-                            <ul className="text-[11px] text-slate-600 space-y-0.5">
-                              {r.failed_gates.slice(0, 3).map((g) => (
-                                <li key={g.gate_id}>
-                                  <span className="font-mono text-[10px] text-red-700">
-                                    -{g.weight}
-                                  </span>{' '}
-                                  {g.display_label}
-                                </li>
-                              ))}
-                              {r.failed_gates.length > 3 && (
-                                <li className="text-slate-400">
-                                  +{r.failed_gates.length - 3} more
-                                </li>
+                      </td>
+
+                      {/* 2. Quality Family */}
+                      <td className="px-3 py-2.5">
+                        <div className="text-slate-900">
+                          {r.variety || r.category || '--'}
+                          {r.length ? ` ${r.length}` : ''}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {[r.category, r.variety, r.length, r.unit]
+                            .filter(Boolean)
+                            .join(' . ') || '--'}
+                        </div>
+                      </td>
+
+                      {/* 3. Vendor */}
+                      <td className="px-3 py-2.5">
+                        <div className="text-slate-700">{r.vendor}</div>
+                        {r.country && (
+                          <div className="text-[11px] text-slate-500">{r.country}</div>
+                        )}
+                      </td>
+
+                      {/* 4. Box */}
+                      <td className="px-3 py-2.5">
+                        {r.box_type ? (
+                          <>
+                            <div className="text-slate-700">{r.box_type}</div>
+                            <div className="text-[11px]">
+                              {r.box_verified ? (
+                                <span className="text-emerald-700">verified</span>
+                              ) : (
+                                <span className="text-amber-700">needs verify</span>
                               )}
-                            </ul>
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 align-top">
-                          {action.href ? (
-                            <Link
-                              href={action.href}
-                              className={
-                                action.escalate
-                                  ? 'inline-flex items-center text-[11px] px-2 py-1 rounded-md bg-orange-50 text-orange-800 border border-orange-200 hover:bg-orange-100 font-medium'
-                                  : 'inline-flex items-center text-[11px] px-2 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-medium'
-                              }
-                              title={action.hint}
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-slate-400 text-xs">--</span>
+                        )}
+                      </td>
+
+                      {/* 5. Cost */}
+                      <td className="px-3 py-2.5 text-right">
+                        {r.farm_cost == null ? (
+                          <span className="text-amber-700 text-xs">missing</span>
+                        ) : (
+                          <span className="text-slate-900">{fmtUsd(r.farm_cost)}</span>
+                        )}
+                      </td>
+
+                      {/* 6. Delivery (per-stem shipping cost) */}
+                      <td className="px-3 py-2.5 text-right text-slate-700">
+                        {fmtUsd(r.shipping_per_stem)}
+                      </td>
+
+                      {/* 7. Price */}
+                      <td className="px-3 py-2.5 text-right">
+                        <span className="text-slate-900 font-semibold">
+                          {fmtUsd(r.price)}
+                        </span>
+                      </td>
+
+                      {/* 8. GPM */}
+                      <td className="px-3 py-2.5 text-right">
+                        {r.gpm_band ? (
+                          <span className={`font-semibold ${GPM_BAND_CLS[r.gpm_band]}`}>
+                            {fmtGpm(r.gpm)}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs">--</span>
+                        )}
+                      </td>
+
+                      {/* 9. Sources */}
+                      <td className="px-3 py-2.5">
+                        <div className="flex flex-wrap gap-1">
+                          {r.buckets.map((b) => (
+                            <span
+                              key={b}
+                              className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${SOURCE_BADGE_CLS[b]}`}
                             >
-                              {action.label}
-                            </Link>
-                          ) : (
-                            <span className="text-[11px] text-slate-400">--</span>
+                              {SOURCE_LABELS[b]}
+                            </span>
+                          ))}
+                          {r.buckets.length === 0 && (
+                            <span className="text-slate-400 text-xs">--</span>
                           )}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        </div>
+                      </td>
+
+                      {/* 10. Avail */}
+                      <td className="px-3 py-2.5 text-right">
+                        <div className="text-slate-700">
+                          {r.total_stems.toLocaleString()}
+                          <span className="text-[10px] text-slate-400 ml-1">stems</span>
+                        </div>
+                        {r.boxes_available != null && r.boxes_available > 0 && (
+                          <div className="text-[10px] text-slate-400">
+                            {r.boxes_available.toLocaleString()} boxes
+                          </div>
+                        )}
+                      </td>
+
+                      {/* 11. Visibility (with inline quality_score badge) */}
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <span
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${VISIBILITY_BADGE_CLS[r.visibility]}`}
+                          >
+                            {r.visibility}
+                          </span>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${qualityBadgeCls(r.quality_score, perfect_min_score)}`}
+                            title={`Quality score (0-100). Perfect threshold = ${perfect_min_score}.`}
+                          >
+                            {r.quality_score == null ? '--' : r.quality_score}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* 12. Flags */}
+                      <td className="px-3 py-2.5">
+                        {r.failed_gates.length === 0 &&
+                        r.farm_cost != null &&
+                        r.box_verified ? (
+                          <span className="text-[11px] text-emerald-700">clean</span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1">
+                            {r.failed_gates.slice(0, 3).map((g) => (
+                              <span
+                                key={g.gate_id}
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 font-medium"
+                                title={`-${g.weight} . ${g.display_label}`}
+                              >
+                                {g.display_label}
+                              </span>
+                            ))}
+                            {r.failed_gates.length > 3 && (
+                              <Link
+                                href={`/admin/catalog/${r.id}`}
+                                className="text-[10px] text-slate-500 hover:text-slate-700 underline"
+                              >
+                                +{r.failed_gates.length - 3} more
+                              </Link>
+                            )}
+                            {r.farm_cost == null && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                                no cost
+                              </span>
+                            )}
+                            {!r.box_verified && r.box_type && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                                box unverified
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
 
@@ -682,47 +940,43 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
         {/* Legend */}
         <div className="mt-4 text-xs text-slate-500 flex flex-wrap gap-x-4 gap-y-1">
-          <span>Quality bands:</span>
+          <span>Sources:</span>
           <span className="inline-flex items-center gap-1">
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${STATUS_BAND_CLS.perfect}`}>
-              Perfect
+            <span className="text-[10px] px-1.5 py-0.5 rounded border font-medium bg-emerald-50 text-emerald-700 border-emerald-200">
+              K2K live
             </span>{' '}
-            {perfect_min_score}+
+            vendor uploaded
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${STATUS_BAND_CLS.almost_perfect}`}>
-              Almost perfect
+            <span className="text-[10px] px-1.5 py-0.5 rounded border font-medium bg-blue-50 text-blue-700 border-blue-200">
+              T2
             </span>{' '}
-            90-99
+            commitment
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${STATUS_BAND_CLS.needs_minor_fix}`}>
-              Needs minor fix
+            <span className="text-[10px] px-1.5 py-0.5 rounded border font-medium bg-slate-50 text-slate-600 border-slate-200">
+              T3
             </span>{' '}
-            75-89
+            sourceable
           </span>
-          <span className="inline-flex items-center gap-1">
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${STATUS_BAND_CLS.has_issues}`}>
-              Has issues
-            </span>{' '}
-            50-74
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${STATUS_BAND_CLS.broken}`}>
-              Broken
-            </span>{' '}
-            &lt;50
+          <span className="ml-2">
+            GPM:{' '}
+            <span className="text-emerald-700 font-semibold">green &gt;=33%</span> .{' '}
+            <span className="text-amber-700 font-semibold">amber 25-33%</span> .{' '}
+            <span className="text-red-700 font-semibold">red &lt;25%</span>
           </span>
         </div>
 
         <p className="text-xs text-slate-400 mt-6">
-          Catalog-v2 model: quality_score = weighted sum (0-100) of passing gates
-          from catalog_quality_weights. Importance from featured-products framework
-          (seed of 7 SKUs today; full pipeline pending TAM x seasonal x trend x
-          quotes x competitor data). priority_to_fix = importance x (100 - quality).
-          Data sources: supabase-backup public.floropolis_inventory_mirror,
-          public.catalog_classifications, public.catalog_quality_weights,
-          public.catalog_quality_thresholds.
+          Catalog-v5 model: universe = T2 + T3 + K2K live (de-duped). quality_score
+          = weighted sum (0-100) of passing gates from catalog_quality_weights.
+          Importance from featured-products framework (seed of 7 SKUs today;
+          pipeline pending). GPM = (price - cost - shipping) / price. Shipping per
+          stem = ceil(box_weight_kg) * fedex_rate_per_kg * fuel_surcharge_mult /
+          units_per_box. Sources: supabase-backup
+          public.floropolis_inventory_mirror, public.catalog_classifications,
+          public.catalog_quality_weights, public.catalog_quality_thresholds,
+          public.box_master, public.pricing_constants.
         </p>
       </main>
     </>
@@ -752,7 +1006,11 @@ function TabLink({
     : 'px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700';
   return (
     <Link
-      href={buildUrl(rawFilters, { tab: tab !== 'improvement-queue' ? tab : undefined, page: undefined, sort: undefined })}
+      href={buildUrl(rawFilters, {
+        tab: tab !== 'improvement-queue' ? tab : undefined,
+        page: undefined,
+        sort: undefined,
+      })}
       className={cls}
     >
       {label}

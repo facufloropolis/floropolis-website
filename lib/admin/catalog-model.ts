@@ -102,6 +102,21 @@ export interface MirrorRow {
   live: boolean;
   active: boolean;
   arrival_date: string | null;
+  country?: string | null;
+}
+
+export interface BoxMasterRow {
+  box_type: string;
+  weight_kg: number | string | null;
+  description: string | null;
+  validated_by: string | null;
+  validated_at: string | null;
+  active?: boolean | null;
+}
+
+export interface PricingConstantRow {
+  id: string;
+  value_numeric: number | string | null;
 }
 
 export type StatusBand =
@@ -113,6 +128,9 @@ export type StatusBand =
   | 'unscored';
 
 export type UniverseBucket = 't2' | 't3' | 'k2k_live';
+
+export type GpmBand = 'green' | 'amber' | 'red';
+export type Visibility = 'live' | 'hidden' | 'draft';
 
 export interface FailedGateDetail {
   gate_id: string;
@@ -145,10 +163,26 @@ export interface CatalogV2Row {
   price: number | null;
   farm_cost: number | null;
   stock: number;
+  total_stems: number;
+  units_per_box: number | null;
+  boxes_available: number | null;
   live: boolean;
   active: boolean;
   cost_source: string | null;
   arrival_date: string | null;
+  country: string | null;
+  // Box + shipping
+  box_type: string | null;
+  box_verified: boolean;
+  box_weight_kg: number | null;
+  shipping_per_stem: number | null;
+  // GPM (computed from price - farm_cost - shipping_per_stem) / price
+  gpm: number | null;
+  gpm_band: GpmBand | null;
+  // Visibility (derived from live + active)
+  visibility: Visibility;
+  // Override marker (NULL today; surfaced by future joins to overrides table)
+  active_override_id: string | null;
 }
 
 export interface UniverseCounts {
@@ -223,6 +257,31 @@ function deriveBuckets(row: MirrorRow): UniverseBucket[] {
   return out;
 }
 
+export function deriveVisibility(row: MirrorRow): Visibility {
+  if (row.live && row.active) return 'live';
+  if (row.active && !row.live) return 'hidden';
+  return 'draft';
+}
+
+export function gpmBandFor(gpm: number | null): GpmBand | null {
+  if (gpm == null) return null;
+  if (gpm >= 0.33) return 'green';
+  if (gpm >= 0.25) return 'amber';
+  return 'red';
+}
+
+export const GPM_BAND_CLS: Record<GpmBand, string> = {
+  green: 'text-emerald-700',
+  amber: 'text-amber-700',
+  red: 'text-red-700',
+};
+
+export const VISIBILITY_BADGE_CLS: Record<Visibility, string> = {
+  live: 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+  hidden: 'bg-slate-100 text-slate-600 border border-slate-200',
+  draft: 'bg-amber-100 text-amber-800 border border-amber-200',
+};
+
 // ---------------------------------------------------------------------------
 // Build catalog rows
 // ---------------------------------------------------------------------------
@@ -232,6 +291,10 @@ export interface BuildCatalogInputs {
   classifications: ClassificationRow[];
   weights: QualityWeightRow[];
   thresholds: QualityThresholdRow[];
+  // Optional -- when provided, enables per-row GPM + shipping_per_stem compute.
+  // When omitted, those fields are null and the GPM column renders "--".
+  boxMaster?: BoxMasterRow[];
+  pricingConstants?: PricingConstantRow[];
 }
 
 export interface BuildCatalogOutput {
@@ -242,7 +305,7 @@ export interface BuildCatalogOutput {
 }
 
 export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
-  const { mirror, classifications, weights, thresholds } = inputs;
+  const { mirror, classifications, weights, thresholds, boxMaster, pricingConstants } = inputs;
 
   // Index helpers ---------------------------------------------------------
   const weightsByGate = new Map<string, QualityWeightRow>();
@@ -253,6 +316,17 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
   for (const c of classifications) {
     if (c && c.sku_id != null) classBySku.set(c.sku_id, c);
   }
+  const boxByType = new Map<string, BoxMasterRow>();
+  for (const b of boxMaster ?? []) {
+    if (b && typeof b.box_type === 'string') boxByType.set(b.box_type, b);
+  }
+  const pricingMap = new Map<string, number>();
+  for (const c of pricingConstants ?? []) {
+    const n = asNum(c.value_numeric);
+    if (n != null) pricingMap.set(c.id, n);
+  }
+  const fedexRate = pricingMap.get('fedex_rate_per_kg') ?? null;
+  const fuelMult = pricingMap.get('fuel_surcharge_mult') ?? null;
 
   const perfectThresholdRow = thresholds.find((t) => t.threshold_id === 'perfect_min_score');
   // Default to 100 if missing/malformed (Facu spec: weights table is the model;
@@ -328,6 +402,37 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
         ? (importance_score ?? 0) * 100 // worst case: ungraded but flagged important
         : (importance_score ?? 0) * (100 - quality_score);
 
+    // Box + shipping ------------------------------------------------------
+    const box = r.box_type ? boxByType.get(r.box_type) ?? null : null;
+    const boxWeight = box ? asNum(box.weight_kg) : null;
+    const upbRaw = asNum(r.units_per_box);
+    const unitsPerBox = upbRaw != null && upbRaw > 0 ? upbRaw : null;
+    // box_master is "verified" when validated_by + validated_at are populated.
+    const boxVerified = !!(box && box.validated_by && box.validated_at);
+    const shipping_per_stem =
+      boxWeight != null && fedexRate != null && fuelMult != null && unitsPerBox != null
+        ? (Math.ceil(boxWeight) * fedexRate * fuelMult) / unitsPerBox
+        : null;
+
+    // GPM = (price - cost - shipping) / price
+    // Today we have no box_share data (box_master cost_usd not in schema yet);
+    // box_cost folds into shipping when it lands. Document in callsite.
+    const priceN = asNum(r.price);
+    const costN = asNum(r.farm_cost);
+    const gpm =
+      priceN != null && priceN > 0 && costN != null
+        ? (priceN - costN - (shipping_per_stem ?? 0)) / priceN
+        : null;
+    const gpm_band = gpmBandFor(gpm);
+
+    // Available boxes (when units_per_box known).
+    const totalStems =
+      r.total_stems != null
+        ? r.total_stems
+        : Math.max(0, Math.round(asNum(r.stock) ?? 0));
+    const boxes_available =
+      unitsPerBox != null ? Math.floor(totalStems / unitsPerBox) : null;
+
     return {
       id: r.id,
       name: r.name,
@@ -344,16 +449,25 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       priority_to_fix,
       failed_gates,
       unevaluated_gate_ids,
-      price: asNum(r.price),
-      farm_cost: asNum(r.farm_cost),
-      stock:
-        r.total_stems != null
-          ? r.total_stems
-          : Math.max(0, Math.round(asNum(r.stock) ?? 0)),
+      price: priceN,
+      farm_cost: costN,
+      stock: totalStems,
+      total_stems: totalStems,
+      units_per_box: unitsPerBox,
+      boxes_available,
       live: r.live === true,
       active: r.active === true,
       cost_source: r.cost_source,
       arrival_date: r.arrival_date,
+      country: r.country ?? null,
+      box_type: r.box_type ?? null,
+      box_verified: boxVerified,
+      box_weight_kg: boxWeight,
+      shipping_per_stem,
+      gpm,
+      gpm_band,
+      visibility: deriveVisibility(r),
+      active_override_id: null,
     };
   });
 
