@@ -6,7 +6,6 @@
 //   - Inventory delta DoD flag (placeholder until mirror_snapshot_daily lands)
 //   - Tier visibility windows banner (Ecuador active, Colombia / US OFF per Phase A seed)
 //   - Sortable columns via ?sort=col:dir
-//   - Filter chip row (one click per major dimension)
 //   - Bulk-actions toolbar (client island) -- selection + Propose hide all / Export / Flag to CEO
 //   - Export CSV button (links to /api/admin/catalog/export, preserves filters)
 //
@@ -837,81 +836,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
         </WiringSection>
 
-        {/* Filter chip row -- compact single-line layout per mockup ------ */}
-        <WiringSection level={wm('filter-chips').level} note={wm('filter-chips').note} id="filter-chips">
-        <section
-          aria-label="Filter chips"
-          className="mb-3 flex flex-wrap items-center gap-1 text-[11px]"
-        >
-          <span className="text-slate-400 uppercase tracking-wide font-semibold mr-1">
-            Source
-          </span>
-          <FilterChip
-            label="All"
-            active={!sourceFilter || sourceFilter === 'all'}
-            href={buildUrl(rawFilters, { source: undefined, page: undefined })}
-          />
-          <FilterChip
-            label={`K2K (${counts.liveK2K})`}
-            active={sourceFilter === 'k2k_live'}
-            href={buildUrl(rawFilters, { source: 'k2k_live', page: undefined })}
-          />
-          <FilterChip
-            label={`T2 (${counts.t2})`}
-            active={sourceFilter === 't2'}
-            href={buildUrl(rawFilters, { source: 't2', page: undefined })}
-          />
-          <FilterChip
-            label={`T3 (${counts.t3})`}
-            active={sourceFilter === 't3'}
-            href={buildUrl(rawFilters, { source: 't3', page: undefined })}
-          />
-          <span className="text-slate-400 uppercase tracking-wide font-semibold mx-2">
-            Visibility
-          </span>
-          <FilterChip
-            label={`Live (${counts.live})`}
-            active={visibilityFilter === 'live'}
-            href={buildUrl(rawFilters, { visibility: 'live', page: undefined })}
-          />
-          <FilterChip
-            label={`Hidden (${counts.hidden})`}
-            active={visibilityFilter === 'hidden'}
-            href={buildUrl(rawFilters, { visibility: 'hidden', page: undefined })}
-          />
-          <FilterChip
-            label={`Draft (${counts.draft})`}
-            active={visibilityFilter === 'draft'}
-            href={buildUrl(rawFilters, { visibility: 'draft', page: undefined })}
-          />
-          <span className="text-slate-400 uppercase tracking-wide font-semibold mx-2">
-            Flags
-          </span>
-          <FilterChip
-            label={`No cost (${counts.noCost})`}
-            active={flagsFilter === 'no_cost'}
-            href={buildUrl(rawFilters, { flags: 'no_cost', page: undefined })}
-          />
-          <FilterChip
-            label={`No box (${counts.noBoxDims})`}
-            active={flagsFilter === 'no_box_dims'}
-            href={buildUrl(rawFilters, { flags: 'no_box_dims', page: undefined })}
-          />
-          {totalAwaiting > 0 && (
-            <FilterChip
-              label={`Awaiting Facu (${totalAwaiting})`}
-              active={flagsFilter === 'awaiting_facu'}
-              href={buildUrl(rawFilters, { flags: 'awaiting_facu', page: undefined })}
-            />
-          )}
-          <FilterChip
-            label="Override"
-            active={flagsFilter === 'has_override'}
-            href={buildUrl(rawFilters, { flags: 'has_override', page: undefined })}
-          />
-        </section>
-
-        </WiringSection>
+        {/* Filter chip row removed in r3-cleanup per mockup parity (Facu decision).
+            Filter form below is the single filter surface. */}
 
         {/* Filter form ---------------------------------------------- */}
         <WiringSection level={wm('filter-form').level} note={wm('filter-form').note} id="filter-form">
@@ -1384,29 +1310,6 @@ function SelectField({
         ))}
       </select>
     </div>
-  );
-}
-
-function FilterChip({
-  label,
-  active,
-  href,
-}: {
-  label: string;
-  active: boolean;
-  href: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className={
-        active
-          ? 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-600 text-white'
-          : 'text-[11px] font-medium px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-      }
-    >
-      {label}
-    </Link>
   );
 }
 

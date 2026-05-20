@@ -4,6 +4,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Admin shell total sticky-header height (banner + top bar + health bar).
+   * Single source of truth for any sticky element on /admin/* that needs to
+   * clear the shell header (e.g. DetailActionPanel right column).
+   * v1 | 2026-05-19 | r3-cleanup */
+  --admin-shell-header-height: 140px;
 }
 
 @theme {

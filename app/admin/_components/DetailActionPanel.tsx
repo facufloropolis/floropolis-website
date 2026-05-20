@@ -29,9 +29,10 @@ interface DetailActionPanelProps {
    */
   children: ReactNode;
   /**
-   * Tailwind top offset for the sticky position on desktop. AdminShell's
-   * header is sticky at top-[33px] with ~96px combined height; default of
-   * `top-[140px]` keeps the panel below it. Override if a page has extra
+   * Tailwind top offset for the sticky position on desktop. Defaults to
+   * `lg:top-[var(--admin-shell-header-height)]` which reads the shared CSS
+   * variable defined on :root in app/globals.css (single source of truth for
+   * AdminShell + sticky descendants). Override only if a page adds extra
    * sticky chrome above the 2-col grid.
    */
   stickyTopClass?: string;
@@ -41,7 +42,7 @@ export default function DetailActionPanel({
   title,
   subtitle,
   children,
-  stickyTopClass = 'lg:top-[140px]',
+  stickyTopClass = 'lg:top-[var(--admin-shell-header-height)]',
 }: DetailActionPanelProps) {
   return (
     <aside

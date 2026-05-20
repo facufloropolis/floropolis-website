@@ -6,9 +6,10 @@
 // supabase-backup. Falls back to address rows when snapshot jsonb is missing.
 //
 // Sections:
+//   - One-line Dispatch + Refunds summaries (above header; r3-cleanup W4
+//     follow-up: full display cards collapsed, action triggers stay in the
+//     right DetailActionPanel)
 //   - Header (order_number, status, total, customer)
-//   - Trigger-refund action OR existing refund_approvals + pending refund
-//     proposals (admin_proposals where type='refund.create' + target_id)
 //   - Timeline derived from orders.* timestamps and payments
 //   - Order lines table
 //   - Payments ledger
@@ -417,6 +418,18 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   const wm = (id: string) =>
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
+  // r3-cleanup (W4 follow-up): one-line summaries replace the Dispatch + Refunds
+  // display cards on the left column. Trigger buttons (InitDispatchButton,
+  // RefundProposalForm) remain in the right DetailActionPanel as W4 placed them.
+  const dispatchLastEventAt =
+    dispatch?.delivered_at ??
+    dispatch?.in_transit_at ??
+    dispatch?.picked_up_at ??
+    dispatch?.packed_at ??
+    null;
+  const pendingRefundCount =
+    refundProposals.length + approvals.filter((a) => a.status === 'pending').length;
+
   return (
     <>
       <main className="max-w-6xl mx-auto px-4 py-10">
@@ -430,6 +443,53 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             <span aria-hidden="true">&larr;</span> All orders
           </Link>
         </div>
+
+        {/* Collapsed Dispatch + Refunds summary lines (W4 display-card collapse) */}
+        {(dispatch || pendingRefundCount > 0) && (
+          <div className="mb-4 space-y-1">
+            {dispatch && (
+              <WiringSection level={wm('init-dispatch').level} note={wm('init-dispatch').note} id="init-dispatch">
+                <p className="text-xs text-slate-600">
+                  <span className="text-slate-400 font-semibold uppercase tracking-wide mr-2">
+                    Dispatch
+                  </span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                    {dispatch.status}
+                  </span>
+                  {dispatchLastEventAt && (
+                    <span className="ml-2 text-slate-500">{fmtDate(dispatchLastEventAt)}</span>
+                  )}
+                  {dispatch.tracking_number && (
+                    <>
+                      <span className="ml-2 text-slate-400">--</span>
+                      <Link
+                        href="/admin/dispatch"
+                        className="ml-2 underline text-emerald-700 hover:text-emerald-900 font-mono"
+                      >
+                        {dispatch.tracking_number}
+                      </Link>
+                    </>
+                  )}
+                </p>
+              </WiringSection>
+            )}
+            {pendingRefundCount > 0 && (
+              <WiringSection level={wm('refund-proposal').level} note={wm('refund-proposal').note} id="refund-proposal">
+                <p className="text-xs text-slate-600">
+                  <span className="text-slate-400 font-semibold uppercase tracking-wide mr-2">
+                    Refunds
+                  </span>
+                  <Link
+                    href={`/admin/refunds?order=${order.id}`}
+                    className="underline text-emerald-700 hover:text-emerald-900"
+                  >
+                    {pendingRefundCount} pending
+                  </Link>
+                </p>
+              </WiringSection>
+            )}
+          </div>
+        )}
 
         {/* Header */}
         <WiringSection level={wm('header').level} note={wm('header').note} id="header">
@@ -467,129 +527,9 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
         <div className="grid lg:grid-cols-[1fr_320px] gap-6">
           {/* Main column */}
           <div className="space-y-6">
-            {/* Dispatch status (display) */}
-            <WiringSection level={wm('init-dispatch').level} note={wm('init-dispatch').note} id="init-dispatch">
-            <section className="bg-white border border-slate-200 rounded-2xl p-5">
-              <div className="flex items-start justify-between flex-wrap gap-3 mb-2">
-                <div>
-                  <h2 className="font-semibold text-slate-900">Dispatch</h2>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Once initialized, manage status + tracking on{' '}
-                    <Link href="/admin/dispatch" className="underline text-emerald-700 hover:text-emerald-900">
-                      /admin/dispatch
-                    </Link>.
-                  </p>
-                </div>
-              </div>
-              {dispatch ? (
-                <div className="text-xs text-slate-600 grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                  <div><span className="text-slate-400">Status:</span> <span className="font-mono">{dispatch.status}</span></div>
-                  <div><span className="text-slate-400">Carrier:</span> {dispatch.carrier ?? 'fedex'}</div>
-                  <div><span className="text-slate-400">Tracking:</span> {dispatch.tracking_number ?? 'unassigned'}</div>
-                  <div>
-                    <span className="text-slate-400">Last event:</span>{' '}
-                    {dispatch.delivered_at ?? dispatch.in_transit_at ?? dispatch.picked_up_at ?? dispatch.packed_at ?? '—'}
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-500 italic mt-2">No dispatch row yet. Use &quot;Initialize dispatch&quot; in the action panel to track packing + shipping.</p>
-              )}
-            </section>
-            </WiringSection>
-
-            {/* Refund history (display only; trigger lives in the action panel) */}
-            <WiringSection level={wm('refund-proposal').level} note={wm('refund-proposal').note} id="refund-proposal">
-            <section className="bg-white border border-slate-200 rounded-2xl p-5">
-              <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
-                <div>
-                  <h2 className="font-semibold text-slate-900">Refunds</h2>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Refunds route through{' '}
-                    <Link
-                      href="/admin/catalog/approval-queue"
-                      className="underline text-emerald-700 hover:text-emerald-900"
-                    >
-                      Facu&apos;s approval queue
-                    </Link>
-                    . Quorum: JJ or Facu &lt;=$200, Facu only $200-$500, both &gt;$500.
-                  </p>
-                </div>
-              </div>
-
-              {refundProposals.length === 0 && approvals.length === 0 && (
-                <p className="text-sm text-slate-500 italic">
-                  No refund activity on this order yet. Use the action panel to trigger one.
-                </p>
-              )}
-
-              {refundProposals.length > 0 && (
-                <div className="space-y-2 mb-3">
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
-                    Pending refund proposals (admin_proposals)
-                  </p>
-                  {refundProposals.map((p) => {
-                    const amt = (p.payload?.amount as number | undefined) ?? null;
-                    const reason = (p.payload?.reason as string | undefined) ?? '(no reason)';
-                    return (
-                      <div
-                        key={p.id}
-                        className="border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-sm"
-                      >
-                        <div className="flex justify-between items-start gap-3 flex-wrap">
-                          <div>
-                            <p className="font-semibold text-amber-900">
-                              {amt != null ? fmtCurrency(amt, order.currency) : '(amount missing)'}{' '}
-                              -- {p.status}
-                            </p>
-                            <p className="text-xs text-amber-900/80 mt-0.5">{reason}</p>
-                          </div>
-                          <p className="text-xs text-amber-900/60 font-mono">
-                            {fmtDate(p.proposed_at)} -- proposal #{p.id.slice(0, 8)}
-                          </p>
-                        </div>
-                        <p className="text-[11px] text-amber-900/60 mt-2">
-                          TODO: refund.create executor is a stub; Facu approval won&apos;t
-                          issue the Stripe refund yet. See proposal-executors.ts.
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {approvals.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
-                    refund_approvals
-                  </p>
-                  {approvals.map((a) => (
-                    <div
-                      key={a.id}
-                      className="border border-slate-200 rounded-xl px-4 py-3 text-sm flex justify-between flex-wrap gap-3"
-                    >
-                      <div>
-                        <p className="font-semibold text-slate-900">
-                          {fmtCurrency(a.proposed_amount, a.currency)} -- {a.status}
-                        </p>
-                        <p className="text-xs text-slate-500 mt-0.5">{a.reason}</p>
-                        <p className="text-[11px] text-slate-400 mt-1">
-                          JJ {voteLabel(a.jj_approved)} -- Facu {voteLabel(a.facu_approved)} --
-                          {a.quorum_met ? ' quorum met' : ' awaiting quorum'} -- expires{' '}
-                          {fmtDateOnly(a.expires_at)}
-                        </p>
-                      </div>
-                      <Link
-                        href="/admin/refunds"
-                        className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 self-start"
-                      >
-                        Manage in /admin/refunds &rarr;
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-            </WiringSection>
+            {/* Dispatch + Refunds display cards collapsed to one-line summaries
+                above the header (r3-cleanup, W4 follow-up). Trigger actions live
+                in the right DetailActionPanel. */}
 
             {/* W5: EMAIL_LOG slot -- Brevo transactional events for this order. */}
             <EmailLogSection orderId={order.id} customerEmail={customerEmail} />
@@ -979,12 +919,6 @@ function addressToSnap(a: AddressRow | undefined): ShippingSnap | null {
     postal_code: a.postal_code,
     country: a.country,
   };
-}
-
-function voteLabel(v: boolean | null): string {
-  if (v === true) return 'approved';
-  if (v === false) return 'rejected';
-  return 'no vote';
 }
 
 interface TimelineEvent {
