@@ -343,130 +343,188 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const backup = getBackupServiceClient();
 
   // Fetch mirror rows -----------------------------------------------------
-  let mq = backup
-    .from('floropolis_inventory_mirror')
-    .select(
-      'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, k2k_alignment_status, live, active, quality_family_id, is_on_deal, price_override, arrival_date',
-    );
+  // 2026-05-19: each fetch block is wrapped in try/catch so a single failing
+  // table (or a single non-numeric target_id / malformed expires_at) cannot
+  // 500 the whole page. Caught errors fall through to empty state + log a
+  // stage-tagged console.error so Sentry can pinpoint which block failed.
+  let mirrorRows: MirrorRow[] = [];
+  try {
+    let mq = backup
+      .from('floropolis_inventory_mirror')
+      .select(
+        'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, k2k_alignment_status, live, active, quality_family_id, is_on_deal, price_override, arrival_date',
+      );
 
-  if (vendorFilter !== 'all') mq = mq.eq('vendor', vendorFilter);
-  if (categoryFilter !== 'all') mq = mq.eq('category', categoryFilter);
-  if (sourceFilter === 't2') mq = mq.eq('tier', 'T2');
-  if (sourceFilter === 't3') mq = mq.eq('tier', 'T3');
-  if (sourceFilter === 'k2k_live') mq = mq.ilike('cost_source', '%_k2k_%');
-  if (visibilityFilter === 'live') mq = mq.eq('live', true);
-  if (visibilityFilter === 'hidden') mq = mq.eq('live', false).eq('active', true);
-  if (visibilityFilter === 'draft') mq = mq.eq('active', false);
+    if (vendorFilter !== 'all') mq = mq.eq('vendor', vendorFilter);
+    if (categoryFilter !== 'all') mq = mq.eq('category', categoryFilter);
+    if (sourceFilter === 't2') mq = mq.eq('tier', 'T2');
+    if (sourceFilter === 't3') mq = mq.eq('tier', 'T3');
+    if (sourceFilter === 'k2k_live') mq = mq.ilike('cost_source', '%_k2k_%');
+    if (visibilityFilter === 'live') mq = mq.eq('live', true);
+    if (visibilityFilter === 'hidden') mq = mq.eq('live', false).eq('active', true);
+    if (visibilityFilter === 'draft') mq = mq.eq('active', false);
 
-  mq = mq.order('vendor', { ascending: true }).order('name', { ascending: true }).limit(5000);
+    mq = mq.order('vendor', { ascending: true }).order('name', { ascending: true }).limit(5000);
 
-  const { data: mirrorRowsRaw, error: mirrorErr } = await mq;
-  if (mirrorErr) {
-    console.error('[admin/catalog] mirror fetch error:', mirrorErr);
+    const { data: mirrorRowsRaw, error: mirrorErr } = await mq;
+    if (mirrorErr) {
+      console.error('[admin/catalog] stage=mirror fetch error:', mirrorErr);
+    }
+    mirrorRows = (mirrorRowsRaw ?? []) as unknown as MirrorRow[];
+  } catch (err) {
+    console.error('[admin/catalog] stage=mirror threw:', err);
   }
-  const mirrorRows = (mirrorRowsRaw ?? []) as unknown as MirrorRow[];
 
   // Fetch classifications overlay ----------------------------------------
   const classificationsBySku = new Map<number, ClassificationRow>();
-  if (mirrorRows.length > 0) {
-    const ids = mirrorRows.map((r) => r.id);
-    const chunks: number[][] = [];
-    for (let i = 0; i < ids.length; i += 500) chunks.push(ids.slice(i, i + 500));
-    for (const chunk of chunks) {
-      const { data: cRows } = await backup
-        .from('catalog_classifications')
-        .select('sku_id, status, gate_score, failing_gates, vendor, tier')
-        .in('sku_id', chunk);
-      (cRows ?? []).forEach((c) => {
-        classificationsBySku.set(c.sku_id as number, c as unknown as ClassificationRow);
-      });
+  try {
+    if (mirrorRows.length > 0) {
+      const ids = mirrorRows.map((r) => r.id).filter((id) => Number.isFinite(id));
+      const chunks: number[][] = [];
+      for (let i = 0; i < ids.length; i += 500) chunks.push(ids.slice(i, i + 500));
+      for (const chunk of chunks) {
+        const { data: cRows, error: cErr } = await backup
+          .from('catalog_classifications')
+          .select('sku_id, status, gate_score, failing_gates, vendor, tier')
+          .in('sku_id', chunk);
+        if (cErr) {
+          console.error('[admin/catalog] stage=classifications fetch error:', cErr);
+          continue;
+        }
+        (cRows ?? []).forEach((c) => {
+          if (c && c.sku_id != null) {
+            classificationsBySku.set(c.sku_id as number, c as unknown as ClassificationRow);
+          }
+        });
+      }
     }
+  } catch (err) {
+    console.error('[admin/catalog] stage=classifications threw:', err);
   }
 
   // Fetch awaiting-Facu proposals grouped by target_id --------------------
   const proposalCountsBySku = new Map<number, number>();
   let totalAwaiting = 0;
-  {
-    const { data: propsRaw } = await backup
+  try {
+    const { data: propsRaw, error: propsErr } = await backup
       .from('admin_proposals')
       .select('id, target_id')
       .eq('status', 'awaiting_facu')
       .eq('target_table', 'floropolis_inventory_mirror');
+    if (propsErr) {
+      console.error('[admin/catalog] stage=proposals fetch error:', propsErr);
+    }
     (propsRaw ?? []).forEach((p) => {
       totalAwaiting += 1;
-      const tid = (p.target_id as string | null) ?? '';
-      const n = parseInt(tid, 10);
+      // target_id is TEXT in the DB; UUID-shaped values parseInt to a leading
+      // numeric prefix, so we require the whole string to be digits before
+      // mapping. Anything else just contributes to totalAwaiting only.
+      const tid = (p?.target_id as string | null) ?? '';
+      if (!/^\d+$/.test(tid)) return;
+      const n = Number(tid);
       if (!Number.isFinite(n)) return;
       proposalCountsBySku.set(n, (proposalCountsBySku.get(n) ?? 0) + 1);
     });
+  } catch (err) {
+    console.error('[admin/catalog] stage=proposals threw:', err);
   }
 
   // Fetch active visibility overrides ------------------------------------
   // An override is "active" when expires_at is null OR > now().
   const overridesBySku = new Map<number, 'show' | 'hide'>();
-  {
+  try {
     const nowIso = new Date().toISOString();
-    const { data: overrides } = await backup
+    const { data: overrides, error: ovrErr } = await backup
       .from('visibility_overrides')
       .select('sku_id, decision, expires_at');
+    if (ovrErr) {
+      console.error('[admin/catalog] stage=overrides fetch error:', ovrErr);
+    }
     (overrides ?? []).forEach((o) => {
+      if (!o) return;
       const exp = (o.expires_at as string | null) ?? null;
-      if (exp != null && exp < nowIso) return;
+      // Coerce both sides to string before lexical compare; treat malformed
+      // expires_at as "not expired" rather than throwing.
+      if (exp != null && typeof exp === 'string' && exp < nowIso) return;
       const dec = o.decision as string;
       if (dec === 'show' || dec === 'hide') {
-        overridesBySku.set(o.sku_id as number, dec);
+        if (o.sku_id != null) {
+          overridesBySku.set(o.sku_id as number, dec);
+        }
       }
     });
+  } catch (err) {
+    console.error('[admin/catalog] stage=overrides threw:', err);
   }
 
   // Fetch tier visibility windows (Phase A seed) -------------------------
-  const { data: tvwRows } = await backup
-    .from('tier_visibility_windows')
-    .select('tier, origin_country, accepted, earliest_delivery_days, latest_delivery_days');
-  const tvw = (tvwRows ?? []) as TierVisibilityWindow[];
+  let tvw: TierVisibilityWindow[] = [];
+  try {
+    const { data: tvwRows, error: tvwErr } = await backup
+      .from('tier_visibility_windows')
+      .select('tier, origin_country, accepted, earliest_delivery_days, latest_delivery_days');
+    if (tvwErr) {
+      console.error('[admin/catalog] stage=tvw fetch error:', tvwErr);
+    }
+    tvw = ((tvwRows ?? []) as TierVisibilityWindow[]).filter(
+      (r) => r && typeof r.origin_country === 'string' && typeof r.tier === 'string',
+    );
+  } catch (err) {
+    console.error('[admin/catalog] stage=tvw threw:', err);
+  }
 
   // Compute per-row derived fields ---------------------------------------
-  const computed: ComputedRow[] = mirrorRows.map((r) => {
-    const farm = asNum(r.farm_cost);
-    const price = asNum(r.price);
-    const gpm =
-      farm != null && price != null && price > 0 ? (price - farm) / price : null;
-    const stock = asNum(r.stock);
-    const totalStems = r.total_stems ?? null;
-    const availability =
-      totalStems != null ? totalStems : stock != null ? Math.round(stock) : 0;
-    const sources = deriveSources(r);
-    const visibility = deriveVisibility(r);
-    const cls = classificationsBySku.get(r.id) ?? null;
-    const ovr = overridesBySku.get(r.id) ?? null;
-    return {
-      id: r.id,
-      name: r.name,
-      vendor: r.vendor ?? 'Unknown',
-      tier: r.tier ?? '',
-      category: r.category ?? '',
-      variety: r.variety ?? '',
-      length: r.length ?? '',
-      unit: r.unit ?? '',
-      box_type: r.box_type ?? '',
-      units_per_box: asNum(r.units_per_box),
-      availability_total: availability,
-      vendor_cost_usd: farm,
-      target_price_usd: price,
-      gpm_actual_pct: gpm,
-      gpm_band: gpmBandFor(gpm),
-      sources,
-      visibility,
-      has_active_override: ovr != null,
-      override_decision: ovr,
-      classification_status: cls?.status ?? null,
-      classification_score: cls?.gate_score ?? null,
-      proposal_count: proposalCountsBySku.get(r.id) ?? 0,
-      is_on_deal: r.is_on_deal === true,
-      has_price_override: r.price_override === true,
-      cost_source: r.cost_source,
-      arrival_date: r.arrival_date,
-    };
+  // Defensive: skip rows missing required NOT NULL fields (id/name/live/active)
+  // rather than letting a single corrupt row 500 the whole render.
+  const computed: ComputedRow[] = mirrorRows.flatMap((r) => {
+    try {
+      if (r == null || r.id == null || r.name == null) return [];
+      const farm = asNum(r.farm_cost);
+      const price = asNum(r.price);
+      const gpm =
+        farm != null && price != null && price > 0 ? (price - farm) / price : null;
+      const stock = asNum(r.stock);
+      const totalStems = r.total_stems ?? null;
+      const availability =
+        totalStems != null ? totalStems : stock != null ? Math.round(stock) : 0;
+      const sources = deriveSources(r);
+      const visibility = deriveVisibility(r);
+      const cls = classificationsBySku.get(r.id) ?? null;
+      const ovr = overridesBySku.get(r.id) ?? null;
+      return [
+        {
+          id: r.id,
+          name: r.name,
+          vendor: r.vendor ?? 'Unknown',
+          tier: r.tier ?? '',
+          category: r.category ?? '',
+          variety: r.variety ?? '',
+          length: r.length ?? '',
+          unit: r.unit ?? '',
+          box_type: r.box_type ?? '',
+          units_per_box: asNum(r.units_per_box),
+          availability_total: availability,
+          vendor_cost_usd: farm,
+          target_price_usd: price,
+          gpm_actual_pct: gpm,
+          gpm_band: gpmBandFor(gpm),
+          sources,
+          visibility,
+          has_active_override: ovr != null,
+          override_decision: ovr,
+          classification_status: cls?.status ?? null,
+          classification_score: cls?.gate_score ?? null,
+          proposal_count: proposalCountsBySku.get(r.id) ?? 0,
+          is_on_deal: r.is_on_deal === true,
+          has_price_override: r.price_override === true,
+          cost_source: r.cost_source,
+          arrival_date: r.arrival_date,
+        },
+      ];
+    } catch (err) {
+      console.error('[admin/catalog] stage=computed row threw, id=', r?.id, err);
+      return [];
+    }
   });
 
   // Derived-field filters (gpm / flags / search) -------------------------
@@ -485,7 +543,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   });
 
   // Sort -------------------------------------------------------------------
-  filtered = sortRows(filtered, sort.key, sort.dir);
+  try {
+    filtered = sortRows(filtered, sort.key, sort.dir);
+  } catch (err) {
+    console.error('[admin/catalog] stage=sort threw:', err);
+  }
 
   // Pagination -----------------------------------------------------------
   const filteredTotal = filtered.length;
@@ -512,85 +574,92 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   let allRows: MirrorRow[] = mirrorRows;
   let allVendors: string[] = [];
   let allCategories: string[] = [];
-  {
+  try {
     if (
       vendorFilter !== 'all' ||
       categoryFilter !== 'all' ||
       sourceFilter !== 'all' ||
       visibilityFilter !== 'all'
     ) {
-      const { data: globalRowsRaw } = await backup
+      const { data: globalRowsRaw, error: globalErr } = await backup
         .from('floropolis_inventory_mirror')
         .select(
           'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, k2k_alignment_status, live, active, quality_family_id, is_on_deal, price_override, arrival_date',
         )
         .limit(5000);
+      if (globalErr) {
+        console.error('[admin/catalog] stage=global-mirror fetch error:', globalErr);
+      }
       allRows = (globalRowsRaw ?? []) as unknown as MirrorRow[];
     }
     const vSet = new Set<string>();
     const cSet = new Set<string>();
     for (const r of allRows) {
-      if (r.vendor) vSet.add(r.vendor);
-      if (r.category) cSet.add(r.category);
+      if (r?.vendor) vSet.add(r.vendor);
+      if (r?.category) cSet.add(r.category);
     }
     allVendors = Array.from(vSet).sort();
     allCategories = Array.from(cSet).sort();
+  } catch (err) {
+    console.error('[admin/catalog] stage=aggregated-counters threw:', err);
   }
 
   const counts = (() => {
-    let liveK2K = 0;
-    let t2 = 0;
-    let t3 = 0;
-    let live = 0;
-    let hidden = 0;
-    let draft = 0;
-    let publishable = 0;
-    let needsDataFix = 0;
-    let noCost = 0;
-    let noBoxDims = 0;
-    for (const r of allRows) {
-      const tiers = deriveSources(r);
-      if (tiers.includes('k2k_live')) liveK2K += 1;
-      if (tiers.includes('t2')) t2 += 1;
-      if (tiers.includes('t3')) t3 += 1;
-      const vis = deriveVisibility(r);
-      if (vis === 'live') live += 1;
-      else if (vis === 'hidden') hidden += 1;
-      else draft += 1;
-      const cls = classificationsBySku.get(r.id) ?? null;
-      if (cls?.status === 'publishable') publishable += 1;
-      if (cls?.status === 'needs_data_fix') needsDataFix += 1;
-      if (r.farm_cost == null) noCost += 1;
-      if (!r.box_type) noBoxDims += 1;
-    }
-    return {
-      liveK2K,
-      t2,
-      t3,
-      live,
-      hidden,
-      draft,
-      publishable,
-      needsDataFix,
-      noCost,
-      noBoxDims,
+    const base = {
+      liveK2K: 0,
+      t2: 0,
+      t3: 0,
+      live: 0,
+      hidden: 0,
+      draft: 0,
+      publishable: 0,
+      needsDataFix: 0,
+      noCost: 0,
+      noBoxDims: 0,
     };
+    try {
+      for (const r of allRows) {
+        if (r == null) continue;
+        const tiers = deriveSources(r);
+        if (tiers.includes('k2k_live')) base.liveK2K += 1;
+        if (tiers.includes('t2')) base.t2 += 1;
+        if (tiers.includes('t3')) base.t3 += 1;
+        const vis = deriveVisibility(r);
+        if (vis === 'live') base.live += 1;
+        else if (vis === 'hidden') base.hidden += 1;
+        else base.draft += 1;
+        const cls = r.id != null ? classificationsBySku.get(r.id) ?? null : null;
+        if (cls?.status === 'publishable') base.publishable += 1;
+        if (cls?.status === 'needs_data_fix') base.needsDataFix += 1;
+        if (r.farm_cost == null) base.noCost += 1;
+        if (!r.box_type) base.noBoxDims += 1;
+      }
+    } catch (err) {
+      console.error('[admin/catalog] stage=counts threw:', err);
+    }
+    return base;
   })();
 
   // Vendor breakdown ----------------------------------------------------
   const vendorBreakdown: { vendor: string; total: number; live: number }[] = (() => {
-    const map = new Map<string, { total: number; live: number }>();
-    for (const r of allRows) {
-      const v = r.vendor ?? 'Unknown';
-      const entry = map.get(v) ?? { total: 0, live: 0 };
-      entry.total += 1;
-      if (r.live) entry.live += 1;
-      map.set(v, entry);
+    try {
+      const map = new Map<string, { total: number; live: number }>();
+      for (const r of allRows) {
+        if (r == null) continue;
+        const v = r.vendor ?? 'Unknown';
+        const entry = map.get(v) ?? { total: 0, live: 0 };
+        entry.total += 1;
+        if (r.live) entry.live += 1;
+        map.set(v, entry);
+      }
+      return Array.from(map.entries())
+        .map(([vendor, e]) => ({ vendor, total: e.total, live: e.live }))
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 6);
+    } catch (err) {
+      console.error('[admin/catalog] stage=vendor-breakdown threw:', err);
+      return [];
     }
-    return Array.from(map.entries())
-      .map(([vendor, e]) => ({ vendor, total: e.total, live: e.live }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 6);
   })();
 
   const totalAll = allRows.length;
