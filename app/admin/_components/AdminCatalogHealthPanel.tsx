@@ -1,18 +1,19 @@
 // AdminCatalogHealthPanel — catalog health overview for /admin right rail.
-// v1 | 2026-05-21 | Job_PM [V8 SHADOW]
+// v2 | 2026-05-21 | Job_PM [V8 SHADOW]
 //
-// Replaces the generic "Today's numbers" KPI tiles with a visual supply
-// health summary: tier breakdown, publication funnel, avg quality score,
-// top blockers, vendor margins. Operational counters (orders/refunds/clients)
-// kept as a compact footer row.
+// Right rail: tier breakdown, publication funnel, avg quality (0-100 weighted,
+// same scale as catalog page), avg importance (from featured-scores seed),
+// top blockers, vendor margins. Operational counters as compact footer.
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { lookupImportanceScore } from '@/lib/admin/featured-scores-seed';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
 interface MirrorRow {
+  name: string;
   tier: string | null;
   vendor: string | null;
   price: number | string | null;
@@ -33,9 +34,14 @@ interface ConstantRow {
   value_numeric: number | string | null;
 }
 
+interface WeightRow {
+  gate_id: string;
+  weight: number;
+  evaluated: boolean;
+}
+
 interface ClassificationRow {
   status: string;
-  gate_score: number | null;
   failing_gates: unknown;
 }
 
@@ -97,16 +103,18 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     { data: boxRaw },
     { data: constRaw },
     { data: clsRaw },
+    { data: weightsRaw },
     { count: ordersOpen },
     { count: refundsPending },
     { count: clientsPending },
   ] = await Promise.all([
     svc.from('floropolis_inventory_mirror')
-      .select('tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
+      .select('name, tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
       .limit(2000),
     svc.from('box_master').select('box_type, weight_kg'),
     svc.from('pricing_constants').select('id, value_numeric'),
-    svc.from('catalog_classifications').select('status, gate_score, failing_gates'),
+    svc.from('catalog_classifications').select('status, failing_gates'),
+    svc.from('catalog_quality_weights').select('gate_id, weight, evaluated'),
     svc.from('orders').select('*', { count: 'exact', head: true })
       .in('status', ['payment_authorized', 'payment_captured', 'pending'])
       .then((r) => ({ count: r.count }), () => ({ count: 0 })),
@@ -122,6 +130,11 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   const boxes = (boxRaw ?? []) as BoxRow[];
   const constants = (constRaw ?? []) as ConstantRow[];
   const classifications = (clsRaw ?? []) as ClassificationRow[];
+  const weights = (weightsRaw ?? []) as WeightRow[];
+
+  // Pre-compute weight lookup for 0-100 quality score (same as catalog page)
+  const evalWeights = weights.filter((w) => w.evaluated);
+  const unevalBonus = weights.filter((w) => !w.evaluated).reduce((s, w) => s + w.weight, 0);
 
   // Pricing constants
   const fedexRate = toNum(constants.find((c) => c.id === 'fedex_rate_per_kg')?.value_numeric) ?? 6.5;
@@ -142,18 +155,12 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
 
   // ── Publication status ──────────────────────────────────────────────────────
   let perfect = 0, publishable = 0, blocked = 0;
-  let scoreSum = 0, scoreCount = 0;
   const gateCounts = new Map<string, number>();
 
   for (const c of classifications) {
     if (c.status === 'perfect') perfect++;
     else if (c.status === 'publishable') publishable++;
     else blocked++;
-
-    if (c.gate_score != null) {
-      scoreSum += Number(c.gate_score);
-      scoreCount++;
-    }
 
     const gates = Array.isArray(c.failing_gates)
       ? (c.failing_gates as string[])
@@ -164,7 +171,30 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   }
 
   const totalCls = classifications.length;
-  const avgScore = scoreCount > 0 ? Math.round(scoreSum / scoreCount) : null;
+
+  // 0-100 weighted quality score (same formula as catalog-model.ts buildCatalog)
+  let qSum = 0, qCount = 0;
+  for (const c of classifications) {
+    const fails = new Set<string>(
+      Array.isArray(c.failing_gates)
+        ? (c.failing_gates as string[]).filter((g): g is string => typeof g === 'string')
+        : [],
+    );
+    const score = unevalBonus + evalWeights
+      .filter((w) => !fails.has(w.gate_id))
+      .reduce((s, w) => s + w.weight, 0);
+    qSum += score;
+    qCount++;
+  }
+  const avgScore = qCount > 0 ? Math.round(qSum / qCount) : null;
+
+  // Importance from featured-scores seed (only scored SKUs count in avg)
+  let impSum = 0, impCount = 0;
+  for (const r of mirror) {
+    const imp = lookupImportanceScore(r.name);
+    if (imp != null) { impSum += imp; impCount++; }
+  }
+  const avgImportance = impCount > 0 ? Math.round(impSum / impCount) : null;
 
   const topGates = [...gateCounts.entries()]
     .sort((a, b) => b[1] - a[1])
@@ -245,21 +275,41 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
         </div>
       </div>
 
-      {/* Avg gates passing — gate_score is Rose's count (0–15), not 0–100 */}
+      {/* Avg quality score — 0-100 weighted (same as catalog page) */}
       {avgScore != null && (
         <div>
           <div className="flex items-baseline justify-between mb-1">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-              Avg gates passing
+              Avg quality score
             </p>
             <span className={`text-sm font-bold ${
-              avgScore >= 13 ? 'text-emerald-700' :
-              avgScore >= 10 ? 'text-amber-600' : 'text-red-600'
+              avgScore >= 90 ? 'text-emerald-700' :
+              avgScore >= 75 ? 'text-amber-600' : 'text-red-600'
             }`}>
-              {avgScore}<span className="text-slate-400 font-normal text-xs"> / 15</span>
+              {avgScore}<span className="text-slate-400 font-normal text-xs"> / 100</span>
             </span>
           </div>
-          <ScoreBar score={avgScore} max={15} />
+          <ScoreBar score={avgScore} max={100} />
+        </div>
+      )}
+
+      {/* Avg importance — only featured SKUs score; shows coverage */}
+      {avgImportance != null && (
+        <div>
+          <div className="flex items-baseline justify-between mb-1">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+              Avg importance
+            </p>
+            <span className="text-sm font-bold text-amber-700">
+              {avgImportance}
+              <span className="text-slate-400 font-normal text-xs"> / 100</span>
+              <span className="text-[10px] font-normal text-slate-400 ml-1">({impCount} scored)</span>
+            </span>
+          </div>
+          <ScoreBar score={avgImportance} max={100} />
+          <p className="text-[10px] text-slate-400 mt-0.5">
+            Featured SKUs only · <Link href="/admin/catalog?tab=improvement-queue" className="underline">expand coverage →</Link>
+          </p>
         </div>
       )}
 
@@ -290,9 +340,14 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
       {/* Vendor margins */}
       {vendorStats.length > 0 && (
         <div>
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-2">
-            Vendor margin vs {Math.round(gpmTarget * 100)}% target
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+              Vendor margin vs {Math.round(gpmTarget * 100)}% target
+            </p>
+            <Link href="/admin/vendors" className="text-[10px] text-emerald-700 hover:underline font-medium">
+              Manage →
+            </Link>
+          </div>
           <div className="space-y-2">
             {vendorStats.map((v) => {
               const gpmPct = Math.round(v.avgGpm * 100);
