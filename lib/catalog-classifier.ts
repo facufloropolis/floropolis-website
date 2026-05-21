@@ -32,27 +32,6 @@ const EVALUATED_GATE_IDS = new Set([
   'missing_vendor_name',
 ]);
 
-const DATA_FIX_GATES = new Set([
-  'price_zero',
-  'margin_unknown',
-  'missing_cost_source',
-  'cost_unverified',
-  'open_price_alert',
-  'missing_arrival_date',
-  'missing_image',
-  'missing_unit',
-  'missing_units_or_bunch',
-  'missing_box_dims',
-  'missing_contents_description',
-  'missing_vendor_name',
-]);
-
-const FACU_REVIEW_GATES = new Set([
-  'formula_deviation',
-  'stock_live_mismatch',
-  't2_outside_5d_window',
-  't3_outside_14d_window',
-]);
 
 // Hardcoded box weight fallback (matches Python _BOX_DIM_KG_FALLBACK).
 const BOX_DIM_KG_FALLBACK: Record<string, number> = {
@@ -97,11 +76,13 @@ export interface MirrorRow {
 export interface ClassifierConfig {
   pricingConstants: Record<string, number>; // gpm_target, fedex_rate_per_kg, fuel_surcharge_mult
   boxMaster: Record<string, number>;        // UPPERCASED box_type -> weight_kg
+  // gate_id -> tier from catalog_quality_weights. Falls back to 'publishable_gap' when missing.
+  gateTiers: Record<string, 'blocking' | 'publishable_gap' | 'perfect_gap'>;
 }
 
 export interface Classification {
   sku_id: number;
-  status: string; // publishable | needs_data_fix | needs_facu_review
+  status: 'blocked' | 'publishable' | 'perfect';
   failing_gates: string[];
   gate_score: number;
   vendor: string | null;
@@ -273,20 +254,25 @@ export function classifySingleSku(
   const failingEvaluated = failing.filter((g) => EVALUATED_GATE_IDS.has(g));
   const gateScore = Math.max(
     0,
-    Math.min(16, EVALUATED_GATE_IDS.size - failingEvaluated.length),
+    Math.min(EVALUATED_GATE_IDS.size, EVALUATED_GATE_IDS.size - failingEvaluated.length),
   );
 
-  const hasDataFix = failing.some((g) => DATA_FIX_GATES.has(g));
-  const hasFacu = failing.some((g) => FACU_REVIEW_GATES.has(g));
-  let status: string;
-  if (failingEvaluated.length === 0 && !hasFacu) {
-    status = 'publishable';
-  } else if (hasDataFix) {
-    status = 'needs_data_fix';
-  } else if (hasFacu) {
-    status = 'needs_facu_review';
+  // Lead-time gate IDs all map to the 'lead_time' weight bucket tier.
+  const LEAD_TIME_IDS = new Set(['t2_outside_5d_window', 't3_outside_14d_window', 'missing_arrival_date']);
+
+  function tierOf(gateId: string): 'blocking' | 'publishable_gap' | 'perfect_gap' {
+    const mapped = LEAD_TIME_IDS.has(gateId) ? 'lead_time' : gateId;
+    return config.gateTiers[mapped] ?? 'publishable_gap';
+  }
+
+  let status: 'blocked' | 'publishable' | 'perfect';
+  if (failingEvaluated.length === 0) {
+    status = 'perfect';
+  } else if (failingEvaluated.some((g) => tierOf(g) === 'blocking')) {
+    status = 'blocked';
   } else {
-    status = 'needs_data_fix';
+    // Only publishable_gap or perfect_gap gates failing → publishable
+    status = 'publishable';
   }
 
   return {

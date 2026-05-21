@@ -77,11 +77,14 @@ import {
   buildCatalog,
   GPM_BAND_CLS,
   VISIBILITY_BADGE_CLS,
+  PUBLICATION_STATUS_CLS,
+  PUBLICATION_STATUS_LABEL,
   type BoxMasterRow,
   type CatalogV2Row,
   type ClassificationRow,
   type MirrorRow,
   type PricingConstantRow,
+  type PublicationStatus,
   type QualityThresholdRow,
   type QualityWeightRow,
 } from '@/lib/admin/catalog-model';
@@ -565,41 +568,26 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               </p>
             </div>
           </div>
-          {/* Change 1: Quality distribution bar */}
+          {/* Change 1: Publication status distribution bar */}
           {(() => {
-            const bandOrder = [
-              'perfect', 'almost_perfect', 'needs_minor_fix', 'has_issues', 'broken', 'unscored',
-            ] as const;
-            type BandKey = typeof bandOrder[number];
-            const bandCls: Record<BandKey, string> = {
-              perfect:          'text-green-700',
-              almost_perfect:   'text-amber-600',
-              needs_minor_fix:  'text-amber-500',
-              has_issues:       'text-red-600',
-              broken:           'text-red-700',
-              unscored:         'text-slate-400',
+            const order: PublicationStatus[] = ['perfect', 'publishable', 'blocked'];
+            const cls: Record<PublicationStatus, string> = {
+              perfect:     'text-emerald-700',
+              publishable: 'text-amber-600',
+              blocked:     'text-red-700',
             };
-            const bandLabels: Record<BandKey, string> = {
-              perfect:          'perfect',
-              almost_perfect:   'almost',
-              needs_minor_fix:  'minor fixes',
-              has_issues:       'has issues',
-              broken:           'broken',
-              unscored:         'unscored',
+            const labels: Record<PublicationStatus, string> = {
+              perfect:     'perfect',
+              publishable: 'publishable',
+              blocked:     'blocked',
             };
-            const counts: Record<BandKey, number> = {
-              perfect: 0, almost_perfect: 0, needs_minor_fix: 0,
-              has_issues: 0, broken: 0, unscored: 0,
-            };
-            for (const r of universeRows) {
-              const band = r.status_band as BandKey;
-              if (band in counts) counts[band]++;
-            }
-            const parts = bandOrder
-              .filter((b) => counts[b] > 0)
-              .map((b) => (
-                <span key={b} className={`font-medium ${bandCls[b]}`}>
-                  {counts[b]} {bandLabels[b]}
+            const counts: Record<PublicationStatus, number> = { perfect: 0, publishable: 0, blocked: 0 };
+            for (const r of universeRows) counts[r.publication_status]++;
+            const parts = order
+              .filter((s) => counts[s] > 0)
+              .map((s) => (
+                <span key={s} className={`font-medium ${cls[s]}`}>
+                  {counts[s]} {labels[s]}
                 </span>
               ));
             return parts.length > 0 ? (
@@ -1080,7 +1068,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         })()}
                       </td>
 
-                      {/* 11. Visibility + Change 5: status_band chip */}
+                      {/* 11. Visibility + publication_status chip */}
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-1 flex-wrap">
                           <span
@@ -1088,34 +1076,12 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                           >
                             {r.visibility}
                           </span>
-                          {(() => {
-                            type SB = 'perfect'|'almost_perfect'|'needs_minor_fix'|'has_issues'|'broken'|'unscored';
-                            const sbBg: Record<SB, string> = {
-                              perfect:          'bg-green-600',
-                              almost_perfect:   'bg-amber-500',
-                              needs_minor_fix:  'bg-amber-400',
-                              has_issues:       'bg-red-500',
-                              broken:           'bg-red-700',
-                              unscored:         'bg-slate-400',
-                            };
-                            const sbLabel: Record<SB, string> = {
-                              perfect:          '✓ perfect',
-                              almost_perfect:   'almost ✓',
-                              needs_minor_fix:  'minor fixes',
-                              has_issues:       'has issues',
-                              broken:           'broken',
-                              unscored:         'not scored',
-                            };
-                            const band = (r.status_band ?? 'unscored') as SB;
-                            return (
-                              <span
-                                className={`text-[10px] px-2 py-0.5 rounded-full font-semibold text-white ${sbBg[band]}`}
-                                title={r.quality_score != null ? `Quality score: ${r.quality_score}` : 'No quality score'}
-                              >
-                                {sbLabel[band]}
-                              </span>
-                            );
-                          })()}
+                          <span
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${PUBLICATION_STATUS_CLS[r.publication_status]}`}
+                            title={r.quality_score != null ? `Quality score: ${r.quality_score}/100` : 'Not yet scored'}
+                          >
+                            {r.publication_status === 'perfect' ? '✓ ' : ''}{PUBLICATION_STATUS_LABEL[r.publication_status]}
+                          </span>
                         </div>
                       </td>
 

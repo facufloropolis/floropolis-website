@@ -317,9 +317,8 @@ export async function POST(
     });
   }
 
-  // Need pricing constants / box weights to evaluate formula_deviation +
-  // missing_box_dims gates. Fetch in parallel.
-  const [pcRes, bmRes, existingClsRes] = await Promise.all([
+  // Need pricing constants / box weights / gate tiers to re-classify.
+  const [pcRes, bmRes, existingClsRes, tiersRes] = await Promise.all([
     backup
       .from('pricing_constants')
       .select('id, value_numeric')
@@ -330,6 +329,7 @@ export async function POST(
       .select('status, last_changed_at, reviewer_action')
       .eq('sku_id', skuId)
       .maybeSingle(),
+    backup.from('catalog_quality_weights').select('gate_id, tier'),
   ]);
 
   const pricingConstants: Record<string, number> = {};
@@ -349,9 +349,16 @@ export async function POST(
     }
   }
 
+  const gateTiers: Record<string, 'blocking' | 'publishable_gap' | 'perfect_gap'> = {};
+  for (const r of tiersRes.data ?? []) {
+    if (typeof r.gate_id === 'string' && typeof r.tier === 'string') {
+      gateTiers[r.gate_id] = r.tier as 'blocking' | 'publishable_gap' | 'perfect_gap';
+    }
+  }
+
   const classification = classifySingleSku(
     freshRow as unknown as MirrorRow,
-    { pricingConstants, boxMaster },
+    { pricingConstants, boxMaster, gateTiers },
   );
 
   // Preserve admin overrides: if reviewer_action is set and status is

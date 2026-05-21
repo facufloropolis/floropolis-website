@@ -154,27 +154,30 @@ EVALUATED_GATE_IDS = {
 # max is len(EVALUATED_GATE_IDS) = 15. We still emit 0-16 in the column so future
 # expansion is a no-op DB-side.
 
-# Gates that route to needs_data_fix (Rose can resolve without Facu).
-DATA_FIX_GATES = {
-    "price_zero",
-    "margin_unknown",
-    "missing_cost_source",
-    "cost_unverified",
-    "open_price_alert",
-    "missing_arrival_date",
-    "missing_image",
-    "missing_unit",
-    "missing_units_or_bunch",
-    "missing_box_dims",
-    "missing_contents_description",
-    "missing_vendor_name",
-}
-# Gates that route to needs_facu_review (policy/edge calls).
-FACU_REVIEW_GATES = {
-    "formula_deviation",
-    "stock_live_mismatch",
-    "t2_outside_5d_window",
-    "t3_outside_14d_window",
+# Gate tiers: loaded from catalog_quality_weights at runtime by load_gate_tiers().
+# Fallback hardcoded here so the validator works when DB read fails.
+# Lead-time sub-IDs (t2_outside_5d_window, t3_outside_14d_window, missing_arrival_date)
+# all fold into the 'lead_time' weight bucket which is blocking.
+GATE_TIERS: dict[str, str] = {
+    "price_zero":                "blocking",
+    "formula_deviation":         "blocking",
+    "cost_unverified":           "blocking",
+    "margin_unknown":            "blocking",
+    "open_price_alert":          "blocking",
+    "missing_cost_source":       "blocking",
+    "missing_box_dims":          "blocking",
+    "missing_units_or_bunch":    "blocking",
+    "missing_unit":              "blocking",
+    "lead_time":                 "blocking",
+    "t2_outside_5d_window":      "blocking",   # sub-IDs of lead_time
+    "t3_outside_14d_window":     "blocking",
+    "missing_arrival_date":      "blocking",
+    "missing_image":             "publishable_gap",
+    "missing_vendor_name":       "publishable_gap",
+    "missing_contents_description": "publishable_gap",
+    "missing_contents_named":    "perfect_gap",
+    "missing_vase_life":         "perfect_gap",
+    "missing_harvest_date":      "perfect_gap",
 }
 
 # Cost verification freshness window (gate 5).
@@ -305,6 +308,25 @@ def load_box_master() -> None:
         BOX_DIM_KG = loaded
     else:
         CONFIG_LOAD_FALLBACK["box_master"] = True
+
+
+def load_gate_tiers() -> None:
+    """Load gate_id -> tier from catalog_quality_weights. Mutates GATE_TIERS global.
+    On failure, hardcoded fallback remains in place.
+    """
+    global GATE_TIERS
+    try:
+        rows = execute_sql("SELECT gate_id, tier FROM catalog_quality_weights")
+    except Exception as e:
+        print(f"catalog_quality_weights read failed ({e}); using hardcoded tier fallback", file=sys.stderr)
+        return
+    if not rows:
+        return
+    for r in rows:
+        gid = r.get("gate_id")
+        t = r.get("tier")
+        if gid and t:
+            GATE_TIERS[str(gid)] = str(t)
 
 
 def resolve_box_weight(box_type_raw: str | None) -> float | None:
@@ -636,20 +658,18 @@ def classify_row(row: dict, validate_result: dict) -> dict:
 
     # gate_score: count of evaluated gates that PASSED.
     failing_evaluated = [g for g in failing if g in EVALUATED_GATE_IDS]
-    gate_score = max(0, min(16, len(EVALUATED_GATE_IDS) - len(failing_evaluated)))
+    gate_score = max(0, min(len(EVALUATED_GATE_IDS), len(EVALUATED_GATE_IDS) - len(failing_evaluated)))
 
-    # Status routing
-    has_data_fix = any(g in DATA_FIX_GATES for g in failing)
-    has_facu = any(g in FACU_REVIEW_GATES for g in failing)
-    if not failing_evaluated and not has_facu:
-        status = "publishable"
-    elif has_data_fix:
-        status = "needs_data_fix"   # prioritized — Rose can resolve without Facu
-    elif has_facu:
-        status = "needs_facu_review"
+    # Status routing — 3 tiers from catalog_quality_weights.tier (loaded at startup).
+    # stock_live_mismatch is an informational signal; it doesn't affect publication status.
+    actionable = [g for g in failing if g != "stock_live_mismatch"]
+    if not actionable:
+        status = "perfect"
+    elif any(GATE_TIERS.get(g, "publishable_gap") == "blocking" for g in actionable):
+        status = "blocked"
     else:
-        # Failing gates exist but none routed -- conservative fallback
-        status = "needs_data_fix"
+        # Only publishable_gap or perfect_gap gates failing.
+        status = "publishable"
 
     return {
         "sku_id": row.get("id"),
@@ -829,6 +849,7 @@ def run_validation() -> dict:
     # Load live config from DB (with fallback to hardcoded constants)
     load_pricing_constants()
     load_box_master()
+    load_gate_tiers()
 
     table = os.environ.get("INVENTORY_TABLE", "floropolis_inventory")
     # whitelist to prevent injection -- only known table names allowed

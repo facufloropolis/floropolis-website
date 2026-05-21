@@ -84,6 +84,7 @@ export interface QualityWeightRow {
   display_label: string;
   category: string;
   weight: number;
+  tier: 'blocking' | 'publishable_gap' | 'perfect_gap';
   description: string | null;
   evaluated: boolean;
   updated_at: string | null;
@@ -146,6 +147,8 @@ export interface PricingConstantRow {
   value_numeric: number | string | null;
 }
 
+export type PublicationStatus = 'blocked' | 'publishable' | 'perfect';
+
 export type StatusBand =
   | 'perfect'
   | 'almost_perfect'
@@ -180,7 +183,8 @@ export interface CatalogV2Row {
   buckets: UniverseBucket[];
   // Scores
   quality_score: number | null; // null = no classification row yet
-  status_band: StatusBand;
+  publication_status: PublicationStatus; // blocked | publishable | perfect — derived from gate tiers
+  status_band: StatusBand; // quality gradient for display
   importance_score: number | null;
   priority_to_fix: number;
   // Diagnostic
@@ -260,6 +264,42 @@ export function bandFor(score: number | null): StatusBand {
   if (score >= 50) return 'has_issues';
   return 'broken';
 }
+
+// Gate IDs that fold into the "lead_time" weight bucket (all three are blocking).
+const LEAD_TIME_GATE_IDS = new Set([
+  't2_outside_5d_window',
+  't3_outside_14d_window',
+  'missing_arrival_date',
+]);
+
+export function publicationStatusFor(
+  failedGates: FailedGateDetail[],
+  weightsByGate: Map<string, QualityWeightRow>,
+): PublicationStatus {
+  if (failedGates.length === 0) return 'perfect';
+  for (const g of failedGates) {
+    const w = weightsByGate.get(g.gate_id);
+    if (w && w.tier === 'blocking') return 'blocked';
+  }
+  for (const g of failedGates) {
+    const w = weightsByGate.get(g.gate_id);
+    if (w && w.tier === 'publishable_gap') return 'publishable';
+  }
+  // Only perfect_gap gates failing → publishable (perfect_gap is aspirational)
+  return 'publishable';
+}
+
+export const PUBLICATION_STATUS_LABEL: Record<PublicationStatus, string> = {
+  blocked: 'Blocked',
+  publishable: 'Publishable',
+  perfect: 'Perfect',
+};
+
+export const PUBLICATION_STATUS_CLS: Record<PublicationStatus, string> = {
+  blocked: 'bg-red-50 text-red-700 border border-red-200',
+  publishable: 'bg-amber-50 text-amber-700 border border-amber-200',
+  perfect: 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+};
 
 export const STATUS_BAND_LABEL: Record<StatusBand, string> = {
   perfect: 'Perfect',
@@ -428,6 +468,8 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       failed_gates.sort((a, b) => b.weight - a.weight);
     }
 
+    const publication_status = publicationStatusFor(failed_gates, weightsByGate);
+
     const importance_score = lookupImportanceScore(r.name);
     const priority_to_fix =
       quality_score == null
@@ -488,6 +530,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       unit: r.unit ?? '',
       buckets,
       quality_score,
+      publication_status,
       status_band: bandFor(quality_score),
       importance_score,
       priority_to_fix,
