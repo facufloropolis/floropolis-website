@@ -20,7 +20,7 @@ import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import WiringFooterToggle from '@/components/admin/WiringFooterToggle';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import AdminTodayPanel from './_components/AdminTodayPanel';
-import AdminKPITiles from './_components/AdminKPITiles';
+import AdminCatalogHealthPanel from './_components/AdminCatalogHealthPanel';
 import AdminRecentActivity from './_components/AdminRecentActivity';
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
@@ -71,7 +71,7 @@ export default async function AdminIndexPage() {
           {/* Right column: KPIs + Recent activity (~1/3) */}
           <aside className="col-span-12 lg:col-span-4 space-y-4">
             <WiringSection level={kpiMeta.level} note={kpiMeta.note} id="kpi-tiles">
-              <AdminKPITiles />
+              <AdminCatalogHealthPanel />
             </WiringSection>
             <WiringSection level={activityMeta.level} note={activityMeta.note} id="recent-activity">
               <AdminRecentActivity />
