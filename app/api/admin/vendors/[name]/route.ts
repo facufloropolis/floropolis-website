@@ -11,7 +11,7 @@ const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { name: string } },
+  { params }: { params: Promise<{ name: string }> },
 ) {
   const supabase = await createBackupServerClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -29,7 +29,8 @@ export async function PATCH(
   }
   if (!isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const vendorName = decodeURIComponent(params.name);
+  const { name } = await params;
+  const vendorName = decodeURIComponent(name);
   const body = await req.json();
   const admin_notes: string = typeof body.admin_notes === 'string' ? body.admin_notes : '';
 
