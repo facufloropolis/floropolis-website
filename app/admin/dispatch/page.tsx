@@ -45,6 +45,7 @@ import DispatchFeedbackForm from './DispatchFeedbackForm';
 import RoseUpcomingTab from './RoseUpcomingTab';
 import RoseRecentTab from './RoseRecentTab';
 import RoseFarmShipmentsTab from './RoseFarmShipmentsTab';
+import DispatchPipelineStepper from './DispatchPipelineStepper';
 import {
   fetchRoseQueueUpcoming,
   fetchRoseBatchesRecent,
@@ -204,23 +205,27 @@ interface PageProps {
   }>;
 }
 
+const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com', 'jjpj@floropolis.com', 'jjp@floropolis.com'];
+
 export default async function AdminDispatchPage({ searchParams }: PageProps) {
   // Re-check admin server-side ----------------------------------------------
   const userClient = await createUserClient();
   const {
     data: { user },
   } = await userClient.auth.getUser();
-  if (!user) redirect('/');
+  if (!user?.email) redirect('/auth/login?next=/admin/dispatch');
 
-  const adminClient = getBackupServiceClient();
-  const { data: profile } = await adminClient
-    .from('client_profiles')
-    .select('status')
-    .eq('user_id', user.id)
-    .maybeSingle();
-  if (!profile || profile.status !== 'admin') {
-    redirect('/');
+  let isAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase());
+  if (!isAdmin) {
+    const adminClient = getBackupServiceClient();
+    const { data: profile } = await adminClient
+      .from('client_profiles')
+      .select('status')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (profile?.status === 'admin') isAdmin = true;
   }
+  if (!isAdmin) redirect('/');
 
   const sp = await searchParams;
 
@@ -439,6 +444,24 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   const defaultDispatchId =
     visible.find((r) => r.dispatch != null)?.dispatch?.id ?? null;
 
+  // Derive current pipeline step from today's dispatch state
+  // 0:PREP 1:REVIEW 2:DISPATCH 3:LABELS 4:READ 5:EMAILS 6:SEND 7:LOG 8:PRE-ARRIVAL
+  function derivePipelineStep(rows: ManifestRow[]): number {
+    if (rows.length === 0) return 0;
+    const dispatches = rows.map((r) => r.dispatch).filter(Boolean);
+    if (dispatches.length === 0) return 2; // Need to run FedEx Ship Manager
+    if (!dispatches.some((d) => d!.label_url)) return 3; // Need to upload labels
+    if (!dispatches.some((d) => d!.tracking_number)) return 4; // Rose reading labels
+    if (!dispatches.every((d) => d!.fedex_confirmed)) return 5; // Rose drafting farm emails
+    if (!dispatches.every((d) => d!.driver_pickup_confirmed)) return 6; // Facu sends emails
+    return 7; // Rose logging
+  }
+  const todayRows = rowsAll.filter((r) => {
+    const dispatched = r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
+    return tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched) === 'today';
+  });
+  const activePipelineStep = derivePipelineStep(todayRows);
+
   const innerTabs: { key: DispatchInnerTab; label: string }[] = [
     { key: 'today', label: 'Today' },
     { key: 'tomorrow', label: 'Tomorrow' },
@@ -569,39 +592,214 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                   Try a different date, clear the stage filter, or check the Today tab.
                 </p>
               </div>
+            ) : activeInnerTab === 'today' && !dateParam ? (
+              /* ── 3-column today layout (matches /mockups/admin-dispatch) ── */
+              <>
+                {/* FedEx info banner */}
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-5 flex items-start gap-3">
+                  <span className="text-blue-500 text-base shrink-0">📦</span>
+                  <p className="text-sm text-blue-800">
+                    <strong>FedEx receives at Quito depot by 10pm ECT.</strong> Driver picks up at the farm in the afternoon — confirmation usually arrives via WhatsApp.
+                    {' '}<span className="text-blue-600 font-medium">Contacts: edgar.freire@fedex.com · Dominique Romero (dromero@entregas.ec)</span>
+                  </p>
+                </div>
+
+                <div className="grid lg:grid-cols-3 gap-5">
+                  {/* ── LEFT: Today's dispatch ── */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wide">Today&apos;s Dispatch</h2>
+                      {totalBoxesForActiveDate < 2 && (
+                        <DispatchSampleBoxButton prospects={prospects} defaultDispatchId={defaultDispatchId} />
+                      )}
+                    </div>
+
+                    {/* Box summary table */}
+                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                      <table className="w-full text-xs">
+                        <thead className="bg-slate-50 border-b border-slate-100">
+                          <tr>
+                            <th className="text-left px-3 py-2 font-semibold text-slate-500">BOX</th>
+                            <th className="text-left px-3 py-2 font-semibold text-slate-500">FARM</th>
+                            <th className="text-left px-3 py-2 font-semibold text-slate-500">RECIPIENT</th>
+                            <th className="text-left px-3 py-2 font-semibold text-slate-500">STATUS</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                          {visible.flatMap((r) => {
+                            const farm = r.order.order_lines?.find((l) => l.sku_vendor_snapshot)?.sku_vendor_snapshot ?? 'Farm';
+                            const status: DispatchStatus = r.dispatch?.status ?? 'awaiting_pack';
+                            const badge = STATUS_BADGE[status];
+                            return Array.from({ length: Math.max(1, r.boxesCount) }, (_, bi) => (
+                              <tr key={`${r.order.id}-${bi}`} className="hover:bg-slate-50">
+                                <td className="px-3 py-2 font-mono font-bold text-slate-700">#{bi + 1}</td>
+                                <td className="px-3 py-2 text-slate-600 truncate max-w-[70px]">{farm.split(' ')[0]}</td>
+                                <td className="px-3 py-2 text-slate-600 truncate max-w-[70px]">{r.businessName.split(' ')[0]}</td>
+                                <td className="px-3 py-2">
+                                  <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold border ${badge.cls}`}>
+                                    {badge.label.split(' ')[0]}
+                                  </span>
+                                </td>
+                              </tr>
+                            ));
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Order cards */}
+                    {visible.map((r) => {
+                      const status: DispatchStatus = r.dispatch?.status ?? 'awaiting_pack';
+                      const badge = STATUS_BADGE[status];
+                      const farm = r.order.order_lines?.find((l) => l.sku_vendor_snapshot)?.sku_vendor_snapshot ?? 'Unknown';
+                      const isDelivered = status === 'delivered';
+                      const skus = (r.order.order_lines ?? [])
+                        .filter((l) => l.sku_id != null)
+                        .map((l) => ({ sku_id: String(l.sku_id), sku_name: l.sku_name_snapshot ?? `SKU ${l.sku_id}` }));
+                      return (
+                        <div key={r.order.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                          <div className="px-4 py-3 flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-slate-900 truncate">{r.businessName}</p>
+                              <p className="text-[11px] text-slate-400">{farm} · {r.boxesCount} box{r.boxesCount === 1 ? '' : 'es'} · {r.totalQty} stems</p>
+                              <p className="text-[10px] font-mono text-slate-500 mt-0.5">{r.order.order_number}</p>
+                            </div>
+                            <span className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badge.cls}`}>
+                              {badge.label}
+                            </span>
+                          </div>
+                          {r.order.order_lines && r.order.order_lines.length > 0 && (
+                            <div className="border-t border-slate-100 px-4 py-2">
+                              {r.order.order_lines.map((l, li) => (
+                                <div key={li} className="flex items-baseline justify-between text-[11px] py-0.5">
+                                  <span className="text-slate-600 truncate max-w-[160px]">{l.sku_name_snapshot ?? `SKU ${l.sku_id}`}</span>
+                                  <span className="text-slate-400 shrink-0 ml-2">{l.quantity} stems</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {r.dispatch?.exception_note && (
+                            <div className="px-4 pb-2 text-[11px] text-red-600">{r.dispatch.exception_note}</div>
+                          )}
+                          {r.dispatch?.tracking_number && (
+                            <div className="px-4 pb-2 text-[11px] text-slate-500 font-mono">{r.dispatch.tracking_number}</div>
+                          )}
+                          {isDelivered && r.dispatch && (
+                            <div className="border-t border-slate-100 px-4 py-2">
+                              <DispatchFeedbackForm
+                                dispatchId={r.dispatch.id}
+                                existingFeedbackCount={r.feedbackCount}
+                                skus={skus}
+                              />
+                            </div>
+                          )}
+                          {r.dispatch && (
+                            <div className="border-t border-slate-100 px-4 py-2">
+                              <DispatchRowActions
+                                dispatchId={r.dispatch.id}
+                                status={status}
+                                trackingNumber={r.dispatch.tracking_number}
+                              />
+                            </div>
+                          )}
+                          {!r.dispatch && (
+                            <div className="border-t border-slate-100 px-4 py-2">
+                              <span className="text-[11px] text-slate-400 italic">Initialize from /admin/orders/{r.order.id}</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* ── MIDDLE: Communications ── */}
+                  <div className="space-y-4">
+                    <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wide">Communications</h2>
+                    {visible.map((r) => (
+                      <div key={r.order.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                        <div className="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
+                          <p className="text-xs font-semibold text-slate-800">{r.businessName}</p>
+                          <p className="text-[10px] font-mono text-slate-400">{r.order.order_number}</p>
+                        </div>
+                        <div className="p-3">
+                          {r.dispatch ? (
+                            <DispatchCommunicationsPanel
+                              dispatchId={r.dispatch.id}
+                              orderNumber={r.order.order_number}
+                              businessName={r.businessName}
+                              recipientEmail={r.order.shipping_address_snapshot?.email ?? null}
+                              comms={r.comms}
+                            />
+                          ) : (
+                            <p className="text-xs text-slate-400 italic py-2">Initialize dispatch to enable communications</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ── RIGHT: Labels & Confirmations ── */}
+                  <div className="space-y-4">
+                    <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wide">Labels &amp; Confirmations</h2>
+                    {visible.map((r) => (
+                      <div key={r.order.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                        <div className="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
+                          <p className="text-xs font-semibold text-slate-800">{r.businessName}</p>
+                          <p className="text-[10px] font-mono text-slate-400">{r.order.order_number}</p>
+                        </div>
+                        <div className="p-3">
+                          {r.dispatch ? (
+                            <DispatchLabelsPanel
+                              dispatchId={r.dispatch.id}
+                              labelStoragePath={r.dispatch.label_url}
+                              labelSignedUrl={r.labelSignedUrl}
+                              driverPickupConfirmed={r.dispatch.driver_pickup_confirmed}
+                              driverPickupAt={r.dispatch.driver_pickup_confirmed_at}
+                              fedexConfirmed={r.dispatch.fedex_confirmed}
+                              fedexAt={r.dispatch.fedex_confirmed_at}
+                              driverWhatsappPhone={r.order.shipping_address_snapshot?.phone ?? null}
+                            />
+                          ) : (
+                            <p className="text-xs text-slate-400 italic py-2">Initialize dispatch first</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Customs info (static — global for all Ecuador shipments) */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-500 space-y-1.5">
+                      <p className="font-semibold text-slate-700 mb-2">Customs</p>
+                      <div className="flex justify-between"><span>ISS/NSR</span><span className="font-semibold text-slate-700">PPQ 587 active ✓</span></div>
+                      <div className="flex justify-between"><span>ETD</span><span className="font-semibold text-slate-700">Enabled ✓</span></div>
+                      <div className="flex justify-between"><span>Broker</span><span className="font-semibold text-slate-700">Andri Molina, Doral FL</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pipeline stepper — full width below grid */}
+                <DispatchPipelineStepper activeStep={activePipelineStep} />
+              </>
             ) : (
+              /* ── Standard table for tomorrow / week / late / date-filter ── */
               <div className="space-y-8">
                 {sortedDates.map((d) => (
                   <section key={d}>
                     <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-3">
                       {fmtDate(d)}{' '}
                       <span className="text-slate-400 font-normal normal-case">
-                        - {byDate[d].length} order{byDate[d].length === 1 ? '' : 's'}
+                        — {byDate[d].length} order{byDate[d].length === 1 ? '' : 's'}
                       </span>
                     </h2>
-
                     <div className="border border-slate-200 rounded-xl overflow-hidden">
                       <table className="w-full text-sm">
                         <thead className="bg-slate-50 border-b border-slate-200">
                           <tr>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                              Order
-                            </th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                              Customer
-                            </th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                              Status
-                            </th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">
-                              Communications
-                            </th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">
-                              Labels &amp; confirmations
-                            </th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">
-                              Actions
-                            </th>
+                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Order</th>
+                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Customer</th>
+                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Status</th>
+                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">Communications</th>
+                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">Labels &amp; confirmations</th>
+                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -611,53 +809,31 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                             const isDelivered = status === 'delivered';
                             const skus = (r.order.order_lines ?? [])
                               .filter((l) => l.sku_id != null)
-                              .map((l) => ({
-                                sku_id: String(l.sku_id),
-                                sku_name: l.sku_name_snapshot ?? `SKU ${l.sku_id}`,
-                              }));
+                              .map((l) => ({ sku_id: String(l.sku_id), sku_name: l.sku_name_snapshot ?? `SKU ${l.sku_id}` }));
                             return (
                               <tr key={r.order.id} className="hover:bg-slate-50 align-top">
                                 <td className="px-3 py-3 font-mono text-xs font-semibold text-slate-700">
                                   {r.order.order_number}
-                                  <div className="text-slate-400 font-normal mt-0.5">
-                                    {r.boxesCount} box{r.boxesCount === 1 ? '' : 'es'} - {r.totalQty} stems
-                                  </div>
+                                  <div className="text-slate-400 font-normal mt-0.5">{r.boxesCount} box{r.boxesCount === 1 ? '' : 'es'} · {r.totalQty} stems</div>
                                 </td>
                                 <td className="px-3 py-3 text-slate-700 text-xs">
                                   <div className="font-medium">{r.businessName}</div>
                                   {r.order.shipping_address_snapshot?.city && (
-                                    <div className="text-slate-400">
-                                      {r.order.shipping_address_snapshot.city},{' '}
-                                      {r.order.shipping_address_snapshot.state ?? ''}
-                                    </div>
+                                    <div className="text-slate-400">{r.order.shipping_address_snapshot.city}, {r.order.shipping_address_snapshot.state ?? ''}</div>
                                   )}
                                 </td>
                                 <td className="px-3 py-3">
-                                  <span
-                                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold border ${badge.cls}`}
-                                  >
-                                    {badge.label}
-                                  </span>
-                                  {r.dispatch?.exception_note && (
-                                    <div className="text-xs text-red-600 mt-1 max-w-[200px]">
-                                      {r.dispatch.exception_note}
-                                    </div>
-                                  )}
-                                  {r.dispatch ? (
+                                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold border ${badge.cls}`}>{badge.label}</span>
+                                  {r.dispatch?.exception_note && <div className="text-xs text-red-600 mt-1 max-w-[200px]">{r.dispatch.exception_note}</div>}
+                                  {r.dispatch && (
                                     <div className="text-xs text-slate-500 mt-1">
                                       <div className="uppercase">{r.dispatch.carrier}</div>
-                                      <div className="font-mono text-slate-700">
-                                        {r.dispatch.tracking_number ?? '-'}
-                                      </div>
+                                      <div className="font-mono text-slate-700">{r.dispatch.tracking_number ?? '-'}</div>
                                     </div>
-                                  ) : null}
+                                  )}
                                   {isDelivered && r.dispatch && (
                                     <div className="mt-2">
-                                      <DispatchFeedbackForm
-                                        dispatchId={r.dispatch.id}
-                                        existingFeedbackCount={r.feedbackCount}
-                                        skus={skus}
-                                      />
+                                      <DispatchFeedbackForm dispatchId={r.dispatch.id} existingFeedbackCount={r.feedbackCount} skus={skus} />
                                     </div>
                                   )}
                                 </td>
@@ -671,9 +847,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                                       comms={r.comms}
                                     />
                                   ) : (
-                                    <span className="text-xs text-slate-400 italic">
-                                      Initialize dispatch to enable
-                                    </span>
+                                    <span className="text-xs text-slate-400 italic">Initialize dispatch to enable</span>
                                   )}
                                 </td>
                                 <td className="px-3 py-3">
@@ -694,15 +868,9 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                                 </td>
                                 <td className="px-3 py-3">
                                   {r.dispatch ? (
-                                    <DispatchRowActions
-                                      dispatchId={r.dispatch.id}
-                                      status={status}
-                                      trackingNumber={r.dispatch.tracking_number}
-                                    />
+                                    <DispatchRowActions dispatchId={r.dispatch.id} status={status} trackingNumber={r.dispatch.tracking_number} />
                                   ) : (
-                                    <span className="text-xs text-slate-400 italic">
-                                      Initialize from /admin/orders/{r.order.id}
-                                    </span>
+                                    <span className="text-xs text-slate-400 italic">Initialize from /admin/orders/{r.order.id}</span>
                                   )}
                                 </td>
                               </tr>

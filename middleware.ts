@@ -23,7 +23,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Fallback allowlist used only if the backup REST query fails (e.g.
 // transient outage). Normal path uses client_profiles.status='admin'.
-const ADMIN_EMAILS = ["facu@floropolis.com", "jjpj@crescoinversiones.com"];
+const ADMIN_EMAILS = ["facu@floropolis.com", "jjpj@crescoinversiones.com", "jjpj@floropolis.com", "jjp@floropolis.com"];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
