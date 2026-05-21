@@ -1,5 +1,5 @@
 // Admin Unified Catalog -- catalog-v5: mockup-faithful 12-column rebuild.
-// v5 | 2026-05-19 | Job_PM catalog-v5 [V8 SHADOW]
+// v5.1 | 2026-05-20 | Job_PM catalog-v5 [V8 SHADOW] — 10 changes batch
 //
 // What changed (vs v4 / commit ae662dc9):
 //   v4 shipped a 7-column "Improvement queue" surface (SKU / Tier+Vendor /
@@ -37,6 +37,33 @@
 // Bulk-action buttons render disabled (UI intent only -- executors don't exist
 // yet for override-price / change-vendor / add-to-campaign).
 
+// ============================================================================
+// RACI ENFORCEMENT — READ BEFORE EDITING THIS FILE
+// ============================================================================
+//
+// This file is DISPLAY + FILTER only. It has ZERO business arithmetic authority.
+//
+// PERMITTED in this file:
+//   - Reading fields from CatalogV2Row (all values pre-computed by buildCatalog)
+//   - Formatting helpers (fmtUsd, fmtGpm) — string conversion only, no business logic
+//   - Filter/sort logic that compares CatalogV2Row fields (no raw arithmetic)
+//   - UI decisions: color classes from gpm_band / status_band / visibility
+//   - Fetching DB tables and passing them to buildCatalog — no post-processing
+//
+// PROHIBITED in this file:
+//   - Any arithmetic (*,/,+,-) on Rose's raw inputs: price, farm_cost, box_weight_kg,
+//     shipping_per_stem, fedex_rate, fuel_surcharge, stems_per_box
+//   - Recalculating any value that buildCatalog already produces
+//   - Hardcoding business constants (rates, weights, thresholds, tier windows)
+//
+// If a computed display value is missing → add it to CatalogV2Row in catalog-model.ts.
+// If a config value is missing → add it to the relevant DB table (Rose owns those tables).
+//
+// RACI: Rose (raw data) → catalog-model.ts (derives CatalogV2Row) → this file (renders)
+//       Facu approves config changes; Rose validates before they go live in the DB.
+//
+// ============================================================================
+
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
@@ -63,6 +90,15 @@ import {
 // Types
 // ---------------------------------------------------------------------------
 
+// Tier visibility window from DB — accepted config drives the Avail cell indicator.
+// tier values: 'T2' | 'T3' | 'live' (K2K live). Key in map: `${tier}|${origin_country}`.
+interface TierWindowRow {
+  tier: string;
+  origin_country: string;
+  earliest_delivery_days: number;
+  latest_delivery_days: number;
+}
+
 type TabKey = 'improvement-queue' | 'perfect' | 'all';
 type SortKey =
   | 'priority'
@@ -73,6 +109,7 @@ type SortKey =
   | 'cost'
   | 'price'
   | 'gpm'
+  | 'margin'
   | 'avail';
 type SortDir = 'asc' | 'desc';
 
@@ -138,7 +175,7 @@ function parseSort(raw: string | undefined, tab: TabKey): { key: SortKey; dir: S
   const [keyRaw, dirRaw] = raw.split(':');
   const allowed: SortKey[] = [
     'priority', 'quality', 'importance', 'vendor', 'name',
-    'cost', 'price', 'gpm', 'avail',
+    'cost', 'price', 'gpm', 'margin', 'avail',
   ];
   const key: SortKey = (allowed as string[]).includes(keyRaw)
     ? (keyRaw as SortKey)
@@ -182,6 +219,7 @@ function sortRows(rows: CatalogV2Row[], key: SortKey, dir: SortDir): CatalogV2Ro
       case 'cost': return r.farm_cost ?? -1;
       case 'price': return r.price ?? -1;
       case 'gpm': return r.gpm ?? -1;
+      case 'margin': return r.margin_per_stem ?? -999;
       case 'avail': return r.total_stems;
       default: return 0;
     }
@@ -237,6 +275,20 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const flagFilter = (sp.flag ?? 'all').trim();
   const pageNum = Math.max(1, parseInt(sp.page ?? '1', 10) || 1);
   const sort = parseSort(sp.sort, tab);
+  // Tier window compliance: compute once per request, used in Avail cell.
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+
+  // Change 10: count active (non-default) filters
+  const activeFilterCount = [
+    search ? 1 : 0,
+    tab !== 'improvement-queue' ? 1 : 0,
+    vendorFilter !== 'all' ? 1 : 0,
+    sourceFilter !== 'all' ? 1 : 0,
+    categoryFilter !== 'all' ? 1 : 0,
+    visibilityFilter !== 'all' ? 1 : 0,
+    gpmFilter !== 'all' ? 1 : 0,
+    flagFilter !== 'all' ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
 
   const rawFilters: Record<string, string | undefined> = {
     tab: tab !== 'improvement-queue' ? tab : undefined,
@@ -258,7 +310,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('floropolis_inventory_mirror')
       .select(
-        'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date',
+        'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date, country',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -332,6 +384,28 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     pricingConstants = (data ?? []) as unknown as PricingConstantRow[];
   } catch (err) {
     console.error('[admin/catalog] pricing_constants threw:', err);
+  }
+
+  // Fetch tier visibility windows (accepted=true only — source of truth for Avail cell) -----
+  // Key: `${tier}|${origin_country}` → { min, max }. tier values: 'T2'|'T3'|'live' (K2K).
+  const tierWindowMap = new Map<string, { min: number; max: number }>();
+  try {
+    const { data, error } = await backup
+      .from('tier_visibility_windows')
+      .select('tier, origin_country, earliest_delivery_days, latest_delivery_days')
+      .eq('accepted', true);
+    if (error) {
+      console.error('[admin/catalog] tier_visibility_windows error:', error);
+    } else {
+      for (const w of (data ?? []) as unknown as TierWindowRow[]) {
+        tierWindowMap.set(`${w.tier}|${w.origin_country}`, {
+          min: w.earliest_delivery_days,
+          max: w.latest_delivery_days,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('[admin/catalog] tier_visibility_windows threw:', err);
   }
 
   // Build catalog rows ---------------------------------------------------
@@ -491,6 +565,54 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               </p>
             </div>
           </div>
+          {/* Change 1: Quality distribution bar */}
+          {(() => {
+            const bandOrder = [
+              'perfect', 'almost_perfect', 'needs_minor_fix', 'has_issues', 'broken', 'unscored',
+            ] as const;
+            type BandKey = typeof bandOrder[number];
+            const bandCls: Record<BandKey, string> = {
+              perfect:          'text-green-700',
+              almost_perfect:   'text-amber-600',
+              needs_minor_fix:  'text-amber-500',
+              has_issues:       'text-red-600',
+              broken:           'text-red-700',
+              unscored:         'text-slate-400',
+            };
+            const bandLabels: Record<BandKey, string> = {
+              perfect:          'perfect',
+              almost_perfect:   'almost',
+              needs_minor_fix:  'minor fixes',
+              has_issues:       'has issues',
+              broken:           'broken',
+              unscored:         'unscored',
+            };
+            const counts: Record<BandKey, number> = {
+              perfect: 0, almost_perfect: 0, needs_minor_fix: 0,
+              has_issues: 0, broken: 0, unscored: 0,
+            };
+            for (const r of universeRows) {
+              const band = r.status_band as BandKey;
+              if (band in counts) counts[band]++;
+            }
+            const parts = bandOrder
+              .filter((b) => counts[b] > 0)
+              .map((b) => (
+                <span key={b} className={`font-medium ${bandCls[b]}`}>
+                  {counts[b]} {bandLabels[b]}
+                </span>
+              ));
+            return parts.length > 0 ? (
+              <div className="mt-2 text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                {parts.map((el, i) => (
+                  <span key={i} className="inline-flex items-center gap-x-2">
+                    {el}
+                    {i < parts.length - 1 && <span className="text-slate-300">·</span>}
+                  </span>
+                ))}
+              </div>
+            ) : null;
+          })()}
         </WiringSection>
 
         {/* Tabs */}
@@ -509,6 +631,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               rawFilters={rawFilters}
               label="Perfect"
               count={tabCounts.perfect}
+              perfectMinScore={perfect_min_score}
             />
             <TabLink
               tab="all"
@@ -523,6 +646,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         {/* Filter form */}
         <WiringSection level={wm('filter-form').level} note={wm('filter-form').note} id="filter-form">
           <form
+            id="catalog-filter"
             action="/admin/catalog"
             method="get"
             className="bg-white border border-slate-200 rounded-xl p-4 mb-4"
@@ -531,18 +655,47 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               <input type="hidden" name="tab" value={tab} />
             )}
             {sp.sort && <input type="hidden" name="sort" value={sp.sort} />}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-              <div className="lg:col-span-2">
-                <label className="block text-[11px] font-medium text-slate-500 mb-1">
-                  Search
-                </label>
-                <input
-                  name="q"
-                  defaultValue={search}
-                  placeholder="SKU, name, variety, vendor..."
-                  className="w-full px-2 py-1.5 text-sm rounded-md border border-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
+
+            {/* Change 9: standalone full-width search bar above filter grid */}
+            <div className="relative mb-4">
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <svg
+                  className="h-4 w-4 text-slate-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
+                </svg>
               </div>
+              <input
+                name="q"
+                defaultValue={search}
+                placeholder="SKU, name, variety, vendor..."
+                className="w-full pl-9 pr-9 py-2 text-sm rounded-xl border border-emerald-300 bg-white shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              />
+              {search && (
+                <div className="absolute inset-y-0 right-3 flex items-center">
+                  <Link
+                    href={buildUrl({ ...rawFilters, q: undefined }, {})}
+                    className="text-slate-400 hover:text-slate-600"
+                    title="Clear search"
+                    aria-label="Clear search"
+                  >
+                    ✕
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               <SelectField
                 label="Vendor"
                 name="vendor"
@@ -596,7 +749,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 ]}
               />
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mt-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-3">
               <SelectField
                 label="Flags"
                 name="flag"
@@ -630,6 +783,15 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 >
                   Reset
                 </Link>
+                {/* Change 10: clear N filters link */}
+                {activeFilterCount > 0 && (
+                  <Link
+                    href="/admin/catalog"
+                    className="text-xs px-3 py-1.5 rounded-md text-red-500 hover:text-red-700 hover:underline"
+                  >
+                    Clear {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
+                  </Link>
+                )}
                 <a
                   href="/api/admin/catalog/export"
                   className="text-xs px-3 py-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
@@ -696,9 +858,16 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                     <th className="px-3 py-2.5 text-right">Delivery</th>
                     <SortHeader label="Price"          sortKey="price"      current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="GPM"            sortKey="gpm"        current={sort} rawFilters={rawFilters} align="right" />
+                    <SortHeader label="Margin $"       sortKey="margin"     current={sort} rawFilters={rawFilters} align="right" />
                     <th className="px-3 py-2.5">Sources</th>
                     <SortHeader label="Avail"          sortKey="avail"      current={sort} rawFilters={rawFilters} align="right" />
                     <th className="px-3 py-2.5">Visibility</th>
+                    {tab === 'improvement-queue' && (
+                      <th className="px-3 py-2.5 text-right">
+                        Gap
+                        <div className="text-[10px] font-normal normal-case tracking-normal text-slate-400">to perfect</div>
+                      </th>
+                    )}
                     <th className="px-3 py-2.5">Flags</th>
                   </tr>
                 </thead>
@@ -722,7 +891,18 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         >
                           {r.name}
                         </div>
-                        {r.importance_score != null && (
+                        {/* Change 8: star ★ for importance ≥72, subtle badge for <72 */}
+                        {r.importance_score != null && r.importance_score >= 72 ? (
+                          <div className="mt-1">
+                            <span
+                              className="text-amber-500 font-bold text-sm"
+                              title={`Importance score: ${r.importance_score} (featured top seller)`}
+                              aria-label="Top seller"
+                            >
+                              ★
+                            </span>
+                          </div>
+                        ) : r.importance_score != null ? (
                           <div className="mt-1">
                             <span
                               className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 font-semibold"
@@ -731,7 +911,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                               <span aria-hidden="true">*</span>{r.importance_score}
                             </span>
                           </div>
-                        )}
+                        ) : null}
                       </td>
 
                       {/* 2. Quality Family */}
@@ -755,11 +935,24 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      {/* 4. Box */}
+                      {/* 4. Box — type + weight from Rose box_master + delivery/stem from buildCatalog.
+                            No recalculation here. Weight is vendor-specific (QB-MF≠QB≠QB-OLI).
+                            Tooltip shows what Rose computed, not a re-derivation. */}
                       <td className="px-3 py-2.5">
                         {r.box_type ? (
                           <>
-                            <div className="text-slate-700">{r.box_type}</div>
+                            <div
+                              className="text-slate-700 font-mono text-xs"
+                              title={[
+                                r.box_weight_kg != null ? `${r.box_weight_kg}kg` : null,
+                                r.shipping_per_stem != null ? `$${r.shipping_per_stem.toFixed(3)}/stem delivery` : null,
+                              ].filter(Boolean).join(' · ')}
+                            >
+                              {r.box_type}
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              {r.box_weight_kg != null ? `${r.box_weight_kg}kg` : 'wt unknown'}
+                            </div>
                             <div className="text-[11px]">
                               {r.box_verified ? (
                                 <span className="text-emerald-700">verified</span>
@@ -805,6 +998,23 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
+                      {/* 8b. Margin $ — reads r.margin_per_stem from buildCatalog; no arithmetic here */}
+                      <td className="px-3 py-2.5 text-right">
+                        {(() => {
+                          if (r.margin_per_stem == null) {
+                            return <span className="text-slate-400 text-xs">—</span>;
+                          }
+                          const cls =
+                            r.gpm_band === 'green'
+                              ? 'text-emerald-700 font-semibold'
+                              : r.gpm_band === 'amber'
+                              ? 'text-amber-600 font-semibold'
+                              : 'text-red-600 font-semibold';
+                          return <span className={cls}>${r.margin_per_stem.toFixed(2)}</span>;
+                        })()}
+                        <div className="text-[10px] text-slate-400">per stem</div>
+                      </td>
+
                       {/* 9. Sources */}
                       <td className="px-3 py-2.5">
                         <div className="flex flex-wrap gap-1">
@@ -822,7 +1032,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </div>
                       </td>
 
-                      {/* 10. Avail */}
+                      {/* 10. Avail — Change 4: arrival date below total_stems */}
                       <td className="px-3 py-2.5 text-right">
                         <div className="text-slate-700">
                           {r.total_stems.toLocaleString()}
@@ -833,9 +1043,43 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                             {r.boxes_available.toLocaleString()} boxes
                           </div>
                         )}
+                        {r.arrival_date != null ? (
+                          <div className="text-[10px] text-slate-500 mt-0.5">
+                            arrives{' '}
+                            {(() => {
+                              try {
+                                const d = new Date(r.arrival_date + 'T00:00:00');
+                                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                              } catch {
+                                return (r.arrival_date as string).slice(0, 10);
+                              }
+                            })()}
+                          </div>
+                        ) : (
+                          <div className="text-[10px] text-amber-600 mt-0.5">date TBD</div>
+                        )}
+                        {/* Tier window compliance — driven by tier_visibility_windows (accepted=true).
+                            K2K live items use tier='live'; T2/T3 use their own tier value.
+                            Key: `${tier}|${country}` so Colombia vs Ecuador have separate windows. */}
+                        {(() => {
+                          if (!r.arrival_date) return null;
+                          const effectiveTier = r.buckets.includes('k2k_live') ? 'live' : r.tier;
+                          const country = r.country ?? 'Ecuador'; // mirror default; real value when country is populated
+                          const w =
+                            tierWindowMap.get(`${effectiveTier}|${country}`) ??
+                            tierWindowMap.get(`${effectiveTier}|Ecuador`); // fallback to Ecuador window
+                          if (!w) return null;
+                          const arrDate = new Date(r.arrival_date + 'T00:00:00');
+                          const daysOut = Math.round((arrDate.getTime() - today.getTime()) / 86400000);
+                          if (daysOut < w.min)
+                            return <div className="text-[10px] text-red-600 mt-0.5">⚠ {daysOut}d (min {w.min}d)</div>;
+                          if (daysOut > w.max)
+                            return <div className="text-[10px] text-red-600 mt-0.5">⚠ {daysOut}d (max {w.max}d)</div>;
+                          return <div className="text-[10px] text-emerald-600 mt-0.5">✓ {daysOut}d in window</div>;
+                        })()}
                       </td>
 
-                      {/* 11. Visibility (with inline quality_score badge) */}
+                      {/* 11. Visibility + Change 5: status_band chip */}
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-1 flex-wrap">
                           <span
@@ -843,14 +1087,49 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                           >
                             {r.visibility}
                           </span>
-                          <span
-                            className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${qualityBadgeCls(r.quality_score, perfect_min_score)}`}
-                            title={`Quality score (0-100). Perfect threshold = ${perfect_min_score}.`}
-                          >
-                            {r.quality_score == null ? '--' : r.quality_score}
-                          </span>
+                          {(() => {
+                            type SB = 'perfect'|'almost_perfect'|'needs_minor_fix'|'has_issues'|'broken'|'unscored';
+                            const sbBg: Record<SB, string> = {
+                              perfect:          'bg-green-600',
+                              almost_perfect:   'bg-amber-500',
+                              needs_minor_fix:  'bg-amber-400',
+                              has_issues:       'bg-red-500',
+                              broken:           'bg-red-700',
+                              unscored:         'bg-slate-400',
+                            };
+                            const sbLabel: Record<SB, string> = {
+                              perfect:          '✓ perfect',
+                              almost_perfect:   'almost ✓',
+                              needs_minor_fix:  'minor fixes',
+                              has_issues:       'has issues',
+                              broken:           'broken',
+                              unscored:         'not scored',
+                            };
+                            const band = (r.status_band ?? 'unscored') as SB;
+                            return (
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded-full font-semibold text-white ${sbBg[band]}`}
+                                title={r.quality_score != null ? `Quality score: ${r.quality_score}` : 'No quality score'}
+                              >
+                                {sbLabel[band]}
+                              </span>
+                            );
+                          })()}
                         </div>
                       </td>
+
+                      {/* 11b. Gap column (improvement-queue only) — reads r.gap_to_perfect from buildCatalog */}
+                      {tab === 'improvement-queue' && (
+                        <td className="px-3 py-2.5 text-right">
+                          {r.gap_to_perfect != null ? (
+                            <span className={r.gap_to_perfect >= 30 ? 'text-red-600 font-semibold' : 'text-amber-600 font-semibold'}>
+                              −{r.gap_to_perfect}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-xs">—</span>
+                          )}
+                        </td>
+                      )}
 
                       {/* 12. Flags */}
                       <td className="px-3 py-2.5">
@@ -861,13 +1140,14 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         ) : (
                           <div className="flex flex-wrap gap-1">
                             {r.failed_gates.slice(0, 3).map((g) => (
-                              <span
+                              <Link
                                 key={g.gate_id}
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 font-medium"
+                                href={`/admin/catalog/${r.id}?focus=${g.gate_id}`}
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 font-medium hover:bg-red-100 transition-colors"
                                 title={`-${g.weight} . ${g.display_label}`}
                               >
-                                {g.display_label}
-                              </span>
+                                {g.display_label} (−{g.weight})
+                              </Link>
                             ))}
                             {r.failed_gates.length > 3 && (
                               <Link
@@ -993,17 +1273,24 @@ function TabLink({
   rawFilters,
   label,
   count,
+  perfectMinScore,
 }: {
   tab: TabKey;
   current: TabKey;
   rawFilters: Record<string, string | undefined>;
   label: string;
   count: number;
+  perfectMinScore?: number;
 }) {
   const active = tab === current;
   const cls = active
     ? 'px-4 py-2 text-sm font-semibold text-emerald-700 border-b-2 border-emerald-600 -mb-px'
     : 'px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700';
+  // Change 2: show threshold in Perfect tab label
+  const displayLabel =
+    tab === 'perfect' && perfectMinScore != null
+      ? `Perfect ≥${perfectMinScore}`
+      : label;
   return (
     <Link
       href={buildUrl(rawFilters, {
@@ -1013,7 +1300,7 @@ function TabLink({
       })}
       className={cls}
     >
-      {label}
+      {displayLabel}
       <span className="ml-2 text-[11px] text-slate-400">{count.toLocaleString()}</span>
     </Link>
   );

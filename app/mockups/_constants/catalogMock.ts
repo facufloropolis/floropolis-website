@@ -93,6 +93,9 @@ export type SKU = {
   active_override_id?: string;
   last_edit_at: string;
   last_edit_by: string;
+  is_top_seller: boolean;
+  margin_per_stem: number | null;
+  tier_targets?: { t2?: number; t3?: number };
 };
 
 export type Proposal = {
@@ -403,6 +406,8 @@ type SkuSeed = {
   active_override_id?: string;
   last_edit_at: string;
   last_edit_by: string;
+  is_top_seller?: boolean;
+  tier_targets?: { t2?: number; t3?: number };
 };
 
 function buildSku(seed: SkuSeed): SKU {
@@ -433,6 +438,9 @@ function buildSku(seed: SkuSeed): SKU {
       active_override_id: seed.active_override_id,
       last_edit_at: seed.last_edit_at,
       last_edit_by: seed.last_edit_by,
+      is_top_seller: seed.is_top_seller ?? false,
+      margin_per_stem: null,
+      tier_targets: seed.tier_targets,
     };
   }
   const calc = priceFromFormula({
@@ -464,6 +472,9 @@ function buildSku(seed: SkuSeed): SKU {
     active_override_id: seed.active_override_id,
     last_edit_at: seed.last_edit_at,
     last_edit_by: seed.last_edit_by,
+    is_top_seller: seed.is_top_seller ?? false,
+    margin_per_stem: Number((calc.price_ex_delivery - seed.farm_cost).toFixed(3)),
+    tier_targets: seed.tier_targets,
   };
 }
 
@@ -489,6 +500,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 'k2k_live', valid: true }, { tier: 't2', valid: true, note: 'Standing commitment 2026-Q2' }],
     availability: [{ delivery_week: W20, stems: 875, source: 'k2k_live' }, { delivery_week: W21, stems: 1000, source: 'k2k_live' }, { delivery_week: W22, stems: 750, source: 't2' }],
     visibility: 'live', visibility_rule: 'auto: cost_verified AND stems>0', last_edit_at: '2026-05-14', last_edit_by: 'Rose (auto)',
+    is_top_seller: true, tier_targets: { t2: 1500 },
   }),
   buildSku({
     id: 'sku_eco_freedom_60', vendor_id: 'v_ecoroses', quality_family_id: 'qf_rose_freedom_60',
@@ -497,6 +509,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 'k2k_live', valid: true }, { tier: 't2', valid: true }],
     availability: [{ delivery_week: W20, stems: 1250, source: 'k2k_live' }, { delivery_week: W21, stems: 1000, source: 'k2k_live' }],
     visibility: 'live', visibility_rule: 'auto: cost_verified AND stems>0', last_edit_at: '2026-05-14', last_edit_by: 'Rose (auto)',
+    is_top_seller: true, tier_targets: { t2: 2000 },
   }),
   buildSku({
     id: 'sku_eco_antonia_60', vendor_id: 'v_ecoroses', quality_family_id: 'qf_rose_antonia_60',
@@ -529,6 +542,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 'k2k_live', valid: true }, { tier: 't2', valid: true }],
     availability: [{ delivery_week: W20, stems: 625, source: 'k2k_live' }, { delivery_week: W21, stems: 750, source: 'k2k_live' }],
     visibility: 'live', visibility_rule: 'auto', last_edit_at: '2026-05-14', last_edit_by: 'Rose (auto)',
+    is_top_seller: true, tier_targets: { t2: 1000 },
   }),
   buildSku({
     id: 'sku_eco_coolwater_60', vendor_id: 'v_ecoroses', quality_family_id: 'qf_rose_coolwater_60',
@@ -537,6 +551,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 'k2k_live', valid: true }],
     availability: [{ delivery_week: W20, stems: 500, source: 'k2k_live' }, { delivery_week: W21, stems: 500, source: 'k2k_live' }],
     visibility: 'live', visibility_rule: 'auto', last_edit_at: '2026-05-14', last_edit_by: 'Rose (auto)',
+    is_top_seller: true,
   }),
   buildSku({
     id: 'sku_eco_highflame_60', vendor_id: 'v_ecoroses', quality_family_id: 'qf_rose_highflame_60',
@@ -587,6 +602,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 't2', valid: true, note: 'Pending Viviana cost confirm' }],
     availability: [{ delivery_week: W21, stems: 240, source: 't2' }],
     visibility: 'hidden', visibility_rule: 'auto: cost_status!=verified -> hidden', last_edit_at: '2026-05-09', last_edit_by: 'Job (rule)',
+    tier_targets: { t2: 480 },
   }),
   buildSku({
     id: 'sku_mf_anemone_burgundy', vendor_id: 'v_magicflowers', quality_family_id: 'qf_anemone_mariane_burgundy',
@@ -603,6 +619,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 'k2k_live', valid: true }],
     availability: [{ delivery_week: W20, stems: 250, source: 'k2k_live' }, { delivery_week: W21, stems: 500, source: 'k2k_live' }],
     visibility: 'live', visibility_rule: 'auto', last_edit_at: '2026-05-14', last_edit_by: 'Rose (auto)',
+    is_top_seller: true,
   }),
   buildSku({
     id: 'sku_mf_hydrangea_white', vendor_id: 'v_magicflowers', quality_family_id: 'qf_hydrangea_white',
@@ -621,6 +638,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 'k2k_live', valid: true }, { tier: 't2', valid: true }],
     availability: [{ delivery_week: W20, stems: 400, source: 'k2k_live' }, { delivery_week: W21, stems: 600, source: 'k2k_live' }],
     visibility: 'live', visibility_rule: 'auto', last_edit_at: '2026-05-14', last_edit_by: 'Rose (auto)',
+    is_top_seller: true, tier_targets: { t2: 800 },
   }),
   buildSku({
     id: 'sku_flo_delphinium_blue_fb', vendor_id: 'v_flodecol', quality_family_id: 'qf_delphinium_seawaltz',
@@ -706,6 +724,7 @@ export const SKUS: SKU[] = [
     sources: [{ tier: 't2', valid: true, note: 'Weekly avail email' }, { tier: 't3', valid: true }],
     availability: [{ delivery_week: W21, stems: 200, source: 't2' }, { delivery_week: W22, stems: 300, source: 't2' }],
     visibility: 'hidden', visibility_rule: 'auto: shipping_config awaiting_facu', last_edit_at: '2026-05-12', last_edit_by: 'Job (rule)',
+    tier_targets: { t2: 400, t3: 600 },
   }),
   buildSku({
     id: 'sku_dut_peony_coral', vendor_id: 'v_dutchflora', quality_family_id: 'qf_peony_coral_charm',

@@ -1,5 +1,32 @@
 // Catalog-v2 model: weighted quality_score + importance_score + priority_to_fix.
-// v1 | 2026-05-19 | Job_PM catalog-v2 [V8 SHADOW]
+// v1.1 | 2026-05-20 | Job_PM catalog-v2 [V8 SHADOW]
+//
+// ============================================================================
+// RACI — DATA OWNERSHIP (enforced by file boundary)
+// ============================================================================
+//
+// ROSE (Accountable — source of truth for all raw data):
+//   - box_master.weight_kg         pricing_constants (fedex_rate, fuel_mult, gpm_target)
+//   - floropolis_inventory_mirror  (price, farm_cost, units_per_box, arrival_date, country, tier…)
+//   - catalog_quality_weights      catalog_quality_thresholds   catalog_classifications
+//   - tier_visibility_windows      (accepted windows — Rose validates, Facu approves changes)
+//
+// THIS FILE (catalog-model.ts) — the ONLY place allowed to run business arithmetic:
+//   - Derives computed fields FROM Rose's raw inputs (gpm, shipping_per_stem, margin_per_stem,
+//     gap_to_perfect, quality_score, priority_to_fix…)
+//   - Exports them as typed fields on CatalogV2Row
+//   - No business logic may live anywhere else in the admin stack
+//
+// page.tsx (Responsible — display/filter only, ZERO business arithmetic):
+//   - Reads CatalogV2Row fields — formats, filters, sorts, renders
+//   - Prohibited: any arithmetic operator (*,/,+,-) applied to Rose's raw inputs
+//   - If a computed display value is missing from CatalogV2Row → add it HERE, not there
+//
+// FACU (Approves):
+//   - Config changes (tier windows, weights, thresholds) flow: Facu proposes → Rose validates
+//   - Pending Rose sign-off, the change is not live in the DB
+//
+// ============================================================================
 //
 // Why this exists:
 //   Round 2 W2 SHOP-FILTER dropped the admin catalog from 707 to 110 SKUs by
@@ -179,6 +206,11 @@ export interface CatalogV2Row {
   // GPM (computed from price - farm_cost - shipping_per_stem) / price
   gpm: number | null;
   gpm_band: GpmBand | null;
+  // Margin per stem in $ (price - farm_cost - shipping_per_stem). null when price or cost missing.
+  // shipping treated as 0 when null (US domestic: delivery baked into farm_cost; no separate leg).
+  margin_per_stem: number | null;
+  // Gap to perfect threshold (perfect_min_score - quality_score). null when unscored.
+  gap_to_perfect: number | null;
   // Visibility (derived from live + active)
   visibility: Visibility;
   // Override marker (NULL today; surfaced by future joins to overrides table)
@@ -425,6 +457,18 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
         : null;
     const gpm_band = gpmBandFor(gpm);
 
+    // Margin $ per stem — the dollar equivalent of GPM without the ratio.
+    // null when price or cost is missing (not the same as zero margin).
+    const margin_per_stem =
+      priceN != null && costN != null
+        ? priceN - costN - (shipping_per_stem ?? 0)
+        : null;
+
+    // Gap to perfect threshold — how many quality points this SKU needs to close.
+    // null when unscored (quality_score=null): unscored ≠ broken, it's simply unmeasured.
+    const gap_to_perfect =
+      quality_score != null ? perfect_min_score - quality_score : null;
+
     // Available boxes (when units_per_box known).
     const totalStems =
       r.total_stems != null
@@ -466,6 +510,8 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       shipping_per_stem,
       gpm,
       gpm_band,
+      margin_per_stem,
+      gap_to_perfect,
       visibility: deriveVisibility(r),
       active_override_id: null,
     };
