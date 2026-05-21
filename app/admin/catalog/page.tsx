@@ -1037,46 +1037,36 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                             <div className="text-[10px] text-slate-400">0 boxes</div>
                           )
                         ) : r.buckets.includes('t2') ? (
-                          // T2: availability window status only
+                          // T2: farm commitment — show date as context only, no alarming
                           (() => {
-                            const w =
-                              tierWindowMap.get(`T2|${r.country ?? 'Ecuador'}`) ??
-                              tierWindowMap.get('T2|Ecuador') ??
-                              { min: 5, max: 180 };
                             if (!r.arrival_date) {
-                              return <div className="text-[10px] text-amber-600">T2 – date TBD</div>;
+                              return <div className="text-[10px] text-blue-600">T2 · date TBD</div>;
                             }
                             const arrDate = new Date(r.arrival_date + 'T00:00:00');
                             const dateStr = arrDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            const daysOut = Math.round((arrDate.getTime() - today.getTime()) / 86400000);
-                            if (daysOut < 0)
-                              return <div className="text-[10px] text-red-600">⚠ T2 expired {dateStr} ({Math.abs(daysOut)}d ago)</div>;
-                            if (daysOut < w.min)
-                              return <div className="text-[10px] text-amber-600">T2 opens in {w.min - daysOut}d ({dateStr})</div>;
-                            if (daysOut > w.max)
-                              return <div className="text-[10px] text-slate-400">T2 far – {dateStr}</div>;
-                            return <div className="text-[10px] text-emerald-600 font-medium">✓ T2 {dateStr}</div>;
+                            const isPast = arrDate < today;
+                            return (
+                              <div>
+                                <div className="text-[10px] text-blue-600 font-medium">T2 · {dateStr}</div>
+                                {isPast && <div className="text-[10px] text-slate-400">date stale</div>}
+                              </div>
+                            );
                           })()
                         ) : r.buckets.includes('t3') ? (
-                          // T3: availability window status only
+                          // T3: farm commitment — show date as context only, no alarming
                           (() => {
-                            const w =
-                              tierWindowMap.get(`T3|${r.country ?? 'Ecuador'}`) ??
-                              tierWindowMap.get('T3|Ecuador') ??
-                              { min: 14, max: 180 };
                             if (!r.arrival_date) {
-                              return <div className="text-[10px] text-amber-600">T3 – date TBD</div>;
+                              return <div className="text-[10px] text-slate-500">T3 · date TBD</div>;
                             }
                             const arrDate = new Date(r.arrival_date + 'T00:00:00');
                             const dateStr = arrDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            const daysOut = Math.round((arrDate.getTime() - today.getTime()) / 86400000);
-                            if (daysOut < 0)
-                              return <div className="text-[10px] text-red-600">⚠ T3 expired {dateStr} ({Math.abs(daysOut)}d ago)</div>;
-                            if (daysOut < w.min)
-                              return <div className="text-[10px] text-amber-600">T3 opens in {w.min - daysOut}d ({dateStr})</div>;
-                            if (daysOut > w.max)
-                              return <div className="text-[10px] text-slate-400">T3 far – {dateStr}</div>;
-                            return <div className="text-[10px] text-emerald-600 font-medium">✓ T3 {dateStr}</div>;
+                            const isPast = arrDate < today;
+                            return (
+                              <div>
+                                <div className="text-[10px] text-slate-500 font-medium">T3 · {dateStr}</div>
+                                {isPast && <div className="text-[10px] text-slate-400">date stale</div>}
+                              </div>
+                            );
                           })()
                         ) : (
                           <span className="text-[10px] text-slate-400">—</span>

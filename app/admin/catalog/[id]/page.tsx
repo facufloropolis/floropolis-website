@@ -28,6 +28,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { getCostSourceMeta, getReliabilityCls } from '@/lib/admin/cost-source-registry';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
@@ -1382,7 +1383,24 @@ function GateFixer({
               <span className="text-slate-500">farm_cost</span>
               <span className="font-mono font-semibold text-slate-900">{costN != null ? `$${costN.toFixed(4)}` : '—'}</span>
               <span className="text-slate-500">cost_source</span>
-              <span className="font-mono text-slate-700 break-all">{costSource ?? '—'}</span>
+              {(() => {
+                const meta = getCostSourceMeta(costSource);
+                if (!meta) return <span className="font-mono text-slate-700 break-all">{costSource ?? '—'}</span>;
+                if (meta.url) {
+                  return (
+                    <a href={meta.url} target="_blank" rel="noopener noreferrer"
+                       className={`font-mono underline break-all hover:opacity-80 ${getReliabilityCls(meta.reliability)}`}>
+                      {costSource}
+                    </a>
+                  );
+                }
+                return (
+                  <span className={`font-mono break-all ${getReliabilityCls(meta.reliability)}`}
+                        title={meta.description}>
+                    {costSource} · {meta.reliability}
+                  </span>
+                );
+              })()}
               <span className="text-slate-500">last verified</span>
               <span className={costVerified ? 'font-mono text-slate-700' : 'text-red-700 font-semibold'}>
                 {costVerified ? `${costVerified.slice(0, 10)} (${daysSinceVerified}d ago)` : 'never'}
