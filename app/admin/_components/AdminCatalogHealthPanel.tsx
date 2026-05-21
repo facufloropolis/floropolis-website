@@ -245,21 +245,21 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
         </div>
       </div>
 
-      {/* Avg quality score */}
+      {/* Avg gates passing — gate_score is Rose's count (0–15), not 0–100 */}
       {avgScore != null && (
         <div>
           <div className="flex items-baseline justify-between mb-1">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-              Avg quality score
+              Avg gates passing
             </p>
             <span className={`text-sm font-bold ${
-              avgScore >= 90 ? 'text-emerald-700' :
-              avgScore >= 70 ? 'text-amber-600' : 'text-red-600'
+              avgScore >= 13 ? 'text-emerald-700' :
+              avgScore >= 10 ? 'text-amber-600' : 'text-red-600'
             }`}>
-              {avgScore}<span className="text-slate-400 font-normal text-xs">/100</span>
+              {avgScore}<span className="text-slate-400 font-normal text-xs"> / 15</span>
             </span>
           </div>
-          <ScoreBar score={avgScore} />
+          <ScoreBar score={avgScore} max={15} />
         </div>
       )}
 
