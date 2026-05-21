@@ -19,6 +19,8 @@ interface MirrorRow {
   farm_cost: number | string | null;
   box_type: string | null;
   units_per_box: number | string | null;
+  cost_source: string | null;
+  live: boolean;
 }
 
 interface BoxRow {
@@ -100,7 +102,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     { count: clientsPending },
   ] = await Promise.all([
     svc.from('floropolis_inventory_mirror')
-      .select('tier, vendor, price, farm_cost, box_type, units_per_box')
+      .select('tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
       .limit(2000),
     svc.from('box_master').select('box_type, weight_kg'),
     svc.from('pricing_constants').select('id, value_numeric'),
@@ -128,11 +130,13 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   const boxWeightMap = new Map(boxes.map((b) => [b.box_type, toNum(b.weight_kg) ?? 0]));
 
   // ── Tier breakdown ──────────────────────────────────────────────────────────
+  // K2K live = cost_source matches /_k2k_/i AND live=true (same as catalog-model deriveBuckets).
+  // Do NOT use tier fallback — all mirror rows have tier=T2 or T3; tier is not the K2K signal.
   let k2kCount = 0, t2Count = 0, t3Count = 0;
   for (const r of mirror) {
     if (r.tier === 'T2') t2Count++;
-    else if (r.tier === 'T3') t3Count++;
-    else k2kCount++;
+    if (r.tier === 'T3') t3Count++;
+    if (r.cost_source && /_k2k_/i.test(r.cost_source) && r.live) k2kCount++;
   }
   const totalSkus = mirror.length;
 
