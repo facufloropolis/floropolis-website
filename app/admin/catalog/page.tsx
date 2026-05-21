@@ -310,7 +310,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('floropolis_inventory_mirror')
       .select(
-        'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date, country',
+        'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -1064,10 +1064,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         {(() => {
                           if (!r.arrival_date) return null;
                           const effectiveTier = r.buckets.includes('k2k_live') ? 'live' : r.tier;
-                          const country = r.country ?? 'Ecuador'; // mirror default; real value when country is populated
+                          // mirror has no country column yet — use Ecuador window (only accepted rows today).
+                          // When mirror gains country, switch key to `${effectiveTier}|${r.country}`.
                           const w =
-                            tierWindowMap.get(`${effectiveTier}|${country}`) ??
-                            tierWindowMap.get(`${effectiveTier}|Ecuador`); // fallback to Ecuador window
+                            tierWindowMap.get(`${effectiveTier}|${r.country ?? 'Ecuador'}`) ??
+                            tierWindowMap.get(`${effectiveTier}|Ecuador`);
                           if (!w) return null;
                           const arrDate = new Date(r.arrival_date + 'T00:00:00');
                           const daysOut = Math.round((arrDate.getTime() - today.getTime()) / 86400000);
