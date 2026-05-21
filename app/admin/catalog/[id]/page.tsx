@@ -38,6 +38,7 @@ import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
 import {
   AdminActions,
   AcceptDeviationButton,
+  AskRoseButton,
   ClearPriceAlertButton,
   ContentsNoteEditor,
   CostSourceEditor,
@@ -998,6 +999,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                   </summary>
                   <div className="px-3 pb-3 pt-1">
                     <GateFixer gateId={gate.id} skuId={skuId} mirror={mirror} />
+                    <AskRoseButton skuId={skuId} gateId={gate.id} gateLabel={label} />
                   </div>
                 </details>
               );

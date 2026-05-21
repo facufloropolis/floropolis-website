@@ -656,3 +656,121 @@ export function AdminActions({
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// AskRoseButton — routes a failing gate to Rose via rose_queue
+// ---------------------------------------------------------------------------
+// Every gate card gets this button. Clicking expands a textarea so Facu can
+// type context before sending. The API records: gate, SKU snapshot, who
+// flagged it, what Facu wrote, and when — so Rose has full context in one row.
+
+type FlagState = 'idle' | 'open' | 'sending' | 'sent' | 'duplicate' | 'error';
+
+export function AskRoseButton({
+  skuId,
+  gateId,
+  gateLabel,
+}: {
+  skuId: number;
+  gateId: string;
+  gateLabel: string;
+}) {
+  const [state, setState] = useState<FlagState>('idle');
+  const [note, setNote] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  async function submit() {
+    setState('sending');
+    try {
+      const res = await fetch(`/api/admin/catalog/sku/${skuId}/flag-rose`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason_code: gateId, context_note: note }),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        status?: string;
+        error?: string;
+        detail?: string;
+      };
+      if (body.status === 'duplicate') {
+        setState('duplicate');
+      } else if (res.ok && body.status === 'inserted') {
+        setState('sent');
+      } else {
+        setState('error');
+        setErrorMsg(body.detail ?? body.error ?? `HTTP ${res.status}`);
+      }
+    } catch (e) {
+      setState('error');
+      setErrorMsg(e instanceof Error ? e.message : 'network error');
+    }
+  }
+
+  if (state === 'sent') {
+    return (
+      <p className="mt-2 text-[11px] text-emerald-700 font-semibold">
+        ✓ Flagged to Rose — gate: {gateId}
+      </p>
+    );
+  }
+
+  if (state === 'duplicate') {
+    return (
+      <p className="mt-2 text-[11px] text-slate-500">
+        Already open in Rose queue for this gate.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-3 border-t border-slate-100 pt-2">
+      {state === 'idle' && (
+        <button
+          type="button"
+          onClick={() => setState('open')}
+          className="text-[11px] text-amber-700 hover:text-amber-900 font-medium underline underline-offset-2"
+        >
+          Ask Rose →
+        </button>
+      )}
+
+      {(state === 'open' || state === 'sending' || state === 'error') && (
+        <div className="space-y-2">
+          <p className="text-[11px] text-slate-600 font-medium">
+            Flag to Rose:{' '}
+            <span className="font-mono text-slate-800">{gateId}</span>
+            {' — '}{gateLabel}
+          </p>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Context for Rose — what you found, what decision you need (optional)"
+            className="w-full text-[11px] border border-slate-200 rounded-md p-2 focus:border-amber-400 focus:outline-none resize-none leading-relaxed"
+            rows={2}
+            maxLength={500}
+          />
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={submit}
+              disabled={state === 'sending'}
+              className="text-[11px] font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-md disabled:opacity-50"
+            >
+              Send to Rose
+            </button>
+            <button
+              type="button"
+              onClick={() => { setState('idle'); setNote(''); setErrorMsg(''); }}
+              className="text-[11px] text-slate-500 hover:text-slate-700"
+            >
+              Cancel
+            </button>
+            {state === 'error' && (
+              <span className="text-[11px] text-red-600 font-mono">{errorMsg}</span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
