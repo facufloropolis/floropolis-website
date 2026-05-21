@@ -107,13 +107,18 @@ type SortKey =
   | 'priority'
   | 'quality'
   | 'importance'
+  | 'family'
   | 'vendor'
   | 'name'
+  | 'box'
   | 'cost'
+  | 'delivery'
   | 'price'
   | 'gpm'
   | 'margin'
-  | 'avail';
+  | 'sources'
+  | 'avail'
+  | 'visibility';
 type SortDir = 'asc' | 'desc';
 
 interface PageProps {
@@ -173,12 +178,13 @@ function parseTab(v: string | undefined): TabKey {
 function parseSort(raw: string | undefined, tab: TabKey): { key: SortKey; dir: SortDir } {
   if (!raw) {
     if (tab === 'improvement-queue') return { key: 'priority', dir: 'desc' };
+    if (tab === 'perfect') return { key: 'importance', dir: 'desc' };
     return { key: 'vendor', dir: 'asc' };
   }
   const [keyRaw, dirRaw] = raw.split(':');
   const allowed: SortKey[] = [
-    'priority', 'quality', 'importance', 'vendor', 'name',
-    'cost', 'price', 'gpm', 'margin', 'avail',
+    'priority', 'quality', 'importance', 'family', 'vendor', 'name',
+    'box', 'cost', 'delivery', 'price', 'gpm', 'margin', 'sources', 'avail', 'visibility',
   ];
   const key: SortKey = (allowed as string[]).includes(keyRaw)
     ? (keyRaw as SortKey)
@@ -217,13 +223,18 @@ function sortRows(rows: CatalogV2Row[], key: SortKey, dir: SortDir): CatalogV2Ro
       case 'priority': return r.priority_to_fix;
       case 'quality': return r.quality_score ?? -1;
       case 'importance': return r.importance_score ?? -1;
+      case 'family': return (r.variety || r.category || '').toLowerCase();
       case 'vendor': return r.vendor.toLowerCase();
       case 'name': return r.name.toLowerCase();
+      case 'box': return (r.box_type ?? '').toLowerCase();
       case 'cost': return r.farm_cost ?? -1;
+      case 'delivery': return r.shipping_per_stem ?? -1;
       case 'price': return r.price ?? -1;
       case 'gpm': return r.gpm ?? -1;
       case 'margin': return r.margin_per_stem ?? -999;
+      case 'sources': return r.buckets.includes('k2k_live') ? 3 : r.buckets.includes('t2') ? 2 : r.buckets.includes('t3') ? 1 : 0;
       case 'avail': return r.total_stems;
+      case 'visibility': return r.visibility;
       default: return 0;
     }
   };
@@ -351,7 +362,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   try {
     const { data, error } = await backup
       .from('catalog_quality_weights')
-      .select('gate_id, display_label, category, weight, description, evaluated, updated_at, updated_by');
+      .select('gate_id, display_label, category, weight, tier, description, evaluated, updated_at, updated_by');
     if (error) console.error('[admin/catalog] weights error:', error);
     weights = (data ?? []) as unknown as QualityWeightRow[];
   } catch (err) {
@@ -438,21 +449,13 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
   // Tab filter -----------------------------------------------------------
   const inTab = (r: CatalogV2Row): boolean => {
-    if (tab === 'perfect') {
-      return r.quality_score != null && r.quality_score >= perfect_min_score;
-    }
-    if (tab === 'improvement-queue') {
-      return r.quality_score == null || r.quality_score < perfect_min_score;
-    }
+    if (tab === 'perfect') return r.publication_status === 'perfect';
+    if (tab === 'improvement-queue') return r.publication_status !== 'perfect';
     return true;
   };
   const tabCounts = {
-    'improvement-queue': universeRows.filter(
-      (r) => r.quality_score == null || r.quality_score < perfect_min_score,
-    ).length,
-    perfect: universeRows.filter(
-      (r) => r.quality_score != null && r.quality_score >= perfect_min_score,
-    ).length,
+    'improvement-queue': universeRows.filter((r) => r.publication_status !== 'perfect').length,
+    perfect: universeRows.filter((r) => r.publication_status === 'perfect').length,
     all: universeRows.length,
   };
 
@@ -838,18 +841,19 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
-                    <SortHeader label="SKU"            sortKey="name"       current={sort} rawFilters={rawFilters} />
-                    <th className="px-3 py-2.5">Quality Family</th>
+                    <SortHeader label="Family"         sortKey="family"     current={sort} rawFilters={rawFilters} />
+                    <th className="px-3 py-2.5">SKU</th>
+                    <SortHeader label="Importance"     sortKey="importance" current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="Vendor"         sortKey="vendor"     current={sort} rawFilters={rawFilters} />
-                    <th className="px-3 py-2.5">Box</th>
+                    <SortHeader label="Box"            sortKey="box"        current={sort} rawFilters={rawFilters} />
                     <SortHeader label="Cost"           sortKey="cost"       current={sort} rawFilters={rawFilters} align="right" />
-                    <th className="px-3 py-2.5 text-right">Delivery</th>
+                    <SortHeader label="Delivery"       sortKey="delivery"   current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="Price"          sortKey="price"      current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="GPM"            sortKey="gpm"        current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="Margin $"       sortKey="margin"     current={sort} rawFilters={rawFilters} align="right" />
-                    <th className="px-3 py-2.5">Sources</th>
+                    <SortHeader label="Sources"        sortKey="sources"    current={sort} rawFilters={rawFilters} />
                     <SortHeader label="Avail"          sortKey="avail"      current={sort} rawFilters={rawFilters} align="right" />
-                    <th className="px-3 py-2.5">Visibility</th>
+                    <SortHeader label="Visibility"     sortKey="visibility" current={sort} rawFilters={rawFilters} />
                     {tab === 'improvement-queue' && (
                       <th className="px-3 py-2.5 text-right">
                         Gap
@@ -865,54 +869,49 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                       key={r.id}
                       className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors align-top"
                     >
-                      {/* 1. SKU */}
+                      {/* 1. Family */}
+                      <td className="px-3 py-2.5">
+                        <div className="text-slate-900 font-medium max-w-[180px] truncate" title={r.name}>
+                          {r.variety || r.category || r.name || '--'}
+                          {r.length ? ` ${r.length}` : ''}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {[r.category, r.unit]
+                            .filter(Boolean)
+                            .join(' · ') || '--'}
+                        </div>
+                      </td>
+
+                      {/* 2. SKU — #ID only; name is in Family column */}
                       <td className="px-3 py-2.5">
                         <Link
                           href={`/admin/catalog/${r.id}`}
                           className="font-mono text-[11px] text-emerald-700 hover:underline"
-                        >
-                          {r.id}
-                        </Link>
-                        <div
-                          className="text-[11px] text-slate-700 mt-0.5 max-w-[220px] truncate"
                           title={r.name}
                         >
-                          {r.name}
-                        </div>
-                        {/* Change 8: star ★ for importance ≥72, subtle badge for <72 */}
-                        {r.importance_score != null && r.importance_score >= 72 ? (
-                          <div className="mt-1">
-                            <span
-                              className="text-amber-500 font-bold text-sm"
-                              title={`Importance score: ${r.importance_score} (featured top seller)`}
-                              aria-label="Top seller"
-                            >
-                              ★
-                            </span>
-                          </div>
-                        ) : r.importance_score != null ? (
-                          <div className="mt-1">
-                            <span
-                              className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 font-semibold"
-                              title="Importance from featured-products framework (seed of 7)."
-                            >
-                              <span aria-hidden="true">*</span>{r.importance_score}
-                            </span>
-                          </div>
-                        ) : null}
+                          #{r.id}
+                        </Link>
                       </td>
 
-                      {/* 2. Quality Family */}
-                      <td className="px-3 py-2.5">
-                        <div className="text-slate-900">
-                          {r.variety || r.category || '--'}
-                          {r.length ? ` ${r.length}` : ''}
-                        </div>
-                        <div className="text-[11px] text-slate-500">
-                          {[r.category, r.variety, r.length, r.unit]
-                            .filter(Boolean)
-                            .join(' . ') || '--'}
-                        </div>
+                      {/* 3. Importance */}
+                      <td className="px-3 py-2.5 text-right">
+                        {r.importance_score != null && r.importance_score >= 72 ? (
+                          <span
+                            className="text-amber-500 font-bold text-sm"
+                            title={`Importance score: ${r.importance_score} (featured top seller — competitive advantage vs PetalJet)`}
+                          >
+                            ★ {r.importance_score}
+                          </span>
+                        ) : r.importance_score != null ? (
+                          <span
+                            className="text-[11px] text-violet-700 font-semibold"
+                            title={`Importance score: ${r.importance_score} (featured framework)`}
+                          >
+                            {r.importance_score}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300 text-xs">—</span>
+                        )}
                       </td>
 
                       {/* 3. Vendor */}
@@ -1020,20 +1019,27 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </div>
                       </td>
 
-                      {/* 10. Avail — Change 4: arrival date below total_stems */}
+                      {/* 10. Avail — "live" label for k2k stems; "next batch" for arrival_date */}
                       <td className="px-3 py-2.5 text-right">
-                        <div className="text-slate-700">
-                          {r.total_stems.toLocaleString()}
-                          <span className="text-[10px] text-slate-400 ml-1">stems</span>
-                        </div>
+                        {r.total_stems > 0 ? (
+                          <div className="text-slate-700">
+                            {r.total_stems.toLocaleString()}
+                            <span className="text-[10px] text-slate-400 ml-1">
+                              {r.buckets.includes('k2k_live') ? 'live' : 'stems'}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="text-[10px] text-slate-400">0 in stock</div>
+                        )}
                         {r.boxes_available != null && r.boxes_available > 0 && (
                           <div className="text-[10px] text-slate-400">
                             {r.boxes_available.toLocaleString()} boxes
                           </div>
                         )}
                         {r.arrival_date != null ? (
-                          <div className="text-[10px] text-slate-500 mt-0.5">
-                            arrives{' '}
+                          <div className="text-[10px] text-blue-600 mt-0.5">
+                            {r.buckets.filter((b) => b !== 'k2k_live').includes('t2') ? 'T2 ' :
+                             r.buckets.filter((b) => b !== 'k2k_live').includes('t3') ? 'T3 ' : ''}
                             {(() => {
                               try {
                                 const d = new Date(r.arrival_date + 'T00:00:00');
@@ -1043,9 +1049,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                               }
                             })()}
                           </div>
-                        ) : (
+                        ) : r.buckets.some((b) => b === 't2' || b === 't3') ? (
                           <div className="text-[10px] text-amber-600 mt-0.5">date TBD</div>
-                        )}
+                        ) : null}
                         {/* Tier window compliance — driven by tier_visibility_windows (accepted=true).
                             K2K live items use tier='live'; T2/T3 use their own tier value.
                             Key: `${tier}|${country}` so Colombia vs Ecuador have separate windows. */}
@@ -1070,15 +1076,28 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
                       {/* 11. Visibility + publication_status chip */}
                       <td className="px-3 py-2.5">
-                        <div className="flex items-center gap-1 flex-wrap">
+                        <div className="flex flex-col gap-0.5">
                           <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${VISIBILITY_BADGE_CLS[r.visibility]}`}
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold w-fit ${VISIBILITY_BADGE_CLS[r.visibility]}`}
+                            title={
+                              r.visibility === 'live'
+                                ? 'Live: mirror.live = true AND mirror.active = true (K2K uploaded this SKU as active)'
+                                : r.visibility === 'hidden'
+                                ? 'Hidden: mirror.live = false or mirror.active = false'
+                                : 'Draft: not yet in K2K live feed'
+                            }
                           >
                             {r.visibility}
                           </span>
                           <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${PUBLICATION_STATUS_CLS[r.publication_status]}`}
-                            title={r.quality_score != null ? `Quality score: ${r.quality_score}/100` : 'Not yet scored'}
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold w-fit ${PUBLICATION_STATUS_CLS[r.publication_status]}`}
+                            title={
+                              r.publication_status === 'perfect'
+                                ? `Perfect: all ${r.failed_gates.length === 0 ? 'gates' : 'evaluated gates'} pass (quality score: ${r.quality_score ?? '?'}/100). Source: catalog_classifications.`
+                                : r.publication_status === 'publishable'
+                                ? `Publishable: blocking gates pass but quality gaps remain (score: ${r.quality_score ?? '?'}/100). See flags column.`
+                                : `Blocked: one or more blocking gates fail (score: ${r.quality_score ?? '?'}/100). Cannot publish until fixed. See flags column.`
+                            }
                           >
                             {r.publication_status === 'perfect' ? '✓ ' : ''}{PUBLICATION_STATUS_LABEL[r.publication_status]}
                           </span>
