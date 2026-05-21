@@ -32,6 +32,7 @@ import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import { GATE_LABELS } from '@/lib/catalog-gates';
+import { lookupImportanceScore, FEATURED_SCORE_SEED } from '@/lib/admin/featured-scores-seed';
 import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
 
 import {
@@ -241,29 +242,17 @@ function renderRaw(v: unknown): string {
 }
 
 function statusBadge(status: string): { label: string; cls: string } {
+  if (status === 'perfect') {
+    return { label: '✓ perfect', cls: 'bg-emerald-100 text-emerald-800 border-emerald-300' };
+  }
   if (status === 'publishable') {
-    return {
-      label: 'publishable',
-      cls: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-    };
+    return { label: 'publishable', cls: 'bg-amber-100 text-amber-800 border-amber-300' };
   }
-  if (status === 'needs_data_fix') {
-    return {
-      label: 'needs_data_fix',
-      cls: 'bg-amber-100 text-amber-800 border-amber-300',
-    };
-  }
-  if (status === 'needs_facu_review') {
-    return {
-      label: 'needs_facu_review',
-      cls: 'bg-red-100 text-red-800 border-red-300',
-    };
+  if (status === 'blocked') {
+    return { label: 'blocked', cls: 'bg-red-100 text-red-800 border-red-300' };
   }
   if (status.startsWith('admin_overridden_')) {
-    return {
-      label: status,
-      cls: 'bg-violet-100 text-violet-800 border-violet-300',
-    };
+    return { label: status, cls: 'bg-violet-100 text-violet-800 border-violet-300' };
   }
   return { label: status, cls: 'bg-slate-100 text-slate-700 border-slate-300' };
 }
@@ -454,6 +443,11 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
 
   const breakdown = mirror
     ? computeBreakdown(mirror, box, constants)
+    : null;
+
+  const importanceScore = mirror ? lookupImportanceScore(mirror.name) : null;
+  const importanceSeedEntry = importanceScore != null
+    ? FEATURED_SCORE_SEED.find((e) => e.match_terms.every((t) => (mirror?.name ?? '').toLowerCase().includes(t)))
     : null;
 
   const wiringEntry = getWiringForPage('/admin/catalog/[id]');
@@ -842,6 +836,50 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         </SectionCard>
 
         </WiringSection>
+
+        {/* Importance score */}
+        <SectionCard
+          title="Importance score"
+          subtitle="Strategic priority — how much this SKU moves the needle vs competitors"
+        >
+          {importanceScore != null ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                {importanceScore >= 72 ? (
+                  <span className="text-amber-500 font-bold text-2xl">★</span>
+                ) : (
+                  <span className="text-violet-600 font-bold text-2xl">{importanceScore}</span>
+                )}
+                <div>
+                  <div className="text-lg font-bold text-slate-900">{importanceScore}/100</div>
+                  {importanceScore >= 72 && (
+                    <div className="text-xs text-amber-700 font-semibold">Top seller — featured priority</div>
+                  )}
+                </div>
+              </div>
+              {importanceSeedEntry?.notes && (
+                <div className="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded p-2">
+                  {importanceSeedEntry.notes}
+                </div>
+              )}
+              <div className="text-[11px] text-slate-500 bg-amber-50 border border-amber-200 rounded p-2">
+                <strong>Source:</strong> Manual seed — Talin_Marketing analysis 2026-05-12 (featured_by_variety). Based on: competitive price gap vs PetalJet/FiftyFlowers, variety demand signal, bridal/event trend 2026.
+                <br />
+                <strong>Pipeline:</strong> Not yet automated. To update this score, edit <code className="font-mono text-[10px]">lib/admin/featured-scores-seed.ts</code> and re-deploy.
+              </div>
+              <div className="text-[11px] text-slate-500">
+                Match criteria: {importanceSeedEntry?.match_terms.join(' + ')}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-slate-500">No importance score for this SKU.</p>
+              <p className="text-[11px] text-slate-400">
+                The featured-score seed covers 7 SKUs today (Quicksand, Cool Water, Sky Waltz, Serene Lavender, Orange Crush). This SKU is not in the seed. Once the scoring pipeline is built (TAM × competitive advantage × seasonal demand), all SKUs will get a score automatically.
+              </p>
+            </div>
+          )}
+        </SectionCard>
 
         {/* Section: Rose escalation queue ---------------------------- */}
         <SectionCard
@@ -1327,12 +1365,42 @@ function GateFixer({
           <MarginStatusEditor skuId={skuId} current={mirror.margin_status ?? null} />
         </FixerWrap>
       );
-    case 'cost_unverified':
+    case 'cost_unverified': {
+      const costN = toNumOrNull(mirror.farm_cost);
+      const costSource = (mirror.cost_source as string | null) ?? null;
+      const costVerified = (mirror.cost_verified_at as string | null) ?? null;
+      const daysSinceVerified = costVerified
+        ? Math.round((Date.now() - new Date(costVerified).getTime()) / 86400000)
+        : null;
+      const inRecentReview = costSource ? /facu|may|2026-05/i.test(costSource) : false;
       return (
-        <FixerWrap hint="Stamp cost_verified_at = today once Rose confirms the vendor cost. Window: 30 days.">
+        <FixerWrap hint="Cost is set but verification stamp is missing or expired (30-day window). Confirm with Rose before stamping.">
+          <div className="space-y-2 mb-3 text-xs">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 bg-slate-50 border border-slate-200 rounded p-2">
+              <span className="text-slate-500">farm_cost</span>
+              <span className="font-mono font-semibold text-slate-900">{costN != null ? `$${costN.toFixed(4)}` : '—'}</span>
+              <span className="text-slate-500">cost_source</span>
+              <span className="font-mono text-slate-700 break-all">{costSource ?? '—'}</span>
+              <span className="text-slate-500">last verified</span>
+              <span className={costVerified ? 'font-mono text-slate-700' : 'text-red-700 font-semibold'}>
+                {costVerified ? `${costVerified.slice(0, 10)} (${daysSinceVerified}d ago)` : 'never'}
+              </span>
+            </div>
+            {!inRecentReview && (
+              <div className="bg-amber-50 border border-amber-200 rounded p-2 text-amber-800">
+                Source looks like FOB pricelist — this SKU may NOT have been in the Facu_May12_2026_matrix review. Ask Rose to confirm the cost before stamping.
+              </div>
+            )}
+            {inRecentReview && !costVerified && (
+              <div className="bg-blue-50 border border-blue-200 rounded p-2 text-blue-800">
+                Source matches a recent review — safe to stamp verified today if you confirmed the cost.
+              </div>
+            )}
+          </div>
           <VerifyCostButton skuId={skuId} />
         </FixerWrap>
       );
+    }
     case 'missing_cost_source':
       return (
         <FixerWrap hint="Record where this cost came from (vendor name, K2K snapshot, manual quote, etc).">
@@ -1411,26 +1479,51 @@ function GateFixer({
         </FixerWrap>
       );
     case 't2_outside_5d_window':
-    case 't3_outside_14d_window':
+    case 't3_outside_14d_window': {
+      const minDays = gateId === 't2_outside_5d_window' ? 5 : 14;
+      const tierLabel = gateId === 't2_outside_5d_window' ? 'T2' : 'T3';
+      const currentArrival = mirror.arrival_date ?? null;
+      const arrDaysOut = currentArrival
+        ? Math.round((new Date(currentArrival + 'T00:00:00').getTime() - Date.now()) / 86400000)
+        : null;
+      const isExpired = arrDaysOut != null && arrDaysOut < 0;
       return (
         <FixerWrap
-          hint={
-            gateId === 't2_outside_5d_window'
-              ? 'T2 SKU has arrival_date within 5 days but no stock. Either update arrival_date or force-publish to override.'
-              : 'T3 SKU has arrival_date within 14 days but no stock. Either update arrival_date or force-publish to override.'
-          }
+          hint={`${tierLabel} products are available on Stripe checkout when arrival_date is ${minDays}–180 days from today. Arrival date must be updated to unblock.`}
         >
-          <div className="flex flex-col gap-2">
-            <DateEditor
-              skuId={skuId}
-              field="arrival_date"
-              current={mirror.arrival_date ?? null}
-              label="arrival"
-            />
-            <AcceptDeviationButton skuId={skuId} />
+          <div className="space-y-2 mb-3 text-xs">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 bg-slate-50 border border-slate-200 rounded p-2">
+              <span className="text-slate-500">current arrival_date</span>
+              <span className="font-mono font-semibold text-slate-900">{currentArrival ?? '(none)'}</span>
+              {arrDaysOut != null && (
+                <>
+                  <span className="text-slate-500">days from today</span>
+                  <span className={`font-mono font-semibold ${isExpired ? 'text-red-700' : arrDaysOut < minDays ? 'text-amber-700' : 'text-emerald-700'}`}>
+                    {arrDaysOut >= 0 ? `+${arrDaysOut}d` : `${arrDaysOut}d (EXPIRED)`}
+                  </span>
+                </>
+              )}
+            </div>
+            {isExpired && (
+              <div className="bg-red-50 border border-red-200 rounded p-2 text-red-800">
+                Arrival date is in the past. Ask vendor for the next batch date and update arrival_date below — or ask Rose to update from K2K.
+              </div>
+            )}
+            {!isExpired && arrDaysOut != null && arrDaysOut < minDays && (
+              <div className="bg-amber-50 border border-amber-200 rounded p-2 text-amber-800">
+                Arrival is within {minDays}d — too close to publish. Update to a date at least {minDays} days out.
+              </div>
+            )}
           </div>
+          <DateEditor
+            skuId={skuId}
+            field="arrival_date"
+            current={currentArrival}
+            label="arrival"
+          />
         </FixerWrap>
       );
+    }
     default:
       return (
         <p className="text-xs text-slate-500 italic">
