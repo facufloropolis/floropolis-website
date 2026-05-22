@@ -8,6 +8,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { getProdReadClient } from '@/lib/supabase/prod-server';
 import { lookupImportanceScore } from '@/lib/admin/featured-scores-seed';
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -107,6 +108,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     { count: ordersOpen },
     { count: refundsPending },
     { count: clientsPending },
+    { count: orphanCount },
   ] = await Promise.all([
     svc.from('floropolis_inventory_mirror')
       .select('name, tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
@@ -124,6 +126,14 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     svc.from('client_profiles').select('*', { count: 'exact', head: true })
       .eq('status', 'pending')
       .then((r) => ({ count: r.count }), () => ({ count: 0 })),
+    // Orphan count from prod
+    (async () => {
+      const prod = getProdReadClient();
+      if (!prod) return { count: null };
+      const { data } = await prod.rpc('sales_cleanup_list', { p_status: 'pending', p_limit: 1, p_offset: 0 });
+      const r = data as { total_pending?: number } | null;
+      return { count: r?.total_pending ?? null };
+    })(),
   ]);
 
   const mirror = (mirrorRaw ?? []) as MirrorRow[];
@@ -396,6 +406,14 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
         <span>Refunds <span className="font-semibold text-slate-700">{refundsPending ?? 0}</span></span>
         <span className="text-slate-200">·</span>
         <span>Clients pending <span className="font-semibold text-slate-700">{clientsPending ?? 0}</span></span>
+        {orphanCount != null && orphanCount > 0 && (
+          <>
+            <span className="text-slate-200">·</span>
+            <Link href="/admin/sales-cleanup" className="text-amber-700 font-semibold hover:underline">
+              {orphanCount} orphan{orphanCount === 1 ? '' : 's'}
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

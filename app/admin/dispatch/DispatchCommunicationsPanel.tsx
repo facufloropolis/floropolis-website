@@ -120,9 +120,8 @@ export default function DispatchCommunicationsPanel({
           type="button"
           onClick={() => setModal('email')}
           className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-2 py-0.5 rounded transition-colors"
-          title="Phase F STUB: writes the log row, does NOT send. Phase G wires Brevo."
         >
-          Email customer (stub)
+          Log email sent
         </button>
         <button
           type="button"
@@ -162,13 +161,8 @@ export default function DispatchCommunicationsPanel({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5">
             <h3 className="font-bold text-slate-900 text-base mb-1">
-              {modal === 'email' ? `Email ${businessName} (STUB)` : modal === 'phone_note' ? 'Log phone note' : 'Log WhatsApp reference'}
+              {modal === 'email' ? `Log email to ${businessName}` : modal === 'phone_note' ? 'Log phone note' : 'Log WhatsApp reference'}
             </h3>
-            {modal === 'email' && (
-              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-3">
-                Phase F: this writes the comm log row but does NOT actually send. Phase G wires Brevo.
-              </p>
-            )}
             <div className="space-y-2 mb-4">
               {modal === 'email' && (
                 <>
@@ -276,7 +270,7 @@ export default function DispatchCommunicationsPanel({
                 disabled={busy}
                 className="text-sm px-4 py-1 rounded bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-50"
               >
-                {busy ? 'Saving...' : modal === 'email' ? 'Log (no send)' : 'Save'}
+                {busy ? 'Saving...' : modal === 'email' ? 'Save log' : 'Save'}
               </button>
             </div>
           </div>

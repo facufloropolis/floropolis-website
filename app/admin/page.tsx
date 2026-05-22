@@ -23,7 +23,12 @@ import AdminTodayPanel from './_components/AdminTodayPanel';
 import AdminCatalogHealthPanel from './_components/AdminCatalogHealthPanel';
 import AdminRecentActivity from './_components/AdminRecentActivity';
 
-const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
+const ADMIN_EMAILS = [
+  'facu@floropolis.com',
+  'jjpj@crescoinversiones.com',
+  'jjpj@floropolis.com',
+  'jjp@floropolis.com',
+];
 
 export default async function AdminIndexPage() {
   const supabase = await createBackupServerClient();
