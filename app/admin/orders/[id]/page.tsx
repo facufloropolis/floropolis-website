@@ -44,6 +44,7 @@ import RefundProposalForm from './RefundProposalForm';
 import InitDispatchButton from './InitDispatchButton';
 import EmailLogSection from './_components/EmailLogSection';
 import ConversationsSection from './_components/ConversationsSection';
+import OrderStatusActions from './OrderStatusActions';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -815,6 +816,12 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               title="Order actions"
               subtitle={`Status: ${order.status}`}
             >
+              <OrderStatusActions
+                orderId={order.id}
+                currentStatus={order.status}
+                hasDeliveredDispatch={!!dispatch?.delivered_at}
+                hasPendingRefund={pendingRefundCount > 0}
+              />
               <div>
                 <p className="text-[11px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
                   Dispatch
