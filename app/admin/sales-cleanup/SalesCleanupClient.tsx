@@ -250,7 +250,7 @@ function OrphanRowItem({
         <div className="px-4 pb-4 flex flex-col gap-4 border-t border-gray-100">
           {/* Signal blocks */}
           <div className="grid grid-cols-3 gap-4 mt-3">
-            <SignalBlock title="Identity" signals={row.identity_signals as Record<string, unknown>} />
+            <SignalBlock title="Identity" signals={row.identity_signals as unknown as Record<string, unknown>} />
             <SignalBlock title="Transaction" signals={flattenTxn(row.transaction_signals)} />
             <SignalBlock title="Cross-source" signals={flattenCross(row.cross_source_signals)} />
           </div>
