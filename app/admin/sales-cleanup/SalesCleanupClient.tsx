@@ -116,15 +116,15 @@ export default function SalesCleanupClient({ initial }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">Sales Cleanup</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-lg font-semibold text-slate-900">Sales Cleanup</h1>
+          <p className="text-sm text-slate-500">
             {data.total_count} pending &middot; ${data.total_pending_usd.toFixed(2)} at stake
           </p>
         </div>
         <button
           onClick={refresh}
           disabled={isPending}
-          className="flex items-center gap-1.5 text-sm text-gray-600 border border-gray-200 rounded px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+          className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-200 rounded px-3 py-1.5 hover:bg-slate-50 disabled:opacity-50"
         >
           <span>{isPending ? '...' : '↻'}</span>
           <span>Refresh</span>
@@ -132,7 +132,7 @@ export default function SalesCleanupClient({ initial }: Props) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-200">
+      <div className="flex gap-4 border-b border-slate-200">
         {(['pending', 'history'] as Tab[]).map(t => (
           <button
             key={t}
@@ -140,7 +140,7 @@ export default function SalesCleanupClient({ initial }: Props) {
             className={`pb-2 text-sm font-medium capitalize border-b-2 -mb-px transition-colors ${
               tab === t
                 ? 'border-emerald-600 text-emerald-700'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
             {t}
@@ -155,11 +155,11 @@ export default function SalesCleanupClient({ initial }: Props) {
 
       {/* Row list */}
       {rows.length === 0 ? (
-        <p className="text-sm text-gray-400 py-8 text-center">
+        <p className="text-sm text-slate-400 py-8 text-center">
           {tab === 'pending' ? 'No pending orphans.' : 'No resolved orphans yet.'}
         </p>
       ) : (
-        <div className="flex flex-col divide-y divide-gray-100 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="flex flex-col divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
           {rows.map(row => (
             <OrphanRowItem
               key={row.id}
@@ -202,7 +202,7 @@ function OrphanRowItem({
   const cross = crossSourceSummary(row);
 
   return (
-    <div className={`${expanded ? 'bg-gray-50' : 'bg-white hover:bg-gray-50'}`}>
+    <div className={`${expanded ? 'bg-slate-50' : 'bg-white hover:bg-slate-50'}`}>
       {/* Collapsed row — 2 lines */}
       <button
         onClick={onToggle}
@@ -211,17 +211,17 @@ function OrphanRowItem({
         <div className="flex-1 min-w-0">
           {/* Line 1: identity + amount */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-sm text-gray-900 truncate">
+            <span className="font-medium text-sm text-slate-900 truncate">
               {row.identity_signals.business_name ?? '—'}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-slate-400">
               {row.identity_signals.email ?? row.identity_signals.phone_normalized ?? ''}
             </span>
-            <span className="ml-auto text-sm font-semibold text-gray-800">
+            <span className="ml-auto text-sm font-semibold text-slate-700">
               ${(row.transaction_signals.total_amount ?? 0).toFixed(2)}
             </span>
-            <span className="text-xs text-gray-400">{row.transaction_signals.kind}</span>
-            <span className="text-xs text-gray-400">{txnAgeLabel(row.detected_at)}</span>
+            <span className="text-xs text-slate-400">{row.transaction_signals.kind}</span>
+            <span className="text-xs text-slate-400">{txnAgeLabel(row.detected_at)}</span>
           </div>
           {/* Line 2: top suggestion + cross source */}
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -231,10 +231,10 @@ function OrphanRowItem({
               </span>
             )}
             {cross && (
-              <span className="text-xs text-gray-400 truncate">{cross}</span>
+              <span className="text-xs text-slate-400 truncate">{cross}</span>
             )}
             {tab === 'history' && row.resolved_by && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-slate-400">
                 &bull; resolved by {row.resolved_by} &bull; {row.resolution_action}
               </span>
             )}
@@ -247,7 +247,7 @@ function OrphanRowItem({
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 flex flex-col gap-4 border-t border-gray-100">
+        <div className="px-4 pb-4 flex flex-col gap-4 border-t border-slate-100">
           {/* Signal blocks */}
           <div className="grid grid-cols-3 gap-4 mt-3">
             <SignalBlock title="Identity" signals={row.identity_signals as unknown as Record<string, unknown>} />
@@ -258,12 +258,12 @@ function OrphanRowItem({
           {/* Fuzzy candidates */}
           {(row.cross_source_signals?.lead_master_candidates_fuzzy?.length ?? 0) > 0 && (
             <div>
-              <p className="text-xs font-medium text-gray-500 mb-1">Fuzzy lead matches</p>
+              <p className="text-xs font-medium text-slate-500 mb-1">Fuzzy lead matches</p>
               <div className="flex flex-col gap-1">
                 {row.cross_source_signals!.lead_master_candidates_fuzzy.map(c => (
-                  <div key={c.lead_master_id} className="text-xs text-gray-600 flex gap-2">
+                  <div key={c.lead_master_id} className="text-xs text-slate-600 flex gap-2">
                     <span className="font-medium">{c.matched_value}</span>
-                    <span className="text-gray-400">({c.match_field}, {(c.similarity_score * 100).toFixed(0)}%)</span>
+                    <span className="text-slate-400">({c.match_field}, {(c.similarity_score * 100).toFixed(0)}%)</span>
                   </div>
                 ))}
               </div>
@@ -273,7 +273,7 @@ function OrphanRowItem({
           {/* Action buttons — only in pending tab */}
           {tab === 'pending' && (
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium text-gray-500">Actions</p>
+              <p className="text-xs font-medium text-slate-500">Actions</p>
               <div className="flex flex-wrap gap-2">
                 {actions.slice(0, 3).map(a => (
                   <ActionButton
@@ -290,13 +290,13 @@ function OrphanRowItem({
                     placeholder="Other action..."
                     value={otherAction ?? ''}
                     onChange={e => onOtherActionChange(e.target.value)}
-                    className="text-xs border border-gray-200 rounded px-2 py-1.5 w-44 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="text-xs border border-slate-200 rounded px-2 py-1.5 w-44 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                   {otherAction && (
                     <button
                       disabled={resolving}
                       onClick={() => onResolve(row.id, otherAction)}
-                      className="text-xs bg-gray-800 text-white px-3 py-1.5 rounded hover:bg-gray-700 disabled:opacity-50"
+                      className="text-xs bg-slate-700 text-white px-3 py-1.5 rounded hover:bg-slate-700 disabled:opacity-50"
                     >
                       Submit
                     </button>
@@ -306,7 +306,7 @@ function OrphanRowItem({
                 <button
                   disabled={resolving}
                   onClick={() => onResolve(row.id, 'deferred_24h', 'Skipped by user')}
-                  className="text-xs text-gray-500 border border-gray-200 rounded px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+                  className="text-xs text-slate-500 border border-slate-200 rounded px-3 py-1.5 hover:bg-slate-50 disabled:opacity-50"
                 >
                   Skip 24h
                 </button>
@@ -319,7 +319,7 @@ function OrphanRowItem({
 
           {/* History: show resolution detail */}
           {tab === 'history' && (
-            <div className="text-xs text-gray-500 flex flex-col gap-1">
+            <div className="text-xs text-slate-500 flex flex-col gap-1">
               <div><span className="font-medium">Action:</span> {row.resolution_action}</div>
               {row.resolution_note && <div><span className="font-medium">Note:</span> {row.resolution_note}</div>}
               <div><span className="font-medium">Resolved by:</span> {row.resolved_by}</div>
@@ -349,14 +349,14 @@ function ActionButton({ action, disabled, onClick }: { action: SuggestedAction; 
 function SignalBlock({ title, signals }: { title: string; signals: Record<string, unknown> }) {
   const entries = Object.entries(signals).filter(([, v]) => v != null && v !== '');
   return (
-    <div className="bg-white border border-gray-100 rounded p-3 text-xs">
-      <p className="font-medium text-gray-500 mb-2">{title}</p>
+    <div className="bg-white border border-slate-100 rounded p-3 text-xs">
+      <p className="font-medium text-slate-500 mb-2">{title}</p>
       <div className="flex flex-col gap-1">
         {entries.length === 0 && <span className="text-gray-300">—</span>}
         {entries.map(([k, v]) => (
           <div key={k} className="flex gap-1">
-            <span className="text-gray-400 shrink-0">{k}:</span>
-            <span className="text-gray-700 font-mono break-all">{String(v)}</span>
+            <span className="text-slate-400 shrink-0">{k}:</span>
+            <span className="text-slate-700 font-mono break-all">{String(v)}</span>
           </div>
         ))}
       </div>

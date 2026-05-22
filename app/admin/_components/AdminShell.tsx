@@ -32,9 +32,6 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
                 F
               </div>
               <span className="font-bold text-slate-900 text-sm">Floropolis Admin</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
-                v2 unified
-              </span>
             </Link>
           </div>
           <div className="flex items-center gap-2">

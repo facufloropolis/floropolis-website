@@ -106,6 +106,7 @@ export default function DispatchTodayPanel({
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [err, setErr] = useState<Record<string, string>>({});
   const [labelFiles, setLabelFiles] = useState<Record<string, File | null>>({});
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const below2Box = totalBoxes < 2;
@@ -143,6 +144,50 @@ export default function DispatchTodayPanel({
       router.refresh();
     } catch (e) {
       setErr1(key, e instanceof Error ? e.message : 'error');
+    } finally {
+      setBusy1(key, false);
+    }
+  }
+
+  async function uploadBatch() {
+    if (batchFiles.length === 0) return;
+    const key = 'batch-upload';
+    setBusy1(key, true);
+    setErr1(key, '');
+    try {
+      const dispatches = rows.filter(r => r.dispatchId && !r.labelUrl);
+      for (let i = 0; i < Math.min(batchFiles.length, dispatches.length); i++) {
+        const fd = new FormData();
+        fd.append('file', batchFiles[i]);
+        await fetch(`/api/admin/dispatch/${dispatches[i].dispatchId}/label-upload`, { method: 'POST', body: fd });
+      }
+      setBatchFiles([]);
+      router.refresh();
+    } catch (e) {
+      setErr1(key, e instanceof Error ? e.message : 'batch upload error');
+    } finally {
+      setBusy1(key, false);
+    }
+  }
+
+  async function addSampleBox() {
+    if (!selectedProspect) return;
+    const key = 'sample-box';
+    setBusy1(key, true);
+    setErr1(key, '');
+    try {
+      const res = await fetch('/api/admin/dispatch/sample-box', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ prospect_id: selectedProspect }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
+      setSampleBoxModal(false);
+      setSelectedProspect(null);
+      router.refresh();
+    } catch (e) {
+      setErr1(key, e instanceof Error ? e.message : 'failed');
     } finally {
       setBusy1(key, false);
     }
@@ -248,8 +293,8 @@ export default function DispatchTodayPanel({
                   return Array.from({ length: Math.max(1, r.boxesCount) }, (_, bi) => (
                     <tr key={`${r.orderId}-${bi}`} className="hover:bg-slate-50">
                       <td className="px-4 py-2.5 font-mono font-bold text-slate-700">#{bi + 1}</td>
-                      <td className="px-4 py-2.5 text-slate-600 truncate max-w-[80px]">{r.farm.split(' ')[0]}</td>
-                      <td className="px-4 py-2.5 text-slate-600 truncate max-w-[80px]">{r.businessName.split(' ')[0]}</td>
+                      <td className="px-4 py-2.5 text-slate-600 truncate max-w-[80px]" title={r.farm}>{r.farm.split(' ')[0]}</td>
+                      <td className="px-4 py-2.5 text-slate-600 truncate max-w-[80px]" title={r.businessName}>{r.businessName.split(' ')[0]}</td>
                       <td className="px-4 py-2.5">
                         <span
                           className={`inline-block px-1.5 py-0.5 rounded text-xs font-semibold border ${
@@ -413,6 +458,27 @@ export default function DispatchTodayPanel({
           <div className="bg-white rounded-2xl border border-slate-200 p-4">
             <p className="text-xs font-semibold text-slate-700 mb-3">📋 FedEx labels</p>
             <div className="space-y-2">
+              <div className="mb-3 pb-3 border-b border-slate-100">
+                <p className="text-xs text-slate-500 mb-1.5 font-medium">Upload all labels at once</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    multiple
+                    onChange={e => setBatchFiles(Array.from(e.target.files ?? []))}
+                    className="text-xs flex-1 min-w-0"
+                  />
+                  <button
+                    type="button"
+                    disabled={batchFiles.length === 0 || !!busy['batch-upload']}
+                    onClick={uploadBatch}
+                    className="text-xs font-semibold bg-slate-900 text-white px-2.5 py-1 rounded-lg hover:bg-slate-700 disabled:opacity-40 shrink-0"
+                  >
+                    {busy['batch-upload'] ? `Uploading…` : `Upload ${batchFiles.length > 0 ? batchFiles.length + ' PDF' + (batchFiles.length > 1 ? 's' : '') : 'PDFs'}`}
+                  </button>
+                </div>
+                {err['batch-upload'] && <p className="text-xs text-red-600 mt-1">{err['batch-upload']}</p>}
+              </div>
               {rows.map((r) => {
                 if (!r.dispatchId) {
                   return (
@@ -601,13 +667,14 @@ export default function DispatchTodayPanel({
                 Cancel
               </button>
               <button
-                disabled={!selectedProspect || prospects.length === 0}
-                onClick={() => { setSampleBoxModal(false); setSelectedProspect(null); }}
+                disabled={!!busy['sample-box'] || !selectedProspect}
+                onClick={addSampleBox}
                 className="text-sm px-5 py-2 rounded-xl bg-emerald-600 text-white font-semibold disabled:opacity-40 hover:bg-emerald-700"
               >
                 Add to dispatch →
               </button>
             </div>
+            {err['sample-box'] && <p className="text-xs text-red-600 mt-1">{err['sample-box']}</p>}
           </div>
         </div>
       )}
