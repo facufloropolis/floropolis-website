@@ -24,7 +24,12 @@ import * as Sentry from '@sentry/nextjs';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 
-const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
+const ADMIN_EMAILS = [
+  'facu@floropolis.com',
+  'jjpj@crescoinversiones.com',
+  'jjpj@floropolis.com',
+  'jjp@floropolis.com',
+];
 
 interface AuthOk { ok: true; userId: string; email: string }
 interface AuthFail { ok: false; response: NextResponse }

@@ -28,6 +28,7 @@ import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import {
   BoxFlagCEOForm,
+  ConfigFlagRoseForm,
   PricingConstantsProposeForm,
   ShippingConfigCreateForm,
   ProposalDecisionButtons,
@@ -532,7 +533,19 @@ function BoxPanel({
       </div>
     );
   }
+  const newestBoxAt = boxes.reduce<string | null>(
+    (acc, b) => (!acc || (b.validated_at && b.validated_at > acc) ? (b.validated_at ?? acc) : acc),
+    null,
+  );
   return (
+    <>
+      {/* Source provenance bar */}
+      <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
+        <span>Source: <code className="font-mono">public.box_master</code></span>
+        <span>Write path: <span className="font-medium text-amber-800">rose_queue only (read-only)</span></span>
+        <span>{boxes.length} rows</span>
+        {newestBoxAt && <span>Last validated: {fmtDate(newestBoxAt)}</span>}
+      </div>
     <div className="border border-slate-200 rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -604,6 +617,7 @@ function BoxPanel({
         Use &quot;Flag to CEO&quot; to escalate via rose_queue.
       </div>
     </div>
+    </>
   );
 }
 
@@ -669,7 +683,19 @@ function PricingPanel({
       </div>
     );
   }
+  const newestPricingAt = constants.reduce<string | null>(
+    (acc, c) => (!acc || (c.updated_at && c.updated_at > acc) ? (c.updated_at ?? acc) : acc),
+    null,
+  );
   return (
+    <>
+      {/* Source provenance bar */}
+      <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
+        <span>Source: <code className="font-mono">public.pricing_constants</code></span>
+        <span>Write path: <span className="font-medium text-emerald-800">admin_proposals &rarr; executor</span></span>
+        <span>{constants.length} rows</span>
+        {newestPricingAt && <span>Last updated: {fmtDate(newestPricingAt)}</span>}
+      </div>
     <div className="border border-slate-200 rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -694,7 +720,16 @@ function PricingPanel({
                 <td className="px-4 py-2.5 text-xs text-slate-500">{c.unit ?? '-'}</td>
                 <td className="px-4 py-2.5 text-xs text-slate-500">{fmtDate(c.updated_at)}</td>
                 <td className="px-4 py-2.5 text-right">
-                  <PricingConstantsProposeForm row={c} totalSkus={totalSkus} />
+                  <div className="flex items-center justify-end gap-2 flex-wrap">
+                    <PricingConstantsProposeForm row={c} totalSkus={totalSkus} />
+                    <ConfigFlagRoseForm
+                      itemId={c.id}
+                      itemLabel={c.description}
+                      currentValue={c.value_numeric == null ? '—' : String(c.value_numeric)}
+                      sourceTable="pricing_constants"
+                      reasonCode="pricing_question"
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -705,6 +740,7 @@ function PricingPanel({
         <strong>Cascade:</strong> Global config - applies to all {totalSkus} SKUs once Facu approves.
       </div>
     </div>
+    </>
   );
 }
 
@@ -795,7 +831,19 @@ function ShippingPanel({
     byOrigin[s.origin_country].push(s);
   }
 
+  const newestShippingAt = ships.reduce<string | null>(
+    (acc, s) => (!acc || s.effective_from > acc ? s.effective_from : acc),
+    null,
+  );
   return (
+    <>
+      {/* Source provenance bar */}
+      <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
+        <span>Source: <code className="font-mono">public.shipping_config_v2</code></span>
+        <span>Write path: <span className="font-medium text-emerald-800">admin_proposals &rarr; executor</span></span>
+        <span>{ships.length} rows</span>
+        {newestShippingAt && <span>Newest effective from: {fmtShortDate(newestShippingAt)}</span>}
+      </div>
     <div className="space-y-6">
       <div className="flex justify-end">
         <ShippingConfigCreateForm totalSkus={totalSkus} />
@@ -821,6 +869,7 @@ function ShippingPanel({
                     <th className="px-4 py-2 text-right">REL #</th>
                     <th className="px-4 py-2">Effective from</th>
                     <th className="px-4 py-2">Effective until</th>
+                    <th className="px-4 py-2 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -837,6 +886,15 @@ function ShippingPanel({
                       </td>
                       <td className="px-4 py-2 text-xs text-slate-500">{fmtShortDate(s.effective_from)}</td>
                       <td className="px-4 py-2 text-xs text-slate-500">{fmtShortDate(s.effective_until)}</td>
+                      <td className="px-4 py-2 text-right">
+                        <ConfigFlagRoseForm
+                          itemId={s.id}
+                          itemLabel={`${s.origin_country}→${s.dest_port}`}
+                          currentValue={`fuel ${Number(s.fuel_pct).toFixed(2)}%`}
+                          sourceTable="shipping_config_v2"
+                          reasonCode="shipping_question"
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -850,6 +908,7 @@ function ShippingPanel({
         not yet wired (use a new effective_from row to supersede).
       </p>
     </div>
+    </>
   );
 }
 
@@ -1069,149 +1128,193 @@ function QualityPanel({
   }
 
   // Active tab -- show weights and thresholds.
+  const newestThresholdAt = thresholds.reduce<string | null>(
+    (acc, t) => (!acc || (t.updated_at && t.updated_at > acc) ? (t.updated_at ?? acc) : acc),
+    null,
+  );
+  const newestWeightAt = weights.reduce<string | null>(
+    (acc, w) => (!acc || (w.updated_at && w.updated_at > acc) ? (w.updated_at ?? acc) : acc),
+    null,
+  );
   return (
     <div className="space-y-6">
       {/* Thresholds card */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
-        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-          <h3 className="text-sm font-semibold text-slate-900">Thresholds</h3>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Gates between &quot;Perfect&quot; and the improvement queue on /admin/catalog.
-            Default 100 = strict; lower to 95/90 to relax.
-          </p>
+      <div>
+        {/* Source provenance bar — thresholds */}
+        <div className="mb-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
+          <span>Source: <code className="font-mono">public.catalog_quality_thresholds</code></span>
+          <span>Write path: <span className="font-medium text-emerald-800">admin_proposals &rarr; executor</span></span>
+          <span>{thresholds.length} rows</span>
+          {newestThresholdAt && <span>Last updated: {fmtDate(newestThresholdAt)}</span>}
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-white border-b border-slate-200">
-              <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
-                <th className="px-4 py-2">Threshold</th>
-                <th className="px-4 py-2 text-right">Value</th>
-                <th className="px-4 py-2">Description</th>
-                <th className="px-4 py-2">Last edit</th>
-                <th className="px-4 py-2 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {thresholds.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-slate-400">
-                    No thresholds seeded.
-                  </td>
+        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h3 className="text-sm font-semibold text-slate-900">Thresholds</h3>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Gates between &quot;Perfect&quot; and the improvement queue on /admin/catalog.
+              Default 100 = strict; lower to 95/90 to relax.
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-white border-b border-slate-200">
+                <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                  <th className="px-4 py-2">Threshold</th>
+                  <th className="px-4 py-2 text-right">Value</th>
+                  <th className="px-4 py-2">Description</th>
+                  <th className="px-4 py-2">Last edit</th>
+                  <th className="px-4 py-2 text-right">Actions</th>
                 </tr>
-              ) : (
-                thresholds.map((t) => (
-                  <tr key={t.threshold_id} className="border-b border-slate-100 last:border-b-0">
-                    <td className="px-4 py-2.5 font-mono text-xs text-slate-900">
-                      {t.threshold_id}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
-                      {Number(t.value).toString()}
-                    </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
-                      {t.description ?? '-'}
-                    </td>
-                    <td className="px-4 py-2.5 text-[11px] text-slate-500">
-                      {fmtDate(t.updated_at)}
-                      {t.updated_by && (
-                        <div className="text-[10px] text-slate-400">{t.updated_by}</div>
-                      )}
-                    </td>
-                    <td className="px-4 py-2.5 text-right">
-                      <QualityThresholdProposeForm row={t} />
+              </thead>
+              <tbody>
+                {thresholds.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-6 text-center text-xs text-slate-400">
+                      No thresholds seeded.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  thresholds.map((t) => (
+                    <tr key={t.threshold_id} className="border-b border-slate-100 last:border-b-0">
+                      <td className="px-4 py-2.5 font-mono text-xs text-slate-900">
+                        {t.threshold_id}
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
+                        {Number(t.value).toString()}
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
+                        {t.description ?? '-'}
+                      </td>
+                      <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                        {fmtDate(t.updated_at)}
+                        {t.updated_by && (
+                          <div className="text-[10px] text-slate-400">{t.updated_by}</div>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        <div className="flex items-center justify-end gap-2 flex-wrap">
+                          <QualityThresholdProposeForm row={t} />
+                          <ConfigFlagRoseForm
+                            itemId={t.threshold_id}
+                            itemLabel={t.threshold_id}
+                            currentValue={String(t.value)}
+                            sourceTable="catalog_quality_thresholds"
+                            reasonCode="data_quality"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Weights card */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
-        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-3">
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Per-gate weights</h3>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Sum must equal 100. Gates marked unevaluated are aspirational
-              (perfect_inventory_bar.md spec) but not yet emitted by the
-              validator -- their weight is credited automatically.
-            </p>
-          </div>
-          <div className="text-right">
-            <span
-              className={
-                sumOk
-                  ? 'inline-block px-2 py-1 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200'
-                  : 'inline-block px-2 py-1 rounded-full text-[11px] font-semibold border bg-red-100 text-red-800 border-red-200'
-              }
-            >
-              sum = {totalWeight} / 100
-            </span>
-            {!sumOk && (
-              <p className="text-[10px] text-red-700 mt-1">
-                Weights have drifted. Use a proposal to rebalance.
-              </p>
-            )}
-          </div>
+      <div>
+        {/* Source provenance bar — weights */}
+        <div className="mb-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
+          <span>Source: <code className="font-mono">public.catalog_quality_weights</code></span>
+          <span>Write path: <span className="font-medium text-emerald-800">admin_proposals &rarr; executor</span></span>
+          <span>{weights.length} rows</span>
+          {newestWeightAt && <span>Last updated: {fmtDate(newestWeightAt)}</span>}
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-white border-b border-slate-200">
-              <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
-                <th className="px-4 py-2">Gate</th>
-                <th className="px-4 py-2">Category</th>
-                <th className="px-4 py-2 text-right">Weight</th>
-                <th className="px-4 py-2">Description</th>
-                <th className="px-4 py-2">Evaluated</th>
-                <th className="px-4 py-2 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {weights.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-xs text-slate-400">
-                    No quality weights seeded.
-                  </td>
+        <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Per-gate weights</h3>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Sum must equal 100. Gates marked unevaluated are aspirational
+                (perfect_inventory_bar.md spec) but not yet emitted by the
+                validator -- their weight is credited automatically.
+              </p>
+            </div>
+            <div className="text-right">
+              <span
+                className={
+                  sumOk
+                    ? 'inline-block px-2 py-1 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200'
+                    : 'inline-block px-2 py-1 rounded-full text-[11px] font-semibold border bg-red-100 text-red-800 border-red-200'
+                }
+              >
+                sum = {totalWeight} / 100
+              </span>
+              {!sumOk && (
+                <p className="text-[10px] text-red-700 mt-1">
+                  Weights have drifted. Use a proposal to rebalance.
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-white border-b border-slate-200">
+                <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                  <th className="px-4 py-2">Gate</th>
+                  <th className="px-4 py-2">Category</th>
+                  <th className="px-4 py-2 text-right">Weight</th>
+                  <th className="px-4 py-2">Description</th>
+                  <th className="px-4 py-2">Evaluated</th>
+                  <th className="px-4 py-2 text-right">Actions</th>
                 </tr>
-              ) : (
-                weights.map((w) => (
-                  <tr key={w.gate_id} className="border-b border-slate-100 last:border-b-0">
-                    <td className="px-4 py-2.5">
-                      <div className="font-mono text-[11px] text-slate-500">{w.gate_id}</div>
-                      <div className="text-slate-900 text-xs">{w.display_label}</div>
-                    </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">
-                      {w.category}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
-                      {w.weight}
-                    </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
-                      {w.description ?? '-'}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      {w.evaluated ? (
-                        <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200">
-                          evaluated
-                        </span>
-                      ) : (
-                        <span
-                          className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-100 text-slate-600 border-slate-200"
-                          title="Validator does not yet emit this gate; weight is credited as passing."
-                        >
-                          pending schema
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2.5 text-right">
-                      <QualityWeightProposeForm row={w} currentTotal={totalWeight} />
+              </thead>
+              <tbody>
+                {weights.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-6 text-center text-xs text-slate-400">
+                      No quality weights seeded.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  weights.map((w) => (
+                    <tr key={w.gate_id} className="border-b border-slate-100 last:border-b-0">
+                      <td className="px-4 py-2.5">
+                        <div className="font-mono text-[11px] text-slate-500">{w.gate_id}</div>
+                        <div className="text-slate-900 text-xs">{w.display_label}</div>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">
+                        {w.category}
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
+                        {w.weight}
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
+                        {w.description ?? '-'}
+                      </td>
+                      <td className="px-4 py-2.5">
+                        {w.evaluated ? (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200">
+                            evaluated
+                          </span>
+                        ) : (
+                          <span
+                            className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-100 text-slate-600 border-slate-200"
+                            title="Validator does not yet emit this gate; weight is credited as passing."
+                          >
+                            pending schema
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        <div className="flex items-center justify-end gap-2 flex-wrap">
+                          <QualityWeightProposeForm row={w} currentTotal={totalWeight} />
+                          <ConfigFlagRoseForm
+                            itemId={w.gate_id}
+                            itemLabel={w.display_label}
+                            currentValue={String(w.weight)}
+                            sourceTable="catalog_quality_weights"
+                            reasonCode="data_quality"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

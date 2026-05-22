@@ -133,6 +133,7 @@ interface PageProps {
     flag?: string;
     sort?: string;
     page?: string;
+    view?: string;
   }>;
 }
 
@@ -279,7 +280,10 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
   // Parse search params --------------------------------------------------
   const sp = await searchParams;
+  const viewMode: 'today' | 'target' = (sp.view === 'target') ? 'target' : 'today';
   const tab = parseTab(sp.tab);
+  // In target mode, default tab is 'all' instead of 'improvement-queue'
+  const effectiveTab: TabKey = (!sp.tab && viewMode === 'target') ? 'all' : tab;
   const search = (sp.q ?? '').trim();
   const vendorFilter = (sp.vendor ?? 'all').trim();
   const sourceFilter = (sp.source ?? 'all').trim();
@@ -288,14 +292,14 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const gpmFilter = (sp.gpm ?? 'all').trim();
   const flagFilter = (sp.flag ?? 'all').trim();
   const pageNum = Math.max(1, parseInt(sp.page ?? '1', 10) || 1);
-  const sort = parseSort(sp.sort, tab);
+  const sort = parseSort(sp.sort, effectiveTab);
   // Tier window compliance: compute once per request, used in Avail cell.
   const today = new Date(); today.setHours(0, 0, 0, 0);
 
   // Change 10: count active (non-default) filters
   const activeFilterCount = [
     search ? 1 : 0,
-    tab !== 'improvement-queue' ? 1 : 0,
+    effectiveTab !== 'improvement-queue' ? 1 : 0,
     vendorFilter !== 'all' ? 1 : 0,
     sourceFilter !== 'all' ? 1 : 0,
     categoryFilter !== 'all' ? 1 : 0,
@@ -305,7 +309,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   ].reduce((a, b) => a + b, 0);
 
   const rawFilters: Record<string, string | undefined> = {
-    tab: tab !== 'improvement-queue' ? tab : undefined,
+    tab: effectiveTab !== 'improvement-queue' ? effectiveTab : undefined,
     q: search || undefined,
     vendor: vendorFilter !== 'all' ? vendorFilter : undefined,
     source: sourceFilter !== 'all' ? sourceFilter : undefined,
@@ -314,6 +318,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     gpm: gpmFilter !== 'all' ? gpmFilter : undefined,
     flag: flagFilter !== 'all' ? flagFilter : undefined,
     sort: sp.sort,
+    view: viewMode === 'target' ? 'target' : undefined,
   };
 
   const backup = getBackupServiceClient();
@@ -449,8 +454,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
   // Tab filter -----------------------------------------------------------
   const inTab = (r: CatalogV2Row): boolean => {
-    if (tab === 'perfect') return r.publication_status === 'perfect';
-    if (tab === 'improvement-queue') return r.publication_status !== 'perfect';
+    if (effectiveTab === 'perfect') return r.publication_status === 'perfect';
+    if (effectiveTab === 'improvement-queue') return r.publication_status !== 'perfect';
     return true;
   };
   const tabCounts = {
@@ -543,27 +548,44 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 </span>
               </p>
               <p className="text-[11px] text-slate-400 mt-1">
-                Reality per Rose&apos;s layer state: gaps visible, ghost still alive
+                {viewMode === 'target'
+                  ? `Projected state: assumes all improvement-queue items resolved.`
+                  : `Reality per Rose's layer state: gaps visible, ghost still alive`}
               </p>
+              {viewMode === 'target' && (() => {
+                const todayPublishable = universeRows.filter((r) => r.publication_status !== 'blocked').length;
+                const targetPublishable = universeRows.length;
+                const todayPct = universeRows.length > 0 ? Math.round((todayPublishable / universeRows.length) * 100) : 0;
+                return (
+                  <div className="mt-2 flex items-center gap-4 text-xs">
+                    <span className="text-slate-500">Today:</span>
+                    <span className="font-semibold text-slate-700">{todayPublishable}/{universeRows.length} publishable ({todayPct}%)</span>
+                    <span className="text-slate-400">→</span>
+                    <span className="text-slate-500">Target:</span>
+                    <span className="font-semibold text-emerald-700">{targetPublishable}/{universeRows.length} publishable (100%)</span>
+                    <span className="text-[11px] text-slate-400">if all improvement-queue items resolved</span>
+                  </div>
+                );
+              })()}
             </div>
             <div className="flex flex-col items-end gap-2">
               <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
-                <button
-                  type="button"
-                  className="px-3 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white cursor-default"
-                  aria-pressed="true"
-                  title="Today: live mirror state."
+                <Link
+                  href={buildUrl(rawFilters, { view: undefined })}
+                  className={viewMode === 'today'
+                    ? 'px-3 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white'
+                    : 'px-3 py-1 text-xs font-medium rounded-md text-slate-600 hover:bg-slate-50'}
                 >
                   Today
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 text-xs font-medium rounded-md text-slate-400 cursor-not-allowed"
-                  disabled
-                  title="Target state -- coming soon (no diverging data path yet)."
+                </Link>
+                <Link
+                  href={buildUrl(rawFilters, { view: 'target' })}
+                  className={viewMode === 'target'
+                    ? 'px-3 py-1 text-xs font-semibold rounded-md bg-emerald-600 text-white'
+                    : 'px-3 py-1 text-xs font-medium rounded-md text-slate-600 hover:bg-slate-50'}
                 >
                   Target state
-                </button>
+                </Link>
               </div>
               <p className="text-[11px] text-slate-400 max-w-xs text-right">
                 Importance covers {summary.importance_covered_count}/
@@ -611,14 +633,14 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           <div className="flex gap-1 mb-5 border-b border-slate-200 flex-wrap">
             <TabLink
               tab="improvement-queue"
-              current={tab}
+              current={effectiveTab}
               rawFilters={rawFilters}
               label="Improvement queue"
               count={tabCounts['improvement-queue']}
             />
             <TabLink
               tab="perfect"
-              current={tab}
+              current={effectiveTab}
               rawFilters={rawFilters}
               label="Perfect"
               count={tabCounts.perfect}
@@ -626,7 +648,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             />
             <TabLink
               tab="all"
-              current={tab}
+              current={effectiveTab}
               rawFilters={rawFilters}
               label="All"
               count={tabCounts.all}
@@ -642,8 +664,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             method="get"
             className="bg-white border border-slate-200 rounded-xl p-4 mb-4"
           >
-            {tab !== 'improvement-queue' && (
-              <input type="hidden" name="tab" value={tab} />
+            {effectiveTab !== 'improvement-queue' && (
+              <input type="hidden" name="tab" value={effectiveTab} />
             )}
             {sp.sort && <input type="hidden" name="sort" value={sp.sort} />}
 
@@ -854,7 +876,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                     <SortHeader label="Sources"        sortKey="sources"    current={sort} rawFilters={rawFilters} />
                     <SortHeader label="Avail"          sortKey="avail"      current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="Visibility"     sortKey="visibility" current={sort} rawFilters={rawFilters} />
-                    {tab === 'improvement-queue' && (
+                    {effectiveTab === 'improvement-queue' && (
                       <th className="px-3 py-2.5 text-right">
                         Gap
                         <div className="text-[10px] font-normal normal-case tracking-normal text-slate-400">to perfect</div>
@@ -1100,11 +1122,14 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                           >
                             {r.publication_status === 'perfect' ? '✓ ' : ''}{PUBLICATION_STATUS_LABEL[r.publication_status]}
                           </span>
+                          {viewMode === 'target' && (
+                            <div className="text-[10px] text-emerald-600 font-medium mt-0.5">→ 100 target</div>
+                          )}
                         </div>
                       </td>
 
                       {/* 11b. Gap column (improvement-queue only) — reads r.gap_to_perfect from buildCatalog */}
-                      {tab === 'improvement-queue' && (
+                      {effectiveTab === 'improvement-queue' && (
                         <td className="px-3 py-2.5 text-right">
                           {r.gap_to_perfect != null ? (
                             <span className={r.gap_to_perfect >= 30 ? 'text-red-600 font-semibold' : 'text-amber-600 font-semibold'}>

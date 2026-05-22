@@ -1087,6 +1087,138 @@ export function QualityWeightProposeForm({
   );
 }
 
+// ----- Config: Route to Rose (generic, non-box panels) -------------------
+// 2026-05-22 (Phase D+): source provenance — creates a rose_queue entry for
+// any config panel row so CEO can triage + coordinate with Rose.
+// Works for pricing_constants, shipping_config_v2, catalog_quality_weights,
+// catalog_quality_thresholds. POSTs to the same flag-rose endpoint as
+// BoxFlagCEOForm, using "{sourceTable}:{itemId}" as the sku_id.
+
+export interface ConfigFlagRoseFormProps {
+  itemId: string;           // e.g. "gpm_floor", "EC-MIA-Z3", a gate_id
+  itemLabel: string;        // human label to show in the modal
+  currentValue: string;     // the current value as a string for context
+  sourceTable: string;      // e.g. "pricing_constants", "shipping_config_v2"
+  reasonCode: 'pricing_question' | 'shipping_question' | 'data_quality';
+}
+
+export function ConfigFlagRoseForm({
+  itemId,
+  itemLabel,
+  currentValue,
+  sourceTable,
+  reasonCode,
+}: ConfigFlagRoseFormProps) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [userText, setUserText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  async function submit() {
+    if (userText.trim().length < 5) {
+      setError('Describe what needs to change (>=5 chars).');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/catalog/config/flag-rose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sku_id: `${sourceTable}:${itemId}`,
+          reason_code: reasonCode,
+          reason_text: `${itemLabel} (current: ${currentValue}) — ${userText.trim()}`,
+        }),
+      });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string; detail?: string };
+        setError(j.detail ? `${j.error ?? 'error'}: ${j.detail}` : (j.error ?? `HTTP ${res.status}`));
+        return;
+      }
+      setSuccess(true);
+      setUserText('');
+      setTimeout(() => {
+        setOpen(false);
+        setSuccess(false);
+        router.refresh();
+      }, 1200);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'fetch failed');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-amber-700 hover:text-amber-900 border border-amber-300 hover:border-amber-500 px-3 py-1.5 rounded-md transition-colors"
+        title="Route to Rose via rose_queue — CEO triages"
+      >
+        Route to Rose
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-left bg-white border border-amber-300 rounded-lg p-3 shadow-sm w-80">
+      <p className="text-xs font-semibold text-slate-900 mb-1">
+        Route <span className="font-mono">{itemLabel}</span> to Rose
+      </p>
+      <p className="text-[11px] text-slate-600 mb-1">
+        Creates a rose_queue entry. CEO triages + coordinates with Rose.
+      </p>
+      <p className="text-[11px] text-slate-500 mb-2">
+        Current value: <span className="font-mono">{currentValue}</span>
+      </p>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        What needs to change?
+      </label>
+      <textarea
+        rows={3}
+        value={userText}
+        onChange={(e) => setUserText(e.target.value)}
+        disabled={busy || success}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50"
+        placeholder="Describe the discrepancy or needed change..."
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            setUserText('');
+            setError(null);
+          }}
+          disabled={busy || success}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || success}
+          className="text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {success ? 'Sent' : busy ? 'Sending...' : 'Send'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+      {success && (
+        <div className="text-[11px] text-emerald-700 font-medium mt-2">
+          Row added to rose_queue. CEO will see it on next triage.
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ----- Catalog quality threshold: propose edit -----------------------------
 
 export function QualityThresholdProposeForm({
