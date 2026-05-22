@@ -238,7 +238,12 @@ function fmtDateOnly(iso: string | null | undefined): string {
 // Auth
 // ---------------------------------------------------------------------------
 
-const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
+const ADMIN_EMAILS = [
+  'facu@floropolis.com',
+  'jjpj@crescoinversiones.com',
+  'jjpj@floropolis.com',
+  'jjp@floropolis.com',
+];
 
 async function gateAdmin(): Promise<void> {
   const userClient = await createUserClient();
@@ -444,6 +449,44 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           </Link>
         </div>
 
+        {/* Quick actions */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {shipping?.phone && (
+            <a
+              href={`https://wa.me/${shipping.phone.replace(/\D/g, '')}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors"
+            >
+              WhatsApp customer
+            </a>
+          )}
+          {customerEmail && (
+            <a
+              href={`mailto:${customerEmail}?subject=Your%20order%20${order.order_number}`}
+              className="inline-flex items-center gap-1.5 text-xs font-medium border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              Email customer
+            </a>
+          )}
+          {dispatch?.tracking_number && (
+            <a
+              href={`https://www.fedex.com/fedextrack/?trknbr=${dispatch.tracking_number}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              Track {dispatch.tracking_number}
+            </a>
+          )}
+          <Link
+            href="/admin/dispatch"
+            className="inline-flex items-center gap-1.5 text-xs font-medium border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            → Dispatch
+          </Link>
+        </div>
+
         {/* Collapsed Dispatch + Refunds summary lines (W4 display-card collapse) */}
         {(dispatch || pendingRefundCount > 0) && (
           <div className="mb-4 space-y-1">
@@ -530,6 +573,37 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             {/* Dispatch + Refunds display cards collapsed to one-line summaries
                 above the header (r3-cleanup, W4 follow-up). Trigger actions live
                 in the right DetailActionPanel. */}
+
+            {/* Arrival status */}
+            {dispatch && (
+              <section className="bg-white border border-slate-200 rounded-2xl p-5">
+                <h2 className="font-semibold text-slate-900 mb-3">Delivery status</h2>
+                <div className="flex flex-wrap items-center gap-3">
+                  {dispatch.delivered_at ? (
+                    <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold px-3 py-1.5 rounded-full">
+                      ✓ Arrived {fmtDateOnly(dispatch.delivered_at)}
+                    </span>
+                  ) : dispatch.in_transit_at ? (
+                    <span className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-800 text-sm font-semibold px-3 py-1.5 rounded-full">
+                      In transit since {fmtDateOnly(dispatch.in_transit_at)}
+                    </span>
+                  ) : dispatch.picked_up_at ? (
+                    <span className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-semibold px-3 py-1.5 rounded-full">
+                      Picked up {fmtDateOnly(dispatch.picked_up_at)}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 text-sm px-3 py-1.5 rounded-full">
+                      Awaiting pickup · Expected {fmtDateOnly(order.requested_delivery_date)}
+                    </span>
+                  )}
+                  {!dispatch.delivered_at && new Date(order.requested_delivery_date) < new Date() && (
+                    <span className="text-xs text-red-600 font-semibold bg-red-50 border border-red-200 px-2.5 py-1 rounded-lg">
+                      ⚠ Delivery date passed
+                    </span>
+                  )}
+                </div>
+              </section>
+            )}
 
             {/* W5: EMAIL_LOG slot -- Brevo transactional events for this order. */}
             <EmailLogSection orderId={order.id} customerEmail={customerEmail} />
