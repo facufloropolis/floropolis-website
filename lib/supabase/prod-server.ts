@@ -29,11 +29,12 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 let _prod: SupabaseClient | null = null;
-let _prodChecked = false;
 
 export function getProdReadClient(): SupabaseClient | null {
-  if (_prodChecked) return _prod;
-  _prodChecked = true;
+  // Only memoize a real client — never cache null. Vercel cold starts may
+  // resolve env vars after module init, so we must re-attempt on each call
+  // until a client is successfully created.
+  if (_prod) return _prod;
 
   const url =
     process.env.PROD_SUPABASE_URL ??
@@ -45,10 +46,7 @@ export function getProdReadClient(): SupabaseClient | null {
     process.env.PROD_SUPABASE_SERVICE_KEY ??
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
     '';
-  if (!url || !key) {
-    _prod = null;
-    return null;
-  }
+  if (!url || !key) return null;
 
   _prod = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
