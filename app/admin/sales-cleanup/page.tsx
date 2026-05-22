@@ -40,12 +40,16 @@ export default async function SalesCleanupPage() {
       p_offset: 0,
     });
 
-    if (!error && data) {
+    if (error) {
+      console.error('[sales-cleanup/page] RPC error:', error);
+    } else if (data) {
       const result = data as { rows: OrphanRow[]; total_pending: number; total_pending_usd: number };
       rows = result.rows ?? [];
       totalCount = result.total_pending ?? 0;
       totalPendingUsd = result.total_pending_usd ?? 0;
     }
+  } else {
+    console.error('[sales-cleanup/page] getProdReadClient() returned null — PROD_SUPABASE_SERVICE_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY both missing');
   }
 
   return (

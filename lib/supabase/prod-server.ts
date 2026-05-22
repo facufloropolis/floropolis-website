@@ -39,9 +39,13 @@ export function getProdReadClient(): SupabaseClient | null {
     process.env.PROD_SUPABASE_URL ??
     process.env.NEXT_PUBLIC_SUPABASE_URL ??
     '';
-  const key = process.env.PROD_SUPABASE_SERVICE_KEY ?? '';
+  // Service key preferred (bypasses RLS for Rose tables).
+  // Falls back to anon key — sufficient for SECURITY DEFINER RPCs granted to anon.
+  const key =
+    process.env.PROD_SUPABASE_SERVICE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    '';
   if (!url || !key) {
-    // Soft failure: caller renders "not configured" banner.
     _prod = null;
     return null;
   }
@@ -64,6 +68,9 @@ export function isProdReadConfigured(): boolean {
     process.env.PROD_SUPABASE_URL ??
     process.env.NEXT_PUBLIC_SUPABASE_URL ??
     '';
-  const key = process.env.PROD_SUPABASE_SERVICE_KEY ?? '';
+  const key =
+    process.env.PROD_SUPABASE_SERVICE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    '';
   return Boolean(url && key);
 }
