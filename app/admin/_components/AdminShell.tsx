@@ -13,7 +13,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import AdminSidebar from './AdminSidebar';
-import AdminHealthBar from './AdminHealthBar';
 import AdminCommandPaletteTrigger from './AdminCommandPaletteTrigger';
 
 interface AdminShellProps {
@@ -45,7 +44,6 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
             </span>
           </div>
         </div>
-        <AdminHealthBar />
       </header>
 
       <div className="flex flex-1">

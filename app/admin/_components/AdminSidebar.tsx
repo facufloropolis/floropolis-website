@@ -30,7 +30,6 @@ const NAV: NavItem[] = [
   { id: 'approvals',     label: 'Approvals',     icon: 'A',  url: '/admin/catalog/approval-queue',   sub: 'Awaiting your sign-off',     matchPrefix: '/admin/catalog/approval-queue' },
   { id: 'proposals', label: 'Proposals', icon: 'P', url: '/admin/catalog/proposals',        sub: 'Specs + meta',               matchPrefix: '/admin/catalog/proposals' },
   { id: 'settings',  label: 'Config',    icon: 'S', url: '/admin/catalog/config',           sub: 'Box / shipping / GPM',       matchPrefix: '/admin/catalog/config' },
-  { id: 'health',    label: 'Health',    icon: 'H', url: '/admin#health',                   sub: 'Dimension health' },
 ];
 
 function isActive(pathname: string | null, item: NavItem): boolean {
