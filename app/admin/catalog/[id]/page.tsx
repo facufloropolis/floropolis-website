@@ -163,12 +163,16 @@ interface SiblingSkuRow {
   vendor: string | null;
   name: string | null;
   variety: string | null;
+  color: string | null;
   length: string | null;
   price: number | string | null;
   farm_cost: number | string | null;
+  cost_source: string | null;
+  scrape_date: string | null;
   stock: number | string | null;
   live: boolean | null;
   tier: string | null;
+  k2k_listed_price_avg: number | string | null;
 }
 
 // All 16 gate IDs the validator can emit (plus the stock_live_mismatch signal).
@@ -404,17 +408,33 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
     box = (boxRow ?? null) as BoxMasterRow | null;
   }
 
-  // Sibling SKUs (same quality_family_id, excluding this row).
+  // Sibling SKUs: prefer quality_family_id when set; fall back to variety+length.
+  // variety+length is the practical primary since quality_family_id is NULL on ~98% of rows.
   const qfid = mirror?.quality_family_id ?? cls?.quality_family_id ?? null;
   let siblings: SiblingSkuRow[] = [];
+  const siblingSelect = 'id, vendor, name, variety, color, length, price, farm_cost, cost_source, scrape_date, stock, live, tier, k2k_listed_price_avg';
   if (qfid) {
     const { data: siblingRows } = await backup
       .from('floropolis_inventory_mirror')
-      .select('id, vendor, name, variety, length, price, farm_cost, stock, live, tier')
+      .select(siblingSelect)
       .eq('quality_family_id', qfid)
       .neq('id', skuId)
-      .limit(20);
+      .limit(30);
     siblings = (siblingRows ?? []) as SiblingSkuRow[];
+  }
+  // Variety+length comparison — always fetch regardless of quality_family_id.
+  let varietyComps: SiblingSkuRow[] = [];
+  if (mirror?.variety && mirror?.length) {
+    const { data: vcRows } = await backup
+      .from('floropolis_inventory_mirror')
+      .select(siblingSelect)
+      .eq('variety', mirror.variety)
+      .eq('length', mirror.length)
+      .neq('id', skuId)
+      .limit(40);
+    varietyComps = ((vcRows ?? []) as SiblingSkuRow[]).sort(
+      (a, b) => (toNumOrNull(a.farm_cost) ?? 999) - (toNumOrNull(b.farm_cost) ?? 999),
+    );
   }
 
   // Override audit timeline -- target_id is stored as text, so coerce.
@@ -486,7 +506,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                 )}
               </h1>
               <p className="text-sm text-slate-600 mt-1">
-                {mirror?.variety ?? '-'} . {mirror?.length ?? '-'} . vendor{' '}
+                {[mirror?.variety, (mirror as Record<string, unknown>)?.color as string | null, mirror?.length].filter(Boolean).join(' · ')} . vendor{' '}
                 <span className="font-medium">{mirror?.vendor ?? '-'}</span>{' '}
                 . tier <span className="font-mono">{mirror?.tier ?? '-'}</span>
               </p>
@@ -531,101 +551,125 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         <div className="grid lg:grid-cols-[1fr_320px] gap-6">
           <div className="space-y-0 min-w-0">
 
-        {/* Section: Sources side-by-side */}
+        {/* Section: Variety cost comparison — same variety + length, all vendors */}
         <WiringSection level={wm('sources-side-by-side').level} note={wm('sources-side-by-side').note} id="sources-side-by-side">
         <SectionCard
-          title="Sources side-by-side"
-          subtitle="Other SKUs in the same quality_family across vendors"
+          title={`${mirror?.variety ?? 'Variety'} · ${mirror?.length ?? '?'} — all vendors`}
+          subtitle="Same variety + length across every vendor in the mirror. Sorted cheapest first. Outliers >25% above median are flagged."
         >
-          {!qfid ? (
-            <p className="text-xs text-slate-500 italic">
-              No cross-source data yet (quality_family_id not backfilled). Once
-              Rose backfills the column, this panel will list every vendor
-              offering the same quality family side by side.
-            </p>
-          ) : siblings.length === 0 ? (
-            <p className="text-xs text-slate-500 italic">
-              quality_family_id <span className="font-mono">{qfid}</span> is set
-              on this SKU but no sibling SKUs exist yet.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead className="bg-slate-50 text-left text-[11px] uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th className="px-2 py-1.5 font-semibold">SKU</th>
-                    <th className="px-2 py-1.5 font-semibold">Vendor</th>
-                    <th className="px-2 py-1.5 font-semibold">Variety / length</th>
-                    <th className="px-2 py-1.5 font-semibold text-right">Cost</th>
-                    <th className="px-2 py-1.5 font-semibold text-right">Price</th>
-                    <th className="px-2 py-1.5 font-semibold text-right">GPM</th>
-                    <th className="px-2 py-1.5 font-semibold text-right">Stock</th>
-                    <th className="px-2 py-1.5 font-semibold">Live</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* this SKU first as reference row */}
-                  {mirror && (
-                    <tr className="border-t border-slate-200 bg-emerald-50/40">
-                      <td className="px-2 py-1.5 font-mono text-emerald-800">
-                        {mirror.id} (this)
-                      </td>
-                      <td className="px-2 py-1.5">{mirror.vendor ?? '-'}</td>
-                      <td className="px-2 py-1.5 text-slate-600">
-                        {mirror.variety ?? '-'} . {mirror.length ?? '-'}
-                      </td>
-                      <td className="px-2 py-1.5 text-right">
-                        {fmtUsd(mirror.farm_cost)}
-                      </td>
-                      <td className="px-2 py-1.5 text-right">
-                        {fmtUsd(mirror.price)}
-                      </td>
-                      <td className="px-2 py-1.5 text-right">
-                        {breakdown ? fmtPct(breakdown.realizedGpm) : '-'}
-                      </td>
-                      <td className="px-2 py-1.5 text-right">
-                        {mirror.stock ?? '-'}
-                      </td>
-                      <td className="px-2 py-1.5">
-                        {mirror.live === true ? 'live' : '-'}
-                      </td>
+          {(() => {
+            // Build full list: this SKU + comps
+            const allRows = mirror
+              ? [
+                  {
+                    id: mirror.id,
+                    vendor: mirror.vendor,
+                    color: (mirror as Record<string, unknown>).color as string | null,
+                    farm_cost: mirror.farm_cost,
+                    cost_source: mirror.cost_source,
+                    scrape_date: (mirror as Record<string, unknown>).scrape_date as string | null,
+                    price: mirror.price,
+                    live: mirror.live,
+                    tier: mirror.tier,
+                    k2k_listed_price_avg: (mirror as Record<string, unknown>).k2k_listed_price_avg as number | null,
+                    isThis: true,
+                  },
+                  ...varietyComps.map((s) => ({ ...s, isThis: false })),
+                ]
+              : varietyComps.map((s) => ({ ...s, isThis: false }));
+
+            const allCosts = allRows.map((r) => toNumOrNull(r.farm_cost)).filter((n): n is number => n != null);
+            const median = allCosts.length > 0
+              ? allCosts.slice().sort((a, b) => a - b)[Math.floor(allCosts.length / 2)]
+              : null;
+
+            if (allRows.length === 0 && !mirror?.variety) {
+              return (
+                <p className="text-xs text-slate-500 italic">No variety set on this SKU — comparison unavailable.</p>
+              );
+            }
+            if (varietyComps.length === 0 && mirror) {
+              return (
+                <p className="text-xs text-slate-500 italic">
+                  No other SKUs found for {mirror.variety} {mirror.length}. This may be the only vendor offering this spec.
+                </p>
+              );
+            }
+
+            return (
+              <div className="overflow-x-auto">
+                <div className="text-[11px] text-slate-500 mb-2">
+                  Median cost across {allCosts.length} SKUs: <span className="font-semibold text-slate-700">{median != null ? fmtUsd(median) : '—'}</span>
+                </div>
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-50 text-left text-[11px] uppercase tracking-wide text-slate-500">
+                    <tr>
+                      <th className="px-2 py-1.5 font-semibold">Vendor</th>
+                      <th className="px-2 py-1.5 font-semibold">Color</th>
+                      <th className="px-2 py-1.5 font-semibold text-right">Cost</th>
+                      <th className="px-2 py-1.5 font-semibold text-right">Price</th>
+                      <th className="px-2 py-1.5 font-semibold text-right">GPM</th>
+                      <th className="px-2 py-1.5 font-semibold">Source</th>
+                      <th className="px-2 py-1.5 font-semibold">Data date</th>
+                      <th className="px-2 py-1.5 font-semibold">Tier</th>
                     </tr>
-                  )}
-                  {siblings.map((s) => {
-                    const cost = toNumOrNull(s.farm_cost);
-                    const price = toNumOrNull(s.price);
-                    const gpm =
-                      cost != null && price != null && price > 0
-                        ? 1 - cost / price
-                        : null;
-                    return (
-                      <tr key={s.id} className="border-t border-slate-100">
-                        <td className="px-2 py-1.5 font-mono">
-                          <Link
-                            href={`/admin/catalog/${s.id}`}
-                            className="text-emerald-700 hover:underline"
-                          >
-                            {s.id}
-                          </Link>
-                        </td>
-                        <td className="px-2 py-1.5">{s.vendor ?? '-'}</td>
-                        <td className="px-2 py-1.5 text-slate-600">
-                          {s.variety ?? '-'} . {s.length ?? '-'}
-                        </td>
-                        <td className="px-2 py-1.5 text-right">{fmtUsd(s.farm_cost)}</td>
-                        <td className="px-2 py-1.5 text-right">{fmtUsd(s.price)}</td>
-                        <td className="px-2 py-1.5 text-right">{fmtPct(gpm)}</td>
-                        <td className="px-2 py-1.5 text-right">{s.stock ?? '-'}</td>
-                        <td className="px-2 py-1.5">
-                          {s.live === true ? 'live' : '-'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  </thead>
+                  <tbody>
+                    {allRows.map((s) => {
+                      const cost = toNumOrNull(s.farm_cost);
+                      const price = toNumOrNull(s.price);
+                      const gpm = cost != null && price != null && price > 0 ? 1 - cost / price : null;
+                      const isOutlier = cost != null && median != null && cost > median * 1.25;
+                      const meta = getCostSourceMeta(s.cost_source ?? null);
+                      return (
+                        <tr key={s.id} className={`border-t ${s.isThis ? 'border-slate-200 bg-emerald-50' : 'border-slate-100 hover:bg-slate-50'}`}>
+                          <td className="px-2 py-1.5">
+                            {s.isThis ? (
+                              <span className="font-semibold text-emerald-800">{s.vendor ?? '-'} <span className="text-[10px] font-normal">(this SKU)</span></span>
+                            ) : (
+                              <Link href={`/admin/catalog/${s.id}`} className="text-emerald-700 hover:underline">{s.vendor ?? '-'}</Link>
+                            )}
+                          </td>
+                          <td className="px-2 py-1.5 text-slate-600">{s.color ?? '—'}</td>
+                          <td className="px-2 py-1.5 text-right font-mono">
+                            <span className={isOutlier ? 'text-red-700 font-semibold' : ''}>
+                              {fmtUsd(s.farm_cost)}
+                            </span>
+                            {isOutlier && (
+                              <span className="ml-1 text-[10px] text-red-600">↑ outlier</span>
+                            )}
+                          </td>
+                          <td className="px-2 py-1.5 text-right font-mono">{fmtUsd(s.price)}</td>
+                          <td className={`px-2 py-1.5 text-right font-mono ${gpm != null ? (gpm >= 0.33 ? 'text-emerald-700' : gpm >= 0.25 ? 'text-amber-700' : 'text-red-700') : 'text-slate-400'}`}>
+                            {fmtPct(gpm)}
+                          </td>
+                          <td className="px-2 py-1.5">
+                            {meta ? (
+                              <span className={`text-[11px] ${getReliabilityCls(meta.reliability)}`} title={meta.description}>
+                                {meta.url ? (
+                                  <a href={meta.url} target="_blank" rel="noopener noreferrer" className="underline decoration-dotted">
+                                    {meta.label}
+                                  </a>
+                                ) : meta.label}
+                              </span>
+                            ) : (
+                              <span className="font-mono text-[10px] text-slate-400">{s.cost_source ?? '—'}</span>
+                            )}
+                          </td>
+                          <td className="px-2 py-1.5 text-slate-500 text-[11px]">{s.scrape_date ?? '—'}</td>
+                          <td className="px-2 py-1.5">
+                            <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${s.tier === 'T2' ? 'bg-blue-50 text-blue-700' : s.tier === 'T3' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'}`}>
+                              {s.tier ?? '?'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
         </SectionCard>
 
         </WiringSection>
@@ -1297,39 +1341,105 @@ function CostSourcePanel({
     toneCls = 'border-slate-200 bg-slate-50 text-slate-700';
   }
 
+  const meta = getCostSourceMeta(cs);
+  const k2kAvg = toNumOrNull((mirror as Record<string, unknown>).k2k_listed_price_avg);
+  const k2kStatus = (mirror as Record<string, unknown>).k2k_alignment_status as string | null;
+  const k2kVerified = (mirror as Record<string, unknown>).k2k_last_verified_at as string | null;
+  const scrapeDate = (mirror as Record<string, unknown>).scrape_date as string | null;
+  const priceN = toNumOrNull(mirror.price);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-      <div className={`rounded-md border p-3 ${toneCls}`}>
-        <div className="text-[10px] uppercase tracking-wide font-semibold opacity-70 mb-1">
-          Bucket
+    <div className="space-y-3 text-xs">
+      {/* Source identity row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className={`rounded-md border p-3 ${toneCls}`}>
+          <div className="text-[10px] uppercase tracking-wide font-semibold opacity-70 mb-1">Source type</div>
+          <div className="text-sm font-semibold">{bucketLabel}</div>
+          <div className="text-[11px] mt-1 font-mono opacity-80">{cs ?? '(null)'}</div>
         </div>
-        <div className="text-sm font-semibold">{bucketLabel}</div>
-        <div className="text-[11px] mt-1 font-mono opacity-80">{cs ?? '(null)'}</div>
-      </div>
-      <div className="rounded-md border border-slate-200 bg-white p-3">
-        <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
-          Verification
-        </div>
-        <div className="text-sm">
-          {verified ? (
+        <div className="rounded-md border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">Registry</div>
+          {meta ? (
             <>
-              verified at{' '}
-              <span className="font-mono text-slate-800">{fmtDate(verified)}</span>
+              <div className={`text-sm font-semibold ${getReliabilityCls(meta.reliability)}`}>{meta.label}</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">{meta.description}</div>
+              {meta.url ? (
+                <a
+                  href={meta.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-1.5 text-[11px] text-emerald-700 underline decoration-dotted hover:text-emerald-900"
+                >
+                  Open source file →
+                </a>
+              ) : (
+                <span className="inline-block mt-1.5 text-[11px] text-slate-400 italic">
+                  No link yet — add URL to <code className="font-mono">lib/admin/cost-source-registry.ts</code>
+                </span>
+              )}
             </>
           ) : (
-            <span className="text-red-700">cost_verified_at is null -- unverified</span>
+            <span className="text-slate-500 italic">Not in registry — new source key</span>
           )}
         </div>
-        <div className="text-[11px] text-slate-500 mt-1">
-          For K2K live, ghost_upload_log carries the upload reference. For
-          email / whatsapp / manual, the proposal that landed this cost must
-          include source_artifact (per Rose contract v1.0).
+      </div>
+
+      {/* Verification + data freshness */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="rounded-md border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">Cost verified</div>
+          {verified ? (
+            <span className="font-mono text-slate-800">{fmtDate(verified)}</span>
+          ) : (
+            <span className="text-red-700">Not verified</span>
+          )}
+        </div>
+        <div className="rounded-md border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">Data date (scrape)</div>
+          <span className="font-mono text-slate-700">{scrapeDate ?? '—'}</span>
+        </div>
+        <div className="rounded-md border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">Reliability</div>
+          <span className={`font-semibold capitalize ${meta ? getReliabilityCls(meta.reliability) : 'text-slate-400'}`}>
+            {meta?.reliability ?? 'unknown'}
+          </span>
         </div>
       </div>
-      <p className="md:col-span-2 text-[11px] text-slate-500 italic">
-        Bucketing key: {bucket}. SKU id: {skuId}. farm_cost is JOB_LOCKED -- to
-        change the cost itself, propose via canonical_cost.update (Rose owns
-        that path).
+
+      {/* K2K market alignment */}
+      <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
+        <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-2">K2K market alignment</div>
+        {k2kAvg != null ? (
+          <div className="flex flex-wrap gap-4">
+            <div>
+              <div className="text-[10px] text-slate-500">K2K avg listed</div>
+              <div className="font-mono text-slate-900">{fmtUsd(k2kAvg)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500">Our price</div>
+              <div className="font-mono text-slate-900">{fmtUsd(priceN)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500">vs K2K</div>
+              <div className={`font-semibold font-mono ${priceN != null && k2kAvg > 0 ? (priceN / k2kAvg - 1 > 0.05 ? 'text-red-700' : priceN / k2kAvg - 1 < -0.05 ? 'text-emerald-700' : 'text-slate-700') : 'text-slate-400'}`}>
+                {priceN != null && k2kAvg > 0 ? `${((priceN / k2kAvg - 1) * 100).toFixed(1)}%` : '—'}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500">K2K verified</div>
+              <div className="text-slate-700">{k2kVerified ? fmtDate(k2kVerified) : '—'}</div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-slate-500 italic">
+            k2k_listed_price_avg is null — K2K price not verified for this SKU.
+            Status: <span className="font-mono">{k2kStatus ?? 'UNVERIFIED'}</span>
+          </p>
+        )}
+      </div>
+
+      <p className="text-[11px] text-slate-500 italic">
+        SKU {skuId}. farm_cost is JOB_LOCKED — to change cost, file canonical_cost.update via Rose. To add a source URL, update <code className="font-mono">lib/admin/cost-source-registry.ts</code>.
       </p>
     </div>
   );
