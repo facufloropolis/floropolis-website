@@ -1102,6 +1102,133 @@ async function execCatalogQualityTierReclassification(
 }
 
 // ---------------------------------------------------------------------------
+// price_correction.propose
+// ---------------------------------------------------------------------------
+//
+// Applies a Facu-approved price correction to floropolis_inventory_mirror.
+// The proposal is ALWAYS temporary — price_override=true tells the daily sync
+// to skip this row so the corrected price isn't blown away on next load.
+//
+// Payload shape:
+//   { new_price: number, reason: string, farm_cost: number,
+//     shipping_per_stem?: number, computed_gpm?: number }
+//
+// Server-side invariant: GPM = (new_price - farm_cost - shipping) / new_price >= 5%
+// (5% = max sales commission = absolute floor). If the client sends a price that
+// would breach this, the executor rejects it before touching any row.
+//
+// TODO[price_override_migration]: add price_override (boolean default false) +
+//   price_override_proposal_id (uuid nullable) to floropolis_inventory_mirror.
+//   Until then the executor falls back to a price-only update (less safe —
+//   daily sync may overwrite), records the gap in the audit entry _note field.
+
+async function execPriceCorrection(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  if (!proposal.target_id) return fail('missing_target_id');
+
+  const newPriceRaw = payload.new_price;
+  const newPrice =
+    typeof newPriceRaw === 'number' ? newPriceRaw : Number(newPriceRaw);
+  if (!Number.isFinite(newPrice) || newPrice <= 0) {
+    return fail('invalid_new_price: must be a positive number');
+  }
+
+  // Server-side GPM re-validation (never trust client-submitted computed_gpm).
+  // GPM = (price - farm_cost - shipping) / price; floor = 5%.
+  const farmCostRaw = payload.farm_cost;
+  const farmCost =
+    typeof farmCostRaw === 'number' ? farmCostRaw : Number(farmCostRaw ?? 0);
+  if (!Number.isFinite(farmCost) || farmCost < 0) {
+    return fail('invalid_farm_cost: must be a non-negative number');
+  }
+  const shippingRaw = payload.shipping_per_stem;
+  const shippingForFloor =
+    typeof shippingRaw === 'number' && Number.isFinite(shippingRaw) && shippingRaw > 0
+      ? shippingRaw
+      : typeof shippingRaw === 'string' && Number.isFinite(Number(shippingRaw)) && Number(shippingRaw) > 0
+        ? Number(shippingRaw)
+        : 0;
+
+  const totalCosts = farmCost + shippingForFloor;
+  const gpm = (newPrice - totalCosts) / newPrice;
+  if (!Number.isFinite(gpm) || gpm < 0.05) {
+    const minPrice = totalCosts > 0 ? totalCosts / 0.95 : null;
+    const hint = minPrice != null ? ` Min price at this cost: $${minPrice.toFixed(2)}.` : '';
+    return fail(
+      `gpm_below_floor: GPM=${(gpm * 100).toFixed(1)}%, floor=5% (= sales commission).${hint}`,
+    );
+  }
+
+  // Read before-snapshot.
+  const { data: before, error: readErr } = await service
+    .from('floropolis_inventory_mirror')
+    .select('id, price, farm_cost, price_override, price_override_proposal_id')
+    .eq('id', Number(proposal.target_id))
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!before) return fail('target_not_found');
+
+  // Apply price + set override flag so the daily sync doesn't overwrite.
+  const { data: after, error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update({
+      price: newPrice,
+      price_override: true,
+      price_override_proposal_id: proposal.id,
+    })
+    .eq('id', Number(proposal.target_id))
+    .select('id, price, farm_cost, price_override, price_override_proposal_id')
+    .maybeSingle();
+
+  if (updErr) {
+    // price_override columns likely don't exist yet — fall back to price-only.
+    // Daily sync will overwrite on next load. Add migration to fix.
+    const { data: afterFallback, error: fallbackErr } = await service
+      .from('floropolis_inventory_mirror')
+      .update({ price: newPrice })
+      .eq('id', Number(proposal.target_id))
+      .select('id, price, farm_cost')
+      .maybeSingle();
+    if (fallbackErr) return fail(`update_failed: ${fallbackErr.message}`);
+    return {
+      ok: true,
+      auditEntries: [
+        {
+          proposal_id: proposal.id,
+          target_table: 'floropolis_inventory_mirror',
+          target_id: String(proposal.target_id),
+          before_jsonb: before as Record<string, unknown>,
+          after_jsonb: {
+            ...(afterFallback ?? {}),
+            _note: 'price_override columns missing — migration needed to protect from daily sync overwrite',
+          } as Record<string, unknown>,
+          applied_by_function:
+            'proposal-executors.execPriceCorrection[price_only_fallback]',
+        },
+      ],
+    };
+  }
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'floropolis_inventory_mirror',
+        target_id: String(proposal.target_id),
+        before_jsonb: before as Record<string, unknown>,
+        after_jsonb: (after ?? null) as Record<string, unknown> | null,
+        applied_by_function: 'proposal-executors.execPriceCorrection',
+      },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
@@ -1153,6 +1280,8 @@ export async function executeProposal(
       return execCatalogQualityRebalance(proposal, service);
     case 'catalog_quality_tier_reclassification':
       return execCatalogQualityTierReclassification(proposal, service);
+    case 'price_correction.propose':
+      return execPriceCorrection(proposal, service);
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -1191,4 +1320,7 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   // surfaces an explicit error and no Stripe refund is issued.
   'refund.create',
   'sku_mapping.confirm',
+  // Price correction: temporary price override per proposal, logged with reason + who proposed.
+  // Requires price_override migration on floropolis_inventory_mirror (see execPriceCorrection TODO).
+  'price_correction.propose',
 ];

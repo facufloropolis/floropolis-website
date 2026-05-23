@@ -56,6 +56,7 @@ import { FlagToggleClient as FlagToggle } from './Editor.flag';
 import {
   DiscountSkuForm,
   HideSkuForm,
+  PriceCorrectionForm,
   ProposeChangeCluster,
   UnsupportedProposeButton,
   ProposeMirrorFieldForm,
@@ -1198,9 +1199,11 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                   label="change vendor cost"
                   reason="JOB_LOCKED per Rose contract v1.0. floropolis_inventory.farm_cost is supply truth -- propose via canonical_cost.update which Rose owns, not via this UI."
                 />
-                <UnsupportedProposeButton
-                  label="set target price override"
-                  reason="No executor for target_price.override yet. Closest available today: propose a discount on this SKU (above), or use the inline price editor."
+                <PriceCorrectionForm
+                  skuId={skuId}
+                  currentPrice={toNumOrNull(mirror?.price)}
+                  farmCost={toNumOrNull(mirror?.farm_cost)}
+                  shippingPerStem={breakdown?.deliveryPerStem ?? null}
                 />
               </ProposeChangeCluster>
             </DetailActionPanel>

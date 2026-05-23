@@ -333,6 +333,262 @@ export function UnsupportedProposeButton({
 }
 
 // ---------------------------------------------------------------------------
+// PriceCorrectionForm -- price_correction.propose
+//
+// Builds a proposed price for this SKU. Hard floor: 5% GPM (= max sales
+// commission). Target: 33% GPM. Reason is mandatory (min 20 chars). This is
+// TEMPORARY and ONLY for a proposal — price_override=true in the executor
+// prevents the daily sync from overwriting Facu's approved price.
+//
+// GPM formula: (price - farm_cost - shipping_per_stem) / price
+// ---------------------------------------------------------------------------
+
+export function PriceCorrectionForm({
+  skuId,
+  currentPrice,
+  farmCost,
+  shippingPerStem,
+}: {
+  skuId: number;
+  currentPrice: number | null;
+  farmCost: number | null;
+  shippingPerStem: number | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [priceStr, setPriceStr] = useState(
+    currentPrice != null ? currentPrice.toFixed(2) : '',
+  );
+  const [reason, setReason] = useState('');
+  const [urgency, setUrgency] = useState<'routine' | 'urgent' | 'critical'>('routine');
+  const [busy, setBusy] = useState(false);
+  const [submitted, setSubmitted] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const newPrice = Number(priceStr);
+  const shipping = shippingPerStem ?? 0;
+  const totalCosts = (farmCost ?? 0) + shipping;
+  const hasCosts = farmCost != null;
+
+  // GPM = (price - farm_cost - shipping) / price
+  const gpm =
+    hasCosts && Number.isFinite(newPrice) && newPrice > 0
+      ? (newPrice - totalCosts) / newPrice
+      : null;
+
+  // 5% floor = sales commission minimum
+  const minPrice = hasCosts && totalCosts > 0 ? totalCosts / 0.95 : null;
+
+  const gpmBelowFloor = gpm != null && gpm < 0.05;
+  const gpmBelowTarget = gpm != null && gpm >= 0.05 && gpm < 0.33;
+  const gpmOk = gpm != null && gpm >= 0.33;
+  const reasonOk = reason.trim().length >= 20;
+  const canSubmit =
+    !gpmBelowFloor && hasCosts && reasonOk && Number.isFinite(newPrice) && newPrice > 0;
+
+  function gpmBadge() {
+    if (gpm == null) return null;
+    const pct = (gpm * 100).toFixed(1);
+    if (gpmBelowFloor)
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+          GPM {pct}% — below 5% floor
+        </span>
+      );
+    if (gpmBelowTarget)
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+          GPM {pct}% — below 33% target
+        </span>
+      );
+    if (gpmOk)
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+          GPM {pct}% ✓
+        </span>
+      );
+    return null;
+  }
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (gpmBelowFloor) {
+      setError(`Price is below the 5% GPM floor. Min: $${minPrice?.toFixed(2) ?? '?'}`);
+      return;
+    }
+    if (!reasonOk) {
+      setError('Reason must be at least 20 characters');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const r = await submitProposal({
+      type: 'price_correction.propose',
+      target_table: 'floropolis_inventory_mirror',
+      target_id: String(skuId),
+      payload: {
+        new_price: newPrice,
+        reason: reason.trim(),
+        farm_cost: farmCost ?? 0,
+        shipping_per_stem: shippingPerStem ?? 0,
+        computed_gpm: gpm ?? 0,
+        current_price: currentPrice,
+        is_temporary: true,
+      },
+      notes: `Price correction SKU ${skuId}: $${currentPrice?.toFixed(2) ?? '?'} → $${newPrice.toFixed(2)} (GPM ${gpm != null ? (gpm * 100).toFixed(1) + '%' : '?'}). Reason: ${reason.trim()}`,
+      source_table: 'floropolis_inventory_mirror',
+      source_id: String(skuId),
+      source_rationale: reason.trim(),
+      before_value: currentPrice,
+      after_value: newPrice,
+    });
+    setBusy(false);
+    if (r.ok && r.id) {
+      setSubmitted(r.id);
+    } else {
+      setError(r.error ?? 'failed');
+    }
+  }
+
+  if (submitted) return <ConfirmationBanner id={submitted} />;
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-blue-700 border border-blue-200 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-md"
+      >
+        Propose: price correction
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="flex flex-col gap-3 border border-blue-200 bg-blue-50/40 rounded-lg p-3 min-w-[280px]"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-blue-900">
+          Propose: price correction — SKU {skuId}
+        </span>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-[11px] text-slate-500 hover:text-slate-700"
+        >
+          Cancel
+        </button>
+      </div>
+
+      {/* Cost reference */}
+      <div className="rounded-md bg-white border border-blue-100 px-3 py-2 text-[11px] text-slate-700 space-y-1">
+        <div className="flex justify-between">
+          <span className="text-slate-500">farm_cost</span>
+          <span className="font-mono font-semibold">
+            {farmCost != null ? `$${farmCost.toFixed(2)}` : <span className="text-red-600">unknown — GPM unavailable</span>}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-500">shipping/stem</span>
+          <span className="font-mono">
+            {shippingPerStem != null ? `$${shippingPerStem.toFixed(2)}` : <span className="text-amber-700">unknown (formula incomplete)</span>}
+          </span>
+        </div>
+        <div className="flex justify-between border-t border-slate-100 pt-1">
+          <span className="text-slate-500">total costs</span>
+          <span className="font-mono font-semibold">{hasCosts ? `$${totalCosts.toFixed(2)}` : '—'}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-500">current price</span>
+          <span className="font-mono">{currentPrice != null ? `$${currentPrice.toFixed(2)}` : '—'}</span>
+        </div>
+        {minPrice != null && (
+          <div className="flex justify-between text-amber-800 bg-amber-50 rounded px-1 py-0.5 mt-1">
+            <span>5% GPM floor (min price)</span>
+            <span className="font-mono font-semibold">${minPrice.toFixed(2)}</span>
+          </div>
+        )}
+      </div>
+
+      {/* New price + live GPM */}
+      <label className="text-[11px] text-slate-700 font-semibold">
+        New price (per stem / unit)
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-slate-500 font-normal">$</span>
+          <input
+            type="number"
+            min="0.01"
+            step="0.01"
+            value={priceStr}
+            onChange={(e) => setPriceStr(e.target.value)}
+            className="w-28 text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-blue-500 focus:outline-none font-mono"
+            placeholder="0.00"
+          />
+          {gpmBadge()}
+        </div>
+      </label>
+
+      {gpmBelowFloor && minPrice != null && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-[11px] text-red-700">
+          Below 5% GPM floor. Raise to at least <span className="font-mono font-semibold">${minPrice.toFixed(2)}</span> to submit.
+        </div>
+      )}
+      {gpmBelowTarget && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-800">
+          GPM is below 33% target. Facu can still approve — but this should be a special case.
+        </div>
+      )}
+
+      {/* Reason */}
+      <label className="text-[11px] text-slate-700 font-semibold">
+        Reason for price change{' '}
+        <span className={`font-normal ${reason.trim().length >= 20 ? 'text-emerald-600' : 'text-slate-400'}`}>
+          ({reason.trim().length}/20 min)
+        </span>
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          rows={2}
+          maxLength={2000}
+          placeholder="Why this price? e.g. matching competitor quote, event deal, margin exception for key client..."
+          className="w-full mt-1 text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-blue-500 focus:outline-none font-normal"
+        />
+      </label>
+
+      {/* Urgency */}
+      <label className="text-[11px] text-slate-700 font-semibold">
+        Urgency
+        <select
+          value={urgency}
+          onChange={(e) => setUrgency(e.target.value as typeof urgency)}
+          className="mt-1 w-full text-sm border border-slate-300 rounded-md px-2 py-1 focus:border-blue-500 focus:outline-none font-normal"
+        >
+          <option value="routine">routine — review within 72h</option>
+          <option value="urgent">urgent — review within 12h</option>
+          <option value="critical">critical — review within 4h</option>
+        </select>
+      </label>
+
+      <div className="flex items-center gap-2">
+        <button
+          type="submit"
+          disabled={busy || !canSubmit}
+          className="text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {busy ? 'Submitting...' : 'Submit to approval queue'}
+        </button>
+        {error && <ErrorBanner error={error} />}
+      </div>
+
+      <p className="text-[10px] text-slate-500 italic">
+        This proposal is TEMPORARY and requires Facu&apos;s approval. Price_override=true prevents the daily sync from overwriting. Who proposed + reason are permanently logged.
+      </p>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Shared section wrapper for the propose-change cluster
 // ---------------------------------------------------------------------------
 
