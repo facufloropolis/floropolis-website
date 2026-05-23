@@ -1229,6 +1229,136 @@ async function execPriceCorrection(
 }
 
 // ---------------------------------------------------------------------------
+// cost.source_confirm: Facu confirms a named cost source is valid for a vendor.
+// Stamps cost_verified_at = now() on all floropolis_inventory_mirror rows that
+// match the vendor + cost_source combination in the payload.
+// Payload: { vendor: string; cost_source: string; sku_count: number }
+// ---------------------------------------------------------------------------
+async function execCostSourceConfirm(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const vendor = typeof payload.vendor === 'string' ? payload.vendor.trim() : '';
+  const costSource = typeof payload.cost_source === 'string' ? payload.cost_source.trim() : '';
+  if (!vendor) return fail('missing_vendor');
+  if (!costSource) return fail('missing_cost_source');
+
+  const { data: before, error: readErr } = await service
+    .from('floropolis_inventory_mirror')
+    .select('id, cost_verified_at, cost_source, vendor')
+    .eq('vendor', vendor)
+    .eq('cost_source', costSource);
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  const rows = (before ?? []) as Array<{ id: number; cost_verified_at: string | null; cost_source: string; vendor: string }>;
+  if (rows.length === 0) return fail(`no_rows_found for vendor=${vendor} cost_source=${costSource}`);
+
+  const now = new Date().toISOString();
+  const { error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update({ cost_verified_at: now })
+    .eq('vendor', vendor)
+    .eq('cost_source', costSource);
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'floropolis_inventory_mirror',
+      target_id: `vendor:${vendor}|source:${costSource}`,
+      before_jsonb: { affected_count: rows.length, sample_cost_verified_at: rows[0]?.cost_verified_at ?? null },
+      after_jsonb: { affected_count: rows.length, cost_verified_at: now },
+      applied_by_function: 'proposal-executors.execCostSourceConfirm',
+    }],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// cost.source_flag: Facu marks a cost source as unreliable / synthetic.
+// Prepends 'FLAGGED_' to cost_source on all matching rows so cost_unverified
+// gate fires again and the catalog excludes them from publishing.
+// Payload: { vendor: string; cost_source: string; reason: string }
+// ---------------------------------------------------------------------------
+async function execCostSourceFlag(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const vendor = typeof payload.vendor === 'string' ? payload.vendor.trim() : '';
+  const costSource = typeof payload.cost_source === 'string' ? payload.cost_source.trim() : '';
+  const reason = typeof payload.reason === 'string' ? payload.reason.trim() : '';
+  if (!vendor) return fail('missing_vendor');
+  if (!costSource) return fail('missing_cost_source');
+  if (reason.length < 5) return fail('reason required (min 5 chars)');
+  if (costSource.startsWith('FLAGGED_')) return fail('already_flagged');
+
+  const flaggedSource = `FLAGGED_${costSource}`;
+  const { data: before, error: readErr } = await service
+    .from('floropolis_inventory_mirror')
+    .select('id, cost_source, vendor')
+    .eq('vendor', vendor)
+    .eq('cost_source', costSource);
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  const rows = (before ?? []) as Array<{ id: number }>;
+  if (rows.length === 0) return fail(`no_rows_found for vendor=${vendor} cost_source=${costSource}`);
+
+  const { error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update({ cost_source: flaggedSource, cost_verified_at: null })
+    .eq('vendor', vendor)
+    .eq('cost_source', costSource);
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'floropolis_inventory_mirror',
+      target_id: `vendor:${vendor}|source:${costSource}`,
+      before_jsonb: { affected_count: rows.length, cost_source: costSource },
+      after_jsonb: { affected_count: rows.length, cost_source: flaggedSource, reason },
+      applied_by_function: 'proposal-executors.execCostSourceFlag',
+    }],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// vendor.pricelist_request: records that we are waiting on a vendor to send
+// their pricelist. Audit trail only — no data change. Creates a visible record
+// so the next session knows this is outstanding and who to chase.
+// Payload: { vendor: string; pending_sku_count: number; due_date?: string; assigned_to?: string }
+// ---------------------------------------------------------------------------
+async function execVendorPricelistRequest(
+  proposal: AdminProposal,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const vendor = typeof payload.vendor === 'string' ? payload.vendor.trim() : '';
+  if (!vendor) return fail('missing_vendor');
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'admin_approvals',
+      target_id: `vendor_pricelist_request:${vendor}`,
+      before_jsonb: null,
+      after_jsonb: {
+        vendor,
+        pending_sku_count: payload.pending_sku_count ?? null,
+        due_date: payload.due_date ?? null,
+        assigned_to: payload.assigned_to ?? null,
+        status: 'pending_vendor_response',
+      },
+      applied_by_function: 'proposal-executors.execVendorPricelistRequest',
+    }],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
@@ -1332,6 +1462,26 @@ export async function executeProposal(
       return execPriceCorrection(proposal, service);
     case 'price.formula_reset':
       return execPriceFormulaReset(proposal, service);
+    case 'cost.source_confirm':
+      return execCostSourceConfirm(proposal, service);
+    case 'cost.source_flag':
+      return execCostSourceFlag(proposal, service);
+    case 'vendor.pricelist_request':
+      return execVendorPricelistRequest(proposal);
+    case 'ingest.price_field_bug':
+      // Audit-only — just records Facu's escalation instruction. Rose's verifier
+      // reads admin_approvals and wires the ingest fix through her own pipeline.
+      return {
+        ok: true,
+        auditEntries: [{
+          proposal_id: proposal.id,
+          target_table: 'floropolis_inventory_mirror',
+          target_id: 'ingest_pipeline',
+          before_jsonb: null,
+          after_jsonb: { status: 'escalated_to_rose', payload: proposal.payload },
+          applied_by_function: 'proposal-executors.ingest.price_field_bug[audit_only]',
+        }],
+      };
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -1376,4 +1526,10 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   // Formula deviation batch reset (2026-05-23 audit): resets K2K-scraped prices to formula prices.
   // Batch-approved by Facu; Atlas runs executor after Rose confirms ingest root cause fixed.
   'price.formula_reset',
+  // Cost source decisions (2026-05-23 supply cleanup):
+  'cost.source_confirm',   // Facu confirms a named cost source is valid → stamps cost_verified_at
+  'cost.source_flag',      // Facu flags a cost source as synthetic/unreliable → prepends FLAGGED_
+  'vendor.pricelist_request', // Audit log: waiting on vendor to send pricelist
+  // Ingest pipeline bug escalation (2026-05-23): Rose's ingest writes K2K price not formula price
+  'ingest.price_field_bug',
 ];

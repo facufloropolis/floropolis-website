@@ -12,7 +12,6 @@
 // them, mirror the additions here AND in the Python validator together.
 
 const FORMULA_DEVIATION_THRESHOLD_PCT = 5;
-const COST_VERIFIED_WINDOW_DAYS = 30;
 
 const EVALUATED_GATE_IDS = new Set([
   'price_zero',
@@ -194,13 +193,19 @@ export function classifySingleSku(
     }
   }
 
-  // 4 cost_source
+  // 4 cost_source present
   if (!row.cost_source) failing.push('missing_cost_source');
 
-  // 5 cost_verified_at within 30d
-  const cv = parseDate(row.cost_verified_at);
-  if (cv == null || daysBetween(today, cv) > COST_VERIFIED_WINDOW_DAYS) {
-    failing.push('cost_unverified');
+  // 5 cost_unverified: fires when we genuinely don't have verified cost data.
+  // NOT a time-based rule. A named source (FOB pricelist, Facu matrix, vendor XLS)
+  // is treated as valid until Facu explicitly flags it. PENDING_ prefix means the
+  // cost data hasn't arrived from the vendor yet — always unverified.
+  {
+    const farmCost = toNum(row.farm_cost);
+    const isPending = (row.cost_source ?? '').startsWith('PENDING_');
+    if (farmCost <= 0 || isPending) {
+      failing.push('cost_unverified');
+    }
   }
 
   // 6 has_open_price_alert
@@ -233,22 +238,30 @@ export function classifySingleSku(
   if (!row.contents_note) failing.push('missing_contents_description');
 
   // 12 tier-appropriate lead time
+  // missing_arrival_date applies to all T2/T3 (we need to know when to receive).
+  // Window gates (t2_outside_5d_window, t3_outside_14d_window) only apply to
+  // K2K-live items. T2/T3 managed supply publishes on Job_PM's schedule, not
+  // constrained by a booking window.
   const arrival = parseDate(row.arrival_date);
   if ((tier === 'T2' || tier === 'T3') && arrival == null) {
     failing.push('missing_arrival_date');
   }
-  if (tier === 'T2' && arrival != null && stock <= 0) {
+  if (tier === 'T2' && arrival != null && stock <= 0 && row.live === true) {
     if (daysBetween(arrival, today) < 5) failing.push('t2_outside_5d_window');
   }
-  if (tier === 'T3' && arrival != null && stock <= 0) {
+  if (tier === 'T3' && arrival != null && stock <= 0 && row.live === true) {
     if (daysBetween(arrival, today) < 14) failing.push('t3_outside_14d_window');
   }
 
   // 13 vendor name
   if (!row.vendor) failing.push('missing_vendor_name');
 
-  // Extra signal: stock > 0 + live = false
-  if (stock > 0 && row.live === false) failing.push('stock_live_mismatch');
+  // stock_live_mismatch: only fires for K2K-live items (T1 / live=true expected).
+  // T2/T3 managed supply legitimately has stock with live=false — that's Job_PM's
+  // publishing decision, not a data error.
+  if (stock > 0 && row.live === false && tier !== 'T2' && tier !== 'T3') {
+    failing.push('stock_live_mismatch');
+  }
 
   // gate_score = count of evaluated gates that PASSED
   const failingEvaluated = failing.filter((g) => EVALUATED_GATE_IDS.has(g));

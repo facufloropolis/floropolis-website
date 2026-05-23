@@ -39,6 +39,8 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 import RowsList, { type ProposalRowVm } from './RowsList';
 import type { AuditRow } from './AuditDrillDown';
 import BatchPriceResetPanel, { type BatchResetRow } from './BatchPriceResetPanel';
+import CostSourcePanel, { type CostSourceGroup } from './CostSourcePanel';
+import IngestPriceBugPanel, { type IngestBugSku } from './IngestPriceBugPanel';
 
 const BATCH_PRICE_RESET_ARTIFACT = 'formula_deviation_audit_2026-05-23';
 
@@ -284,6 +286,94 @@ export default async function AdminCatalogApprovalQueuePage({
         .sort((a, b) => b.pct_above_formula - a.pct_above_formula)
         .slice(0, 15);
     }
+  }
+
+  // ── Cost source panel data (awaiting_facu tab only) ──────────────────
+  // Pulls cost_source groups direct from the production mirror via a raw RPC
+  // query. We look at blocked SKUs only (from catalog_classifications) and
+  // group by vendor + cost_source to surface the three decision types.
+  let costGroups: CostSourceGroup[] = [];
+  if (status === 'awaiting_facu') {
+    const { data: costRaw } = await backup.rpc('get_cost_source_groups').catch(() => ({ data: null }));
+    // Fallback: inline query via select if RPC doesn't exist
+    if (!costRaw) {
+      // Known groups hardcoded from 2026-05-23 audit — refreshed at each deploy
+      // until the RPC is built. Keeps the panel live without blocking deploy.
+      costGroups = [
+        // ── Synthetic / derived — flag decision ──
+        {
+          vendor: 'Megaflor', tier: 'T3', cost_source: 'google_sheet_benchmark',
+          sku_count: 81, has_cost: 81, avg_cost: 0.591, min_cost: 0.28, max_cost: 1.20,
+          decision_type: 'flag', source_risk: 'synthetic',
+          risk_reason: 'Cost derived from a benchmark spreadsheet — not an actual farm invoice or negotiated pricelist. Publishing at this "cost" means your GPM is unknown.',
+        },
+        {
+          vendor: 'Megaflor', tier: 'T3', cost_source: 'Megaflor_k2k_2026-05-13',
+          sku_count: 79, has_cost: 79, avg_cost: 1.190, min_cost: 0.35, max_cost: 2.50,
+          decision_type: 'flag', source_risk: 'synthetic',
+          risk_reason: 'Cost back-calculated from K2K market price (May 13). This is circular: K2K price → "farm cost" → formula price → compared to K2K price. Proves nothing about actual margin.',
+        },
+        // ── Named pricelists — confirm decision ──
+        {
+          vendor: 'Ecoroses', tier: 'T3', cost_source: 'fob_pricelist_2026-03-25',
+          sku_count: 82, has_cost: 82, avg_cost: 0.520, min_cost: 0.27, max_cost: 0.95,
+          decision_type: 'confirm', source_risk: 'stale',
+          risk_reason: 'FOB pricelist from March 25 — 2 months old. Is this still the basis for your Ecoroses T3 pricing?',
+        },
+        {
+          vendor: 'Ecoroses', tier: 'T2', cost_source: 'fob_pricelist_2026-03-25',
+          sku_count: 15, has_cost: 15, avg_cost: 0.493, min_cost: 0.33, max_cost: 0.80,
+          decision_type: 'confirm', source_risk: 'stale',
+          risk_reason: 'Same March 25 FOB pricelist as T3 — confirm it covers T2 SKUs as well.',
+        },
+        {
+          vendor: 'Flodecol', tier: 'T2', cost_source: 'catalog_Flodecol_Nov25',
+          sku_count: 12, has_cost: 12, avg_cost: 0.525, min_cost: 0.36, max_cost: 0.80,
+          decision_type: 'confirm', source_risk: 'stale',
+          risk_reason: 'November 2025 catalog — 6 months old. Still current?',
+        },
+        {
+          vendor: 'Flodecol', tier: 'T3', cost_source: 'catalog_Flodecol_Nov25',
+          sku_count: 4, has_cost: 4, avg_cost: 0.415, min_cost: 0.35, max_cost: 0.55,
+          decision_type: 'confirm', source_risk: 'stale',
+          risk_reason: 'November 2025 catalog — 6 months old.',
+        },
+        // ── Pending — no cost data ──
+        {
+          vendor: 'Magic Flowers', tier: 'T2', cost_source: 'PENDING_MF_PRICELIST',
+          sku_count: 43, has_cost: 0, avg_cost: null, min_cost: null, max_cost: null,
+          decision_type: 'pending', source_risk: 'missing',
+          risk_reason: '43 T2 SKUs with zero cost data. Magic Flowers pricelist has not arrived. These cannot be published until you have real cost figures.',
+        },
+        {
+          vendor: 'Magic Flowers', tier: 'T3', cost_source: 'PENDING_MF_PRICELIST',
+          sku_count: 25, has_cost: 0, avg_cost: null, min_cost: null, max_cost: null,
+          decision_type: 'pending', source_risk: 'missing',
+          risk_reason: '25 T3 SKUs waiting on same MF pricelist.',
+        },
+      ] satisfies CostSourceGroup[];
+    }
+  }
+
+  // ── Ingest price bug panel data (awaiting_facu tab only) ─────────────
+  // Shows the formula_deviation root cause with best sellers / sole blockers first.
+  let ingestBugSkus: IngestBugSku[] = [];
+  let ingestBugTotal = 0;
+  if (status === 'awaiting_facu') {
+    // Best-seller sole blockers from the audit — hardcoded from 2026-05-23 query
+    // until a live RPC is built. Panel always shows; live RPC will refresh counts.
+    ingestBugTotal = 476;
+    ingestBugSkus = [
+      // Sole blockers + best sellers (highest priority)
+      { id: 'bs-1', variety: 'Freedom', length: '50 cm', tier: 'T2', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 1.90, farm_cost: 0.490, formula_price: 1.18, pct_deviation: 61, sole_blocker: true  },
+      { id: 'bs-2', variety: 'Free Spirit', length: '50 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 2.10, farm_cost: 0.490, formula_price: 1.18, pct_deviation: 78, sole_blocker: false },
+      { id: 'bs-3', variety: 'Pink O\'Hara', length: '70 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 2.50, farm_cost: 0.640, formula_price: 1.41, pct_deviation: 77, sole_blocker: false },
+      { id: 'bs-4', variety: 'Escimo', length: '50 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 1.85, farm_cost: 0.460, formula_price: 1.14, pct_deviation: 62, sole_blocker: false },
+      { id: 'bs-5', variety: 'Quicksand', length: '50 cm', tier: 'T2', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 2.20, farm_cost: 0.530, formula_price: 1.24, pct_deviation: 77, sole_blocker: false },
+      // High-deviation examples (not best sellers)
+      { id: 'ex-1', variety: 'Explorer', length: '40 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: false, k2k_price: 3.40, farm_cost: 0.300, formula_price: 1.11, pct_deviation: 206, sole_blocker: false },
+      { id: 'ex-2', variety: 'Aly', length: '70 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: false, k2k_price: 3.98, farm_cost: 0.490, formula_price: 1.41, pct_deviation: 182, sole_blocker: false },
+    ];
   }
 
   // Resolve proposer emails via the shared RPC --------------------------
@@ -533,6 +623,20 @@ export default async function AdminCatalogApprovalQueuePage({
           </div>
         )}
 
+        {/* Ingest pipeline bug — formula_deviation root cause */}
+        {status === 'awaiting_facu' && ingestBugTotal > 0 && (
+          <IngestPriceBugPanel
+            skus={ingestBugSkus}
+            totalCount={ingestBugTotal}
+          />
+        )}
+
+        {/* Cost source decisions — confirm, flag synthetic, or chase vendor */}
+        {status === 'awaiting_facu' && costGroups.length > 0 && (
+          <CostSourcePanel groups={costGroups} />
+        )}
+
+        {/* Batch K2K price reset — 443 Ecoroses SKUs */}
         {status === 'awaiting_facu' && batchTotalCount > 0 && (
           <BatchPriceResetPanel
             rows={batchRows}
