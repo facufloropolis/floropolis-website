@@ -1043,6 +1043,64 @@ async function execCatalogQualityRebalance(
   return { ok: true, auditEntries };
 }
 
+async function execCatalogQualityTierReclassification(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+
+  const changes = payload.changes;
+  if (!Array.isArray(changes) || changes.length === 0) {
+    return fail('invalid_changes: must be non-empty array');
+  }
+
+  const VALID_TIERS = ['blocking', 'publishable_gap', 'perfect_gap'];
+  for (const c of changes) {
+    if (!c || typeof c !== 'object') return fail('invalid_change_entry: must be object');
+    const entry = c as Record<string, unknown>;
+    if (typeof entry.gate_id !== 'string') return fail('invalid_change_entry: missing gate_id');
+    if (typeof entry.new_tier !== 'string' || !VALID_TIERS.includes(entry.new_tier)) {
+      return fail(`invalid_change_entry: new_tier must be one of ${VALID_TIERS.join(', ')}`);
+    }
+  }
+
+  const auditEntries: AuditEntry[] = [];
+  const now = new Date().toISOString();
+
+  for (const c of changes as Array<Record<string, unknown>>) {
+    const gateId = c.gate_id as string;
+    const newTier = c.new_tier as string;
+
+    const { data: before, error: readErr } = await service
+      .from('catalog_quality_weights')
+      .select('*')
+      .eq('gate_id', gateId)
+      .maybeSingle();
+    if (readErr) return fail(`read_failed: ${gateId}: ${readErr.message}`);
+    if (!before) return fail(`gate_not_found: ${gateId}`);
+
+    const { data: after, error: updErr } = await service
+      .from('catalog_quality_weights')
+      .update({ tier: newTier, updated_at: now, updated_by: proposal.proposed_by })
+      .eq('gate_id', gateId)
+      .select('*')
+      .maybeSingle();
+    if (updErr) return fail(`update_failed: ${gateId}: ${updErr.message}`);
+
+    auditEntries.push({
+      proposal_id: proposal.id,
+      target_table: 'catalog_quality_weights',
+      target_id: gateId,
+      before_jsonb: before as Record<string, unknown>,
+      after_jsonb: (after ?? null) as Record<string, unknown> | null,
+      applied_by_function: 'proposal-executors.execCatalogQualityTierReclassification',
+    });
+  }
+
+  return { ok: true, auditEntries };
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -1093,6 +1151,8 @@ export async function executeProposal(
       return execCatalogQualityThresholdUpdate(proposal, service);
     case 'catalog_quality_rebalance':
       return execCatalogQualityRebalance(proposal, service);
+    case 'catalog_quality_tier_reclassification':
+      return execCatalogQualityTierReclassification(proposal, service);
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -1115,6 +1175,7 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'catalog_quality_weight.update',
   'catalog_quality_threshold.update',
   'catalog_quality_rebalance',
+  'catalog_quality_tier_reclassification',
   // Rose-originated canonical_cost cleanup (audit-only; Rose verifier handles write):
   'delete_cost_row',
   'approve_cost_row',

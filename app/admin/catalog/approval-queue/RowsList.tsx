@@ -260,6 +260,8 @@ export default function RowsList({
                 {/* Payload */}
                 {p.type === 'catalog_quality_rebalance' && p.payload_raw ? (
                   <RebalancePayloadCard payload={p.payload_raw} />
+                ) : p.type === 'catalog_quality_tier_reclassification' && p.payload_raw ? (
+                  <TierReclassificationCard payload={p.payload_raw} />
                 ) : (
                   <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 p-3">
                     <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">
@@ -413,6 +415,83 @@ function RebalancePayloadCard({ payload }: { payload: Record<string, unknown> })
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TierReclassificationCard({ payload }: { payload: Record<string, unknown> }) {
+  const changes = Array.isArray(payload.changes)
+    ? (payload.changes as Array<{ gate_id: string; old_tier: string; new_tier: string; reason?: string }>)
+    : [];
+  const minAfter = Array.isArray(payload.minimum_to_publish_after)
+    ? (payload.minimum_to_publish_after as string[])
+    : [];
+  const minBefore = Array.isArray(payload.minimum_to_publish_before)
+    ? (payload.minimum_to_publish_before as string[])
+    : [];
+
+  const TIER_CLS: Record<string, string> = {
+    blocking: 'bg-red-100 text-red-800 border-red-200',
+    publishable_gap: 'bg-amber-100 text-amber-800 border-amber-200',
+    perfect_gap: 'bg-slate-100 text-slate-600 border-slate-200',
+  };
+
+  return (
+    <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-3">
+      {/* Minimum to publish comparison */}
+      <div className="flex gap-6 pb-2 border-b border-amber-200">
+        <div className="flex-1">
+          <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-1">
+            Blocks publication today ({minBefore.length} gates)
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {minBefore.map((g) => (
+              <span key={g} className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 border border-red-200 font-mono">
+                {g}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="text-slate-300 self-center">→</div>
+        <div className="flex-1">
+          <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-1">
+            Blocks publication after ({minAfter.length} gates)
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {minAfter.map((g) => (
+              <span key={g} className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono">
+                {g}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Per-gate changes */}
+      {changes.length > 0 && (
+        <div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1.5">
+            Gate tier changes ({changes.length})
+          </div>
+          <div className="space-y-1.5">
+            {changes.map((c) => (
+              <div key={c.gate_id} className="flex items-start gap-2">
+                <span className="font-mono text-[11px] text-slate-700 w-36 shrink-0">{c.gate_id}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold shrink-0 ${TIER_CLS[c.old_tier] ?? ''}`}>
+                  {c.old_tier}
+                </span>
+                <span className="text-slate-400 text-xs">→</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold shrink-0 ${TIER_CLS[c.new_tier] ?? ''}`}>
+                  {c.new_tier}
+                </span>
+                {c.reason && (
+                  <span className="text-[10px] text-slate-500 italic">{c.reason}</span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

@@ -19,6 +19,7 @@
 
 export const dynamic = 'force-dynamic';
 
+import React from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
@@ -111,6 +112,7 @@ export interface QualityWeightRow {
   display_label: string;
   category: string;
   weight: number;
+  tier: 'blocking' | 'publishable_gap' | 'perfect_gap';
   description: string | null;
   evaluated: boolean;
   updated_at: string | null;
@@ -256,7 +258,7 @@ export default async function AdminCatalogConfigPage({
       .select('*', { count: 'exact', head: true }),
     backup
       .from('catalog_quality_weights')
-      .select('gate_id, display_label, category, weight, description, evaluated, updated_at, updated_by')
+      .select('gate_id, display_label, category, weight, tier, description, evaluated, updated_at, updated_by')
       .order('weight', { ascending: false })
       .order('gate_id', { ascending: true }),
     backup
@@ -1218,6 +1220,33 @@ function QualityPanel({
         </div>
       </div>
 
+      {/* Publication requirements callout */}
+      <div className="mb-4 rounded-xl border border-red-200 bg-red-50 overflow-hidden">
+        <div className="px-4 py-2.5 bg-red-100 border-b border-red-200">
+          <h3 className="text-sm font-semibold text-red-900">Minimum to publish</h3>
+          <p className="text-[11px] text-red-700 mt-0.5">
+            These gates are <strong>blocking</strong>. If ANY fails, the SKU cannot be published — regardless of quality score. Every other gate affects score only.
+          </p>
+        </div>
+        <div className="px-4 py-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {weights.filter(w => w.tier === 'blocking').map(w => (
+              <div key={w.gate_id} className="flex items-start gap-2.5">
+                <div className="mt-0.5 w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                <div>
+                  <span className="text-xs font-semibold text-red-900">{w.display_label}</span>
+                  <span className="ml-2 text-[10px] text-red-600 font-mono">{w.gate_id}</span>
+                  {w.description && <p className="text-[10px] text-red-700 mt-0.5">{w.description}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+          {weights.filter(w => w.tier === 'blocking').length === 0 && (
+            <p className="text-xs text-red-600">No blocking gates configured — all SKUs would be publishable. Check catalog_quality_weights.tier column.</p>
+          )}
+        </div>
+      </div>
+
       {/* Weights card */}
       <div>
         {/* Source provenance bar — weights */}
@@ -1258,6 +1287,7 @@ function QualityPanel({
               <thead className="bg-white border-b border-slate-200">
                 <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
                   <th className="px-4 py-2">Gate</th>
+                  <th className="px-4 py-2">Tier</th>
                   <th className="px-4 py-2">Category</th>
                   <th className="px-4 py-2 text-right">Weight</th>
                   <th className="px-4 py-2">Description</th>
@@ -1268,57 +1298,103 @@ function QualityPanel({
               <tbody>
                 {weights.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-6 text-center text-xs text-slate-400">
+                    <td colSpan={7} className="px-4 py-6 text-center text-xs text-slate-400">
                       No quality weights seeded.
                     </td>
                   </tr>
                 ) : (
-                  weights.map((w) => (
-                    <tr key={w.gate_id} className={`border-b border-slate-100 last:border-b-0${w.evaluated ? '' : ' opacity-50'}`}>
-                      <td className="px-4 py-2.5">
-                        <div className="font-mono text-[11px] text-slate-500">{w.gate_id}</div>
-                        <div className="text-slate-900 text-xs">{w.display_label}</div>
-                      </td>
-                      <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">
-                        {w.category}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
-                        {w.weight}
-                      </td>
-                      <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
-                        {w.description ?? '-'}
-                      </td>
-                      <td className="px-4 py-2.5">
-                        {w.evaluated ? (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200">
-                            evaluated
-                          </span>
-                        ) : (
-                          <>
-                            <span
-                              className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-50 text-slate-400 border-slate-200"
-                              title="This gate is not yet evaluated by the validator — the column does not exist in the inventory mirror schema. Weight is auto-credited until the field is available."
-                            >
-                              placeholder
+                  (() => {
+                    const TIER_ORDER = { blocking: 0, publishable_gap: 1, perfect_gap: 2 } as Record<string, number>;
+                    const TIER_LABEL = {
+                      blocking: 'Blocking — must pass to publish',
+                      publishable_gap: 'Publishable gap — can publish without, but degraded',
+                      perfect_gap: 'Perfect gap — internal / aspirational, never blocks',
+                    } as Record<string, string>;
+                    const TIER_CLS = {
+                      blocking: 'bg-red-100 text-red-800 border-red-200',
+                      publishable_gap: 'bg-amber-100 text-amber-800 border-amber-200',
+                      perfect_gap: 'bg-slate-100 text-slate-600 border-slate-200',
+                    } as Record<string, string>;
+                    const TIER_ROW_CLS = {
+                      blocking: 'bg-red-50/30',
+                      publishable_gap: 'bg-amber-50/20',
+                      perfect_gap: '',
+                    } as Record<string, string>;
+                    const sorted = [...weights].sort((a, b) => {
+                      const ta = TIER_ORDER[a.tier] ?? 9;
+                      const tb = TIER_ORDER[b.tier] ?? 9;
+                      if (ta !== tb) return ta - tb;
+                      return b.weight - a.weight;
+                    });
+                    const rows: React.ReactNode[] = [];
+                    let lastTier = '';
+                    for (const w of sorted) {
+                      if (w.tier !== lastTier) {
+                        lastTier = w.tier;
+                        rows.push(
+                          <tr key={`header-${w.tier}`} className="bg-slate-50 border-b border-slate-200">
+                            <td colSpan={7} className="px-4 py-1.5">
+                              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                {TIER_LABEL[w.tier] ?? w.tier}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      }
+                      rows.push(
+                        <tr key={w.gate_id} className={`border-b border-slate-100 last:border-b-0${w.evaluated ? '' : ' opacity-50'} ${TIER_ROW_CLS[w.tier] ?? ''}`}>
+                          <td className="px-4 py-2.5">
+                            <div className="font-mono text-[11px] text-slate-500">{w.gate_id}</div>
+                            <div className="text-slate-900 text-xs">{w.display_label}</div>
+                          </td>
+                          <td className="px-4 py-2.5">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold border ${TIER_CLS[w.tier] ?? 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                              {w.tier}
                             </span>
-                            <div className="text-[10px] text-slate-400 mt-0.5">auto-credited until schema ready</div>
-                          </>
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        <div className="flex items-center justify-end gap-2 flex-wrap">
-                          <QualityWeightProposeForm row={w} currentTotal={totalWeight} />
-                          <ConfigFlagRoseForm
-                            itemId={w.gate_id}
-                            itemLabel={w.display_label}
-                            currentValue={String(w.weight)}
-                            sourceTable="catalog_quality_weights"
-                            reasonCode="data_quality"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                          </td>
+                          <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">
+                            {w.category}
+                          </td>
+                          <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
+                            {w.weight}
+                          </td>
+                          <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
+                            {w.description ?? '-'}
+                          </td>
+                          <td className="px-4 py-2.5">
+                            {w.evaluated ? (
+                              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200">
+                                evaluated
+                              </span>
+                            ) : (
+                              <>
+                                <span
+                                  className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-50 text-slate-400 border-slate-200"
+                                  title="Not yet evaluated — auto-credited until schema ready."
+                                >
+                                  placeholder
+                                </span>
+                                <div className="text-[10px] text-slate-400 mt-0.5">auto-credited until schema ready</div>
+                              </>
+                            )}
+                          </td>
+                          <td className="px-4 py-2.5 text-right">
+                            <div className="flex items-center justify-end gap-2 flex-wrap">
+                              <QualityWeightProposeForm row={w} currentTotal={totalWeight} />
+                              <ConfigFlagRoseForm
+                                itemId={w.gate_id}
+                                itemLabel={w.display_label}
+                                currentValue={String(w.weight)}
+                                sourceTable="catalog_quality_weights"
+                                reasonCode="data_quality"
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    }
+                    return rows;
+                  })()
                 )}
               </tbody>
             </table>

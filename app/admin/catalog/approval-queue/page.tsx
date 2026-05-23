@@ -105,6 +105,15 @@ function asWarnings(raw: unknown): WarningPill[] {
 }
 
 function payloadSummary(p: ProposalRow): string {
+  if (p.type === 'catalog_quality_tier_reclassification') {
+    const payload = p.payload;
+    if (!payload) return '(no payload)';
+    const changes = Array.isArray(payload.changes) ? payload.changes.length : 0;
+    const minAfter = Array.isArray(payload.minimum_to_publish_after)
+      ? (payload.minimum_to_publish_after as string[]).join(', ')
+      : '?';
+    return `${changes} gate tier changes. Min to publish after: ${minAfter}`;
+  }
   if (p.type === 'catalog_quality_rebalance') {
     const payload = p.payload;
     if (!payload) return '(no payload)';
