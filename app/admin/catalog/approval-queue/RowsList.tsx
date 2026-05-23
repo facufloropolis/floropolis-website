@@ -40,6 +40,7 @@ export interface ProposalRowVm {
   cascade: { value: number | null; label: string };
   has_stale_verification: boolean;
   has_failed_verification: boolean;
+  payload_raw: Record<string, unknown> | null;
 }
 
 interface Props {
@@ -256,15 +257,19 @@ export default function RowsList({
                   )}
                 </div>
 
-                {/* Payload summary */}
-                <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 p-3">
-                  <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">
-                    Payload
+                {/* Payload */}
+                {p.type === 'catalog_quality_rebalance' && p.payload_raw ? (
+                  <RebalancePayloadCard payload={p.payload_raw} />
+                ) : (
+                  <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 p-3">
+                    <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">
+                      Payload
+                    </div>
+                    <div className="text-xs text-slate-700 font-mono break-words">
+                      {p.payload_summary}
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-700 font-mono break-words">
-                    {p.payload_summary}
-                  </div>
-                </div>
+                )}
 
                 {/* Cascade impact */}
                 <div className="border-t border-slate-100 pt-3 mb-3">
@@ -337,6 +342,81 @@ export default function RowsList({
         onClose={() => setDrillId(null)}
       />
     </>
+  );
+}
+
+function RebalancePayloadCard({ payload }: { payload: Record<string, unknown> }) {
+  const changes = Array.isArray(payload.changes)
+    ? (payload.changes as Array<{ gate_id: string; old_weight: number; new_weight: number }>)
+    : [];
+  const impact = payload.impact as
+    | { current_perfect?: number; projected_perfect?: number; unlocked?: number }
+    | undefined;
+  const newThreshold = typeof payload.new_threshold === 'number' ? payload.new_threshold : null;
+
+  return (
+    <div className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 space-y-3">
+      {/* Impact headline */}
+      {impact && (
+        <div className="flex flex-wrap items-center gap-4 pb-2 border-b border-emerald-200">
+          <div className="text-xs">
+            <span className="text-slate-500">Today: </span>
+            <span className="font-bold text-slate-900">{impact.current_perfect ?? '--'} perfect</span>
+          </div>
+          <span className="text-slate-400 text-xs">→</span>
+          <div className="text-xs">
+            <span className="text-slate-500">After approval: </span>
+            <span className="font-bold text-emerald-700">{impact.projected_perfect ?? '--'} perfect</span>
+          </div>
+          {typeof impact.unlocked === 'number' && (
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300">
+              +{impact.unlocked} unlocked
+            </span>
+          )}
+          {newThreshold !== null && (
+            <span className="text-[11px] text-slate-500">
+              perfect_min_score → {newThreshold}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Weight changes table */}
+      {changes.length > 0 && (
+        <div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1.5">
+            Weight changes ({changes.length} gates)
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-[11px]">
+              <thead>
+                <tr className="text-left text-slate-500">
+                  <th className="pb-1 font-medium pr-3">Gate</th>
+                  <th className="pb-1 font-medium pr-3 text-right">Before</th>
+                  <th className="pb-1 font-medium pr-3 text-right">After</th>
+                  <th className="pb-1 font-medium text-right">Delta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {changes.map((c) => {
+                  const delta = c.new_weight - c.old_weight;
+                  return (
+                    <tr key={c.gate_id} className="border-t border-emerald-100">
+                      <td className="py-1 pr-3 font-mono text-slate-700">{c.gate_id}</td>
+                      <td className="py-1 pr-3 text-right text-slate-500">{c.old_weight}</td>
+                      <td className="py-1 pr-3 text-right font-semibold text-slate-900">{c.new_weight}</td>
+                      <td className={`py-1 text-right font-semibold ${delta > 0 ? 'text-emerald-700' : delta < 0 ? 'text-red-600' : 'text-slate-400'}`}>
+                        {delta > 0 ? '+' : ''}{delta}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

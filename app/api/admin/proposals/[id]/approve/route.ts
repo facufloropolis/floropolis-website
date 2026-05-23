@@ -24,7 +24,12 @@ import {
   type AdminProposal,
 } from '@/lib/admin/proposal-executors';
 
-const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
+const ADMIN_EMAILS = [
+  'facu@floropolis.com',
+  'jjpj@crescoinversiones.com',
+  'jjpj@floropolis.com',
+  'jjp@floropolis.com',
+];
 
 interface AuthOk { ok: true; userId: string }
 interface AuthFail { ok: false; response: NextResponse }

@@ -943,6 +943,106 @@ async function execCatalogQualityThresholdUpdate(
   };
 }
 
+async function execCatalogQualityRebalance(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+
+  const changes = payload.changes;
+  if (!Array.isArray(changes) || changes.length === 0) {
+    return fail('invalid_changes: must be non-empty array');
+  }
+
+  const newThreshold =
+    typeof payload.new_threshold === 'number' ? payload.new_threshold : null;
+
+  for (const c of changes) {
+    if (!c || typeof c !== 'object') return fail('invalid_change_entry: must be object');
+    const entry = c as Record<string, unknown>;
+    if (typeof entry.gate_id !== 'string') return fail('invalid_change_entry: missing gate_id');
+    const nw = typeof entry.new_weight === 'number' ? entry.new_weight : Number(entry.new_weight);
+    if (!Number.isFinite(nw) || nw < 0 || nw > 100) return fail(`invalid_change_entry: bad new_weight for ${entry.gate_id}`);
+  }
+
+  const { data: allWeights, error: readErr } = await service
+    .from('catalog_quality_weights')
+    .select('gate_id, weight, display_label, evaluated, updated_at, updated_by');
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+
+  const currentMap = new Map<string, number>();
+  for (const row of allWeights ?? []) {
+    currentMap.set(row.gate_id as string, typeof row.weight === 'number' ? row.weight : Number(row.weight) || 0);
+  }
+
+  const updatedMap = new Map(currentMap);
+  for (const c of changes as Array<Record<string, unknown>>) {
+    updatedMap.set(c.gate_id as string, Math.round(c.new_weight as number));
+  }
+  const postSum = Array.from(updatedMap.values()).reduce((a, b) => a + b, 0);
+  if (postSum !== 100) {
+    return fail(`weights_sum_drift: post-rebalance sum=${postSum}, expected 100`);
+  }
+
+  const auditEntries: AuditEntry[] = [];
+  const now = new Date().toISOString();
+
+  for (const c of changes as Array<Record<string, unknown>>) {
+    const gateId = c.gate_id as string;
+    const newWeight = Math.round(c.new_weight as number);
+
+    const beforeRow = (allWeights ?? []).find((r) => r.gate_id === gateId);
+    if (!beforeRow) return fail(`gate_not_found: ${gateId}`);
+
+    const { data: after, error: updErr } = await service
+      .from('catalog_quality_weights')
+      .update({ weight: newWeight, updated_at: now, updated_by: proposal.proposed_by })
+      .eq('gate_id', gateId)
+      .select('*')
+      .maybeSingle();
+    if (updErr) return fail(`weight_update_failed: ${gateId}: ${updErr.message}`);
+
+    auditEntries.push({
+      proposal_id: proposal.id,
+      target_table: 'catalog_quality_weights',
+      target_id: gateId,
+      before_jsonb: beforeRow as Record<string, unknown>,
+      after_jsonb: (after ?? null) as Record<string, unknown> | null,
+      applied_by_function: 'proposal-executors.execCatalogQualityRebalance',
+    });
+  }
+
+  if (newThreshold !== null) {
+    if (newThreshold < 50 || newThreshold > 100) {
+      return fail('invalid_new_threshold: perfect_min_score must be 50..100');
+    }
+    const { data: beforeThresh } = await service
+      .from('catalog_quality_thresholds')
+      .select('*')
+      .eq('threshold_id', 'perfect_min_score')
+      .maybeSingle();
+    const { data: afterThresh, error: thrErr } = await service
+      .from('catalog_quality_thresholds')
+      .update({ value: newThreshold, updated_at: now, updated_by: proposal.proposed_by })
+      .eq('threshold_id', 'perfect_min_score')
+      .select('*')
+      .maybeSingle();
+    if (thrErr) return fail(`threshold_update_failed: ${thrErr.message}`);
+
+    auditEntries.push({
+      proposal_id: proposal.id,
+      target_table: 'catalog_quality_thresholds',
+      target_id: 'perfect_min_score',
+      before_jsonb: (beforeThresh ?? null) as Record<string, unknown> | null,
+      after_jsonb: (afterThresh ?? null) as Record<string, unknown> | null,
+      applied_by_function: 'proposal-executors.execCatalogQualityRebalance',
+    });
+  }
+
+  return { ok: true, auditEntries };
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -991,6 +1091,8 @@ export async function executeProposal(
       return execCatalogQualityWeightUpdate(proposal, service);
     case 'catalog_quality_threshold.update':
       return execCatalogQualityThresholdUpdate(proposal, service);
+    case 'catalog_quality_rebalance':
+      return execCatalogQualityRebalance(proposal, service);
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -1012,6 +1114,7 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'tier_visibility_window.update',
   'catalog_quality_weight.update',
   'catalog_quality_threshold.update',
+  'catalog_quality_rebalance',
   // Rose-originated canonical_cost cleanup (audit-only; Rose verifier handles write):
   'delete_cost_row',
   'approve_cost_row',

@@ -628,6 +628,185 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           })()}
         </WiringSection>
 
+        {/* Supply Intelligence */}
+        {(() => {
+          // Compute vendor coverage
+          const vendorMap = new Map<string, { total: number; perfect: number; stems: number }>();
+          for (const r of universeRows) {
+            const s = vendorMap.get(r.vendor) ?? { total: 0, perfect: 0, stems: 0 };
+            s.total++;
+            if (r.publication_status === 'perfect') s.perfect++;
+            s.stems += r.total_stems;
+            vendorMap.set(r.vendor, s);
+          }
+          // Vendors sorted by % perfect ascending (worst first)
+          const vendorList = Array.from(vendorMap.entries())
+            .map(([vendor, s]) => ({ vendor, ...s, pct: s.total > 0 ? Math.round((s.perfect / s.total) * 100) : 0 }))
+            .sort((a, b) => a.pct - b.pct || b.total - a.total);
+
+          // Category coverage
+          const catMap = new Map<string, { total: number; perfect: number }>();
+          for (const r of universeRows) {
+            const cat = r.category || 'Unknown';
+            const s = catMap.get(cat) ?? { total: 0, perfect: 0 };
+            s.total++;
+            if (r.publication_status === 'perfect') s.perfect++;
+            catMap.set(cat, s);
+          }
+          const darkCategories = Array.from(catMap.entries())
+            .filter(([, s]) => s.perfect === 0 && s.total > 0)
+            .sort((a, b) => b[1].total - a[1].total)
+            .slice(0, 5);
+
+          // Quick wins: exactly 1 gate away from perfect
+          const quickWins = universeRows
+            .filter((r) => r.publication_status !== 'perfect' && r.failed_gates.length === 1)
+            .sort((a, b) => (b.importance_score ?? 0) - (a.importance_score ?? 0))
+            .slice(0, 5);
+
+          // Most common blocker gates across non-perfect SKUs
+          const gateCount = new Map<string, number>();
+          for (const r of universeRows) {
+            if (r.publication_status === 'perfect') continue;
+            for (const g of r.failed_gates) {
+              gateCount.set(g, (gateCount.get(g) ?? 0) + 1);
+            }
+          }
+          const topGates = Array.from(gateCount.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 4);
+
+          const darkVendors = vendorList.filter((v) => v.perfect === 0 && v.total > 3);
+
+          return (
+            <div className="mb-5 rounded-xl border border-slate-200 bg-white overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Supply intelligence</span>
+                <span className="text-[10px] text-slate-400">{universeRows.length} SKUs analyzed</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+
+                {/* Vendor coverage */}
+                <div className="p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">Vendor coverage</div>
+                  <div className="space-y-1">
+                    {vendorList.slice(0, 5).map(({ vendor, total, perfect, pct }) => (
+                      <div key={vendor} className="flex items-center justify-between gap-2">
+                        <Link
+                          href={buildUrl(rawFilters, { vendor, tab: undefined })}
+                          className="text-[11px] text-slate-700 hover:text-emerald-700 truncate max-w-[110px]"
+                          title={vendor}
+                        >
+                          {vendor}
+                        </Link>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className={`h-1.5 rounded-full ${pct === 0 ? 'bg-red-400' : pct < 30 ? 'bg-amber-400' : 'bg-emerald-500'}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className={`text-[10px] font-semibold ${pct === 0 ? 'text-red-600' : pct < 30 ? 'text-amber-600' : 'text-emerald-700'}`}>
+                            {perfect}/{total}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dark categories */}
+                <div className="p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">Zero perfect</div>
+                  {darkCategories.length === 0 ? (
+                    <p className="text-[11px] text-emerald-700 font-medium">All categories have coverage</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {darkCategories.map(([cat, s]) => (
+                        <div key={cat} className="flex items-center justify-between gap-2">
+                          <Link
+                            href={buildUrl(rawFilters, { category: cat, tab: undefined })}
+                            className="text-[11px] text-red-700 hover:underline truncate max-w-[120px]"
+                            title={cat}
+                          >
+                            {cat}
+                          </Link>
+                          <span className="text-[10px] text-slate-500 shrink-0">{s.total} SKUs</span>
+                        </div>
+                      ))}
+                      {darkVendors.length > 0 && (
+                        <div className="mt-1.5 pt-1.5 border-t border-slate-100">
+                          <span className="text-[10px] text-slate-500">{darkVendors.length} vendors also at 0%: </span>
+                          <span className="text-[10px] text-red-600 font-medium">{darkVendors.slice(0, 3).map((v) => v.vendor).join(', ')}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Quick wins */}
+                <div className="p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">
+                    Quick wins{' '}
+                    <span className="text-slate-400 font-normal normal-case">(1 gate away)</span>
+                  </div>
+                  {quickWins.length === 0 ? (
+                    <p className="text-[11px] text-slate-500">None right now</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {quickWins.map((r) => (
+                        <div key={r.id} className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-[11px] text-slate-700 truncate">{r.name}</p>
+                            <p className="text-[10px] text-red-600 font-mono">{r.failed_gates[0]}</p>
+                          </div>
+                          <Link
+                            href={buildUrl(rawFilters, { q: String(r.id), tab: undefined })}
+                            className="text-[10px] text-emerald-700 hover:underline shrink-0"
+                          >
+                            view
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Top blockers */}
+                <div className="p-3">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">Top blockers</div>
+                  {topGates.length === 0 ? (
+                    <p className="text-[11px] text-emerald-700 font-medium">No blocking gates</p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {topGates.map(([gate, count]) => (
+                        <div key={gate} className="flex items-center justify-between gap-2">
+                          <Link
+                            href={buildUrl(rawFilters, { flag: 'failed_gates', q: gate, tab: undefined })}
+                            className="text-[11px] font-mono text-slate-700 hover:text-emerald-700 truncate"
+                          >
+                            {gate}
+                          </Link>
+                          <span className="text-[10px] font-semibold text-red-600 shrink-0">{count} SKUs</span>
+                        </div>
+                      ))}
+                      <div className="pt-1 border-t border-slate-100">
+                        <Link
+                          href="/admin/catalog/config"
+                          className="text-[10px] text-emerald-700 hover:underline"
+                        >
+                          Adjust weights in Config →
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Tabs */}
         <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
           <div className="flex gap-1 mb-5 border-b border-slate-200 flex-wrap">

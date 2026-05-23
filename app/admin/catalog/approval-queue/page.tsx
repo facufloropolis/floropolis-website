@@ -39,7 +39,12 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 import RowsList, { type ProposalRowVm } from './RowsList';
 import type { AuditRow } from './AuditDrillDown';
 
-const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
+const ADMIN_EMAILS = [
+  'facu@floropolis.com',
+  'jjpj@crescoinversiones.com',
+  'jjpj@floropolis.com',
+  'jjp@floropolis.com',
+];
 
 type Status = 'awaiting_facu' | 'approved' | 'rejected';
 const STATUS_VALUES: Status[] = ['awaiting_facu', 'approved', 'rejected'];
@@ -100,6 +105,15 @@ function asWarnings(raw: unknown): WarningPill[] {
 }
 
 function payloadSummary(p: ProposalRow): string {
+  if (p.type === 'catalog_quality_rebalance') {
+    const payload = p.payload;
+    if (!payload) return '(no payload)';
+    const impact = payload.impact as Record<string, unknown> | undefined;
+    const changes = Array.isArray(payload.changes) ? payload.changes.length : 0;
+    if (impact && typeof impact.projected_perfect === 'number') {
+      return `Conversion model v1: ${changes} weight changes + threshold→${payload.new_threshold ?? '?'}. Impact: ${impact.current_perfect ?? '?'}→${impact.projected_perfect} perfect (${impact.unlocked ?? '?'} unlocked)`;
+    }
+  }
   const payload = p.payload;
   if (!payload || typeof payload !== 'object') return '(no payload)';
   const keys = Object.keys(payload);
@@ -353,6 +367,7 @@ export default async function AdminCatalogApprovalQueuePage({
       cascade,
       has_stale_verification: staleByProposal.has(p.id),
       has_failed_verification: failedByProposal.has(p.id),
+      payload_raw: p.payload,
     };
   });
 
