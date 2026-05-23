@@ -28,7 +28,7 @@ const NAV: NavItem[] = [
   { id: 'dispatch',      label: 'Dispatch',      icon: 'D',  url: '/admin/dispatch',                 sub: 'FedEx / labels / vendor',    matchPrefix: '/admin/dispatch' },
   { id: 'sales-cleanup', label: 'Sales Cleanup', icon: '$',  url: '/admin/sales-cleanup',            sub: 'Orphan transactions',        matchPrefix: '/admin/sales-cleanup' },
   { id: 'approvals',     label: 'Approvals',     icon: 'A',  url: '/admin/catalog/approval-queue',   sub: 'Awaiting your sign-off',     matchPrefix: '/admin/catalog/approval-queue' },
-  { id: 'proposals', label: 'Proposals', icon: 'P', url: '/admin/catalog/proposals',        sub: 'Specs + meta',               matchPrefix: '/admin/catalog/proposals' },
+  { id: 'proposals', label: 'Proposals', icon: 'P', url: '/admin/catalog/proposals',        sub: 'Full history',               matchPrefix: '/admin/catalog/proposals' },
   { id: 'settings',  label: 'Config',    icon: 'S', url: '/admin/catalog/config',           sub: 'Box / shipping / GPM',       matchPrefix: '/admin/catalog/config' },
 ];
 
