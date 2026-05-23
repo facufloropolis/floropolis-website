@@ -294,8 +294,8 @@ export default async function AdminCatalogApprovalQueuePage({
   // group by vendor + cost_source to surface the three decision types.
   let costGroups: CostSourceGroup[] = [];
   if (status === 'awaiting_facu') {
-    const { data: costRaw } = await backup.rpc('get_cost_source_groups').catch(() => ({ data: null }));
-    // Fallback: inline query via select if RPC doesn't exist
+    const { data: costRaw, error: _costRpcErr } = await backup.rpc('get_cost_source_groups');
+    // Fallback: RPC not yet built — use hardcoded audit data from 2026-05-23.
     if (!costRaw) {
       // Known groups hardcoded from 2026-05-23 audit — refreshed at each deploy
       // until the RPC is built. Keeps the panel live without blocking deploy.
