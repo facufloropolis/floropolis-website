@@ -1,0 +1,157 @@
+# Deployment verifier — runs after every push, confirms Vercel built successfully.
+# v1 | 2026-05-23 | Job_PM [V8 SHADOW]
+#
+# What it does:
+#   1. Waits up to 8 minutes for the GitHub deployment status (written by Vercel) to resolve.
+#   2. On success: posts a smoke-test check (HEAD the preview URL).
+#   3. On failure: fetches the Vercel build log via the deployment status description
+#      and writes it to the job summary so it's visible in GitHub Actions without
+#      needing to log into Vercel.
+#
+# Requirements:
+#   - VERCEL_TOKEN secret in GitHub repo settings (Settings → Secrets → Actions).
+#     Create at: vercel.com/account/tokens → "Claude-deployment-verifier".
+#     Without this token, the job completes with a warning (never blocks deploy).
+#
+# Design: this job NEVER fails the build. It only reports. Blocking deploys based on
+# smoke tests would require human confirmation first — add that later if needed.
+
+name: Deployment Verifier
+
+on:
+  push:
+    branches: ['**']
+
+jobs:
+  verify:
+    name: Verify Vercel deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    # Don't block if this job fails — it's diagnostic only
+    continue-on-error: true
+
+    steps:
+      - name: Wait for Vercel deployment status
+        id: wait
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Waiting for Vercel deployment for commit $COMMIT_SHA..."
+          TIMEOUT=480  # 8 minutes
+          ELAPSED=0
+          INTERVAL=15
+
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            STATUSES=$(gh api "repos/$REPO/commits/$COMMIT_SHA/statuses" --jq '[.[] | select(.context | startswith("vercel"))] | sort_by(.updated_at) | reverse | .[0]' 2>/dev/null || echo "null")
+
+            STATE=$(echo "$STATUSES" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('state','pending'))" 2>/dev/null || echo "pending")
+            DESC=$(echo "$STATUSES" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('description',''))" 2>/dev/null || echo "")
+            TARGET=$(echo "$STATUSES" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('target_url',''))" 2>/dev/null || echo "")
+
+            echo "State: $STATE | $DESC"
+
+            if [ "$STATE" = "success" ]; then
+              echo "deployment_state=success" >> $GITHUB_OUTPUT
+              echo "preview_url=$TARGET" >> $GITHUB_OUTPUT
+              echo "deployment_desc=$DESC" >> $GITHUB_OUTPUT
+              break
+            elif [ "$STATE" = "failure" ] || [ "$STATE" = "error" ]; then
+              echo "deployment_state=failure" >> $GITHUB_OUTPUT
+              echo "deployment_desc=$DESC" >> $GITHUB_OUTPUT
+              echo "preview_url=$TARGET" >> $GITHUB_OUTPUT
+              break
+            fi
+
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          if [ $ELAPSED -ge $TIMEOUT ]; then
+            echo "deployment_state=timeout" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fetch Vercel build log on failure
+        if: steps.wait.outputs.deployment_state == 'failure'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DESC: ${{ steps.wait.outputs.deployment_desc }}
+        run: |
+          # Extract deployment ID from description: "run this Vercel CLI command: npx vercel inspect dpl_XXXXX --logs"
+          DEPLOY_ID=$(echo "$DESC" | grep -oP 'dpl_[A-Za-z0-9]+' | head -1)
+
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::warning::VERCEL_TOKEN secret not set — cannot fetch build log."
+            echo "Add it at: Settings → Secrets → Actions → VERCEL_TOKEN"
+            echo "Create token at: vercel.com/account/tokens"
+            exit 0
+          fi
+
+          if [ -z "$DEPLOY_ID" ]; then
+            echo "::warning::Could not parse deployment ID from: $DESC"
+            exit 0
+          fi
+
+          echo "Fetching build log for $DEPLOY_ID..."
+          LOG=$(curl -s "https://api.vercel.com/v2/deployments/$DEPLOY_ID/events?limit=200" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | \
+            python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+events = data if isinstance(data, list) else []
+# Filter for error/build lines
+lines = []
+for e in events:
+    p = e.get('payload', {})
+    text = p.get('text', '') if isinstance(p, dict) else ''
+    if text and any(k in text.lower() for k in ['error', 'fail', 'type', 'cannot', 'unexpected', 'build failed']):
+        lines.append(text)
+print('\n'.join(lines[-50:]) if lines else 'No error lines found in build log.')
+")
+          echo "## Vercel Build Log — Errors" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$LOG" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$LOG"
+
+      - name: Smoke test preview URL on success
+        if: steps.wait.outputs.deployment_state == 'success'
+        env:
+          PREVIEW_URL: ${{ steps.wait.outputs.preview_url }}
+        run: |
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "No preview URL to test"
+            exit 0
+          fi
+
+          echo "Smoke testing $PREVIEW_URL..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$PREVIEW_URL" || echo "000")
+          echo "HTTP status: $STATUS"
+
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "302" ]; then
+            echo "✅ Preview URL responding (HTTP $STATUS)"
+            echo "## ✅ Deployment Verified" >> $GITHUB_STEP_SUMMARY
+            echo "Preview URL: $PREVIEW_URL" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "::warning::Preview URL returned HTTP $STATUS"
+            echo "## ⚠️ Preview URL returned HTTP $STATUS" >> $GITHUB_STEP_SUMMARY
+            echo "URL: $PREVIEW_URL" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Report deployment result
+        env:
+          STATE: ${{ steps.wait.outputs.deployment_state }}
+          URL: ${{ steps.wait.outputs.preview_url }}
+        run: |
+          if [ "$STATE" = "success" ]; then
+            echo "✅ Vercel deployment succeeded: $URL"
+          elif [ "$STATE" = "failure" ]; then
+            echo "❌ Vercel deployment failed. Check job summary for build log."
+            echo "::error::Vercel build failed for this push. See job summary for the error."
+          elif [ "$STATE" = "timeout" ]; then
+            echo "⏱ Vercel deployment timed out after 8 minutes."
+            echo "::warning::Vercel deployment status check timed out."
+          else
+            echo "⚠️ Unknown deployment state: $STATE"
+          fi
