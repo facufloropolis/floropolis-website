@@ -359,8 +359,26 @@ export default async function AdminCatalogApprovalQueuePage({
 
   // ── Ingest price bug panel data (awaiting_facu tab only) ─────────────
   // Shows the formula_deviation root cause with best sellers / sole blockers first.
+  // Also queries admin_proposals for prior ingest.price_field_bug corrections to
+  // show recurrence badge if this correction has been sent before without being resolved.
   let ingestBugSkus: IngestBugSku[] = [];
   let ingestBugTotal = 0;
+  let priorIngestCorrectionCount = 0;
+  let daysSinceFirstIngestSurfaced = 0;
+  if (status === 'awaiting_facu') {
+    const { count: ingestPriorCount, data: ingestPriorRows } = await backup
+      .from('admin_proposals')
+      .select('proposed_at', { count: 'exact' })
+      .eq('type', 'ingest.price_field_bug')
+      .order('proposed_at', { ascending: true })
+      .limit(1);
+    priorIngestCorrectionCount = ingestPriorCount ?? 0;
+    if (ingestPriorRows?.[0]?.proposed_at) {
+      daysSinceFirstIngestSurfaced = Math.floor(
+        (Date.now() - new Date(ingestPriorRows[0].proposed_at).getTime()) / (24 * 60 * 60 * 1000),
+      );
+    }
+  }
   if (status === 'awaiting_facu') {
     // Best-seller sole blockers from the audit — hardcoded from 2026-05-23 query
     // until a live RPC is built. Panel always shows; live RPC will refresh counts.
@@ -722,6 +740,8 @@ export default async function AdminCatalogApprovalQueuePage({
           <IngestPriceBugPanel
             skus={ingestBugSkus}
             totalCount={ingestBugTotal}
+            priorCorrectionCount={priorIngestCorrectionCount}
+            daysSinceFirstSurfaced={daysSinceFirstIngestSurfaced}
           />
         )}
 
