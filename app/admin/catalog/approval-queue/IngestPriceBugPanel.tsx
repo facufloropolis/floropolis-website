@@ -68,8 +68,8 @@ export default function IngestPriceBugPanel({ skus, totalCount }: Props) {
           notes: rationale,
         }),
       });
-      const body = await res.json() as { ok?: boolean; error?: string };
-      if (!res.ok || !body.ok) { setError(body.error ?? `HTTP ${res.status}`); setBusy(false); return; }
+      const body = await res.json() as { proposal?: unknown; error?: string };
+      if (!res.ok) { setError(body.error ?? `HTTP ${res.status}`); setBusy(false); return; }
       setDone(true);
       setShowModal(false);
       router.refresh();

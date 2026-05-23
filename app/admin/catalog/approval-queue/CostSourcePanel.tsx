@@ -144,8 +144,8 @@ function CostGroupCard({ group, tone }: { group: CostSourceGroup; tone: 'red' | 
           notes: rationale,
         }),
       });
-      const body = await res.json() as { ok?: boolean; error?: string; id?: string };
-      if (!res.ok || !body.ok) { setError(body.error ?? `HTTP ${res.status}`); setBusy(null); return; }
+      const body = await res.json() as { proposal?: unknown; error?: string };
+      if (!res.ok) { setError(body.error ?? `HTTP ${res.status}`); setBusy(null); return; }
       setDone(type);
       setShowModal(null);
       router.refresh();
