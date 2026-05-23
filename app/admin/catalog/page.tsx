@@ -670,7 +670,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           for (const r of universeRows) {
             if (r.publication_status === 'perfect') continue;
             for (const g of r.failed_gates) {
-              gateCount.set(g, (gateCount.get(g) ?? 0) + 1);
+              gateCount.set(g.gate_id, (gateCount.get(g.gate_id) ?? 0) + 1);
             }
           }
           const topGates = Array.from(gateCount.entries())
@@ -759,7 +759,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         <div key={r.id} className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-[11px] text-slate-700 truncate">{r.name}</p>
-                            <p className="text-[10px] text-red-600 font-mono">{r.failed_gates[0]}</p>
+                            <p className="text-[10px] text-red-600 font-mono">{r.failed_gates[0]?.display_label ?? r.failed_gates[0]?.gate_id}</p>
                           </div>
                           <Link
                             href={buildUrl(rawFilters, { q: String(r.id), tab: undefined })}
