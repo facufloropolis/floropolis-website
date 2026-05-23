@@ -1359,6 +1359,92 @@ async function execVendorPricelistRequest(
 }
 
 // ---------------------------------------------------------------------------
+// price_alert.batch_clear: Facu acknowledges Ecoroses price changes and
+// clears has_open_price_alert on the specified SKU IDs.
+// Payload: { sku_ids: number[]; sku_count: number; vendor: string; tier: string }
+// ---------------------------------------------------------------------------
+async function execPriceAlertBatchClear(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const rawIds = payload.sku_ids;
+  if (!Array.isArray(rawIds) || rawIds.length === 0) return fail('missing_sku_ids');
+  const skuIds = rawIds.map(Number).filter(n => Number.isFinite(n) && n > 0);
+  if (skuIds.length === 0) return fail('invalid_sku_ids');
+
+  const { error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update({ has_open_price_alert: false })
+    .in('id', skuIds);
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'floropolis_inventory_mirror',
+      target_id: `batch:${skuIds.length}_sku_ids`,
+      before_jsonb: { sku_ids: skuIds, has_open_price_alert: true },
+      after_jsonb: { sku_count: skuIds.length, has_open_price_alert: false, rationale: proposal.source_rationale },
+      applied_by_function: 'proposal-executors.execPriceAlertBatchClear',
+    }],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// contents_description.batch_approve: writes a description template to all
+// floropolis_inventory_mirror rows matching vendor + variety + tier.
+// Payload: { vendor: string; variety: string; tier: string; description_text: string }
+// ---------------------------------------------------------------------------
+async function execContentsDescriptionBatchApprove(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  const vendor = typeof payload.vendor === 'string' ? payload.vendor.trim() : '';
+  const variety = typeof payload.variety === 'string' ? payload.variety.trim() : '';
+  const tier = typeof payload.tier === 'string' ? payload.tier.trim() : '';
+  const text = typeof payload.description_text === 'string' ? payload.description_text.trim() : '';
+  if (!vendor) return fail('missing_vendor');
+  if (!variety) return fail('missing_variety');
+  if (!tier) return fail('missing_tier');
+  if (text.length < 10) return fail('description_text too short (min 10 chars)');
+
+  const { data: before, error: readErr } = await service
+    .from('floropolis_inventory_mirror')
+    .select('id, contents_note')
+    .eq('vendor', vendor)
+    .eq('variety', variety)
+    .eq('tier', tier);
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  const rows = (before ?? []) as Array<{ id: number; contents_note: string | null }>;
+  if (rows.length === 0) return fail(`no_rows_found for ${vendor} × ${variety} × ${tier}`);
+
+  const { error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update({ contents_note: text })
+    .eq('vendor', vendor)
+    .eq('variety', variety)
+    .eq('tier', tier);
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'floropolis_inventory_mirror',
+      target_id: `${vendor}|${variety}|${tier}`,
+      before_jsonb: { affected_count: rows.length, sample_contents_note: rows[0]?.contents_note ?? null },
+      after_jsonb: { affected_count: rows.length, contents_note: text },
+      applied_by_function: 'proposal-executors.execContentsDescriptionBatchApprove',
+    }],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
@@ -1468,6 +1554,10 @@ export async function executeProposal(
       return execCostSourceFlag(proposal, service);
     case 'vendor.pricelist_request':
       return execVendorPricelistRequest(proposal);
+    case 'price_alert.batch_clear':
+      return execPriceAlertBatchClear(proposal, service);
+    case 'contents_description.batch_approve':
+      return execContentsDescriptionBatchApprove(proposal, service);
     case 'ingest.price_field_bug':
       // Audit-only — just records Facu's escalation instruction. Rose's verifier
       // reads admin_approvals and wires the ingest fix through her own pipeline.
@@ -1532,4 +1622,8 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'vendor.pricelist_request', // Audit log: waiting on vendor to send pricelist
   // Ingest pipeline bug escalation (2026-05-23): Rose's ingest writes K2K price not formula price
   'ingest.price_field_bug',
+  // Open price alert batch clear (2026-05-23): Facu acknowledges Ecoroses price changes
+  'price_alert.batch_clear',
+  // Contents description batch approve (2026-05-23): writes description template per variety×vendor×tier
+  'contents_description.batch_approve',
 ];
