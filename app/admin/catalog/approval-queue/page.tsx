@@ -38,6 +38,9 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 
 import RowsList, { type ProposalRowVm } from './RowsList';
 import type { AuditRow } from './AuditDrillDown';
+import BatchPriceResetPanel, { type BatchResetRow } from './BatchPriceResetPanel';
+
+const BATCH_PRICE_RESET_ARTIFACT = 'formula_deviation_audit_2026-05-23';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -238,6 +241,51 @@ export default async function AdminCatalogApprovalQueuePage({
   }
   const rows = (rowsRaw ?? []) as unknown as ProposalRow[];
 
+  // Batch price reset panel (awaiting_facu tab only) --------------------
+  // Fetch proposals from the formula_deviation_audit batch separately so we
+  // can render them as a prioritised panel above the main list and filter them
+  // out of the generic RowsList (443 individual rows would flood the queue).
+  let batchRows: BatchResetRow[] = [];
+  let batchTotalCount = 0;
+  if (status === 'awaiting_facu') {
+    const { count: batchCount } = await backup
+      .from('admin_proposals')
+      .select('id', { count: 'exact', head: true })
+      .eq('source_artifact', BATCH_PRICE_RESET_ARTIFACT)
+      .eq('status', 'awaiting_facu');
+    batchTotalCount = batchCount ?? 0;
+
+    if (batchTotalCount > 0) {
+      const { data: batchRaw } = await backup
+        .from('admin_proposals')
+        .select('id, target_id, payload')
+        .eq('source_artifact', BATCH_PRICE_RESET_ARTIFACT)
+        .eq('status', 'awaiting_facu')
+        .limit(20);
+      const batchUnsorted = ((batchRaw ?? []) as Array<{
+        id: string;
+        target_id: string | null;
+        payload: Record<string, unknown> | null;
+      }>)
+        .map((r) => {
+          const p = r.payload ?? {};
+          return {
+            id: r.id,
+            variety: String(p.variety ?? ''),
+            length: p.length != null ? `${p.length}cm` : '?',
+            tier: String(p.tier ?? ''),
+            farm_cost: Number(p.farm_cost ?? 0),
+            actual_price: Number(p.actual_price ?? 0),
+            formula_price: Number(p.formula_price ?? 0),
+            pct_above_formula: Number(p.pct_above_formula ?? 0),
+          } satisfies BatchResetRow;
+        });
+      batchRows = batchUnsorted
+        .sort((a, b) => b.pct_above_formula - a.pct_above_formula)
+        .slice(0, 15);
+    }
+  }
+
   // Resolve proposer emails via the shared RPC --------------------------
   const proposerIds = Array.from(
     new Set(rows.map((r) => r.proposed_by).filter((v): v is string => !!v)),
@@ -355,7 +403,9 @@ export default async function AdminCatalogApprovalQueuePage({
   }
 
   // Build view models ---------------------------------------------------
-  const vms: ProposalRowVm[] = rows.map((p) => {
+  // Exclude price.formula_reset proposals — they're shown in BatchPriceResetPanel.
+  const visibleRows = rows.filter((p) => p.type !== 'price.formula_reset');
+  const vms: ProposalRowVm[] = visibleRows.map((p) => {
     const cascade =
       cascadeFromSummary(p.cascade_summary) ?? legacyCascadeFor(p);
     return {
@@ -481,6 +531,14 @@ export default async function AdminCatalogApprovalQueuePage({
               tone="amber"
             />
           </div>
+        )}
+
+        {status === 'awaiting_facu' && batchTotalCount > 0 && (
+          <BatchPriceResetPanel
+            rows={batchRows}
+            totalCount={batchTotalCount}
+            sourceArtifact={BATCH_PRICE_RESET_ARTIFACT}
+          />
         )}
 
         <WiringSection level={wm('rows').level} note={wm('rows').note} id="rows">

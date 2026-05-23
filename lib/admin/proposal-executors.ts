@@ -1232,6 +1232,54 @@ async function execPriceCorrection(
 // Public entry point
 // ---------------------------------------------------------------------------
 
+async function execPriceFormulaReset(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  if (!proposal.target_id) return fail('missing_target_id');
+  const skuId = Number(proposal.target_id);
+  if (!Number.isFinite(skuId) || skuId <= 0) return fail('invalid_target_id');
+
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  // formula_price is stored directly in payload by the batch-insert script.
+  // Fallback: payload.after.price for proposals written via the manual form.
+  const newPriceRaw =
+    payload.formula_price ??
+    (payload.after && typeof payload.after === 'object'
+      ? (payload.after as Record<string, unknown>).price
+      : undefined);
+  if (newPriceRaw === undefined || newPriceRaw === null) return fail('missing_formula_price_in_payload');
+  const newPrice = typeof newPriceRaw === 'number' ? newPriceRaw : parseFloat(String(newPriceRaw));
+  if (!Number.isFinite(newPrice) || newPrice <= 0) return fail('invalid_price: must be positive number');
+
+  const { data: before, error: readErr } = await service
+    .from('floropolis_inventory_mirror')
+    .select('id, price')
+    .eq('id', skuId)
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!before) return fail('sku_not_found');
+
+  const { error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update({ price: newPrice })
+    .eq('id', skuId);
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'floropolis_inventory_mirror',
+      target_id: String(skuId),
+      before_jsonb: { price: (before as Record<string, unknown>).price },
+      after_jsonb: { price: newPrice },
+      applied_by_function: 'proposal-executors.execPriceFormulaReset',
+    }],
+  };
+}
+
 export async function executeProposal(
   proposal: AdminProposal,
   service: SupabaseClient,
@@ -1282,6 +1330,8 @@ export async function executeProposal(
       return execCatalogQualityTierReclassification(proposal, service);
     case 'price_correction.propose':
       return execPriceCorrection(proposal, service);
+    case 'price.formula_reset':
+      return execPriceFormulaReset(proposal, service);
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -1323,4 +1373,7 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   // Price correction: temporary price override per proposal, logged with reason + who proposed.
   // Requires price_override migration on floropolis_inventory_mirror (see execPriceCorrection TODO).
   'price_correction.propose',
+  // Formula deviation batch reset (2026-05-23 audit): resets K2K-scraped prices to formula prices.
+  // Batch-approved by Facu; Atlas runs executor after Rose confirms ingest root cause fixed.
+  'price.formula_reset',
 ];
