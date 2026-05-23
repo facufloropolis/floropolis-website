@@ -116,6 +116,7 @@ export interface MirrorRow {
   tier: string | null;
   category: string | null;
   variety: string | null;
+  color: string | null;
   length: string | null;
   unit: string | null;
   price: number | string | null;
@@ -177,6 +178,7 @@ export interface CatalogV2Row {
   tier: string;
   category: string;
   variety: string;
+  color: string | null;
   length: string;
   unit: string;
   // Universe membership
@@ -526,6 +528,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       tier: r.tier ?? '',
       category: r.category ?? '',
       variety: r.variety ?? '',
+      color: r.color ?? null,
       length: r.length ?? '',
       unit: r.unit ?? '',
       buckets,

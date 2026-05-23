@@ -329,7 +329,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('floropolis_inventory_mirror')
       .select(
-        'id, name, vendor, tier, category, variety, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date',
+        'id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -490,7 +490,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     }
 
     if (search) {
-      const blob = `${r.name} ${r.vendor} ${r.variety} ${r.category} ${r.id}`.toLowerCase();
+      const blob = `${r.name} ${r.vendor} ${r.variety} ${r.color ?? ''} ${r.category} ${r.id}`.toLowerCase();
       if (!blob.includes(search.toLowerCase())) return false;
     }
     return true;
@@ -1074,6 +1074,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                       <td className="px-3 py-2.5">
                         <div className="text-slate-900 font-medium max-w-[180px] truncate" title={r.name}>
                           {r.variety || r.category || r.name || '--'}
+                          {r.color ? ` · ${r.color}` : ''}
                           {r.length ? ` ${r.length}` : ''}
                         </div>
                         <div className="text-[11px] text-slate-500">

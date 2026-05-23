@@ -304,6 +304,38 @@ export default async function AdminCatalogConfigPage({
   }
   const totalSkus = totalSkusRes.count ?? 0;
 
+  // Per-gate failing SKU counts for the quality panel ---------------------
+  // Fetch failing_gates from catalog_classifications and normalize gate IDs
+  // to match catalog_quality_weights.gate_id entries.
+  const gateFailCount = new Map<string, number>();
+  try {
+    const { data: classRows, error: classErr } = await backup
+      .from('catalog_classifications')
+      .select('failing_gates')
+      .not('failing_gates', 'is', null);
+    if (classErr) {
+      console.error('[admin/catalog/config] classifications:', classErr);
+    } else {
+      for (const row of (classRows ?? []) as { failing_gates: string[] | null }[]) {
+        if (!Array.isArray(row.failing_gates)) continue;
+        const seen = new Set<string>();
+        for (const g of row.failing_gates) {
+          if (typeof g !== 'string') continue;
+          let normalized: string;
+          if (g.startsWith('formula_deviation_')) normalized = 'formula_deviation';
+          else if (g === 't2_outside_5d_window' || g === 't3_outside_14d_window' || g === 'missing_arrival_date') normalized = 'lead_time';
+          else normalized = g;
+          if (!seen.has(normalized)) {
+            seen.add(normalized);
+            gateFailCount.set(normalized, (gateFailCount.get(normalized) ?? 0) + 1);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[admin/catalog/config] classifications threw:', err);
+  }
+
   // tab counts for header summary -----------------------------------------
   const proposedByPanel: Record<PanelKey, number> = {
     boxes: 0, // boxes are READ-ONLY now -- no proposal pipeline
@@ -416,6 +448,7 @@ export default async function AdminCatalogConfigPage({
               thresholds={qualityThresholds}
               proposals={qualityProps}
               fmtDate={fmtDate}
+              gateFailCount={gateFailCount}
             />
           </WiringSection>
         )}
@@ -1085,12 +1118,14 @@ function QualityPanel({
   thresholds,
   proposals,
   fmtDate,
+  gateFailCount,
 }: {
   tab: TabKey;
   weights: QualityWeightRow[];
   thresholds: QualityThresholdRow[];
   proposals: AdminProposalRow[];
   fmtDate: (iso: string | null) => string;
+  gateFailCount: Map<string, number>;
 }) {
   const totalWeight = weights.reduce((acc, w) => acc + (Number(w.weight) || 0), 0);
   const sumOk = totalWeight === 100;
@@ -1230,16 +1265,24 @@ function QualityPanel({
         </div>
         <div className="px-4 py-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {weights.filter(w => w.tier === 'blocking').map(w => (
-              <div key={w.gate_id} className="flex items-start gap-2.5">
-                <div className="mt-0.5 w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                <div>
-                  <span className="text-xs font-semibold text-red-900">{w.display_label}</span>
-                  <span className="ml-2 text-[10px] text-red-600 font-mono">{w.gate_id}</span>
-                  {w.description && <p className="text-[10px] text-red-700 mt-0.5">{w.description}</p>}
+            {weights.filter(w => w.tier === 'blocking').map(w => {
+              const failing = gateFailCount.get(w.gate_id) ?? 0;
+              return (
+                <div key={w.gate_id} className="flex items-start gap-2.5">
+                  <div className="mt-0.5 w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                  <div>
+                    <span className="text-xs font-semibold text-red-900">{w.display_label}</span>
+                    <span className="ml-2 text-[10px] text-red-600 font-mono">{w.gate_id}</span>
+                    {failing > 0 && (
+                      <span className="ml-2 inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-200 text-red-900 border border-red-300">
+                        {failing} blocked
+                      </span>
+                    )}
+                    {w.description && <p className="text-[10px] text-red-700 mt-0.5">{w.description}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           {weights.filter(w => w.tier === 'blocking').length === 0 && (
             <p className="text-xs text-red-600">No blocking gates configured — all SKUs would be publishable. Check catalog_quality_weights.tier column.</p>
@@ -1290,6 +1333,7 @@ function QualityPanel({
                   <th className="px-4 py-2">Tier</th>
                   <th className="px-4 py-2">Category</th>
                   <th className="px-4 py-2 text-right">Weight</th>
+                  <th className="px-4 py-2 text-right">Failing now</th>
                   <th className="px-4 py-2">Description</th>
                   <th className="px-4 py-2">Evaluated</th>
                   <th className="px-4 py-2 text-right">Actions</th>
@@ -1298,7 +1342,7 @@ function QualityPanel({
               <tbody>
                 {weights.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-6 text-center text-xs text-slate-400">
+                    <td colSpan={8} className="px-4 py-6 text-center text-xs text-slate-400">
                       No quality weights seeded.
                     </td>
                   </tr>
@@ -1333,7 +1377,7 @@ function QualityPanel({
                         lastTier = w.tier;
                         rows.push(
                           <tr key={`header-${w.tier}`} className="bg-slate-50 border-b border-slate-200">
-                            <td colSpan={7} className="px-4 py-1.5">
+                            <td colSpan={8} className="px-4 py-1.5">
                               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
                                 {TIER_LABEL[w.tier] ?? w.tier}
                               </span>
@@ -1357,6 +1401,18 @@ function QualityPanel({
                           </td>
                           <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
                             {w.weight}
+                          </td>
+                          <td className="px-4 py-2.5 text-right">
+                            {w.evaluated ? (() => {
+                              const n = gateFailCount.get(w.gate_id) ?? 0;
+                              return (
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border ${n === 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : w.tier === 'blocking' ? 'bg-red-100 text-red-800 border-red-200' : 'bg-amber-100 text-amber-800 border-amber-200'}`}>
+                                  {n === 0 ? '0 SKUs' : `${n} SKUs`}
+                                </span>
+                              );
+                            })() : (
+                              <span className="text-[11px] text-slate-400">—</span>
+                            )}
                           </td>
                           <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
                             {w.description ?? '-'}
