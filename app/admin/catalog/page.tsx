@@ -329,7 +329,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('floropolis_inventory_mirror')
       .select(
-        'id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, live, active, arrival_date',
+        'id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, has_open_price_alert, live, active, arrival_date',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -484,6 +484,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     }
 
     if (flagFilter !== 'all') {
+      if (flagFilter === 'price_alert' && !r.has_open_price_alert) return false;
       if (flagFilter === 'missing_cost' && r.farm_cost != null) return false;
       if (flagFilter === 'no_box_dims' && r.box_verified) return false;
       if (flagFilter === 'failed_gates' && r.failed_gates.length === 0) return false;
@@ -807,6 +808,125 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           );
         })()}
 
+        {/* Vendor health table */}
+        {(() => {
+          type VHealth = {
+            vendor: string;
+            total: number;
+            live: number;
+            avgGpm: number | null;
+            missingCost: number;
+            openAlerts: number;
+            avgQuality: number | null;
+          };
+          const vhMap = new Map<string, VHealth>();
+          for (const r of universeRows) {
+            const v = vhMap.get(r.vendor) ?? { vendor: r.vendor, total: 0, live: 0, avgGpm: null, missingCost: 0, openAlerts: 0, avgQuality: null };
+            v.total++;
+            if (r.visibility === 'live') v.live++;
+            if (r.farm_cost == null) v.missingCost++;
+            if (r.has_open_price_alert) v.openAlerts++;
+            vhMap.set(r.vendor, v);
+          }
+          // Compute averages
+          const gpmSum = new Map<string, { sum: number; n: number }>();
+          const qSum = new Map<string, { sum: number; n: number }>();
+          for (const r of universeRows) {
+            if (r.gpm != null) {
+              const g = gpmSum.get(r.vendor) ?? { sum: 0, n: 0 };
+              g.sum += r.gpm; g.n++;
+              gpmSum.set(r.vendor, g);
+            }
+            if (r.quality_score != null) {
+              const q = qSum.get(r.vendor) ?? { sum: 0, n: 0 };
+              q.sum += r.quality_score; q.n++;
+              qSum.set(r.vendor, q);
+            }
+          }
+          const vhList: VHealth[] = Array.from(vhMap.values()).map((v) => {
+            const g = gpmSum.get(v.vendor);
+            const q = qSum.get(v.vendor);
+            return {
+              ...v,
+              avgGpm: g && g.n > 0 ? g.sum / g.n : null,
+              avgQuality: q && q.n > 0 ? q.sum / q.n : null,
+            };
+          }).sort((a, b) => b.total - a.total);
+
+          const totalAlerts = vhList.reduce((s, v) => s + v.openAlerts, 0);
+
+          return (
+            <div className="mb-5 rounded-xl border border-slate-200 bg-white overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Vendor health</span>
+                {totalAlerts > 0 && (
+                  <Link href={buildUrl(rawFilters, { flag: 'price_alert', tab: undefined })} className="text-[11px] font-semibold text-orange-700 hover:underline">
+                    {totalAlerts} open price alerts across all vendors →
+                  </Link>
+                )}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-white border-b border-slate-100">
+                    <tr className="text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                      <th className="px-4 py-2">Vendor</th>
+                      <th className="px-4 py-2 text-right">SKUs</th>
+                      <th className="px-4 py-2 text-right">Live</th>
+                      <th className="px-4 py-2 text-right">Avg quality</th>
+                      <th className="px-4 py-2 text-right">Avg GPM</th>
+                      <th className="px-4 py-2 text-right">Missing cost</th>
+                      <th className="px-4 py-2 text-right">Price alerts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vhList.map((v) => (
+                      <tr key={v.vendor} className="border-b border-slate-50 last:border-b-0 hover:bg-slate-50">
+                        <td className="px-4 py-2 font-medium text-slate-900">
+                          <Link href={buildUrl(rawFilters, { vendor: v.vendor, tab: undefined })} className="hover:text-emerald-700 hover:underline">
+                            {v.vendor}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-2 text-right text-slate-700">{v.total}</td>
+                        <td className="px-4 py-2 text-right">
+                          <span className={v.live > 0 ? 'text-emerald-700 font-semibold' : 'text-slate-400'}>{v.live}</span>
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          {v.avgQuality != null ? (
+                            <span className={v.avgQuality >= 90 ? 'text-emerald-700' : v.avgQuality >= 70 ? 'text-amber-700' : 'text-red-600'}>
+                              {v.avgQuality.toFixed(1)}
+                            </span>
+                          ) : <span className="text-slate-300">—</span>}
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          {v.avgGpm != null ? (
+                            <span className={v.avgGpm >= 0.33 ? 'text-emerald-700' : v.avgGpm >= 0.25 ? 'text-amber-700' : 'text-red-600'}>
+                              {(v.avgGpm * 100).toFixed(1)}%
+                            </span>
+                          ) : <span className="text-slate-300">—</span>}
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          {v.missingCost > 0 ? (
+                            <Link href={buildUrl(rawFilters, { vendor: v.vendor, flag: 'missing_cost', tab: undefined })} className="text-amber-700 font-semibold hover:underline">
+                              {v.missingCost}
+                            </Link>
+                          ) : <span className="text-emerald-700">✓</span>}
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          {v.openAlerts > 0 ? (
+                            <Link href={buildUrl(rawFilters, { vendor: v.vendor, flag: 'price_alert', tab: undefined })} className="text-orange-700 font-semibold hover:underline">
+                              ⚠ {v.openAlerts}
+                            </Link>
+                          ) : <span className="text-slate-300">—</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Tabs */}
         <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
           <div className="flex gap-1 mb-5 border-b border-slate-200 flex-wrap">
@@ -948,6 +1068,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 defaultValue={flagFilter}
                 options={[
                   { value: 'all', label: 'All' },
+                  { value: 'price_alert', label: '⚠ Price alerts (Rose)' },
                   { value: 'missing_cost', label: 'Missing cost' },
                   { value: 'no_box_dims', label: 'Box not verified' },
                   { value: 'failed_gates', label: 'Has failing gates' },
@@ -1325,10 +1446,20 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                       <td className="px-3 py-2.5">
                         {r.failed_gates.length === 0 &&
                         r.farm_cost != null &&
-                        r.box_verified ? (
+                        r.box_verified &&
+                        !r.has_open_price_alert ? (
                           <span className="text-[11px] text-emerald-700">clean</span>
                         ) : (
                           <div className="flex flex-wrap gap-1">
+                            {r.has_open_price_alert && (
+                              <Link
+                                href={`/admin/catalog/${r.id}`}
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold hover:bg-orange-100 transition-colors"
+                                title="Rose flagged this price for review"
+                              >
+                                ⚠ price alert
+                              </Link>
+                            )}
                             {r.failed_gates.slice(0, 3).map((g) => (
                               <Link
                                 key={g.gate_id}

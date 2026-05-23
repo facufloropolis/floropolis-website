@@ -128,6 +128,7 @@ export interface MirrorRow {
   units_per_box: number | string | null;
   box_type: string | null;
   margin_status: string | null;
+  has_open_price_alert: boolean | null;
   live: boolean;
   active: boolean;
   arrival_date: string | null;
@@ -219,6 +220,8 @@ export interface CatalogV2Row {
   gap_to_perfect: number | null;
   // Visibility (derived from live + active)
   visibility: Visibility;
+  // Rose-flagged price review signal
+  has_open_price_alert: boolean;
   // Override marker (NULL today; surfaced by future joins to overrides table)
   active_override_id: string | null;
 }
@@ -558,6 +561,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       gpm_band,
       margin_per_stem,
       gap_to_perfect,
+      has_open_price_alert: r.has_open_price_alert === true,
       visibility: deriveVisibility(r),
       active_override_id: null,
     };
