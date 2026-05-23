@@ -1175,15 +1175,21 @@ function QualityPanel({
                   </tr>
                 ) : (
                   thresholds.map((t) => (
-                    <tr key={t.threshold_id} className="border-b border-slate-100 last:border-b-0">
+                    <tr key={t.threshold_id} className={`border-b border-slate-100 last:border-b-0${t.threshold_id === 'competitive_min_comp_adv' ? ' opacity-50' : ''}`}>
                       <td className="px-4 py-2.5 font-mono text-xs text-slate-900">
                         {t.threshold_id}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
                         {Number(t.value).toString()}
+                        {t.threshold_id === 'competitive_min_comp_adv' && (
+                          <div className="text-[10px] text-slate-400 mt-0.5">disabled — set to 0</div>
+                        )}
                       </td>
                       <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
                         {t.description ?? '-'}
+                        {t.threshold_id === 'competitive_min_comp_adv' && (
+                          <div className="text-[10px] text-amber-600 mt-0.5">Becomes active when: comp_adv pipeline scores all SKUs (currently 7/1000)</div>
+                        )}
                       </td>
                       <td className="px-4 py-2.5 text-[11px] text-slate-500">
                         {fmtDate(t.updated_at)}
@@ -1226,9 +1232,8 @@ function QualityPanel({
             <div>
               <h3 className="text-sm font-semibold text-slate-900">Per-gate weights</h3>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Sum must equal 100. Gates marked unevaluated are aspirational
-                (perfect_inventory_bar.md spec) but not yet emitted by the
-                validator -- their weight is credited automatically.
+                3 gates are placeholders (greyed out) — auto-credited until mirror schema supports them.
+                Sum of active gates: <span className="font-semibold">{weights.filter(w => w.evaluated).reduce((a, w) => a + Number(w.weight), 0)}</span> / 100.
               </p>
             </div>
             <div className="text-right">
@@ -1269,7 +1274,7 @@ function QualityPanel({
                   </tr>
                 ) : (
                   weights.map((w) => (
-                    <tr key={w.gate_id} className="border-b border-slate-100 last:border-b-0">
+                    <tr key={w.gate_id} className={`border-b border-slate-100 last:border-b-0${w.evaluated ? '' : ' opacity-50'}`}>
                       <td className="px-4 py-2.5">
                         <div className="font-mono text-[11px] text-slate-500">{w.gate_id}</div>
                         <div className="text-slate-900 text-xs">{w.display_label}</div>
@@ -1289,12 +1294,15 @@ function QualityPanel({
                             evaluated
                           </span>
                         ) : (
-                          <span
-                            className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-100 text-slate-600 border-slate-200"
-                            title="Validator does not yet emit this gate; weight is credited as passing."
-                          >
-                            pending schema
-                          </span>
+                          <>
+                            <span
+                              className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-50 text-slate-400 border-slate-200"
+                              title="This gate is not yet evaluated by the validator — the column does not exist in the inventory mirror schema. Weight is auto-credited until the field is available."
+                            >
+                              placeholder
+                            </span>
+                            <div className="text-[10px] text-slate-400 mt-0.5">auto-credited until schema ready</div>
+                          </>
                         )}
                       </td>
                       <td className="px-4 py-2.5 text-right">
