@@ -1572,6 +1572,22 @@ export async function executeProposal(
           applied_by_function: 'proposal-executors.ingest.price_field_bug[audit_only]',
         }],
       };
+    case 'cost_source.facu_correction':
+    case 'price_alert.facu_correction':
+      // Audit-only correction records — Facu's domain knowledge captured as a structured
+      // correction. No data change in floropolis_inventory_mirror. Rose's verifier reads
+      // these from admin_approvals and routes the fix through her pipeline.
+      return {
+        ok: true,
+        auditEntries: [{
+          proposal_id: proposal.id,
+          target_table: 'floropolis_inventory_mirror',
+          target_id: null,
+          before_jsonb: null,
+          after_jsonb: { status: 'correction_logged', payload: proposal.payload },
+          applied_by_function: `proposal-executors.${proposal.type}[audit_only]`,
+        }],
+      };
     // Rose-originated canonical_cost cleanup proposals (2026-05-19 batch incoming):
     // audit-only on our side; Rose's verifier does the real canonical_cost write.
     case 'delete_cost_row':
@@ -1626,4 +1642,7 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'price_alert.batch_clear',
   // Contents description batch approve (2026-05-23): writes description template per variety×vendor×tier
   'contents_description.batch_approve',
+  // Facu correction records (2026-05-23): domain knowledge captured as structured corrections to Rose
+  'cost_source.facu_correction',
+  'price_alert.facu_correction',
 ];

@@ -43,6 +43,7 @@ import CostSourcePanel, { type CostSourceGroup } from './CostSourcePanel';
 import IngestPriceBugPanel, { type IngestBugSku } from './IngestPriceBugPanel';
 import OpenPriceAlertPanel, { type OpenPriceAlertSku } from './OpenPriceAlertPanel';
 import ContentDescriptionPanel, { type DescriptionVariety } from './ContentDescriptionPanel';
+import SupplyQualityBar, { type PendingCorrection, type PotentialUnlock } from './SupplyQualityBar';
 
 const BATCH_PRICE_RESET_ARTIFACT = 'formula_deviation_audit_2026-05-23';
 
@@ -245,6 +246,61 @@ export default async function AdminCatalogApprovalQueuePage({
   }
   const rows = (rowsRaw ?? []) as unknown as ProposalRow[];
 
+  // ── Supply quality counts (always, for SupplyQualityBar) ─────────────
+  // Read from catalog_classifications. These counts show the current state
+  // of the catalog so Facu can see supply improving as corrections land.
+  let supplyBlockedCount = 0;
+  let supplyPublishableCount = 0;
+  let supplyPerfectCount = 0;
+  let supplyTotalCount = 0;
+  {
+    const [{ count: blocked }, { count: publishable }, { count: perfect }, { count: total }] =
+      await Promise.all([
+        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }).eq('status', 'blocked'),
+        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }).eq('status', 'publishable'),
+        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }).eq('status', 'perfect'),
+        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }),
+      ]);
+    supplyBlockedCount    = blocked    ?? 0;
+    supplyPublishableCount = publishable ?? 0;
+    supplyPerfectCount    = perfect    ?? 0;
+    supplyTotalCount      = total      ?? 0;
+  }
+
+  // ── Pending correction records for SupplyQualityBar (awaiting_facu only) ─
+  // Pulls all Facu-authored correction proposals still in the queue so the
+  // bar can show what's in flight and how long each has been open.
+  const CORRECTION_TYPES = [
+    'ingest.price_field_bug',
+    'cost_source.facu_correction',
+    'price_alert.facu_correction',
+  ];
+  const CORRECTION_LABELS: Record<string, string> = {
+    'ingest.price_field_bug':       'Ingest price bug',
+    'cost_source.facu_correction':  'Cost source correction',
+    'price_alert.facu_correction':  'Price alert correction',
+  };
+  let pendingCorrections: PendingCorrection[] = [];
+  if (status === 'awaiting_facu') {
+    const { data: corrRows } = await backup
+      .from('admin_proposals')
+      .select('id, type, payload, proposed_at')
+      .in('type', CORRECTION_TYPES)
+      .eq('status', 'awaiting_facu')
+      .order('proposed_at', { ascending: false });
+    const now = Date.now();
+    pendingCorrections = ((corrRows ?? []) as Array<{
+      id: string; type: string; payload: Record<string, unknown> | null; proposed_at: string;
+    }>).map(r => ({
+      id: r.id,
+      type: r.type,
+      label: CORRECTION_LABELS[r.type] ?? r.type,
+      priority: (r.payload?.priority as string | null) ?? null,
+      proposed_at: r.proposed_at,
+      days_open: Math.floor((now - new Date(r.proposed_at).getTime()) / (24 * 60 * 60 * 1000)),
+    }));
+  }
+
   // Batch price reset panel (awaiting_facu tab only) --------------------
   // Fetch proposals from the formula_deviation_audit batch separately so we
   // can render them as a prioritised panel above the main list and filter them
@@ -287,6 +343,41 @@ export default async function AdminCatalogApprovalQueuePage({
       batchRows = batchUnsorted
         .sort((a, b) => b.pct_above_formula - a.pct_above_formula)
         .slice(0, 15);
+    }
+  }
+
+  // ── Recurrence detection for CostSource + OpenPriceAlert + ContentDescription ──
+  // Same pattern as ingest — query admin_proposals for prior submissions per type.
+  let priorCostCorrectionCount = 0;
+  let daysSinceFirstCostSurfaced = 0;
+  let priorAlertCorrectionCount = 0;
+  let daysSinceFirstAlertSurfaced = 0;
+  let priorDescriptionCount = 0;
+  let daysSinceFirstDescriptionSurfaced = 0;
+  if (status === 'awaiting_facu') {
+    const [costRes, alertRes, descRes] = await Promise.all([
+      backup.from('admin_proposals').select('proposed_at', { count: 'exact' })
+        .in('type', ['cost_source.facu_correction', 'cost.source_confirm', 'cost.source_flag'])
+        .order('proposed_at', { ascending: true }).limit(1),
+      backup.from('admin_proposals').select('proposed_at', { count: 'exact' })
+        .in('type', ['price_alert.facu_correction', 'price_alert.batch_clear'])
+        .order('proposed_at', { ascending: true }).limit(1),
+      backup.from('admin_proposals').select('proposed_at', { count: 'exact' })
+        .eq('type', 'contents_description.batch_approve')
+        .order('proposed_at', { ascending: true }).limit(1),
+    ]);
+    const now = Date.now();
+    priorCostCorrectionCount = costRes.count ?? 0;
+    if (costRes.data?.[0]?.proposed_at) {
+      daysSinceFirstCostSurfaced = Math.floor((now - new Date(costRes.data[0].proposed_at).getTime()) / 864e5);
+    }
+    priorAlertCorrectionCount = alertRes.count ?? 0;
+    if (alertRes.data?.[0]?.proposed_at) {
+      daysSinceFirstAlertSurfaced = Math.floor((now - new Date(alertRes.data[0].proposed_at).getTime()) / 864e5);
+    }
+    priorDescriptionCount = descRes.count ?? 0;
+    if (descRes.data?.[0]?.proposed_at) {
+      daysSinceFirstDescriptionSurfaced = Math.floor((now - new Date(descRes.data[0].proposed_at).getTime()) / 864e5);
     }
   }
 
@@ -670,6 +761,23 @@ export default async function AdminCatalogApprovalQueuePage({
             Data source: admin_proposals on supabase-backup.
           </p>
         </div>
+
+        {/* Supply quality bar — always visible, shows current state + corrections in flight */}
+        <SupplyQualityBar
+          blockedCount={supplyBlockedCount}
+          publishableCount={supplyPublishableCount}
+          perfectCount={supplyPerfectCount}
+          totalCount={supplyTotalCount}
+          pendingCorrections={pendingCorrections}
+          potentialUnlocks={[
+            ...(ingestBugTotal > 0 ? [{ label: 'Fix ingest pipeline', sku_count: ingestBugTotal, panel: 'ingest' }] satisfies PotentialUnlock[] : []),
+            ...(costGroups.filter(g => g.decision_type === 'confirm').length > 0
+              ? [{ label: 'Confirm cost sources', sku_count: costGroups.filter(g => g.decision_type === 'confirm').reduce((s, g) => s + g.sku_count, 0), panel: 'cost_source' }] satisfies PotentialUnlock[]
+              : []),
+            ...(openAlertSoleBlockers.length > 0 ? [{ label: 'Clear price alerts', sku_count: openAlertSoleBlockers.length, panel: 'price_alert' }] satisfies PotentialUnlock[] : []),
+            ...(descriptionVarieties.length > 0 ? [{ label: 'Add content descriptions', sku_count: DESCRIPTION_TOTAL, panel: 'description' }] satisfies PotentialUnlock[] : []),
+          ]}
+        />
 
         {/* Tab bar */}
         <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">

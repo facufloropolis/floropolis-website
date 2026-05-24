@@ -1,5 +1,5 @@
 'use client';
-// CostSourcePanel | v1 | 2026-05-23 | Job_PM [V8 SHADOW]
+// CostSourcePanel | v2 | 2026-05-23 | Job_PM [V8 SHADOW]
 //
 // Surfaces cost source groups that need a Facu decision:
 //   - CONFIRM: named pricelist exists, cost data present, needs in-system confirmation
@@ -110,6 +110,20 @@ function Section({
   );
 }
 
+// Pre-filled belief text per source_risk category
+function getCorrectionPrefill(group: CostSourceGroup): string {
+  if (group.source_risk === 'synthetic') {
+    return `The cost_source ${group.cost_source} is synthetic/back-calculated. The real farm cost is different from what the system shows.`;
+  }
+  if (group.source_risk === 'stale') {
+    return `The ${group.cost_source} pricelist is stale/no longer current. We have a more recent basis.`;
+  }
+  if (group.source_risk === 'missing') {
+    return `I know the ${group.vendor} pricelist status — `;
+  }
+  return `I have additional context about the ${group.cost_source} cost source for ${group.vendor} (${group.tier}).`;
+}
+
 function CostGroupCard({ group, tone }: { group: CostSourceGroup; tone: 'red' | 'amber' | 'slate' }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
@@ -118,6 +132,15 @@ function CostGroupCard({ group, tone }: { group: CostSourceGroup; tone: 'red' | 
   const [dueDate, setDueDate] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+
+  // Third-path correction state
+  const [showCorrection, setShowCorrection] = useState(false);
+  const [correctionBusy, setCorrectionBusy] = useState(false);
+  const [correctionDone, setCorrectionDone] = useState(false);
+  const [correctionError, setCorrectionError] = useState<string | null>(null);
+  const [whatIBelieve, setWhatIBelieve] = useState('');
+  const [why, setWhy] = useState('');
+  const [correctionPriority, setCorrectionPriority] = useState<'P0' | 'P1' | 'P2'>('P1');
 
   async function submitProposal(type: string, extra: Record<string, unknown> = {}) {
     if (rationale.trim().length < 5) { setError('Rationale required (min 5 chars)'); return; }
@@ -156,10 +179,50 @@ function CostGroupCard({ group, tone }: { group: CostSourceGroup; tone: 'red' | 
     }
   }
 
+  async function sendCostCorrection() {
+    if (whatIBelieve.trim().length < 5) { setCorrectionError('Fill in what you believe (min 5 chars)'); return; }
+    if (why.trim().length < 5) { setCorrectionError('Fill in why (min 5 chars)'); return; }
+    setCorrectionBusy(true);
+    setCorrectionError(null);
+    try {
+      const res = await fetch('/api/admin/proposals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'cost_source.facu_correction',
+          target_table: 'floropolis_inventory_mirror',
+          target_id: null,
+          payload: {
+            vendor: group.vendor,
+            tier: group.tier,
+            cost_source: group.cost_source,
+            sku_count: group.sku_count,
+            source_risk: group.source_risk,
+            what_i_believe: whatIBelieve.trim(),
+            why: why.trim(),
+            priority: correctionPriority,
+          },
+          source_agent: 'Job_PM',
+          source_rationale: why.trim(),
+          notes: whatIBelieve.trim(),
+        }),
+      });
+      const body = await res.json() as { proposal?: unknown; error?: string };
+      if (!res.ok) { setCorrectionError(body.error ?? `HTTP ${res.status}`); setCorrectionBusy(false); return; }
+      setCorrectionDone(true);
+      setShowCorrection(false);
+      router.refresh();
+    } catch (e) {
+      setCorrectionError(e instanceof Error ? e.message : 'request failed');
+    } finally {
+      setCorrectionBusy(false);
+    }
+  }
+
   if (done) {
     return (
       <div className="px-4 py-3 text-xs text-emerald-700 bg-emerald-50">
-        ✓ Proposal submitted — awaiting your approval in the queue.
+        Proposal submitted — awaiting your approval in the queue.
       </div>
     );
   }
@@ -179,14 +242,14 @@ function CostGroupCard({ group, tone }: { group: CostSourceGroup; tone: 'red' | 
               <span className="text-red-600 font-semibold">{group.sku_count - group.has_cost} have NO cost data</span>
             )}
             {group.avg_cost != null && (
-              <span>avg ${group.avg_cost.toFixed(3)}/stem · range ${group.min_cost?.toFixed(2)}–${group.max_cost?.toFixed(2)}</span>
+              <span>avg ${group.avg_cost.toFixed(3)}/stem · range ${group.min_cost?.toFixed(2)}-${group.max_cost?.toFixed(2)}</span>
             )}
           </div>
           <p className={`text-[11px] mt-1 ${tone === 'red' ? 'text-red-700' : tone === 'amber' ? 'text-amber-700' : 'text-slate-500'}`}>
             {group.risk_reason}
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap">
           {group.decision_type === 'confirm' && (
             <>
               <button
@@ -227,8 +290,109 @@ function CostGroupCard({ group, tone }: { group: CostSourceGroup; tone: 'red' | 
               Log chase request
             </button>
           )}
+          {/* Third path — always available */}
+          {correctionDone ? (
+            <span className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+              Correction sent
+            </span>
+          ) : (
+            <button
+              onClick={() => {
+                setShowCorrection(s => !s);
+                setCorrectionError(null);
+                if (!showCorrection) setWhatIBelieve(getCorrectionPrefill(group));
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                showCorrection
+                  ? 'bg-emerald-200 text-emerald-900 border-emerald-300'
+                  : 'bg-emerald-100 text-emerald-800 border border-emerald-200 hover:bg-emerald-200'
+              }`}
+            >
+              I see this differently
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Inline correction form — third path */}
+      {showCorrection && !correctionDone && (
+        <div className="mt-3 border border-emerald-200 rounded-xl bg-white px-4 py-4">
+          <h3 className="font-bold text-slate-900 text-sm mb-1">Correction record for Rose</h3>
+          <p className="text-xs text-slate-500 mb-4">
+            Pre-filled from the cost source context. Edit any field.
+            The <strong>why</strong> field is where you add what the system does not know.
+            This becomes a machine-readable correction record — not just a routing action.
+          </p>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                What I believe is true about this cost source
+              </label>
+              <textarea
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-50/40"
+                rows={2}
+                value={whatIBelieve}
+                onChange={e => setWhatIBelieve(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-emerald-700 mb-1">
+                Why — what do you know that changes this picture?
+              </label>
+              <textarea
+                className="w-full border border-emerald-200 rounded-lg px-3 py-2 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-emerald-50/30"
+                rows={2}
+                placeholder="e.g. Ecoroses gave us an FOB pricelist in April that supersedes the March one. Or: the benchmark spreadsheet costs are actually close enough for T3 pricing."
+                value={why}
+                onChange={e => setWhy(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Priority</label>
+                <div className="flex gap-2">
+                  {(['P0', 'P1', 'P2'] as const).map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setCorrectionPriority(p)}
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors ${
+                        correctionPriority === p
+                          ? p === 'P0' ? 'bg-red-700 text-white border-red-700'
+                            : p === 'P1' ? 'bg-orange-600 text-white border-orange-600'
+                            : 'bg-slate-600 text-white border-slate-600'
+                          : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex-1 flex justify-end gap-2 items-end">
+                {correctionError && <p className="text-xs text-red-600">{correctionError}</p>}
+                <button
+                  onClick={() => { setShowCorrection(false); setCorrectionError(null); }}
+                  className="px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100"
+                  disabled={correctionBusy}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={sendCostCorrection}
+                  disabled={correctionBusy}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {correctionBusy ? 'Sending...' : 'Send correction to Rose'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
