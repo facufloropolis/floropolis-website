@@ -1,5 +1,5 @@
 'use client';
-// CostSourcePanel | v2 | 2026-05-23 | Job_PM [V8 SHADOW]
+// CostSourcePanel | v2 | 2026-05-26 | Job_PM [V8 SHADOW]
 //
 // Surfaces cost source groups that need a Facu decision:
 //   - CONFIRM: named pricelist exists, cost data present, needs in-system confirmation
@@ -30,9 +30,11 @@ export interface CostSourceGroup {
 
 interface Props {
   groups: CostSourceGroup[];
+  priorCorrectionCount: number;      // how many times any cost correction has been submitted before
+  daysSinceFirstSurfaced: number;    // 0 = first time; >0 = recurring
 }
 
-export default function CostSourcePanel({ groups }: Props) {
+export default function CostSourcePanel({ groups, priorCorrectionCount, daysSinceFirstSurfaced }: Props) {
   if (groups.length === 0) return null;
 
   const confirm = groups.filter(g => g.decision_type === 'confirm');
@@ -41,6 +43,16 @@ export default function CostSourcePanel({ groups }: Props) {
 
   return (
     <div className="mb-6 space-y-3">
+      {priorCorrectionCount > 0 && (
+        <div className="px-4 py-2 bg-amber-900/10 border-b border-amber-200 flex items-center gap-2">
+          <span className="text-[10px] font-bold bg-amber-900 text-white rounded-full px-2 py-0.5 uppercase tracking-wide">
+            Recurring x {priorCorrectionCount} — {daysSinceFirstSurfaced}d open
+          </span>
+          <span className="text-xs text-amber-900">
+            Cost source corrections have been submitted {priorCorrectionCount} time{priorCorrectionCount !== 1 ? 's' : ''} without being resolved.
+          </span>
+        </div>
+      )}
       {/* Synthetic / unreliable costs — most urgent */}
       {flag.length > 0 && (
         <Section

@@ -1,5 +1,5 @@
 'use client';
-// OpenPriceAlertPanel | v2 | 2026-05-23 | Job_PM [V8 SHADOW]
+// OpenPriceAlertPanel | v2 | 2026-05-26 | Job_PM [V8 SHADOW]
 //
 // 299 Ecoroses T3 SKUs have has_open_price_alert = true (K2K flagged price change).
 // 26 of those have this as the ONLY failing gate → they publish immediately once cleared.
@@ -22,12 +22,14 @@ export interface OpenPriceAlertSku {
 interface Props {
   soleBlockers: OpenPriceAlertSku[];
   totalAffected: number;
+  priorCorrectionCount: number;
+  daysSinceFirstSurfaced: number;
 }
 
 const CORRECTION_PREFILL_BELIEVE =
   "The Ecoroses price alert may not reflect negotiated prices. K2K's market price change does not necessarily mean our FOB pricelist changed. Our agreed prices may still be valid.";
 
-export default function OpenPriceAlertPanel({ soleBlockers, totalAffected }: Props) {
+export default function OpenPriceAlertPanel({ soleBlockers, totalAffected, priorCorrectionCount, daysSinceFirstSurfaced }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -137,6 +139,11 @@ export default function OpenPriceAlertPanel({ soleBlockers, totalAffected }: Pro
             <span className="text-[10px] font-bold bg-orange-700 text-white rounded-full px-2 py-0.5 uppercase tracking-wide">
               Open Price Alert
             </span>
+            {priorCorrectionCount > 0 && (
+              <span className="text-[10px] font-bold bg-orange-900 text-white rounded-full px-2 py-0.5 uppercase tracking-wide">
+                Recurring x {priorCorrectionCount} — {daysSinceFirstSurfaced}d open
+              </span>
+            )}
             <span className="font-semibold text-orange-900 text-sm">
               Ecoroses changed their prices — {totalAffected} SKUs flagged, {soleBlockers.length} are sole blockers
             </span>

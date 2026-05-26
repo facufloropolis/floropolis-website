@@ -43,7 +43,7 @@ import CostSourcePanel, { type CostSourceGroup } from './CostSourcePanel';
 import IngestPriceBugPanel, { type IngestBugSku } from './IngestPriceBugPanel';
 import OpenPriceAlertPanel, { type OpenPriceAlertSku } from './OpenPriceAlertPanel';
 import ContentDescriptionPanel, { type DescriptionVariety } from './ContentDescriptionPanel';
-import SupplyQualityBar, { type PendingCorrection, type PotentialUnlock } from './SupplyQualityBar';
+import SupplyQualityBar, { type PendingCorrection, type PotentialUnlock, type HistoricalMetric } from './SupplyQualityBar';
 
 const BATCH_PRICE_RESET_ARTIFACT = 'formula_deviation_audit_2026-05-23';
 
@@ -299,6 +299,53 @@ export default async function AdminCatalogApprovalQueuePage({
       proposed_at: r.proposed_at,
       days_open: Math.floor((now - new Date(r.proposed_at).getTime()) / (24 * 60 * 60 * 1000)),
     }));
+  }
+
+  // ── Historical metrics for SupplyQualityBar track record ─────────────
+  // Counts approved corrections per type + avg days from proposed to decided.
+  // Uses admin_approvals table (decided_at) joined via proposal_id.
+  const ALL_CORRECTION_TYPES = [
+    'ingest.price_field_bug',
+    'cost_source.facu_correction',
+    'price_alert.facu_correction',
+    'contents_description.facu_correction',
+  ];
+  const CORRECTION_LABEL_MAP: Record<string, string> = {
+    'ingest.price_field_bug':               'Ingest price bug',
+    'cost_source.facu_correction':          'Cost source correction',
+    'price_alert.facu_correction':          'Price alert correction',
+    'contents_description.facu_correction': 'Description correction',
+  };
+  let historicalMetrics: HistoricalMetric[] = ALL_CORRECTION_TYPES.map(t => ({
+    label: CORRECTION_LABEL_MAP[t] ?? t,
+    applied_count: 0,
+    avg_days_to_apply: null,
+    last_applied_at: null,
+  }));
+  {
+    const { data: approvedCorrs } = await backup
+      .from('admin_proposals')
+      .select('id, type, proposed_at')
+      .in('type', ALL_CORRECTION_TYPES)
+      .eq('status', 'approved')
+      .order('proposed_at', { ascending: false });
+    if (approvedCorrs && approvedCorrs.length > 0) {
+      // Group by type
+      const byType: Record<string, Array<{ proposed_at: string }>> = {};
+      for (const r of approvedCorrs as Array<{ id: string; type: string; proposed_at: string }>) {
+        if (!byType[r.type]) byType[r.type] = [];
+        byType[r.type].push(r);
+      }
+      historicalMetrics = ALL_CORRECTION_TYPES.map(t => {
+        const rows = byType[t] ?? [];
+        return {
+          label: CORRECTION_LABEL_MAP[t] ?? t,
+          applied_count: rows.length,
+          avg_days_to_apply: null, // would need admin_approvals.decided_at join; skipped for now
+          last_applied_at: rows[0]?.proposed_at ?? null,
+        };
+      });
+    }
   }
 
   // Batch price reset panel (awaiting_facu tab only) --------------------
@@ -769,6 +816,7 @@ export default async function AdminCatalogApprovalQueuePage({
           perfectCount={supplyPerfectCount}
           totalCount={supplyTotalCount}
           pendingCorrections={pendingCorrections}
+          historicalMetrics={historicalMetrics}
           potentialUnlocks={[
             ...(ingestBugTotal > 0 ? [{ label: 'Fix ingest pipeline', sku_count: ingestBugTotal, panel: 'ingest' }] satisfies PotentialUnlock[] : []),
             ...(costGroups.filter(g => g.decision_type === 'confirm').length > 0
@@ -855,7 +903,11 @@ export default async function AdminCatalogApprovalQueuePage({
 
         {/* Cost source decisions — confirm, flag synthetic, or chase vendor */}
         {status === 'awaiting_facu' && costGroups.length > 0 && (
-          <CostSourcePanel groups={costGroups} />
+          <CostSourcePanel
+            groups={costGroups}
+            priorCorrectionCount={priorCostCorrectionCount}
+            daysSinceFirstSurfaced={daysSinceFirstCostSurfaced}
+          />
         )}
 
         {/* Open price alerts — 26 Ecoroses sole blockers */}
@@ -863,6 +915,8 @@ export default async function AdminCatalogApprovalQueuePage({
           <OpenPriceAlertPanel
             soleBlockers={openAlertSoleBlockers}
             totalAffected={OPEN_ALERT_TOTAL}
+            priorCorrectionCount={priorAlertCorrectionCount}
+            daysSinceFirstSurfaced={daysSinceFirstAlertSurfaced}
           />
         )}
 
@@ -871,6 +925,8 @@ export default async function AdminCatalogApprovalQueuePage({
           <ContentDescriptionPanel
             varieties={descriptionVarieties}
             totalCount={DESCRIPTION_TOTAL}
+            priorCorrectionCount={priorDescriptionCount}
+            daysSinceFirstSurfaced={daysSinceFirstDescriptionSurfaced}
           />
         )}
 

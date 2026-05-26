@@ -24,6 +24,13 @@ export interface PotentialUnlock {
   panel: string;          // e.g. 'ingest', 'cost_source', 'price_alert', 'description'
 }
 
+export interface HistoricalMetric {
+  label: string;          // e.g. 'Ingest price bug'
+  applied_count: number;  // how many corrections of this type have been approved+executed
+  avg_days_to_apply: number | null; // null if none yet; computed from proposed_at -> decided_at
+  last_applied_at: string | null;   // ISO string of most recent approval
+}
+
 interface Props {
   blockedCount: number;
   publishableCount: number;
@@ -31,6 +38,7 @@ interface Props {
   totalCount: number;
   pendingCorrections: PendingCorrection[];
   potentialUnlocks: PotentialUnlock[];
+  historicalMetrics: HistoricalMetric[];
 }
 
 // Panel color dot mapping
@@ -208,6 +216,44 @@ function CorrectionsInFlightSection({ corrections }: { corrections: PendingCorre
   );
 }
 
+// Section 4 — Historical metrics (track record of closed corrections)
+function HistoricalMetricsSection({ metrics }: { metrics: HistoricalMetric[] }) {
+  const hasData = metrics.some(m => m.applied_count > 0);
+
+  return (
+    <div className="pt-3 border-t border-slate-100 mt-1">
+      <p className="text-[10px] uppercase tracking-wide font-semibold text-slate-400 mb-2">
+        Track record
+      </p>
+      {!hasData ? (
+        <p className="text-xs text-slate-400 italic">
+          No corrections applied yet — first ones are in flight above.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-4">
+          {metrics.filter(m => m.applied_count > 0).map((m, i) => (
+            <div key={i} className="text-xs text-slate-700">
+              <span className="font-medium">{m.label}</span>
+              <span className="mx-1 text-slate-400">—</span>
+              <span className="text-emerald-700 font-semibold">{m.applied_count} applied</span>
+              {m.avg_days_to_apply != null && (
+                <span className="text-slate-500 ml-1">
+                  (avg {m.avg_days_to_apply.toFixed(1)}d to apply)
+                </span>
+              )}
+              {m.last_applied_at && (
+                <span className="text-slate-400 ml-1">
+                  · last {new Date(m.last_applied_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Main component — default export
 export default function SupplyQualityBar({
   blockedCount,
@@ -216,10 +262,11 @@ export default function SupplyQualityBar({
   totalCount,
   pendingCorrections,
   potentialUnlocks,
+  historicalMetrics,
 }: Props) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm mb-5 p-4">
-      {/* Optional header strip */}
+      {/* Header strip */}
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600" />
         <span className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
@@ -248,6 +295,9 @@ export default function SupplyQualityBar({
           <CorrectionsInFlightSection corrections={pendingCorrections} />
         </div>
       </div>
+
+      {/* Track record row — below the grid */}
+      <HistoricalMetricsSection metrics={historicalMetrics} />
     </div>
   );
 }

@@ -1574,6 +1574,7 @@ export async function executeProposal(
       };
     case 'cost_source.facu_correction':
     case 'price_alert.facu_correction':
+    case 'contents_description.facu_correction':
       // Audit-only correction records — Facu's domain knowledge captured as a structured
       // correction. No data change in floropolis_inventory_mirror. Rose's verifier reads
       // these from admin_approvals and routes the fix through her pipeline.
@@ -1645,4 +1646,5 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   // Facu correction records (2026-05-23): domain knowledge captured as structured corrections to Rose
   'cost_source.facu_correction',
   'price_alert.facu_correction',
+  'contents_description.facu_correction',
 ];
