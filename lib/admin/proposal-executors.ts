@@ -1596,6 +1596,26 @@ export async function executeProposal(
     case 'reject_cost_row':
     case 'resolve_conflict':
       return execCanonicalCostAuditOnly(proposal, service);
+    case 'importance_config.weight_update':
+    case 'importance_config.variety_update': {
+      // Discussion-record executor: no automated write. Approval = Facu + Job_PM agreed
+      // on the change. Job_PM manually updates featured-scores-seed.ts after approval.
+      const payload = payloadObject(proposal) ?? {};
+      return {
+        ok: true,
+        auditEntries: [{
+          proposal_id: proposal.id,
+          target_table: 'featured-scores-seed.ts',
+          target_id: proposal.target_id ?? proposal.type,
+          before_jsonb: (payload.before_value as Record<string, unknown>) ?? null,
+          after_jsonb: {
+            ...((payload.after_value as Record<string, unknown>) ?? {}),
+            _note: 'Approved — manual seed update required: Job_PM updates lib/admin/featured-scores-seed.ts',
+          },
+          applied_by_function: `proposal-executors.importanceConfigDiscussion[${proposal.type}]`,
+        }],
+      };
+    }
     default:
       return fail(`unknown_proposal_type: ${proposal.type}`);
   }

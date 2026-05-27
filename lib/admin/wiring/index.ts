@@ -84,6 +84,8 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
       { id: 'pricing-constants', level: 'LIVE', note: 'Propose -> approve flow via pricing_constants.update.' },
       { id: 'shipping-config', level: 'LIVE', note: 'Propose -> approve flow via shipping_config.create.' },
       { id: 'visibility-windows', level: 'LIVE', note: 'tier_visibility_windows accept toggle gated by 5 pipeline checks.' },
+      { id: 'quality-weights', level: 'LIVE', note: 'catalog_quality_weights + catalog_quality_thresholds. Propose -> approve via catalog_quality_weight.update / catalog_quality_threshold.update.' },
+      { id: 'importance-config', level: 'LIVE', note: 'Importance model (conversion probability). Formula weights + variety seed table. Edits route to needs_confirmation → Job_PM inbox. No automated executor — Job_PM updates featured-scores-seed.ts after discussion.' },
     ],
   },
   {
