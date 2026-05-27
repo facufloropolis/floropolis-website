@@ -1164,7 +1164,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
                     <SortHeader label="Family"         sortKey="family"     current={sort} rawFilters={rawFilters} />
-                    <th className="px-3 py-2.5">SKU</th>
+                    <SortHeader label="SKU"            sortKey="name"       current={sort} rawFilters={rawFilters} />
                     <SortHeader label="Importance"     sortKey="importance" current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="Vendor"         sortKey="vendor"     current={sort} rawFilters={rawFilters} />
                     <SortHeader label="Box"            sortKey="box"        current={sort} rawFilters={rawFilters} />
@@ -1177,10 +1177,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                     <SortHeader label="Avail"          sortKey="avail"      current={sort} rawFilters={rawFilters} align="right" />
                     <SortHeader label="Visibility"     sortKey="visibility" current={sort} rawFilters={rawFilters} />
                     {effectiveTab === 'improvement-queue' && (
-                      <th className="px-3 py-2.5 text-right">
-                        Gap
-                        <div className="text-[10px] font-normal normal-case tracking-normal text-slate-400">to perfect</div>
-                      </th>
+                      <SortHeader label="Gap" sortKey="quality" current={sort} rawFilters={rawFilters} align="right" />
                     )}
                     <th className="px-3 py-2.5">Flags</th>
                   </tr>
