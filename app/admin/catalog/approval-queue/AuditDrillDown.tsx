@@ -1,5 +1,5 @@
 // Audit drill-down side panel for /admin/catalog/approval-queue.
-// v1 | 2026-05-19 | Job_PM Phase C [V8 SHADOW]
+// v2 | 2026-05-26 | Job_PM [V8 SHADOW]
 //
 // Click an approved/rejected row -> this panel slides in from the right and
 // shows the override_audit rows tied to that proposal_id (BRD UC-O-204). For
@@ -193,29 +193,37 @@ export default function AuditDrillDown({
         ) : (
           <div className="p-5 space-y-4">
             {sorted.map((row, idx) => {
+              const isFrameCorrection = row.applied_by_function === 'frame_correction';
               const stale = isStale(row);
               const passed = row.verification_passed === true;
               const failed = row.verification_passed === false;
               const pending = row.verification_passed == null && !stale;
-              const pairs = diffPairs(row.before_jsonb, row.after_jsonb);
+              const pairs = isFrameCorrection ? [] : diffPairs(row.before_jsonb, row.after_jsonb);
+
+              // For frame_correction rows, extract structured correction from after_jsonb
+              const correction = isFrameCorrection && row.after_jsonb?.correction
+                ? row.after_jsonb.correction as { what_is_wrong?: string; what_should_be_true?: string }
+                : null;
 
               return (
                 <div
                   key={row.id}
                   className={`rounded-lg border p-4 ${
-                    failed
-                      ? 'border-red-300 bg-red-50/30'
-                      : stale
+                    isFrameCorrection
+                      ? 'border-violet-200 bg-violet-50/30'
+                      : failed
                         ? 'border-red-300 bg-red-50/30'
-                        : passed
-                          ? 'border-emerald-200 bg-emerald-50/30'
-                          : 'border-slate-200 bg-white'
+                        : stale
+                          ? 'border-red-300 bg-red-50/30'
+                          : passed
+                            ? 'border-emerald-200 bg-emerald-50/30'
+                            : 'border-slate-200 bg-white'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="min-w-0">
                       <div className="text-[10px] text-slate-500 uppercase tracking-wide">
-                        Audit row {sorted.length - idx}
+                        {isFrameCorrection ? 'Framing correction' : `Audit row ${sorted.length - idx}`}
                       </div>
                       <div className="text-xs text-slate-900 font-mono break-all">
                         {row.target_table}
@@ -223,7 +231,11 @@ export default function AuditDrillDown({
                       </div>
                     </div>
                     <div>
-                      {stale ? (
+                      {isFrameCorrection ? (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 font-semibold">
+                          FRAMING CORRECTED
+                        </span>
+                      ) : stale ? (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-semibold">
                           verification STALE
                         </span>
@@ -279,34 +291,56 @@ export default function AuditDrillDown({
                     </div>
                   )}
 
-                  <details className="text-[11px]">
-                    <summary className="cursor-pointer text-slate-700 font-semibold">
-                      Diff ({pairs.length} field
-                      {pairs.length === 1 ? '' : 's'} changed)
-                    </summary>
-                    {pairs.length === 0 ? (
-                      <div className="mt-1 text-slate-500">No-op (no diff).</div>
-                    ) : (
-                      <div className="mt-1.5 space-y-1">
-                        {pairs.map((p) => (
-                          <div
-                            key={p.key}
-                            className="font-mono text-[10px] border border-slate-200 rounded px-2 py-1 bg-white"
-                          >
-                            <div className="text-slate-700 font-semibold">
-                              {p.key}
-                            </div>
-                            <div className="text-red-700">
-                              - {fmtValue(p.before)}
-                            </div>
-                            <div className="text-emerald-700">
-                              + {fmtValue(p.after)}
-                            </div>
-                          </div>
-                        ))}
+                  {/* Frame correction: render structured fields instead of raw diff */}
+                  {isFrameCorrection && correction ? (
+                    <div className="space-y-2 mt-2">
+                      <div className="rounded border border-violet-200 bg-white px-3 py-2">
+                        <div className="text-[9px] uppercase tracking-wide text-violet-500 font-semibold mb-0.5">
+                          What the system got wrong
+                        </div>
+                        <div className="text-xs text-slate-800">
+                          {correction.what_is_wrong ?? '—'}
+                        </div>
                       </div>
-                    )}
-                  </details>
+                      <div className="rounded border border-violet-200 bg-white px-3 py-2">
+                        <div className="text-[9px] uppercase tracking-wide text-violet-500 font-semibold mb-0.5">
+                          What is actually true
+                        </div>
+                        <div className="text-xs text-slate-800">
+                          {correction.what_should_be_true ?? '—'}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <details className="text-[11px]">
+                      <summary className="cursor-pointer text-slate-700 font-semibold">
+                        Diff ({pairs.length} field
+                        {pairs.length === 1 ? '' : 's'} changed)
+                      </summary>
+                      {pairs.length === 0 ? (
+                        <div className="mt-1 text-slate-500">No-op (no diff).</div>
+                      ) : (
+                        <div className="mt-1.5 space-y-1">
+                          {pairs.map((p) => (
+                            <div
+                              key={p.key}
+                              className="font-mono text-[10px] border border-slate-200 rounded px-2 py-1 bg-white"
+                            >
+                              <div className="text-slate-700 font-semibold">
+                                {p.key}
+                              </div>
+                              <div className="text-red-700">
+                                - {fmtValue(p.before)}
+                              </div>
+                              <div className="text-emerald-700">
+                                + {fmtValue(p.after)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </details>
+                  )}
                 </div>
               );
             })}

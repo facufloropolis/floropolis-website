@@ -18,6 +18,7 @@ import { useMemo, useState } from 'react';
 
 import ProposalActions from './Actions';
 import AuditDrillDown, { type AuditRow } from './AuditDrillDown';
+import { classifyProposalBucket, BUCKET_LABELS, type ProposalBucket } from '@/lib/admin/proposal-classifier';
 
 interface WarningPill {
   severity: 'critical' | 'warn' | 'info';
@@ -156,6 +157,12 @@ export default function RowsList({
       {/* Body */}
       {filtered.length === 0 ? (
         <EmptyState status={status} filtered={rows.length > 0} />
+      ) : status === 'awaiting_facu' ? (
+        // Bucket view: group by actionable_now / needs_confirmation / strategic_backlog
+        <BucketedList
+          rows={filtered}
+          setDrillId={setDrillId}
+        />
       ) : (
         <div className="space-y-4">
           {filtered.map((p) => {
@@ -168,26 +175,15 @@ export default function RowsList({
               : hasWarn
                 ? 'border-amber-300'
                 : 'border-slate-200';
-            const clickable = status !== 'awaiting_facu';
-
             return (
               <div
                 key={p.id}
-                className={`bg-white rounded-xl border ${cardBorder} p-5 hover:border-slate-300 transition-colors ${
-                  clickable ? 'cursor-pointer' : ''
-                }`}
-                onClick={
-                  clickable
-                    ? (e) => {
-                        // Don't open drill if click was on a button or link inside.
-                        const target = e.target as HTMLElement;
-                        if (target.closest('button, a, textarea, input')) {
-                          return;
-                        }
-                        setDrillId(p.id);
-                      }
-                    : undefined
-                }
+                className={`bg-white rounded-xl border ${cardBorder} p-5 hover:border-slate-300 transition-colors cursor-pointer`}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target.closest('button, a, textarea, input')) return;
+                  setDrillId(p.id);
+                }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
                   <div className="flex-1 min-w-0">
@@ -243,24 +239,16 @@ export default function RowsList({
                       </p>
                     )}
                   </div>
-                  {status === 'awaiting_facu' ? (
-                    <ProposalActions
-                      id={p.id}
-                      proposalType={p.type}
-                      cascadeLabel={p.cascade.label}
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDrillId(p.id);
-                      }}
-                      className="text-xs font-semibold text-slate-700 border border-slate-200 hover:border-slate-400 hover:bg-slate-50 px-3 py-1.5 rounded-md shrink-0"
-                    >
-                      View audit
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDrillId(p.id);
+                    }}
+                    className="text-xs font-semibold text-slate-700 border border-slate-200 hover:border-slate-400 hover:bg-slate-50 px-3 py-1.5 rounded-md shrink-0"
+                  >
+                    View audit
+                  </button>
                 </div>
 
                 {/* Payload */}
@@ -350,6 +338,190 @@ export default function RowsList({
         onClose={() => setDrillId(null)}
       />
     </>
+  );
+}
+
+function BucketedList({
+  rows,
+  setDrillId: _setDrillId,
+}: {
+  rows: ProposalRowVm[];
+  setDrillId: (id: string | null) => void;
+}) {
+  const buckets: ProposalBucket[] = [
+    'actionable_now',
+    'needs_confirmation',
+    'strategic_backlog',
+  ];
+  const grouped: Record<ProposalBucket, ProposalRowVm[]> = {
+    actionable_now: [],
+    needs_confirmation: [],
+    strategic_backlog: [],
+  };
+  for (const row of rows) {
+    grouped[classifyProposalBucket(row.type)].push(row);
+  }
+
+  const bucketStyle: Record<
+    ProposalBucket,
+    { header: string }
+  > = {
+    actionable_now: { header: 'text-emerald-700 border-emerald-200 bg-emerald-50' },
+    needs_confirmation: { header: 'text-amber-700 border-amber-200 bg-amber-50' },
+    strategic_backlog: { header: 'text-slate-600 border-slate-200 bg-slate-50' },
+  };
+
+  return (
+    <div className="space-y-8">
+      {buckets.map((bucket) => {
+        const bucketRows = grouped[bucket];
+        if (bucketRows.length === 0) return null;
+        const { header } = bucketStyle[bucket];
+        return (
+          <div key={bucket}>
+            <div
+              className={`flex items-center gap-2 mb-3 px-3 py-2 rounded-lg border ${header}`}
+            >
+              <span className="text-xs font-semibold uppercase tracking-wide">
+                {BUCKET_LABELS[bucket]}
+              </span>
+              <span className="text-[10px] font-mono bg-white/60 px-1.5 py-0.5 rounded">
+                {bucketRows.length}
+              </span>
+            </div>
+            <div className="space-y-4">
+              {bucketRows.map((p) => {
+                const hasCritical = p.warnings.some((w) => w.severity === 'critical');
+                const hasWarn = p.warnings.some((w) => w.severity === 'warn');
+                const cardBorder = hasCritical
+                  ? 'border-red-300'
+                  : hasWarn
+                    ? 'border-amber-300'
+                    : 'border-slate-200';
+                return (
+                  <div
+                    key={p.id}
+                    className={`bg-white rounded-xl border ${cardBorder} p-5 hover:border-slate-300 transition-colors`}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-[10px] text-slate-400">
+                            {p.id.slice(0, 8)}
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold uppercase tracking-wide">
+                            {p.type}
+                          </span>
+                          {p.source_agent && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-800 font-semibold uppercase tracking-wide">
+                              {p.source_agent}
+                            </span>
+                          )}
+                          <span className="font-semibold text-slate-900 text-sm break-all">
+                            {p.target_table}
+                            {p.target_id ? ` / ${p.target_id}` : ''}
+                          </span>
+                          {hasCritical && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-semibold">
+                              CRITICAL
+                            </span>
+                          )}
+                          {hasWarn && !hasCritical && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">
+                              WARN
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          Proposed by {p.proposer_email} on {fmtDate(p.proposed_at)}
+                        </p>
+                        {p.source_rationale && (
+                          <p className="text-[11px] text-slate-600 mt-1.5 italic">
+                            &ldquo;{p.source_rationale.slice(0, 200)}
+                            {p.source_rationale.length > 200 ? '...' : ''}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                      <ProposalActions
+                        id={p.id}
+                        proposalType={p.type}
+                        cascadeLabel={p.cascade.label}
+                      />
+                    </div>
+
+                    {p.type === 'catalog_quality_rebalance' && p.payload_raw ? (
+                      <RebalancePayloadCard payload={p.payload_raw} />
+                    ) : p.type === 'catalog_quality_tier_reclassification' &&
+                      p.payload_raw ? (
+                      <TierReclassificationCard payload={p.payload_raw} />
+                    ) : (
+                      <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 p-3">
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">
+                          Payload
+                        </div>
+                        <div className="text-xs text-slate-700 font-mono break-words">
+                          {p.payload_summary}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="border-t border-slate-100 pt-3 mb-3">
+                      <span className="text-xs font-semibold text-slate-700">
+                        Cascade impact:{' '}
+                        <span
+                          className={
+                            p.cascade.value == null
+                              ? 'font-mono text-slate-500'
+                              : 'font-mono text-slate-900'
+                          }
+                        >
+                          {p.cascade.label}
+                        </span>
+                      </span>
+                    </div>
+
+                    {p.warnings.length > 0 && (
+                      <div className="border-t border-slate-100 pt-3 space-y-1.5">
+                        {p.warnings.map((w, i) => {
+                          const pill =
+                            w.severity === 'critical'
+                              ? 'bg-red-100 text-red-800 border-red-200'
+                              : w.severity === 'warn'
+                                ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                : 'bg-slate-100 text-slate-700 border-slate-200';
+                          return (
+                            <div
+                              key={i}
+                              className={`text-xs flex items-start gap-2 px-2.5 py-1.5 rounded border ${pill}`}
+                            >
+                              <span className="font-bold shrink-0">
+                                {w.severity === 'critical'
+                                  ? '!!'
+                                  : w.severity === 'warn'
+                                    ? '!'
+                                    : '.'}
+                              </span>
+                              <span>{w.text}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {p.notes && (
+                      <div className="border-t border-slate-100 pt-3 mt-3 text-xs text-slate-600">
+                        <span className="font-semibold text-slate-700">Notes:</span>{' '}
+                        {p.notes}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
