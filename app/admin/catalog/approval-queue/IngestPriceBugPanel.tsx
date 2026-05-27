@@ -1,5 +1,5 @@
 'use client';
-// IngestPriceBugPanel | v2 | 2026-05-23 | Job_PM [V8 SHADOW]
+// IngestPriceBugPanel | v3 | 2026-05-27 | Job_PM [V8 SHADOW]
 //
 // v1 had a "Escalate to Rose" button — useless because Rose generated this data.
 // Escalating back to Rose what Rose gave you captures zero signal.
@@ -37,6 +37,7 @@ interface Props {
   totalCount: number;
   priorCorrectionCount: number;   // how many times this correction has been sent before
   daysSinceFirstSurfaced: number; // 0 = first time; >0 = recurring
+  proposalId?: string;            // if set, button approves existing proposal instead of creating new
 }
 
 const PREFILL = {
@@ -48,7 +49,7 @@ const PREFILL = {
     "Fix the ingest script in floropolis-bi.floropolis_inventory pipeline: compute formula_price from farm_cost + GPM + delivery before writing to the price field. Do not copy K2K market price.",
 };
 
-export default function IngestPriceBugPanel({ skus, totalCount, priorCorrectionCount, daysSinceFirstSurfaced }: Props) {
+export default function IngestPriceBugPanel({ skus, totalCount, priorCorrectionCount, daysSinceFirstSurfaced, proposalId }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -75,33 +76,48 @@ export default function IngestPriceBugPanel({ skus, totalCount, priorCorrectionC
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/proposals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'ingest.price_field_bug',
-          target_table: 'floropolis_inventory_mirror',
-          target_id: null,
-          payload: {
-            correction_type: 'ingest_formula_price',
-            what_is_wrong: whatIsWrong.trim(),
-            what_should_be_true: whatShouldBeTrue.trim(),
-            how_to_fix: howToFix.trim(),
-            facu_additional_context: facuContext.trim() || null,
-            priority,
-            total_affected: totalCount,
-            sole_blockers: soleBlockers.length,
-            best_seller_sole_blockers: soleBlockers
-              .filter(s => s.is_best_seller)
-              .map(s => `${s.variety} ${s.length} (${s.tier})`),
-            mirror_source: 'floropolis-bi.floropolis_inventory',
-            prior_correction_count: priorCorrectionCount,
-          },
-          source_agent: 'Job_PM',
-          source_rationale: howToFix.trim(),
-          notes: facuContext.trim() || howToFix.trim(),
-        }),
-      });
+      let res: Response;
+      if (proposalId) {
+        // Approve existing awaiting_facu proposal — do not create a duplicate.
+        const rationale = [howToFix.trim(), facuContext.trim()].filter(Boolean).join(' | ');
+        res = await fetch(`/api/admin/proposals/${proposalId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            facu_rationale: rationale.length >= 5 ? rationale : 'Approved ingest pipeline fix',
+            urgency_tier: priority === 'P0' ? 'critical' : priority === 'P1' ? 'urgent' : 'routine',
+          }),
+        });
+      } else {
+        // No pending proposal yet — create one for the next review cycle.
+        res = await fetch('/api/admin/proposals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'ingest.price_field_bug',
+            target_table: 'floropolis_inventory_mirror',
+            target_id: null,
+            payload: {
+              correction_type: 'ingest_formula_price',
+              what_is_wrong: whatIsWrong.trim(),
+              what_should_be_true: whatShouldBeTrue.trim(),
+              how_to_fix: howToFix.trim(),
+              facu_additional_context: facuContext.trim() || null,
+              priority,
+              total_affected: totalCount,
+              sole_blockers: soleBlockers.length,
+              best_seller_sole_blockers: soleBlockers
+                .filter(s => s.is_best_seller)
+                .map(s => `${s.variety} ${s.length} (${s.tier})`),
+              mirror_source: 'floropolis-bi.floropolis_inventory',
+              prior_correction_count: priorCorrectionCount,
+            },
+            source_agent: 'Job_PM',
+            source_rationale: howToFix.trim(),
+            notes: facuContext.trim() || howToFix.trim(),
+          }),
+        });
+      }
       const body = await res.json() as { proposal?: unknown; error?: string };
       if (!res.ok) { setError(body.error ?? `HTTP ${res.status}`); setBusy(false); return; }
       setDone(true);
@@ -156,7 +172,7 @@ export default function IngestPriceBugPanel({ skus, totalCount, priorCorrectionC
               : 'bg-red-700 hover:bg-red-800 text-white'
           }`}
         >
-          {showForm ? 'Collapse' : 'Send correction to Rose'}
+          {showForm ? 'Collapse' : proposalId ? 'Approve ingest fix' : 'Send correction to Rose'}
         </button>
       </div>
 
@@ -304,7 +320,7 @@ export default function IngestPriceBugPanel({ skus, totalCount, priorCorrectionC
                   disabled={busy}
                   className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-700 hover:bg-red-800 disabled:opacity-50"
                 >
-                  {busy ? 'Sending...' : 'Send correction to Rose'}
+                  {busy ? 'Sending...' : proposalId ? 'Approve & fire Rose' : 'Send correction to Rose'}
                 </button>
               </div>
             </div>

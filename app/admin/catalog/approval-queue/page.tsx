@@ -509,19 +509,23 @@ export default async function AdminCatalogApprovalQueuePage({
   let ingestBugTotal = 0;
   let priorIngestCorrectionCount = 0;
   let daysSinceFirstIngestSurfaced = 0;
+  let ingestBugProposalId: string | null = null;
   if (status === 'awaiting_facu') {
+    // Fetch all ingest.price_field_bug proposals to count prior corrections + get pending ID.
     const { count: ingestPriorCount, data: ingestPriorRows } = await backup
       .from('admin_proposals')
-      .select('proposed_at', { count: 'exact' })
+      .select('id, proposed_at, status', { count: 'exact' })
       .eq('type', 'ingest.price_field_bug')
-      .order('proposed_at', { ascending: true })
-      .limit(1);
+      .order('proposed_at', { ascending: true });
     priorIngestCorrectionCount = ingestPriorCount ?? 0;
     if (ingestPriorRows?.[0]?.proposed_at) {
       daysSinceFirstIngestSurfaced = Math.floor(
         (Date.now() - new Date(ingestPriorRows[0].proposed_at).getTime()) / (24 * 60 * 60 * 1000),
       );
     }
+    // Find the existing awaiting_facu proposal to approve (avoids creating duplicates).
+    const pendingRow = ingestPriorRows?.find(r => r.status === 'awaiting_facu');
+    ingestBugProposalId = pendingRow?.id ?? null;
   }
   if (status === 'awaiting_facu') {
     // Best-seller sole blockers from the audit — hardcoded from 2026-05-23 query
@@ -904,6 +908,7 @@ export default async function AdminCatalogApprovalQueuePage({
             totalCount={ingestBugTotal}
             priorCorrectionCount={priorIngestCorrectionCount}
             daysSinceFirstSurfaced={daysSinceFirstIngestSurfaced}
+            proposalId={ingestBugProposalId ?? undefined}
           />
         )}
 
