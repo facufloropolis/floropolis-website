@@ -1498,6 +1498,139 @@ async function execPriceFormulaDeviationReview(
 }
 
 // ---------------------------------------------------------------------------
+// ingest.price_field_bug — closes the WHOLE loop end-to-end.
+//
+// Was audit_only. Now actually:
+//   1) Reads all sibling proposals (price.formula_reset + price.formula_deviation_review)
+//      that are awaiting_facu and have a formula_price in payload
+//   2) Applies formula_price to each target SKU in floropolis_inventory_mirror
+//   3) Marks every sibling proposal as approved (status='approved', no separate clicks)
+//   4) Writes an admin_policies row so the generator never re-creates these
+//
+// This is the pattern reference for closing loops via admin: one card =
+// batch fix + sibling cleanup + policy write. Replicate per domain.
+// ---------------------------------------------------------------------------
+
+type SiblingProposalRow = {
+  id: string;
+  target_id: string | null;
+  payload: Record<string, unknown> | null;
+};
+
+async function execIngestPriceFieldBug(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const SIBLING_TYPES = ['price.formula_reset', 'price.formula_deviation_review'];
+
+  const { data: siblings, error: siblingErr } = await service
+    .from('admin_proposals')
+    .select('id, target_id, payload')
+    .in('type', SIBLING_TYPES)
+    .eq('status', 'awaiting_facu');
+  if (siblingErr) return fail(`sibling_read_failed: ${siblingErr.message}`);
+
+  const updatedSkus: Array<{ sku_id: number; before: unknown; after: number }> = [];
+  const resolvedProposalIds: string[] = [];
+  const skipped: Array<{ proposal_id: string; reason: string }> = [];
+
+  for (const raw of (siblings ?? []) as SiblingProposalRow[]) {
+    const payload = raw.payload ?? {};
+    const formulaPriceRaw = (payload as Record<string, unknown>).formula_price
+      ?? (payload as Record<string, unknown>).expected_price;
+    const skuIdNum = raw.target_id ? Number(raw.target_id) : NaN;
+
+    if (!Number.isFinite(skuIdNum) || skuIdNum <= 0) {
+      skipped.push({ proposal_id: raw.id, reason: 'invalid_target_id' });
+      continue;
+    }
+    if (formulaPriceRaw === undefined || formulaPriceRaw === null) {
+      skipped.push({ proposal_id: raw.id, reason: 'missing_formula_price' });
+      continue;
+    }
+    const newPrice = typeof formulaPriceRaw === 'number'
+      ? formulaPriceRaw
+      : parseFloat(String(formulaPriceRaw));
+    if (!Number.isFinite(newPrice) || newPrice <= 0) {
+      skipped.push({ proposal_id: raw.id, reason: 'invalid_price' });
+      continue;
+    }
+
+    const { data: before, error: readErr } = await service
+      .from('floropolis_inventory_mirror')
+      .select('id, price')
+      .eq('id', skuIdNum)
+      .maybeSingle();
+    if (readErr || !before) {
+      skipped.push({ proposal_id: raw.id, reason: readErr ? `read_failed:${readErr.message}` : 'sku_not_found' });
+      continue;
+    }
+
+    const { error: updErr } = await service
+      .from('floropolis_inventory_mirror')
+      .update({ price: newPrice })
+      .eq('id', skuIdNum);
+    if (updErr) {
+      skipped.push({ proposal_id: raw.id, reason: `update_failed:${updErr.message}` });
+      continue;
+    }
+
+    updatedSkus.push({ sku_id: skuIdNum, before: (before as Record<string, unknown>).price, after: newPrice });
+    resolvedProposalIds.push(raw.id);
+  }
+
+  // Mark every sibling proposal we just fixed as approved — no separate clicks needed.
+  if (resolvedProposalIds.length > 0) {
+    const { error: bulkErr } = await service
+      .from('admin_proposals')
+      .update({ status: 'approved' })
+      .in('id', resolvedProposalIds);
+    if (bulkErr) return fail(`sibling_mark_approved_failed: ${bulkErr.message}`);
+  }
+
+  // Write the policy so the generator never re-creates these.
+  const policyKey = 'price.formula_auto.confirmed_cost_basis';
+  const { error: policyErr } = await service
+    .from('admin_policies')
+    .upsert({
+      policy_key: policyKey,
+      policy_type: 'price.formula_auto',
+      scope: {
+        cost_basis_required: ['confirmed', 'good_enough_live'],
+        target_table: 'floropolis_inventory_mirror',
+      },
+      rule: {
+        action: 'apply_formula_price',
+        formula: 'farm_cost / (1 - GPM) + ceil(fedex_chargeable_kg) * fedex_rate * fuel_surcharge / stems_per_box',
+        inputs_source: { farm_cost: 'canonical_cost.facu_approved', box: 'box_master', gpm: 0.33, fedex_rate: 6.50, fuel_surcharge: 1.25 },
+      },
+      approved_by: 'facu',
+      source_proposal_id: proposal.id,
+      status: 'active',
+      notes: `Approved via ingest.price_field_bug at ${new Date().toISOString()}. Updated ${updatedSkus.length} SKUs in this run. Generator must check admin_policies before generating proposals of these types.`,
+    }, { onConflict: 'policy_key' });
+  if (policyErr) return fail(`policy_write_failed: ${policyErr.message}`);
+
+  return {
+    ok: true,
+    auditEntries: [{
+      proposal_id: proposal.id,
+      target_table: 'floropolis_inventory_mirror',
+      target_id: null,
+      before_jsonb: { siblings_pending: (siblings ?? []).length },
+      after_jsonb: {
+        updated_skus: updatedSkus.length,
+        sibling_proposals_resolved: resolvedProposalIds.length,
+        skipped: skipped.length,
+        skipped_reasons: skipped.slice(0, 10),
+        policy_written: policyKey,
+      },
+      applied_by_function: 'proposal-executors.execIngestPriceFieldBug',
+    }],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
@@ -1614,19 +1747,7 @@ export async function executeProposal(
     case 'contents_description.batch_approve':
       return execContentsDescriptionBatchApprove(proposal, service);
     case 'ingest.price_field_bug':
-      // Audit-only — just records Facu's escalation instruction. Rose's verifier
-      // reads admin_approvals and wires the ingest fix through her own pipeline.
-      return {
-        ok: true,
-        auditEntries: [{
-          proposal_id: proposal.id,
-          target_table: 'floropolis_inventory_mirror',
-          target_id: 'ingest_pipeline',
-          before_jsonb: null,
-          after_jsonb: { status: 'escalated_to_rose', payload: proposal.payload },
-          applied_by_function: 'proposal-executors.ingest.price_field_bug[audit_only]',
-        }],
-      };
+      return execIngestPriceFieldBug(proposal, service);
     case 'cost_source.facu_correction':
     case 'price_alert.facu_correction':
     case 'contents_description.facu_correction':
