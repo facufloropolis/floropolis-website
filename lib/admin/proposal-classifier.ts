@@ -18,7 +18,8 @@ export function classifyProposalBucket(proposalType: string): ProposalBucket {
     // -----------------------------------------------------------------------
     // ACTIONABLE NOW: system knows before + after; executor will run immediately
     // -----------------------------------------------------------------------
-    case 'price.formula_reset':         // computed formula price → write to mirror
+    case 'price.formula_reset':                // computed formula price → write to mirror
+    case 'price.formula_deviation_review':    // formula vs actual deviation; executor resets to formula price
     case 'price_correction.propose':    // explicit price correction with before/after
     case 'ingest.price_field_bug':      // pipeline bug escalation — act now
     case 'price_alert.batch_clear':     // Facu acknowledges alert; clears flag in mirror
