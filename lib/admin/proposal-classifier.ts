@@ -20,6 +20,7 @@ export function classifyProposalBucket(proposalType: string): ProposalBucket {
     // -----------------------------------------------------------------------
     case 'price.formula_reset':                // computed formula price → write to mirror
     case 'price.formula_deviation_review':    // formula vs actual deviation; executor resets to formula price
+    case 'price.formula_review.batch':        // Job's synthesized batch from ops.price_audit_log FAIL rows; each batch has clear action (reset_to_formula | raise_to_formula | formula_validation_required | monitor_only)
     case 'price_correction.propose':    // explicit price correction with before/after
     case 'ingest.price_field_bug':      // pipeline bug escalation — act now
     case 'price_alert.batch_clear':     // Facu acknowledges alert; clears flag in mirror
