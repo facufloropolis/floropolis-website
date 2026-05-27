@@ -26,6 +26,7 @@
 
 export const dynamic = 'force-dynamic';
 
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
@@ -667,7 +668,9 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                             return (
                               <tr key={r.order.id} className="hover:bg-slate-50 align-top">
                                 <td className="px-3 py-3 font-mono text-xs font-semibold text-slate-700">
-                                  {r.order.order_number}
+                                  <Link href={`/admin/orders/${r.order.id}`} className="hover:text-emerald-700 hover:underline">
+                                    {r.order.order_number}
+                                  </Link>
                                   <div className="text-slate-400 font-normal mt-0.5">{r.boxesCount} box{r.boxesCount === 1 ? '' : 'es'} · {r.totalQty} stems</div>
                                 </td>
                                 <td className="px-3 py-3 text-slate-700 text-xs">

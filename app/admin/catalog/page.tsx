@@ -488,6 +488,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
       if (flagFilter === 'missing_cost' && r.farm_cost != null) return false;
       if (flagFilter === 'no_box_dims' && r.box_verified) return false;
       if (flagFilter === 'failed_gates' && r.failed_gates.length === 0) return false;
+      if (flagFilter === 'cost_unverified' && !r.failed_gates.some((g: { gate_id: string }) => g.gate_id === 'cost_unverified')) return false;
+      if (flagFilter === 'cost_flagged' && !(r.cost_source != null && r.cost_source.toUpperCase().startsWith('FLAGGED_'))) return false;
     }
 
     if (search) {
@@ -504,6 +506,28 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const page = Math.min(pageNum, totalPages);
   const sliceStart = (page - 1) * PAGE_SIZE;
   const pageRows = filtered.slice(sliceStart, sliceStart + PAGE_SIZE);
+
+  // Gate breakdown (blocking + publishable_gap gates with SKU counts) --------
+  const gateBreakdown: Array<{
+    gate_id: string;
+    display_label: string;
+    tier: 'blocking' | 'publishable_gap';
+    count: number;
+  }> = weights
+    .filter((w) => w.evaluated && (w.tier === 'blocking' || w.tier === 'publishable_gap'))
+    .map((w) => ({
+      gate_id: w.gate_id,
+      display_label: w.display_label,
+      tier: w.tier as 'blocking' | 'publishable_gap',
+      count: universeRows.filter((r) =>
+        r.failed_gates.some((g: { gate_id: string }) => g.gate_id === w.gate_id)
+      ).length,
+    }))
+    .filter((g) => g.count > 0)
+    .sort((a, b) => {
+      if (a.tier !== b.tier) return a.tier === 'blocking' ? -1 : 1;
+      return b.count - a.count;
+    });
 
   // Wiring ---------------------------------------------------------------
   const wiringEntry = getWiringForPage('/admin/catalog');
@@ -910,6 +934,14 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                               {v.missingCost}
                             </Link>
                           ) : <span className="text-emerald-700">✓</span>}
+                          {(() => {
+                            const flagged = universeRows.filter(r => r.vendor === v.vendor && r.cost_source != null && r.cost_source.toUpperCase().startsWith('FLAGGED_')).length;
+                            return flagged > 0 ? (
+                              <Link href={buildUrl(rawFilters, { vendor: v.vendor, flag: 'cost_flagged', tab: undefined })} className="block text-red-600 font-semibold text-xs hover:underline">
+                                ⚑ {flagged} flagged
+                              </Link>
+                            ) : null;
+                          })()}
                         </td>
                         <td className="px-4 py-2 text-right">
                           {v.openAlerts > 0 ? (
@@ -926,6 +958,38 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             </div>
           );
         })()}
+
+        {/* Gate breakdown panel */}
+        {gateBreakdown.length === 0 ? (
+          <div className="mb-5 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 font-medium">
+            All evaluated gates passing — no SKUs blocked
+          </div>
+        ) : (
+          <div className="mb-5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Blocking gates</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {gateBreakdown.map((g) => (
+                <Link
+                  key={g.gate_id}
+                  href={buildUrl(rawFilters, { flag: 'failed_gates', q: g.gate_id, tab: undefined })}
+                  className={`rounded-lg border px-3 py-2 hover:shadow-sm transition-shadow ${
+                    g.tier === 'blocking'
+                      ? 'bg-red-50 border-red-200 hover:border-red-400'
+                      : 'bg-amber-50 border-amber-200 hover:border-amber-400'
+                  }`}
+                >
+                  <div className={`text-lg font-bold leading-none ${g.tier === 'blocking' ? 'text-red-700' : 'text-amber-700'}`}>
+                    {g.count}
+                  </div>
+                  <div className="text-xs text-slate-600 mt-0.5 leading-tight">{g.display_label}</div>
+                  {g.tier === 'blocking' && (
+                    <div className="text-[10px] text-red-500 font-semibold mt-0.5 uppercase tracking-wide">blocking</div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
@@ -1070,6 +1134,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                   { value: 'all', label: 'All' },
                   { value: 'price_alert', label: '⚠ Price alerts (Rose)' },
                   { value: 'missing_cost', label: 'Missing cost' },
+                  { value: 'cost_unverified', label: 'Cost unverified / stale' },
+                  { value: 'cost_flagged', label: 'Cost source FLAGGED' },
                   { value: 'no_box_dims', label: 'Box not verified' },
                   { value: 'failed_gates', label: 'Has failing gates' },
                 ]}

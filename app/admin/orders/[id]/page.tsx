@@ -351,7 +351,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
         .order('proposed_at', { ascending: false }),
       svc
         .from('dispatches')
-        .select('id, status, carrier, tracking_number, packed_at, picked_up_at, in_transit_at, delivered_at')
+        .select('id, status, carrier, tracking_number, packed_at, picked_up_at, in_transit_at, delivered_at, dispatch_date')
         .eq('order_id', orderId)
         .maybeSingle(),
     ]);
@@ -373,6 +373,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
     picked_up_at: string | null;
     in_transit_at: string | null;
     delivered_at: string | null;
+    dispatch_date: string | null;
   };
 
   // Customer email (RPC on user-context client)
@@ -481,10 +482,10 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             </a>
           )}
           <Link
-            href="/admin/dispatch"
+            href={dispatch?.dispatch_date ? `/admin/dispatch?date=${dispatch.dispatch_date}&top=web` : '/admin/dispatch'}
             className="inline-flex items-center gap-1.5 text-xs font-medium border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
           >
-            → Dispatch
+            → View in dispatch{dispatch?.dispatch_date ? ` (${dispatch.dispatch_date})` : ''}
           </Link>
         </div>
 
@@ -507,7 +508,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                     <>
                       <span className="ml-2 text-slate-400">--</span>
                       <Link
-                        href="/admin/dispatch"
+                        href={dispatch.dispatch_date ? `/admin/dispatch?date=${dispatch.dispatch_date}&top=web` : '/admin/dispatch'}
                         className="ml-2 underline text-emerald-700 hover:text-emerald-900 font-mono"
                       >
                         {dispatch.tracking_number}
