@@ -589,8 +589,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                 </Link>
               </div>
               <p className="text-[11px] text-slate-400 max-w-xs text-right">
-                Importance covers {summary.importance_covered_count}/
-                {summary.universe.total} SKUs (seed of 7; pipeline TBD).
+                {summary.importance_covered_count} named varieties scored (research-backed);{' '}
+                {summary.universe.total - summary.importance_covered_count} at commodity default.
               </p>
             </div>
           </div>
@@ -1215,22 +1215,24 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
                       {/* 3. Importance */}
                       <td className="px-3 py-2.5 text-right">
-                        {r.importance_score != null && r.importance_score >= 72 ? (
+                        {r.importance_score >= 72 ? (
                           <span
                             className="text-amber-500 font-bold text-sm"
-                            title={`Importance score: ${r.importance_score} (featured top seller — competitive advantage vs PetalJet)`}
+                            title={`Importance score: ${r.importance_score} — high-demand named variety`}
                           >
                             ★ {r.importance_score}
                           </span>
-                        ) : r.importance_score != null ? (
+                        ) : r.importance_score > 25 ? (
                           <span
                             className="text-[11px] text-violet-700 font-semibold"
-                            title={`Importance score: ${r.importance_score} (featured framework)`}
+                            title={`Importance score: ${r.importance_score} — research-scored variety`}
                           >
                             {r.importance_score}
                           </span>
                         ) : (
-                          <span className="text-slate-300 text-xs">—</span>
+                          <span className="text-[11px] text-slate-400" title="Commodity default (25) — no market research data for this variety">
+                            ~{r.importance_score}
+                          </span>
                         )}
                       </td>
 
@@ -1568,8 +1570,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         <p className="text-xs text-slate-400 mt-6">
           Catalog-v5 model: universe = T2 + T3 + K2K live (de-duped). quality_score
           = weighted sum (0-100) of passing gates from catalog_quality_weights.
-          Importance from featured-products framework (seed of 7 SKUs today;
-          pipeline pending). GPM = (price - cost - shipping) / price. Shipping per
+          Importance = P(conversion | perfect listing): demand tier × price vs market × 2026 trend.
+          Research-backed for named varieties (LVFM, Florists&apos; Review, The Knot, Whole Blossoms).
+          Commodity default (25) for unknowns. Recalibrate monthly vs realized add-to-cart rate per variety. GPM = (price - cost - shipping) / price. Shipping per
           stem = ceil(box_weight_kg) * fedex_rate_per_kg * fuel_surcharge_mult /
           units_per_box. Sources: supabase-backup
           public.floropolis_inventory_mirror, public.catalog_classifications,

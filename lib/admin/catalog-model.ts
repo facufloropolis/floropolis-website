@@ -188,7 +188,7 @@ export interface CatalogV2Row {
   quality_score: number | null; // null = no classification row yet
   publication_status: PublicationStatus; // blocked | publishable | perfect — derived from gate tiers
   status_band: StatusBand; // quality gradient for display
-  importance_score: number | null;
+  importance_score: number;
   priority_to_fix: number;
   // Diagnostic
   failed_gates: FailedGateDetail[];
@@ -478,8 +478,8 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
     const importance_score = lookupImportanceScore(r.name);
     const priority_to_fix =
       quality_score == null
-        ? (importance_score ?? 0) * 100 // worst case: ungraded but flagged important
-        : (importance_score ?? 0) * (100 - quality_score);
+        ? importance_score * 100
+        : importance_score * (100 - quality_score);
 
     // Box + shipping ------------------------------------------------------
     const box = r.box_type ? boxByType.get(r.box_type) ?? null : null;
@@ -587,7 +587,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
   let scored_count = 0;
   let importance_covered_count = 0;
   for (const r of rows) {
-    if (r.importance_score != null) importance_covered_count += 1;
+    if (r.importance_score > 25) importance_covered_count += 1; // above default = research-matched variety
     if (r.quality_score == null) {
       histogram.unscored += 1;
       continue;
