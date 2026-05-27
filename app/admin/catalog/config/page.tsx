@@ -1,5 +1,5 @@
 // Admin Catalog Configuration -- multi-country, propose -> approve flow.
-// v3 | 2026-05-19 | Job_PM Phase D [V8 SHADOW]
+// v4 | 2026-05-26 | Job_PM [V8 SHADOW] — added importance panel
 //
 // Four sub-panels, each with Active / Proposed tabs (?panel=, ?tab=):
 //   1. Box master       -- READ-ONLY per Rose contract v1.0 (Section 1).
@@ -37,7 +37,15 @@ import {
   TierVisibilityWindowEditForm,
   QualityWeightProposeForm,
   QualityThresholdProposeForm,
+  ImportanceProposeWeightForm,
+  ImportanceProposeVarietyForm,
 } from './ProposalForms';
+import {
+  FEATURED_SCORE_SEED,
+  FORMULA_WEIGHTS,
+  DEFAULT_IMPORTANCE_SCORE,
+  type FeaturedScoreEntry,
+} from '@/lib/admin/featured-scores-seed';
 
 export const metadata = {
   title: 'Catalog Configuration | Floropolis Admin',
@@ -149,12 +157,12 @@ function fmtShortDate(iso: string | null): string {
   });
 }
 
-type PanelKey = 'boxes' | 'pricing' | 'shipping' | 'visibility' | 'quality';
+type PanelKey = 'boxes' | 'pricing' | 'shipping' | 'visibility' | 'quality' | 'importance';
 type TabKey = 'active' | 'proposed';
 
 function parsePanel(v: string | string[] | undefined): PanelKey {
   const s = Array.isArray(v) ? v[0] : v;
-  if (s === 'pricing' || s === 'shipping' || s === 'visibility' || s === 'quality') return s;
+  if (s === 'pricing' || s === 'shipping' || s === 'visibility' || s === 'quality' || s === 'importance') return s;
   return 'boxes';
 }
 function parseTab(v: string | string[] | undefined): TabKey {
@@ -211,6 +219,7 @@ export default async function AdminCatalogConfigPage({
     qualityWeightsRes,
     qualityThresholdsRes,
     qualityPropsRes,
+    importancePropsRes,
   ] = await Promise.all([
     backup
       .from('box_master')
@@ -271,6 +280,12 @@ export default async function AdminCatalogConfigPage({
       .in('type', ['catalog_quality_weight.update', 'catalog_quality_threshold.update'])
       .eq('status', 'awaiting_facu')
       .order('proposed_at', { ascending: false }),
+    backup
+      .from('admin_proposals')
+      .select('id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes')
+      .in('type', ['importance_config.weight_update', 'importance_config.variety_update'])
+      .eq('status', 'awaiting_facu')
+      .order('proposed_at', { ascending: false }),
   ]);
 
   if (boxesRes.error) console.error('[admin/catalog/config] box_master:', boxesRes.error);
@@ -283,6 +298,7 @@ export default async function AdminCatalogConfigPage({
   if (qualityWeightsRes.error) console.error('[admin/catalog/config] quality_weights:', qualityWeightsRes.error);
   if (qualityThresholdsRes.error) console.error('[admin/catalog/config] quality_thresholds:', qualityThresholdsRes.error);
   if (qualityPropsRes.error) console.error('[admin/catalog/config] quality proposals:', qualityPropsRes.error);
+  if (importancePropsRes.error) console.error('[admin/catalog/config] importance proposals:', importancePropsRes.error);
 
   const boxes = (boxesRes.data ?? []) as BoxMasterRow[];
   const constants = (constantsRes.data ?? []) as PricingConstantRow[];
@@ -294,6 +310,7 @@ export default async function AdminCatalogConfigPage({
   const qualityWeights = (qualityWeightsRes.data ?? []) as QualityWeightRow[];
   const qualityThresholds = (qualityThresholdsRes.data ?? []) as QualityThresholdRow[];
   const qualityProps = (qualityPropsRes.data ?? []) as AdminProposalRow[];
+  const importanceProps = (importancePropsRes.data ?? []) as AdminProposalRow[];
 
   // Cascade-impact SKU counts ---------------------------------------------
   const skuByBoxRows = (skuByBoxRes.data ?? []) as { box_type: string | null }[];
@@ -343,6 +360,7 @@ export default async function AdminCatalogConfigPage({
     shipping: shipProps.length,
     visibility: windowProps.length,
     quality: qualityProps.length,
+    importance: importanceProps.length,
   };
   const activeByPanel: Record<PanelKey, number> = {
     boxes: boxes.length,
@@ -350,6 +368,7 @@ export default async function AdminCatalogConfigPage({
     shipping: ships.length,
     visibility: windows.length,
     quality: qualityWeights.length + qualityThresholds.length,
+    importance: FEATURED_SCORE_SEED.length,
   };
 
   const wiringEntry = getWiringForPage('/admin/catalog/config');
@@ -379,7 +398,7 @@ export default async function AdminCatalogConfigPage({
 
         {/* Panel switcher --------------------------------------------------- */}
         <div className="flex gap-1 mb-6 border-b border-slate-200 flex-wrap">
-          {(['boxes', 'pricing', 'shipping', 'visibility', 'quality'] as const).map((p) => (
+          {(['boxes', 'pricing', 'shipping', 'visibility', 'quality', 'importance'] as const).map((p) => (
             <PanelTabLink
               key={p}
               panel={p}
@@ -452,6 +471,15 @@ export default async function AdminCatalogConfigPage({
             />
           </WiringSection>
         )}
+        {panel === 'importance' && (
+          <WiringSection level={wm('importance-config')?.level ?? 'PLAN'} note={wm('importance-config')?.note ?? 'unregistered'} id="importance-config">
+            <ImportancePanel
+              tab={tab}
+              proposals={importanceProps}
+              fmtDate={fmtDate}
+            />
+          </WiringSection>
+        )}
 
         <p className="text-xs text-slate-400 mt-10">
           Data sources: supabase-backup public.box_master, public.pricing_constants,
@@ -489,7 +517,9 @@ function PanelTabLink({
           ? 'Shipping (country/port)'
           : panel === 'visibility'
             ? 'Visibility windows'
-            : 'Quality weights';
+            : panel === 'importance'
+              ? 'Importance model'
+              : 'Quality weights';
   const href = `/admin/catalog/config?panel=${panel}&tab=${tab}`;
   const cls = active
     ? 'px-4 py-2 text-sm font-semibold text-emerald-700 border-b-2 border-emerald-600 -mb-px'
@@ -1457,6 +1487,312 @@ function QualityPanel({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ----- IMPORTANCE MODEL panel (2026-05-26) ------------------------------------
+//
+// Shows the full importance model config:
+//   1. Formula weights (demand 60%, competition 25%, trend 15%)
+//   2. Variety seed table — all 55+ entries with scores, tiers, notes
+//   3. Post-Stripe section (greyed out) — recalibration + A/B experiments
+//
+// All edits create admin_proposals (needs_confirmation bucket → Job_PM inbox).
+// No executor runs: the proposal IS the discussion record. Job_PM updates the
+// seed file after discussion + Facu approval.
+
+function ImportancePanel({
+  tab,
+  proposals,
+  fmtDate,
+}: {
+  tab: TabKey;
+  proposals: AdminProposalRow[];
+  fmtDate: (iso: string | null) => string;
+}) {
+  if (tab === 'proposed') {
+    if (proposals.length === 0) {
+      return (
+        <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+          <p className="text-sm">No importance model proposals awaiting review.</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-2">
+        {proposals.map((p) => (
+          <div key={p.id} className="border border-violet-200 rounded-lg p-3 bg-violet-50/30 text-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <span className="font-mono text-[11px] text-violet-600">{p.type}</span>
+                <div className="text-slate-900 font-semibold mt-0.5 font-mono text-xs">
+                  {p.target_id ?? '-'}
+                </div>
+                <pre className="text-[11px] text-slate-600 mt-1 whitespace-pre-wrap break-all">
+                  {JSON.stringify(p.payload, null, 2)}
+                </pre>
+                {p.notes && (
+                  <p className="text-[11px] text-slate-500 mt-1 italic">{p.notes}</p>
+                )}
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Proposed {fmtDate(p.proposed_at)} by {p.proposed_by ?? 'unknown'}
+                </p>
+              </div>
+              <ProposalDecisionButtons id={p.id} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Tier thresholds for display
+  const TIER_5 = 80;
+  const TIER_4 = 70;
+  const TIER_3 = 50;
+  const TIER_2 = 30;
+
+  function tierLabel(score: number, isDefault: boolean): { label: string; cls: string } {
+    if (isDefault) return { label: 'Default', cls: 'bg-slate-100 text-slate-500 border-slate-200' };
+    if (score >= TIER_5) return { label: 'T5 — Bridal staple', cls: 'bg-amber-100 text-amber-800 border-amber-200' };
+    if (score >= TIER_4) return { label: 'T4 — Florist pull', cls: 'bg-violet-100 text-violet-800 border-violet-200' };
+    if (score >= TIER_3) return { label: 'T3 — Trade + trend', cls: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
+    if (score >= TIER_2) return { label: 'T2 — Commodity', cls: 'bg-slate-100 text-slate-600 border-slate-200' };
+    return { label: 'T1 — Unresearched', cls: 'bg-slate-50 text-slate-400 border-slate-200' };
+  }
+
+  return (
+    <div className="space-y-6">
+
+      {/* Formula weights card */}
+      <div className="border border-violet-200 rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b border-violet-200 bg-violet-50/50">
+          <h3 className="text-sm font-semibold text-slate-900">Formula weights</h3>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            importance_score = demand × 0.{Math.round(FORMULA_WEIGHTS.demand_weight * 100)} + competition × 0.{Math.round(FORMULA_WEIGHTS.competition_weight * 100)} + trend × 0.{Math.round(FORMULA_WEIGHTS.trend_weight * 100)}.
+            Each dimension scored 0-100 per variety. Proposing a weight change routes to Job_PM for discussion.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-violet-50/30 border-b border-violet-200">
+              <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                <th className="px-4 py-2">Dimension</th>
+                <th className="px-4 py-2 text-right">Weight</th>
+                <th className="px-4 py-2">What it measures</th>
+                <th className="px-4 py-2">Signal source</th>
+                <th className="px-4 py-2">Recalibration</th>
+                <th className="px-4 py-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-slate-100">
+                <td className="px-4 py-2.5">
+                  <div className="font-mono text-[11px] text-violet-700">demand_weight</div>
+                  <div className="text-xs text-slate-900 font-semibold mt-0.5">Consumer & florist demand</div>
+                </td>
+                <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900 font-bold">
+                  {Math.round(FORMULA_WEIGHTS.demand_weight * 100)}%
+                </td>
+                <td className="px-4 py-2.5 text-xs text-slate-600 max-w-xs">
+                  Does a florist or bride ask for this variety by name? Named-variety demand is the strongest predictor of conversion.
+                </td>
+                <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                  Florists&apos; Review 2024, The Knot 2026, FiftyFlowers collections, Whole Blossoms buyer behavior
+                </td>
+                <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                  Post-Stripe: add-to-cart rate per variety (monthly recal)
+                </td>
+                <td className="px-4 py-2.5 text-right">
+                  <ImportanceProposeWeightForm
+                    dimension="demand_weight"
+                    currentPct={Math.round(FORMULA_WEIGHTS.demand_weight * 100)}
+                    description="Consumer and florist pull — how often is this variety requested by name?"
+                  />
+                </td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <td className="px-4 py-2.5">
+                  <div className="font-mono text-[11px] text-violet-700">competition_weight</div>
+                  <div className="text-xs text-slate-900 font-semibold mt-0.5">Price vs market</div>
+                </td>
+                <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900 font-bold">
+                  {Math.round(FORMULA_WEIGHTS.competition_weight * 100)}%
+                </td>
+                <td className="px-4 py-2.5 text-xs text-slate-600 max-w-xs">
+                  Our stem price vs Las Vegas Flower Market / FiftyFlowers / Whole Blossoms.
+                  Price edge converts; parity is neutral; above-market hurts.
+                </td>
+                <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                  LVFM B2B confirmed prices (100-stem), FiftyFlowers retail, Flower Explosion per-stem (2026-05-26)
+                </td>
+                <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                  Post-Stripe: price elasticity per SKU from A/B price anchor test
+                </td>
+                <td className="px-4 py-2.5 text-right">
+                  <ImportanceProposeWeightForm
+                    dimension="competition_weight"
+                    currentPct={Math.round(FORMULA_WEIGHTS.competition_weight * 100)}
+                    description="Our price vs market (LVFM / FiftyFlowers / Whole Blossoms) for this variety."
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2.5">
+                  <div className="font-mono text-[11px] text-violet-700">trend_weight</div>
+                  <div className="text-xs text-slate-900 font-semibold mt-0.5">2026 trend presence</div>
+                </td>
+                <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900 font-bold">
+                  {Math.round(FORMULA_WEIGHTS.trend_weight * 100)}%
+                </td>
+                <td className="px-4 py-2.5 text-xs text-slate-600 max-w-xs">
+                  Is this variety explicitly called out in 2026 trend forecasts?
+                  Pantone COTY, The Knot color stories, Thursd variety profiles.
+                </td>
+                <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                  The Knot 2026 wedding colors, Thursd 2026 variety roundup, Pantone Mocha Mousse COTY 2026
+                </td>
+                <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                  Annual: swap 2026 → 2027 trend data each January
+                </td>
+                <td className="px-4 py-2.5 text-right">
+                  <ImportanceProposeWeightForm
+                    dimension="trend_weight"
+                    currentPct={Math.round(FORMULA_WEIGHTS.trend_weight * 100)}
+                    description="Presence in 2026 trend forecasts (Pantone, The Knot, Thursd)."
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="px-4 py-2 bg-slate-50 border-t border-slate-200 text-[11px] text-slate-500">
+          Source: <code className="font-mono">lib/admin/featured-scores-seed.ts → FORMULA_WEIGHTS</code> ·
+          Write path: <span className="font-medium text-violet-700">admin_proposals → needs_confirmation → Job_PM inbox → discussion → seed update</span>
+        </div>
+      </div>
+
+      {/* Variety seed table */}
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+          <h3 className="text-sm font-semibold text-slate-900">Variety scores — {FEATURED_SCORE_SEED.length} research-backed entries</h3>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Varieties NOT in this list receive the commodity default ({DEFAULT_IMPORTANCE_SCORE}).
+            Ordered from highest to lowest score. To propose a score change, click Edit — it routes to Job_PM before the seed is updated.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-white border-b border-slate-200">
+              <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
+                <th className="px-4 py-2">Variety / match terms</th>
+                <th className="px-4 py-2 text-right">Score</th>
+                <th className="px-4 py-2">Tier</th>
+                <th className="px-4 py-2">Market notes</th>
+                <th className="px-4 py-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...FEATURED_SCORE_SEED].sort((a, b) => b.importance_score - a.importance_score).map((entry: FeaturedScoreEntry) => {
+                const matchKey = entry.match_terms.join(' + ');
+                const isDefault = entry.importance_score === DEFAULT_IMPORTANCE_SCORE;
+                const { label: tierLbl, cls: tierCls } = tierLabel(entry.importance_score, isDefault);
+                const isStar = entry.importance_score >= 72;
+                return (
+                  <tr key={matchKey} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50">
+                    <td className="px-4 py-2">
+                      <div className="font-mono text-xs text-slate-900 font-semibold">
+                        {entry.match_terms.join(' + ')}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {isStar ? (
+                        <span className="font-mono text-sm font-bold text-amber-600">★ {entry.importance_score}</span>
+                      ) : (
+                        <span className="font-mono text-sm text-slate-900">{entry.importance_score}</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold border ${tierCls}`}>
+                        {tierLbl}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-[11px] text-slate-600 max-w-sm">
+                      {entry.notes ?? '-'}
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      <ImportanceProposeVarietyForm
+                        matchKey={matchKey}
+                        currentScore={entry.importance_score}
+                        notes={entry.notes}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-4 py-2 bg-slate-50 border-t border-slate-200 text-[11px] text-slate-500">
+          Source: <code className="font-mono">lib/admin/featured-scores-seed.ts → FEATURED_SCORE_SEED</code> ·
+          Recalibration trigger: realized demand index &gt;50% above/below predicted → flag for correction ·
+          Write path: <span className="font-medium text-violet-700">proposal → needs_confirmation → Job_PM → seed file update</span>
+        </div>
+      </div>
+
+      {/* Post-Stripe greyed section */}
+      <div className="relative border border-slate-300 rounded-xl overflow-hidden bg-white opacity-60">
+        <div className="absolute inset-0 bg-slate-100/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+          <div className="bg-white border border-slate-300 rounded-lg px-5 py-3 shadow-sm text-center">
+            <div className="text-sm font-semibold text-slate-700">Requires: Stripe confirmed</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">
+              These features activate once Stripe is live and we have real transaction data.
+            </div>
+          </div>
+        </div>
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+          <h3 className="text-sm font-semibold text-slate-900">Post-Stripe: Data-driven recalibration</h3>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Replace estimated demand scores with realized add-to-cart rates per variety.
+          </p>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="rounded-lg border border-slate-200 p-4 bg-white">
+            <div className="text-xs font-semibold text-slate-900 mb-1">Realized add-to-cart tracking per variety</div>
+            <p className="text-[11px] text-slate-500">
+              GA4 + Stripe: track (PDP views × add-to-cart) per SKU weekly. Roll up by variety.
+              Varieties where realized index &gt;50% above or below predicted importance_score
+              → auto-flagged for correction proposal.
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+              <div>Dependency: Stripe live + GA4 ecommerce events</div>
+              <div>Cadence: weekly data pull, monthly recalibration</div>
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-200 p-4 bg-white">
+            <div className="text-xs font-semibold text-slate-900 mb-1">Monthly model recalibration</div>
+            <p className="text-[11px] text-slate-500">
+              After 30 days of Stripe data: run recalibration comparing realized demand index
+              vs predicted importance_score per variety. Auto-generate correction proposals for
+              outliers. Job_PM reviews + approves seed updates.
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-200 p-4 bg-white">
+            <div className="text-xs font-semibold text-slate-900 mb-1">A/B experiment framework</div>
+            <p className="text-[11px] text-slate-500">
+              Four experiment types, all requiring Stripe + The Gate (6 conditions):
+            </p>
+            <ul className="mt-1.5 space-y-1 text-[11px] text-slate-500 list-disc list-inside">
+              <li>Naming test — &quot;Quicksand Rose&quot; vs &quot;Blush Garden Rose&quot; on PDP title</li>
+              <li>Price anchor — show LVFM market price alongside ours on high-importance SKUs</li>
+              <li>Trend badge — &quot;2026 Pantone Color of the Year&quot; label on Toffee / Quicksand</li>
+              <li>Bundle recommendation — surface complementary varieties (Quicksand + Sky Waltz) on PDP</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

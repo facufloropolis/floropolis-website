@@ -1647,4 +1647,8 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'cost_source.facu_correction',
   'price_alert.facu_correction',
   'contents_description.facu_correction',
+  // Importance model config (2026-05-26): proposal → needs_confirmation → Job_PM inbox discussion.
+  // No executor yet — proposals are the discussion record; Job_PM applies change to seed file after approval.
+  'importance_config.weight_update',
+  'importance_config.variety_update',
 ];

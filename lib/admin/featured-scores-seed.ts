@@ -32,6 +32,18 @@ export interface FeaturedScoreEntry {
 // Non-null so priority_to_fix = 25 × quality_gap keeps them in the improvement queue.
 export const DEFAULT_IMPORTANCE_SCORE = 25;
 
+// Formula weights for importance_score.
+// demand_weight × named-variety demand tier (florist/consumer pull)
+// competition_weight × our price vs market (LVFM / FiftyFlowers / Whole Blossoms)
+// trend_weight × 2026 trend presence (The Knot, Florists' Review, Thursd)
+// All editable via importance_config.weight_update proposals → needs_confirmation bucket → Job_PM inbox.
+// Recalibration trigger: post-Stripe, replace with realized add-to-cart rate per variety (monthly).
+export const FORMULA_WEIGHTS = {
+  demand_weight: 0.60,
+  competition_weight: 0.25,
+  trend_weight: 0.15,
+} as const;
+
 export const FEATURED_SCORE_SEED: FeaturedScoreEntry[] = [
 
   // ==========================================================================

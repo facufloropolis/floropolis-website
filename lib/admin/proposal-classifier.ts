@@ -47,6 +47,8 @@ export function classifyProposalBucket(proposalType: string): ProposalBucket {
     case 'approve_cost_row':
     case 'reject_cost_row':
     case 'resolve_conflict':            // Rose canonical_cost cleanup; needs context
+    case 'importance_config.weight_update': // changes conversion model weights → Job_PM must review
+    case 'importance_config.variety_update': // changes single variety importance score → Job_PM must review
       return 'needs_confirmation';
 
     // -----------------------------------------------------------------------

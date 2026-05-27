@@ -1343,3 +1343,259 @@ export function QualityThresholdProposeForm({
     </div>
   );
 }
+
+// ----- IMPORTANCE CONFIG forms (2026-05-26) -----------------------------------
+//
+// importance_config.weight_update  — propose changing one of the 3 formula weights.
+//   Routing: needs_confirmation → Job_PM inbox for discussion before seed update.
+//   No executor yet; the proposal IS the discussion record.
+//
+// importance_config.variety_update — propose changing one variety's importance_score.
+//   Same routing.
+
+export function ImportanceProposeWeightForm({
+  dimension,
+  currentPct,
+  description,
+}: {
+  dimension: 'demand_weight' | 'competition_weight' | 'trend_weight';
+  currentPct: number;
+  description: string;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(String(currentPct));
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function reset() {
+    setValue(String(currentPct));
+    setReason('');
+    setError(null);
+  }
+
+  async function submit() {
+    const pct = Number(value);
+    if (!Number.isFinite(pct) || pct < 0 || pct > 100) {
+      setError('Value must be 0-100 (percentage).');
+      return;
+    }
+    if (reason.trim().length < 10) {
+      setError('Rationale required (>=10 chars) — this changes the conversion model.');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const r = await postProposal({
+      type: 'importance_config.weight_update',
+      target_table: 'importance_formula_weights',
+      target_id: dimension,
+      payload: { dimension, new_pct: pct, old_pct: currentPct },
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_table: 'featured-scores-seed.ts',
+      source_id: dimension,
+      source_agent: 'facu',
+      before_value: { [dimension]: currentPct },
+      after_value: { [dimension]: pct },
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setError(r.error ?? 'proposal failed');
+      return;
+    }
+    setOpen(false);
+    reset();
+    router.refresh();
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-violet-700 hover:text-violet-900 border border-violet-300 hover:border-violet-500 px-3 py-1.5 rounded-md transition-colors"
+      >
+        Propose edit
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-left bg-white border border-violet-300 rounded-lg p-3 shadow-sm w-80">
+      <p className="text-xs font-semibold text-slate-900 mb-1">
+        Propose weight — <span className="font-mono text-violet-700">{dimension}</span>
+      </p>
+      <p className="text-[11px] text-slate-500 mb-2">{description}</p>
+      <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">
+        Changes the conversion model. Routes to Job_PM for discussion before seed is updated. The 3 weights must sum to 100%.
+      </p>
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        New weight % (current: {currentPct}%)
+      </label>
+      <input
+        type="number"
+        min={0}
+        max={100}
+        step={5}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={busy}
+        className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+      />
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Rationale (mandatory)
+      </label>
+      <textarea
+        rows={3}
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+        placeholder="Why change this weight? What new signal justifies it?"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={() => { setOpen(false); reset(); }}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+    </div>
+  );
+}
+
+export function ImportanceProposeVarietyForm({
+  matchKey,
+  currentScore,
+  notes,
+}: {
+  matchKey: string;
+  currentScore: number;
+  notes: string | undefined;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(String(currentScore));
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function reset() {
+    setValue(String(currentScore));
+    setReason('');
+    setError(null);
+  }
+
+  async function submit() {
+    const score = Number(value);
+    if (!Number.isFinite(score) || score < 0 || score > 100) {
+      setError('Score must be 0-100.');
+      return;
+    }
+    if (reason.trim().length < 10) {
+      setError('Rationale required (>=10 chars) — explain the market signal.');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const r = await postProposal({
+      type: 'importance_config.variety_update',
+      target_table: 'featured-scores-seed.ts',
+      target_id: matchKey,
+      payload: { match_key: matchKey, new_score: score, old_score: currentScore },
+      notes: reason.trim(),
+      source_rationale: reason.trim(),
+      source_table: 'featured-scores-seed.ts',
+      source_id: matchKey,
+      source_agent: 'facu',
+      before_value: { importance_score: currentScore },
+      after_value: { importance_score: score },
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setError(r.error ?? 'proposal failed');
+      return;
+    }
+    setOpen(false);
+    reset();
+    router.refresh();
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-violet-700 hover:text-violet-900 border border-violet-300 hover:border-violet-500 px-2 py-1 rounded-md transition-colors"
+      >
+        Edit
+      </button>
+    );
+  }
+
+  return (
+    <div className="text-left bg-white border border-violet-300 rounded-lg p-3 shadow-sm w-72">
+      <p className="text-xs font-semibold text-slate-900 mb-1">
+        Propose score for <span className="font-mono text-violet-700">{matchKey}</span>
+      </p>
+      {notes && <p className="text-[11px] text-slate-500 mb-2">{notes}</p>}
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        New score (0-100, current: {currentScore})
+      </label>
+      <input
+        type="number"
+        min={0}
+        max={100}
+        step={1}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={busy}
+        className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+      />
+      <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+        Market signal / rationale
+      </label>
+      <textarea
+        rows={2}
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        disabled={busy}
+        className="w-full text-xs border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+        placeholder="What changed? Source? (e.g. LVFM new price, The Knot 2027 trend)"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={() => { setOpen(false); reset(); }}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy}
+          className="text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+        >
+          {busy ? 'Submitting...' : 'Submit proposal'}
+        </button>
+      </div>
+      {error && <div className="text-[11px] text-red-600 font-mono mt-2">{error}</div>}
+    </div>
+  );
+}
