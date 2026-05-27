@@ -216,12 +216,15 @@ export default async function AdminCatalogApprovalQueuePage({
   const backup = getBackupServiceClient();
 
   // Counts for tab badges ------------------------------------------------
+  // 'rejected' tab includes framing_rejected proposals (visually distinguished).
   const countResults = await Promise.all(
     STATUS_VALUES.map(async (s) => {
-      const { count } = await backup
+      const q = backup
         .from('admin_proposals')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', s);
+        .select('id', { count: 'exact', head: true });
+      const { count } = s === 'rejected'
+        ? await q.in('status', ['rejected', 'framing_rejected'])
+        : await q.eq('status', s);
       return [s, count ?? 0] as const;
     }),
   );
@@ -233,12 +236,15 @@ export default async function AdminCatalogApprovalQueuePage({
   for (const [s, n] of countResults) counts[s] = n;
 
   // Fetch proposals for the active tab ----------------------------------
+  // 'rejected' tab fetches both rejected and framing_rejected.
   const { data: rowsRaw, error: rowsErr } = await backup
     .from('admin_proposals')
     .select(
       'id, type, target_table, target_id, payload, warnings, status, proposed_by, proposed_at, notes, source_agent, source_rationale, cascade_summary',
     )
-    .eq('status', status)
+    .in('status', status === 'rejected'
+      ? ['rejected', 'framing_rejected']
+      : [status])
     .order('proposed_at', { ascending: false })
     .limit(200);
   if (rowsErr) {

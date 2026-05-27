@@ -1,12 +1,15 @@
 // POST /api/admin/proposals/[id]/approve
-// v1 | 2026-05-18 | Job_PM admin-foundation [V8 SHADOW]
+// v2 | 2026-05-26 | Job_PM [V8 SHADOW]
 //
 // Approves a proposal. The flow:
 //   1. Auth + admin gate (email allowlist or client_profiles.status='admin').
 //   2. Load proposal; refuse if it's not in 'awaiting_facu'.
-//   3. Call executeProposal -- this writes the change to the source table.
-//   4. If executor failed -> 500 with the error, proposal stays awaiting_facu.
-//   5. If executor succeeded -> insert override_audit rows, insert admin_approvals
+//   3. Stale guard: if proposal.payload.source_snapshot exists, compare
+//      current floropolis_inventory_mirror fields against the snapshot.
+//      If any watched field changed, return 409 stale_source.
+//   4. Call executeProposal -- this writes the change to the source table.
+//   5. If executor failed -> 500 with the error, proposal stays awaiting_facu.
+//   6. If executor succeeded -> insert override_audit rows, insert admin_approvals
 //      row, then UPDATE proposal status='approved'.
 //
 // Body (optional): { reason?: string } -- recorded on admin_approvals.
@@ -159,7 +162,59 @@ export async function POST(
     );
   }
 
-  // 2. Execute
+  // 2. Stale guard (only for proposals that carry a source_snapshot in payload)
+  // Recommendation proposals created by the generator embed a snapshot of the
+  // mirror fields they were based on. If Rose updated those fields since the
+  // proposal was created, executing it would act on stale data.
+  const proposalPayload = proposal.payload as Record<string, unknown> | null ?? {};
+  const sourceSnapshot = proposalPayload.source_snapshot;
+  if (
+    sourceSnapshot !== null &&
+    typeof sourceSnapshot === 'object' &&
+    typeof proposalPayload.sku_id === 'number'
+  ) {
+    const snap = sourceSnapshot as Record<string, unknown>;
+    const { data: currentMirrorRow } = await service
+      .from('floropolis_inventory_mirror')
+      .select('price, has_open_price_alert, contents_note')
+      .eq('id', proposalPayload.sku_id)
+      .maybeSingle();
+
+    if (currentMirrorRow) {
+      const staleFields: string[] = [];
+
+      if ('price' in snap) {
+        const snapPrice = Number(snap.price);
+        const nowPrice = Number(currentMirrorRow.price);
+        if (!Number.isNaN(snapPrice) && !Number.isNaN(nowPrice) && Math.abs(nowPrice - snapPrice) > 0.005) {
+          staleFields.push(`price: was ${snap.price}, now ${currentMirrorRow.price}`);
+        }
+      }
+      if ('has_open_price_alert' in snap && currentMirrorRow.has_open_price_alert !== snap.has_open_price_alert) {
+        staleFields.push(`open_price_alert: was ${snap.has_open_price_alert}, now ${currentMirrorRow.has_open_price_alert}`);
+      }
+      if ('contents_note' in snap) {
+        const snapHasNote = snap.contents_note != null && String(snap.contents_note).trim().length > 0;
+        const nowHasNote = currentMirrorRow.contents_note != null && String(currentMirrorRow.contents_note).trim().length > 0;
+        if (snapHasNote !== nowHasNote) {
+          staleFields.push(`contents_note: was ${snapHasNote ? 'present' : 'null'}, now ${nowHasNote ? 'present' : 'null'}`);
+        }
+      }
+
+      if (staleFields.length > 0) {
+        return NextResponse.json(
+          {
+            error: 'stale_source',
+            detail: `Source data changed since this proposal was created: ${staleFields.join('; ')}. Reload the queue to see current data.`,
+            stale_fields: staleFields,
+          },
+          { status: 409 },
+        );
+      }
+    }
+  }
+
+  // 3. Execute
   const result = await executeProposal(proposal, service);
   if (!result.ok) {
     Sentry.captureMessage('proposal_executor_failed', {

@@ -1,5 +1,5 @@
 // Client-side rows list for /admin/catalog/approval-queue.
-// v1 | 2026-05-19 | Job_PM Phase C [V8 SHADOW]
+// v2 | 2026-05-26 | Job_PM [V8 SHADOW]
 //
 // The page server-component computes everything (proposals, cascade summaries,
 // audit rows, proposer emails, filter chip universes) and hands it here.
@@ -217,6 +217,11 @@ export default function RowsList({
                           WARN
                         </span>
                       )}
+                      {p.status === 'framing_rejected' && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 font-semibold">
+                          FRAMING CORRECTED
+                        </span>
+                      )}
                       {p.has_stale_verification && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-semibold">
                           verification STALE
@@ -241,6 +246,7 @@ export default function RowsList({
                   {status === 'awaiting_facu' ? (
                     <ProposalActions
                       id={p.id}
+                      proposalType={p.type}
                       cascadeLabel={p.cascade.label}
                     />
                   ) : (
