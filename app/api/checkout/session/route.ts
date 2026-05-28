@@ -27,9 +27,13 @@
 // This route writes the SetupIntent + seeds the payments ledger row. The Mode B/C
 // inline preauth/charge fires when setup_intent.succeeded webhook arrives.
 //
-// TODO wave-3: rate limit (Layer 4) currently in-process counter; replace with
-//              Supabase RPC or Upstash when we have multi-instance traffic.
-// TODO wave-3: day-total cap value pending Facu confirm ($10k vs $20k — design Q1).
+// Layer-4 rate limit IS already Supabase-backed (see §4 below — queries orders table).
+// Day-total cap IS already enforced (§8 below) as alert-only (Telegram, non-blocking).
+// Tunables in this file:
+//   PER_ORDER_AMOUNT_CAP_USD (line 59)       — hard block above this per order
+//   PER_DAY_TOTAL_CAP_USD    (line 60)       — alert-only above this per user/day
+//   RATE_LIMIT_PER_USER_HOURLY (line 61)     — hard block above this rate
+// Facu: edit those constants directly when policy changes (no DB lookup needed).
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
