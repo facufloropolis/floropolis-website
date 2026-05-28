@@ -82,6 +82,7 @@ const VENDOR_ORIGIN_COUNTRY = {
   Flodecol: "Ecuador",
   "Magic Flowers": "Ecuador",
   Megaflor: "Ecuador",
+  Olimpo: "Ecuador",
   // "Unknown" intentionally omitted — already filtered out upstream by
   // the missing-vendor guard, but explicit absence here also fails closed.
 };
