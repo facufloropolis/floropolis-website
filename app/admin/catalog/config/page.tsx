@@ -46,6 +46,12 @@ import {
   DEFAULT_IMPORTANCE_SCORE,
   type FeaturedScoreEntry,
 } from '@/lib/admin/featured-scores-seed';
+import {
+  boxKey,
+  legacyBoxTypeFor,
+  resolveLegacyBoxIdentity,
+  type BoxMasterRow as CanonicalBoxMasterRow,
+} from '@/lib/box-master';
 
 export const metadata = {
   title: 'Catalog Configuration | Floropolis Admin',
@@ -54,16 +60,7 @@ export const metadata = {
 
 // ----- row types ------------------------------------------------------------
 
-export interface BoxMasterRow {
-  box_type: string;
-  weight_kg: number | string;
-  description: string | null;
-  validated_by: string | null;
-  validated_at: string | null;
-  notes: string | null;
-  active: boolean;
-  updated_at: string | null;
-}
+export type BoxMasterRow = CanonicalBoxMasterRow;
 
 export interface PricingConstantRow {
   id: string;
@@ -225,9 +222,13 @@ export default async function AdminCatalogConfigPage({
     importancePropsRes,
   ] = await Promise.all([
     backup
-      .from('box_master')
-      .select('box_type, weight_kg, description, validated_by, validated_at, notes, active, updated_at')
-      .order('box_type', { ascending: true }),
+      .from('box_master_mirror')
+      .select(
+        'box_id, vendor_canonical_name, box_family, variant_code, fedex_length_cm, fedex_width_cm, fedex_height_cm, fedex_dim_weight_kg, fedex_chargeable_kg, fedex_volume_cm3, stems_per_box, fedex_source_artifact, fedex_source_date, fedex_label_confirmation_count, komet_length_in, komet_width_in, komet_height_in, komet_dim_weight_kg, komet_dim_weight_delta_kg, komet_source, komet_source_date, stems_per_box_source_artifact, stems_per_box_source_date, facu_approved, facu_approved_at, facu_approval_note, source_artifact, legacy_box_type, effective_from, effective_to, active, inserted_by, updated_at',
+      )
+      .order('vendor_canonical_name', { ascending: true })
+      .order('box_family', { ascending: true })
+      .order('variant_code', { ascending: true }),
     backup
       .from('pricing_constants')
       .select('id, market, value_numeric, value_text, allowed_values, description, unit, updated_at')
@@ -264,7 +265,7 @@ export default async function AdminCatalogConfigPage({
       .order('proposed_at', { ascending: false }),
     backup
       .from('floropolis_inventory_mirror')
-      .select('box_type')
+      .select('vendor, box_type')
       .not('box_type', 'is', null),
     backup
       .from('floropolis_inventory_mirror')
@@ -317,11 +318,17 @@ export default async function AdminCatalogConfigPage({
   const importanceProps = (importancePropsRes.data ?? []) as AdminProposalRow[];
 
   // Cascade-impact SKU counts ---------------------------------------------
-  const skuByBoxRows = (skuByBoxRes.data ?? []) as { box_type: string | null }[];
+  const skuByBoxRows = (skuByBoxRes.data ?? []) as { vendor: string | null; box_type: string | null }[];
   const skuCountByBox: Record<string, number> = {};
   for (const r of skuByBoxRows) {
-    if (!r.box_type) continue;
-    skuCountByBox[r.box_type] = (skuCountByBox[r.box_type] ?? 0) + 1;
+    if (!r.vendor || !r.box_type) continue;
+    const identity = resolveLegacyBoxIdentity(r.vendor, r.box_type);
+    const key = boxKey({
+      vendor_canonical_name: identity.vendor,
+      box_family: identity.boxFamily,
+      variant_code: identity.variant,
+    });
+    skuCountByBox[key] = (skuCountByBox[key] ?? 0) + 1;
   }
   const totalSkus = totalSkusRes.count ?? 0;
 
@@ -603,49 +610,66 @@ function BoxPanel({
     );
   }
   const newestBoxAt = boxes.reduce<string | null>(
-    (acc, b) => (!acc || (b.validated_at && b.validated_at > acc) ? (b.validated_at ?? acc) : acc),
+    (acc, b) => {
+      const candidate = b.updated_at ?? b.facu_approved_at ?? null;
+      return !acc || (candidate && candidate > acc) ? (candidate ?? acc) : acc;
+    },
     null,
   );
   return (
     <>
       {/* Source provenance bar */}
       <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
-        <span>Source: <code className="font-mono">public.box_master</code></span>
+        <span>Source: <code className="font-mono">public.box_master_mirror</code></span>
         <span>Write path: <span className="font-medium text-amber-800">rose_queue only (read-only)</span></span>
         <span>{boxes.length} rows</span>
-        {newestBoxAt && <span>Last validated: {fmtDate(newestBoxAt)}</span>}
+        {newestBoxAt && <span>Last updated: {fmtDate(newestBoxAt)}</span>}
       </div>
     <div className="border border-slate-200 rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
-              <th className="px-4 py-2.5">Box type</th>
-              <th className="px-4 py-2.5">Description</th>
-              <th className="px-4 py-2.5 text-right">Weight (kg)</th>
+              <th className="px-4 py-2.5">Vendor / family / variant</th>
+              <th className="px-4 py-2.5">FedEx source</th>
+              <th className="px-4 py-2.5 text-right">Chargeable kg</th>
+              <th className="px-4 py-2.5 text-right">Stems / box</th>
               <th className="px-4 py-2.5 text-right">SKUs using</th>
-              <th className="px-4 py-2.5">Validated</th>
+              <th className="px-4 py-2.5">Approval / note</th>
               <th className="px-4 py-2.5">Status</th>
               <th className="px-4 py-2.5 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {boxes.map((b) => {
-              const cascade = skuCountByBox[b.box_type] ?? 0;
+              const rowKey = boxKey(b);
+              const cascade = skuCountByBox[rowKey] ?? 0;
+              const displayLabel = `${b.vendor_canonical_name} · ${b.box_family} · ${b.variant_code}`;
+              const legacyLabel = legacyBoxTypeFor({
+                vendor_canonical_name: b.vendor_canonical_name,
+                box_family: b.box_family,
+                variant_code: b.variant_code,
+              });
               return (
                 <tr
-                  key={b.box_type}
+                  key={rowKey}
                   className={'border-b border-slate-100 last:border-b-0 ' + (b.active ? '' : 'opacity-60')}
                 >
-                  <td className="px-4 py-2.5 font-mono text-xs text-slate-900">{b.box_type}</td>
+                  <td className="px-4 py-2.5 text-xs text-slate-900">
+                    <div className="font-mono">{displayLabel}</div>
+                    <div className="text-[11px] text-slate-400">legacy: {legacyLabel}</div>
+                  </td>
                   <td className="px-4 py-2.5 text-xs text-slate-600 max-w-md">
-                    <div>{b.description ?? '-'}</div>
-                    {b.notes && (
-                      <div className="text-[11px] text-slate-400 mt-0.5">{b.notes}</div>
+                    <div>{b.fedex_source_artifact ?? '-'}</div>
+                    {b.facu_approval_note && (
+                      <div className="text-[11px] text-slate-400 mt-0.5">{b.facu_approval_note}</div>
                     )}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
-                    {String(b.weight_kg)}
+                    {String(b.fedex_chargeable_kg ?? '-')}
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
+                    {String(b.stems_per_box ?? '-')}
                   </td>
                   <td className="px-4 py-2.5 text-right text-xs">
                     {cascade > 0 ? (
@@ -655,9 +679,9 @@ function BoxPanel({
                     )}
                   </td>
                   <td className="px-4 py-2.5 text-xs text-slate-500">
-                    <div>{b.validated_by ?? '-'}</div>
-                    {b.validated_at && (
-                      <div className="text-[10px] text-slate-400">{fmtDate(b.validated_at)}</div>
+                    <div>{b.facu_approved_at ? fmtDate(b.facu_approved_at) : (b.updated_at ? fmtDate(b.updated_at) : '-')}</div>
+                    {b.fedex_source_date && (
+                      <div className="text-[10px] text-slate-400">{fmtDate(b.fedex_source_date)}</div>
                     )}
                   </td>
                   <td className="px-4 py-2.5">
@@ -672,7 +696,7 @@ function BoxPanel({
                     )}
                   </td>
                   <td className="px-4 py-2.5 text-right">
-                    <BoxFlagCEOForm row={b} cascadeSkus={cascade} />
+                    <BoxFlagCEOForm rowKey={rowKey} rowLabel={displayLabel} cascadeSkus={cascade} />
                   </td>
                 </tr>
               );
@@ -681,7 +705,7 @@ function BoxPanel({
         </table>
       </div>
       <div className="px-4 py-2 bg-amber-50 border-t border-amber-200 text-xs text-amber-900">
-        <strong>READ-ONLY:</strong> box_master is Rose-owned (contract v1.0,
+        <strong>READ-ONLY:</strong> box_master_mirror is Rose-owned (contract v1.0,
         Section 1). Job has no independent source for box dim corrections.
         Use &quot;Flag to CEO&quot; to escalate via rose_queue.
       </div>

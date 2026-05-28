@@ -30,6 +30,11 @@ import {
   requireNumericPricingConstant,
   type PricingConstantValueRow,
 } from '@/lib/pricing-constants';
+import {
+  boxKey,
+  resolveLegacyBoxIdentity,
+  type BoxMasterRow as CanonicalBoxMasterRow,
+} from '@/lib/box-master';
 
 export interface GeneratorStats {
   formula_reset: { created: number; skipped: number; errors: number };
@@ -44,13 +49,20 @@ const BOX_DIM_KG_FALLBACK: Record<string, number> = {
 };
 
 function resolveBoxWeight(
+  vendorRaw: string | null | undefined,
   boxTypeRaw: string | null | undefined,
   boxMaster: Record<string, number>,
 ): number | null {
-  if (!boxTypeRaw) return null;
+  if (!vendorRaw || !boxTypeRaw) return null;
+  const identity = resolveLegacyBoxIdentity(vendorRaw, boxTypeRaw);
+  const key = boxKey({
+    vendor_canonical_name: identity.vendor,
+    box_family: identity.boxFamily,
+    variant_code: identity.variant,
+  });
   const bt = boxTypeRaw.toUpperCase().trim();
   const lookup = (k: string): number | undefined => boxMaster[k] ?? BOX_DIM_KG_FALLBACK[k];
-  const direct = lookup(bt);
+  const direct = boxMaster[key] ?? lookup(bt);
   if (direct != null) return direct;
   if (bt.includes('/')) {
     const parts = bt.split('/').map((c) => c.trim()).filter(Boolean);
@@ -77,7 +89,7 @@ function computeExpectedPrice(
   }
   const stemsPerBox = unitsPerBox || totalStems;
   if (stemsPerBox <= 0) return null;
-  const dimKg = resolveBoxWeight(boxType, boxMaster);
+  const dimKg = resolveBoxWeight(vendor, boxType, boxMaster);
   if (dimKg == null) return null;
   const deliveryPerBox = Math.ceil(dimKg) * fedex * fuel;
   const deliveryPerStem = deliveryPerBox / stemsPerBox;
@@ -119,7 +131,9 @@ export async function generateRecommendationProposals(
       .from('pricing_constants')
       .select('id, market, value_numeric')
       .eq('market', ACTIVE_PRICING_MARKET),
-    service.from('box_master').select('box_type, weight_kg'),
+    service
+      .from('box_master_mirror')
+      .select('box_id, vendor_canonical_name, box_family, variant_code, fedex_chargeable_kg'),
   ]);
 
   const pcRows = (pcResult.data ?? []) as PricingConstantValueRow[];
@@ -127,10 +141,13 @@ export async function generateRecommendationProposals(
   const fedex = requireNumericPricingConstant(pcRows, 'fedex_rate_per_kg');
   const fuel = requireNumericPricingConstant(pcRows, 'fuel_surcharge_mult');
 
-  const bmRows = (bmResult.data ?? []) as Array<{ box_type: string; weight_kg: number }>;
+  const bmRows = (bmResult.data ?? []) as CanonicalBoxMasterRow[];
   const boxMaster: Record<string, number> = {};
   for (const r of bmRows) {
-    if (r.box_type) boxMaster[r.box_type.toUpperCase().trim()] = r.weight_kg;
+    const weight = Number(r.fedex_chargeable_kg);
+    if (Number.isFinite(weight)) {
+      boxMaster[boxKey(r)] = weight;
+    }
   }
 
   // -------------------------------------------------------------------------

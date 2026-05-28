@@ -23,7 +23,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { pricingConstantTargetId } from '@/lib/pricing-constants';
 import type {
-  BoxMasterRow,
   PricingConstantRow,
   TierVisibilityWindowRow,
   QualityWeightRow,
@@ -74,10 +73,12 @@ async function postProposal(body: ProposalBody): Promise<{ ok: boolean; error?: 
 // old BoxMasterProposeForm.
 
 export function BoxFlagCEOForm({
-  row,
+  rowKey,
+  rowLabel,
   cascadeSkus,
 }: {
-  row: BoxMasterRow;
+  rowKey: string;
+  rowLabel: string;
   cascadeSkus: number;
 }) {
   const router = useRouter();
@@ -99,7 +100,7 @@ export function BoxFlagCEOForm({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sku_id: row.box_type,
+          sku_id: rowKey,
           reason_code: 'box_dim_discrepancy',
           reason_text: reasonText.trim(),
         }),
@@ -139,7 +140,7 @@ export function BoxFlagCEOForm({
   return (
     <div className="text-left bg-white border border-amber-300 rounded-lg p-3 shadow-sm w-80">
       <p className="text-xs font-semibold text-slate-900 mb-1">
-        Flag <span className="font-mono">{row.box_type}</span> to CEO
+        Flag <span className="font-mono">{rowLabel}</span> to CEO
       </p>
       <p className="text-[11px] text-slate-600 mb-2">
         box_master is read-only (Rose contract). Lands in rose_queue, CEO triages.

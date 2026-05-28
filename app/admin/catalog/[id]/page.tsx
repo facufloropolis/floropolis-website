@@ -28,6 +28,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { getBoxByLegacyType } from '@/lib/box-master';
 import { getCostSourceMeta, getReliabilityCls } from '@/lib/admin/cost-source-registry';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
@@ -121,9 +122,18 @@ interface MirrorRow {
 }
 
 interface BoxMasterRow {
-  box_type: string;
-  weight_kg: number | string | null;
-  description: string | null;
+  box_id: number;
+  vendor_canonical_name: string;
+  box_family: string;
+  variant_code: string;
+  fedex_chargeable_kg: number | string | null;
+  stems_per_box: number | string | null;
+  fedex_source_artifact: string | null;
+  fedex_source_date: string | null;
+  facu_approved_at: string | null;
+  facu_approval_note: string | null;
+  active: boolean;
+  updated_at?: string | null;
 }
 
 interface PricingConstantRow {
@@ -305,7 +315,7 @@ function computeBreakdown(
   const gpmTarget = constants.get('gpm_target') ?? null;
   const fedexRate = constants.get('fedex_rate_per_kg') ?? null;
   const fuelMult = constants.get('fuel_surcharge_mult') ?? null;
-  const boxWeight = box ? toNumOrNull(box.weight_kg) : null;
+  const boxWeight = box ? toNumOrNull(box.fedex_chargeable_kg) : null;
   const ceilBoxWeight = boxWeight != null ? Math.ceil(boxWeight) : null;
   const unitsPerBox = toNumOrNull(mirror.units_per_box);
   const currentPrice = toNumOrNull(mirror.price);
@@ -403,15 +413,18 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
     if (n != null) constants.set(c.id, n);
   }
 
-  // Box master row for this SKU's box_type.
+  // Box master row for this SKU's vendor + legacy box_type.
   let box: BoxMasterRow | null = null;
-  if (mirror?.box_type) {
-    const { data: boxRow } = await backup
-      .from('box_master')
-      .select('box_type, weight_kg, description')
-      .eq('box_type', mirror.box_type)
-      .maybeSingle();
-    box = (boxRow ?? null) as BoxMasterRow | null;
+  if (mirror?.vendor && mirror?.box_type) {
+    try {
+      box = (await getBoxByLegacyType(backup, {
+        vendor: mirror.vendor,
+        boxType: mirror.box_type,
+      })) as BoxMasterRow;
+    } catch (err) {
+      console.error('[admin/catalog/[id]] box_master_mirror lookup failed:', err);
+      box = null;
+    }
   }
 
   // Sibling SKUs: prefer quality_family_id when set; fall back to variety+length.

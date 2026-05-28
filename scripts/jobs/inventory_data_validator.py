@@ -101,6 +101,7 @@ _BOX_DIM_KG_FALLBACK = {
 
 # Live, mutable lookup. Populated by load_box_master() at start of run().
 BOX_DIM_KG: dict[str, float] = dict(_BOX_DIM_KG_FALLBACK)
+BOX_DIM_KG_BY_VENDOR_TYPE: dict[tuple[str, str], float] = {}
 
 # Tracks whether pricing/box reads fell back to hardcoded values (for return summary).
 CONFIG_LOAD_FALLBACK = {
@@ -276,11 +277,43 @@ def load_pricing_constants() -> None:
 
 
 def load_box_master() -> None:
-    """Load box_type -> weight_kg from box_master table. Mutate BOX_DIM_KG global.
-    On any failure or empty table, leave hardcoded fallback in place and set
-    CONFIG_LOAD_FALLBACK['box_master']=True.
+    """Load canonical box weights.
+
+    Preferred path is the 7A parity mirror (`box_master_mirror`) keyed by
+    vendor + legacy_box_type. If that surface is not available yet, fall back
+    to the legacy global `box_master` table.
     """
-    global BOX_DIM_KG
+    global BOX_DIM_KG, BOX_DIM_KG_BY_VENDOR_TYPE
+
+    try:
+        rows = execute_sql(
+            "SELECT vendor_canonical_name, legacy_box_type, fedex_chargeable_kg "
+            "FROM box_master_mirror WHERE active = true"
+        )
+    except Exception:
+        rows = []
+
+    vendor_loaded: dict[tuple[str, str], float] = {}
+    if rows:
+        for r in rows:
+            vendor = str(r.get("vendor_canonical_name") or "").upper().strip()
+            box_type = str(r.get("legacy_box_type") or "").upper().strip()
+            kg = r.get("fedex_chargeable_kg")
+            if not vendor or not box_type or kg is None:
+                continue
+            try:
+                vendor_loaded[(vendor, box_type)] = float(kg)
+            except (TypeError, ValueError):
+                continue
+        if vendor_loaded:
+            BOX_DIM_KG_BY_VENDOR_TYPE = vendor_loaded
+            global_loaded: dict[str, float] = {}
+            for (_, box_type), kg in vendor_loaded.items():
+                global_loaded[box_type] = min(global_loaded.get(box_type, kg), kg)
+            BOX_DIM_KG = global_loaded
+            CONFIG_LOAD_FALLBACK["box_master"] = False
+            return
+
     try:
         rows = execute_sql("SELECT box_type, weight_kg FROM box_master WHERE active = true")
     except Exception as e:
@@ -305,6 +338,8 @@ def load_box_master() -> None:
             continue
     if loaded:
         BOX_DIM_KG = loaded
+        BOX_DIM_KG_BY_VENDOR_TYPE = {}
+        CONFIG_LOAD_FALLBACK["box_master"] = False
     else:
         CONFIG_LOAD_FALLBACK["box_master"] = True
 
@@ -328,14 +363,18 @@ def load_gate_tiers() -> None:
             GATE_TIERS[str(gid)] = str(t)
 
 
-def resolve_box_weight(box_type_raw: str | None) -> float | None:
+def resolve_box_weight(vendor_raw: str | None, box_type_raw: str | None) -> float | None:
     """Look up box weight, including multi-format types (EB/QB, HB/QB, EB/HB/QB).
     Multi-format types resolve to the MIN of component weights (preserves alerts
     on overpriced rows — per v1.1 design note).
     """
     if not box_type_raw:
         return None
+    vendor = (vendor_raw or "").upper().strip()
     bt = box_type_raw.upper().strip()
+    direct_vendor = BOX_DIM_KG_BY_VENDOR_TYPE.get((vendor, bt)) if vendor else None
+    if direct_vendor is not None:
+        return direct_vendor
     if bt in BOX_DIM_KG:
         return BOX_DIM_KG[bt]
     if "/" in bt:
@@ -369,7 +408,7 @@ def compute_expected_price(row: dict) -> float | None:
     if not stems_per_box or stems_per_box <= 0:
         return None
 
-    dim_kg = resolve_box_weight(row.get("box_type"))
+    dim_kg = resolve_box_weight(row.get("vendor"), row.get("box_type"))
     if dim_kg is None:
         return None  # unknown box type, can't validate
 
@@ -608,7 +647,7 @@ def classify_row(row: dict, validate_result: dict) -> dict:
         failing.append("open_price_alert")
 
     # 7 box_type set AND validated weight available
-    if resolve_box_weight(row.get("box_type")) is None:
+    if resolve_box_weight(row.get("vendor"), row.get("box_type")) is None:
         failing.append("missing_box_dims")
 
     # 8 units_per_box > 0 AND stems_per_bunch > 0 where applicable

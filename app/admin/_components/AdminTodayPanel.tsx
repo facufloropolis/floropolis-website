@@ -16,6 +16,11 @@ import {
   requireNumericPricingConstant,
   type PricingConstantValueRow,
 } from '@/lib/pricing-constants';
+import {
+  boxKey,
+  resolveLegacyBoxIdentity,
+  type BoxMasterRow as CanonicalBoxMasterRow,
+} from '@/lib/box-master';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
@@ -27,11 +32,6 @@ interface MirrorRow {
   units_per_box: number | string | null;
   cost_source: string | null;
   tier: string | null;
-}
-
-interface BoxMasterRow {
-  box_type: string;
-  weight_kg: number | string | null;
 }
 
 interface ProposalRow {
@@ -119,7 +119,17 @@ function computeVendorGpm(
     const cost = toNum(r.farm_cost);
     const upb = toNum(r.units_per_box);
     if (price == null || cost == null || upb == null || upb <= 0) continue;
-    const bw = r.box_type ? (boxWeightMap.get(r.box_type) ?? 0) : 0;
+    const bw = r.vendor && r.box_type
+      ? (() => {
+          const identity = resolveLegacyBoxIdentity(r.vendor, r.box_type);
+          const key = boxKey({
+            vendor_canonical_name: identity.vendor,
+            box_family: identity.boxFamily,
+            variant_code: identity.variant,
+          });
+          return boxWeightMap.get(key) ?? 0;
+        })()
+      : 0;
     const shipping = (Math.ceil(bw) * fedexRate * fuelMult) / upb;
     const gpm = (price - cost - shipping) / price;
     if (!map.has(vendor)) {
@@ -178,7 +188,9 @@ export default async function AdminTodayPanel(): Promise<ReactNode> {
       .from('floropolis_inventory_mirror')
       .select('vendor, price, farm_cost, box_type, units_per_box, cost_source, tier')
       .limit(2000),
-    svc.from('box_master').select('box_type, weight_kg'),
+    svc
+      .from('box_master_mirror')
+      .select('box_id, vendor_canonical_name, box_family, variant_code, fedex_chargeable_kg'),
     svc
       .from('pricing_constants')
       .select('id, market, value_numeric')
@@ -213,9 +225,9 @@ export default async function AdminTodayPanel(): Promise<ReactNode> {
 
   // ── box weight map ──
   const boxWeightMap = new Map<string, number>();
-  for (const b of (boxRes.data ?? []) as BoxMasterRow[]) {
-    const w = toNum(b.weight_kg);
-    if (w != null) boxWeightMap.set(b.box_type, w);
+  for (const b of (boxRes.data ?? []) as CanonicalBoxMasterRow[]) {
+    const w = toNum(b.fedex_chargeable_kg);
+    if (w != null) boxWeightMap.set(boxKey(b), w);
   }
 
   const mirrorRows = (mirrorRes.data ?? []) as MirrorRow[];

@@ -15,6 +15,11 @@ import {
   requireNumericPricingConstant,
   type PricingConstantValueRow,
 } from '@/lib/pricing-constants';
+import {
+  boxKey,
+  resolveLegacyBoxIdentity,
+  type BoxMasterRow as CanonicalBoxMasterRow,
+} from '@/lib/box-master';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
@@ -28,11 +33,6 @@ interface MirrorRow {
   units_per_box: number | string | null;
   cost_source: string | null;
   live: boolean;
-}
-
-interface BoxRow {
-  box_type: string;
-  weight_kg: number | string | null;
 }
 
 interface WeightRow {
@@ -113,7 +113,9 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     svc.from('floropolis_inventory_mirror')
       .select('name, tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
       .limit(2000),
-    svc.from('box_master').select('box_type, weight_kg'),
+    svc
+      .from('box_master_mirror')
+      .select('box_id, vendor_canonical_name, box_family, variant_code, fedex_chargeable_kg'),
     svc
       .from('pricing_constants')
       .select('id, market, value_numeric')
@@ -140,7 +142,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   ]);
 
   const mirror = (mirrorRaw ?? []) as MirrorRow[];
-  const boxes = (boxRaw ?? []) as BoxRow[];
+  const boxes = (boxRaw ?? []) as CanonicalBoxMasterRow[];
   const constants = (constRaw ?? []) as PricingConstantValueRow[];
   const classifications = (clsRaw ?? []) as ClassificationRow[];
   const weights = (weightsRaw ?? []) as WeightRow[];
@@ -153,7 +155,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   const fedexRate = requireNumericPricingConstant(constants, 'fedex_rate_per_kg');
   const fuelMult = requireNumericPricingConstant(constants, 'fuel_surcharge_mult');
   const gpmTarget = requireNumericPricingConstant(constants, 'gpm_target');
-  const boxWeightMap = new Map(boxes.map((b) => [b.box_type, toNum(b.weight_kg) ?? 0]));
+  const boxWeightMap = new Map(boxes.map((b) => [boxKey(b), toNum(b.fedex_chargeable_kg) ?? 0]));
 
   // ── Tier breakdown ──────────────────────────────────────────────────────────
   // K2K live = cost_source matches /_k2k_/i AND live=true (same as catalog-model deriveBuckets).
@@ -223,7 +225,17 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     const price = toNum(r.price);
     const cost = toNum(r.farm_cost);
     const units = toNum(r.units_per_box);
-    const boxWt = r.box_type ? (boxWeightMap.get(r.box_type) ?? 0) : 0;
+    const boxWt = r.vendor && r.box_type
+      ? (() => {
+          const identity = resolveLegacyBoxIdentity(r.vendor, r.box_type);
+          const key = boxKey({
+            vendor_canonical_name: identity.vendor,
+            box_family: identity.boxFamily,
+            variant_code: identity.variant,
+          });
+          return boxWeightMap.get(key) ?? 0;
+        })()
+      : 0;
     if (price == null || cost == null || units == null || units === 0 || price === 0) continue;
 
     const shipping = Math.ceil(boxWt) * fedexRate * fuelMult / units;
