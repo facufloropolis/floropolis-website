@@ -38,14 +38,8 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 
 import RowsList, { type ProposalRowVm } from './RowsList';
 import type { AuditRow } from './AuditDrillDown';
-import BatchPriceResetPanel, { type BatchResetRow } from './BatchPriceResetPanel';
-import CostSourcePanel, { type CostSourceGroup } from './CostSourcePanel';
-import IngestPriceBugPanel, { type IngestBugSku } from './IngestPriceBugPanel';
-import OpenPriceAlertPanel, { type OpenPriceAlertSku } from './OpenPriceAlertPanel';
-import ContentDescriptionPanel, { type DescriptionVariety } from './ContentDescriptionPanel';
+import BatchPriceProposalPanel, { type BatchProposal } from './BatchPriceProposalPanel';
 import SupplyQualityBar, { type PendingCorrection, type PotentialUnlock, type HistoricalMetric } from './SupplyQualityBar';
-
-const BATCH_PRICE_RESET_ARTIFACT = 'formula_deviation_audit_2026-05-23';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -354,287 +348,51 @@ export default async function AdminCatalogApprovalQueuePage({
     }
   }
 
-  // Batch price reset panel (awaiting_facu tab only) --------------------
-  // Fetch proposals from the formula_deviation_audit batch separately so we
-  // can render them as a prioritised panel above the main list and filter them
-  // out of the generic RowsList (443 individual rows would flood the queue).
-  let batchRows: BatchResetRow[] = [];
-  let batchTotalCount = 0;
+  // ── Price formula batch proposals (7 batches, awaiting_facu tab only) ──
+  let batchProposals: BatchProposal[] = [];
+  let deployedSha: string | undefined;
+  let deployedAt: string | undefined;
   if (status === 'awaiting_facu') {
-    const { count: batchCount } = await backup
+    const { data: batchRaw } = await backup
       .from('admin_proposals')
-      .select('id', { count: 'exact', head: true })
-      .eq('source_artifact', BATCH_PRICE_RESET_ARTIFACT)
-      .eq('status', 'awaiting_facu');
-    batchTotalCount = batchCount ?? 0;
-
-    if (batchTotalCount > 0) {
-      const { data: batchRaw } = await backup
-        .from('admin_proposals')
-        .select('id, target_id, payload')
-        .eq('source_artifact', BATCH_PRICE_RESET_ARTIFACT)
-        .eq('status', 'awaiting_facu')
-        .limit(20);
-      const batchUnsorted = ((batchRaw ?? []) as Array<{
-        id: string;
-        target_id: string | null;
-        payload: Record<string, unknown> | null;
-      }>)
-        .map((r) => {
-          const p = r.payload ?? {};
-          return {
-            id: r.id,
-            variety: String(p.variety ?? ''),
-            length: p.length != null ? `${p.length}cm` : '?',
-            tier: String(p.tier ?? ''),
-            farm_cost: Number(p.farm_cost ?? 0),
-            actual_price: Number(p.actual_price ?? 0),
-            formula_price: Number(p.formula_price ?? 0),
-            pct_above_formula: Number(p.pct_above_formula ?? 0),
-          } satisfies BatchResetRow;
-        });
-      batchRows = batchUnsorted
-        .sort((a, b) => b.pct_above_formula - a.pct_above_formula)
-        .slice(0, 15);
-    }
-  }
-
-  // ── Recurrence detection for CostSource + OpenPriceAlert + ContentDescription ──
-  // Same pattern as ingest — query admin_proposals for prior submissions per type.
-  let priorCostCorrectionCount = 0;
-  let daysSinceFirstCostSurfaced = 0;
-  let priorAlertCorrectionCount = 0;
-  let daysSinceFirstAlertSurfaced = 0;
-  let priorDescriptionCount = 0;
-  let daysSinceFirstDescriptionSurfaced = 0;
-  if (status === 'awaiting_facu') {
-    const [costRes, alertRes, descRes] = await Promise.all([
-      backup.from('admin_proposals').select('proposed_at', { count: 'exact' })
-        .in('type', ['cost_source.facu_correction', 'cost.source_confirm', 'cost.source_flag'])
-        .order('proposed_at', { ascending: true }).limit(1),
-      backup.from('admin_proposals').select('proposed_at', { count: 'exact' })
-        .in('type', ['price_alert.facu_correction', 'price_alert.batch_clear'])
-        .order('proposed_at', { ascending: true }).limit(1),
-      backup.from('admin_proposals').select('proposed_at', { count: 'exact' })
-        .eq('type', 'contents_description.batch_approve')
-        .order('proposed_at', { ascending: true }).limit(1),
-    ]);
-    const now = Date.now();
-    priorCostCorrectionCount = costRes.count ?? 0;
-    if (costRes.data?.[0]?.proposed_at) {
-      daysSinceFirstCostSurfaced = Math.floor((now - new Date(costRes.data[0].proposed_at).getTime()) / 864e5);
-    }
-    priorAlertCorrectionCount = alertRes.count ?? 0;
-    if (alertRes.data?.[0]?.proposed_at) {
-      daysSinceFirstAlertSurfaced = Math.floor((now - new Date(alertRes.data[0].proposed_at).getTime()) / 864e5);
-    }
-    priorDescriptionCount = descRes.count ?? 0;
-    if (descRes.data?.[0]?.proposed_at) {
-      daysSinceFirstDescriptionSurfaced = Math.floor((now - new Date(descRes.data[0].proposed_at).getTime()) / 864e5);
-    }
-  }
-
-  // ── Cost source panel data (awaiting_facu tab only) ──────────────────
-  // Pulls cost_source groups direct from the production mirror via a raw RPC
-  // query. We look at blocked SKUs only (from catalog_classifications) and
-  // group by vendor + cost_source to surface the three decision types.
-  let costGroups: CostSourceGroup[] = [];
-  if (status === 'awaiting_facu') {
-    const { data: costRaw, error: _costRpcErr } = await backup.rpc('get_cost_source_groups');
-    // Fallback: RPC not yet built — use hardcoded audit data from 2026-05-23.
-    if (!costRaw) {
-      // Known groups hardcoded from 2026-05-23 audit — refreshed at each deploy
-      // until the RPC is built. Keeps the panel live without blocking deploy.
-      costGroups = [
-        // ── Synthetic / derived — flag decision ──
-        {
-          vendor: 'Megaflor', tier: 'T3', cost_source: 'google_sheet_benchmark',
-          sku_count: 81, has_cost: 81, avg_cost: 0.591, min_cost: 0.28, max_cost: 1.20,
-          decision_type: 'flag', source_risk: 'synthetic',
-          risk_reason: 'Cost derived from a benchmark spreadsheet — not an actual farm invoice or negotiated pricelist. Publishing at this "cost" means your GPM is unknown.',
-        },
-        {
-          vendor: 'Megaflor', tier: 'T3', cost_source: 'Megaflor_k2k_2026-05-13',
-          sku_count: 79, has_cost: 79, avg_cost: 1.190, min_cost: 0.35, max_cost: 2.50,
-          decision_type: 'flag', source_risk: 'synthetic',
-          risk_reason: 'Cost back-calculated from K2K market price (May 13). This is circular: K2K price → "farm cost" → formula price → compared to K2K price. Proves nothing about actual margin.',
-        },
-        // ── Named pricelists — confirm decision ──
-        {
-          vendor: 'Ecoroses', tier: 'T3', cost_source: 'fob_pricelist_2026-03-25',
-          sku_count: 82, has_cost: 82, avg_cost: 0.520, min_cost: 0.27, max_cost: 0.95,
-          decision_type: 'confirm', source_risk: 'stale',
-          risk_reason: 'FOB pricelist from March 25 — 2 months old. Is this still the basis for your Ecoroses T3 pricing?',
-        },
-        {
-          vendor: 'Ecoroses', tier: 'T2', cost_source: 'fob_pricelist_2026-03-25',
-          sku_count: 15, has_cost: 15, avg_cost: 0.493, min_cost: 0.33, max_cost: 0.80,
-          decision_type: 'confirm', source_risk: 'stale',
-          risk_reason: 'Same March 25 FOB pricelist as T3 — confirm it covers T2 SKUs as well.',
-        },
-        {
-          vendor: 'Flodecol', tier: 'T2', cost_source: 'catalog_Flodecol_Nov25',
-          sku_count: 12, has_cost: 12, avg_cost: 0.525, min_cost: 0.36, max_cost: 0.80,
-          decision_type: 'confirm', source_risk: 'stale',
-          risk_reason: 'November 2025 catalog — 6 months old. Still current?',
-        },
-        {
-          vendor: 'Flodecol', tier: 'T3', cost_source: 'catalog_Flodecol_Nov25',
-          sku_count: 4, has_cost: 4, avg_cost: 0.415, min_cost: 0.35, max_cost: 0.55,
-          decision_type: 'confirm', source_risk: 'stale',
-          risk_reason: 'November 2025 catalog — 6 months old.',
-        },
-        // ── Pending — no cost data ──
-        {
-          vendor: 'Magic Flowers', tier: 'T2', cost_source: 'PENDING_MF_PRICELIST',
-          sku_count: 43, has_cost: 0, avg_cost: null, min_cost: null, max_cost: null,
-          decision_type: 'pending', source_risk: 'missing',
-          risk_reason: '43 T2 SKUs with zero cost data. Magic Flowers pricelist has not arrived. These cannot be published until you have real cost figures.',
-        },
-        {
-          vendor: 'Magic Flowers', tier: 'T3', cost_source: 'PENDING_MF_PRICELIST',
-          sku_count: 25, has_cost: 0, avg_cost: null, min_cost: null, max_cost: null,
-          decision_type: 'pending', source_risk: 'missing',
-          risk_reason: '25 T3 SKUs waiting on same MF pricelist.',
-        },
-      ] satisfies CostSourceGroup[];
-    }
-  }
-
-  // ── Ingest price bug panel data (awaiting_facu tab only) ─────────────
-  // Shows the formula_deviation root cause with best sellers / sole blockers first.
-  // Also queries admin_proposals for prior ingest.price_field_bug corrections to
-  // show recurrence badge if this correction has been sent before without being resolved.
-  let ingestBugSkus: IngestBugSku[] = [];
-  let ingestBugTotal = 0;
-  let priorIngestCorrectionCount = 0;
-  let daysSinceFirstIngestSurfaced = 0;
-  let ingestBugProposalId: string | null = null;
-  if (status === 'awaiting_facu') {
-    // Fetch all ingest.price_field_bug proposals to count prior corrections + get pending ID.
-    const { count: ingestPriorCount, data: ingestPriorRows } = await backup
-      .from('admin_proposals')
-      .select('id, proposed_at, status', { count: 'exact' })
-      .eq('type', 'ingest.price_field_bug')
+      .select('id, urgency_tier, source_rationale, before_value, after_value')
+      .eq('proposal_type', 'price.formula_review.batch')
+      .like('proposed_by', 'Job_PM%')
+      .eq('status', 'pending')
       .order('proposed_at', { ascending: true });
-    priorIngestCorrectionCount = ingestPriorCount ?? 0;
-    if (ingestPriorRows?.[0]?.proposed_at) {
-      daysSinceFirstIngestSurfaced = Math.floor(
-        (Date.now() - new Date(ingestPriorRows[0].proposed_at).getTime()) / (24 * 60 * 60 * 1000),
+    batchProposals = ((batchRaw ?? []) as Array<{
+      id: string;
+      urgency_tier: string | null;
+      source_rationale: string | null;
+      before_value: Record<string, unknown> | null;
+      after_value: Record<string, unknown> | null;
+    }>).map(r => ({
+      id: r.id,
+      urgency_tier: r.urgency_tier ?? 'routine',
+      source_rationale: r.source_rationale ?? '',
+      before_value: r.before_value as BatchProposal['before_value'],
+      after_value: r.after_value as BatchProposal['after_value'],
+    }));
+
+    try {
+      const versionRes = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.floropolis.com'}/api/__version`,
+        { cache: 'no-store' },
       );
+      if (versionRes.ok) {
+        const vj = await versionRes.json() as { sha?: string; deployed_at?: string };
+        deployedSha = vj.sha;
+        deployedAt = vj.deployed_at;
+      }
+    } catch {
+      // non-fatal — card footer shows 'unknown'
     }
-    // Find the existing awaiting_facu proposal to approve (avoids creating duplicates).
-    const pendingRow = ingestPriorRows?.find(r => r.status === 'awaiting_facu');
-    ingestBugProposalId = pendingRow?.id ?? null;
-  }
-  if (status === 'awaiting_facu') {
-    // Best-seller sole blockers from the audit — hardcoded from 2026-05-23 query
-    // until a live RPC is built. Panel always shows; live RPC will refresh counts.
-    ingestBugTotal = 476;
-    ingestBugSkus = [
-      // Sole blockers + best sellers (highest priority)
-      { id: 'bs-1', variety: 'Freedom', length: '50 cm', tier: 'T2', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 1.90, farm_cost: 0.490, formula_price: 1.18, pct_deviation: 61, sole_blocker: true  },
-      { id: 'bs-2', variety: 'Free Spirit', length: '50 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 2.10, farm_cost: 0.490, formula_price: 1.18, pct_deviation: 78, sole_blocker: false },
-      { id: 'bs-3', variety: 'Pink O\'Hara', length: '70 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 2.50, farm_cost: 0.640, formula_price: 1.41, pct_deviation: 77, sole_blocker: false },
-      { id: 'bs-4', variety: 'Escimo', length: '50 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 1.85, farm_cost: 0.460, formula_price: 1.14, pct_deviation: 62, sole_blocker: false },
-      { id: 'bs-5', variety: 'Quicksand', length: '50 cm', tier: 'T2', vendor: 'Ecoroses', is_best_seller: true,  k2k_price: 2.20, farm_cost: 0.530, formula_price: 1.24, pct_deviation: 77, sole_blocker: false },
-      // High-deviation examples (not best sellers)
-      { id: 'ex-1', variety: 'Explorer', length: '40 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: false, k2k_price: 3.40, farm_cost: 0.300, formula_price: 1.11, pct_deviation: 206, sole_blocker: false },
-      { id: 'ex-2', variety: 'Aly', length: '70 cm', tier: 'T3', vendor: 'Ecoroses', is_best_seller: false, k2k_price: 3.98, farm_cost: 0.490, formula_price: 1.41, pct_deviation: 182, sole_blocker: false },
-    ];
   }
 
-  // ── Open price alert panel (awaiting_facu tab only) ──────────────────
-  // 299 Ecoroses T3 SKUs have has_open_price_alert = true.
-  // 26 are sole blockers (this is their only failing gate).
-  let openAlertSoleBlockers: OpenPriceAlertSku[] = [];
-  const OPEN_ALERT_TOTAL = 299;
-  if (status === 'awaiting_facu') {
-    // Sole-blocker list from 2026-05-23 query — hardcoded until live RPC built.
-    openAlertSoleBlockers = [
-      { id: 7155, variety: 'Absolut in Pink',  length: '70 cm', tier: 'T3' },
-      { id: 7261, variety: 'Country Candy',    length: '80 cm', tier: 'T3' },
-      { id: 7329, variety: 'Full Monty',       length: '60 cm', tier: 'T3' },
-      { id: 7376, variety: 'High & Flame Magic', length: '80 cm', tier: 'T3' },
-      { id: 7381, variety: 'High & Magic',     length: '80 cm', tier: 'T3' },
-      { id: 7393, variety: 'Hot Explorer',     length: '50 cm', tier: 'T3' },
-      { id: 7423, variety: 'Mamma Mia',        length: '50 cm', tier: 'T3' },
-      { id: 7424, variety: 'Mamma Mia',        length: '60 cm', tier: 'T3' },
-      { id: 7426, variety: 'Mamma Mia',        length: '80 cm', tier: 'T3' },
-      { id: 7479, variety: 'Nina',             length: '60 cm', tier: 'T3' },
-      { id: 7498, variety: 'Paloma',           length: '50 cm', tier: 'T3' },
-      { id: 7588, variety: 'Silantoi',         length: '50 cm', tier: 'T3' },
-      { id: 7589, variety: 'Silantoi',         length: '60 cm', tier: 'T3' },
-      { id: 7602, variety: 'Sunny Days',       length: '40 cm', tier: 'T3' },
-      { id: 7603, variety: 'Sunny Days',       length: '50 cm', tier: 'T3' },
-      { id: 7604, variety: 'Sunny Days',       length: '60 cm', tier: 'T3' },
-      { id: 7605, variety: 'Sunny Days',       length: '70 cm', tier: 'T3' },
-      { id: 7606, variety: 'Sunny Days',       length: '80 cm', tier: 'T3' },
-      { id: 7607, variety: 'Sweet Cake',       length: '40 cm', tier: 'T3' },
-      { id: 7608, variety: 'Sweet Cake',       length: '50 cm', tier: 'T3' },
-      { id: 7609, variety: 'Sweet Cake',       length: '60 cm', tier: 'T3' },
-      { id: 7610, variety: 'Sweet Cake',       length: '70 cm', tier: 'T3' },
-      { id: 7613, variety: 'Sweet Memory',     length: '50 cm', tier: 'T3' },
-      { id: 7614, variety: 'Sweet Memory',     length: '60 cm', tier: 'T3' },
-      { id: 7615, variety: 'Sweet Memory',     length: '70 cm', tier: 'T3' },
-      { id: 7633, variety: 'Tibet',            length: '50 cm', tier: 'T3' },
-    ] satisfies OpenPriceAlertSku[];
-  }
 
-  // ── Content descriptions panel (awaiting_facu tab only) ──────────────
-  // 301 SKUs across Megaflor, Flodecol, Magic Flowers missing contents_note.
-  // publishable_gap gate — needed for perfect catalog status, not blocking.
-  const DESCRIPTION_TOTAL = 301;
-  let descriptionVarieties: DescriptionVariety[] = [];
-  if (status === 'awaiting_facu') {
-    descriptionVarieties = [
-      // ── Megaflor ──────────────────────────────────────────────────────
-      { vendor: 'Megaflor', variety: 'Elegance',     tier: 'T3', sku_count: 36, default_description: 'Alstroemeria Elegance from Megaflor featuring multiple starlike blooms per stem in soft, graduated hues. A versatile, long-lasting filler for mixed bouquets and event arrangements.' },
-      { vendor: 'Megaflor', variety: 'Mariane',      tier: 'T3', sku_count: 27, default_description: 'Alstroemeria Mariane from Megaflor with warm-toned blooms and delicate dark veining. Long vase life and strong stems make this a reliable choice for retail and event floristry.' },
-      { vendor: 'Megaflor', variety: 'Amandine',     tier: 'T3', sku_count: 14, default_description: 'Alstroemeria Amandine from Megaflor in soft apricot-pink tones with classic funnel-shaped blooms. A graceful filler for romantic and spring-inspired arrangements.' },
-      { vendor: 'Megaflor', variety: 'Mistral',      tier: 'T3', sku_count: 14, default_description: 'Alstroemeria Mistral from Megaflor with vibrant, richly colored blooms on upright stems. Suitable for mixed bouquets and solo arrangements due to its color intensity.' },
-      { vendor: 'Megaflor', variety: 'Larkspur',     tier: 'T3', sku_count: 11, default_description: 'Fresh-cut Consolida (larkspur) featuring slender spikes of densely packed blooms. A cottage-garden classic for romantic and vertical arrangements — adds height and color without bulk.' },
-      { vendor: 'Megaflor', variety: 'Full Star',    tier: 'T3', sku_count:  7, default_description: 'Gypsophila Full Star — premium double-form baby\'s breath with densely packed starlike white flowers. An essential filler for bridal designs and high-end bouquet work.' },
-      { vendor: 'Megaflor', variety: 'FullStar',     tier: 'T3', sku_count:  6, default_description: 'Gypsophila Full Star — premium double-form baby\'s breath with densely packed starlike white flowers. An essential filler for bridal designs and high-end bouquet work.' },
-      { vendor: 'Megaflor', variety: 'Focal Scoop',  tier: 'T3', sku_count:  6, default_description: 'Premium specialty flower from Megaflor\'s Focal Scoop variety with unique petal form and rich coloring. A distinctive accent for luxury and garden-style arrangements.' },
-      { vendor: 'Megaflor', variety: 'Blue Bird',    tier: 'T3', sku_count:  3, default_description: 'Delphinium Blue Bird featuring tall spikes of sky-blue flowers with white bee centers. A dramatic vertical accent for wedding and event florals — adds height and cool-tone contrast.' },
-      { vendor: 'Megaflor', variety: 'Galahad',      tier: 'T3', sku_count:  3, default_description: 'Delphinium Galahad — pure white florets on tall branching spikes from the Pacific Giant series. An elegant vertical accent for bridal and white-palette arrangements.' },
-      { vendor: 'Megaflor', variety: 'Magical Lagoon', tier: 'T3', sku_count: 3, default_description: 'Megaflor Magical Lagoon with vibrant multi-toned blooms on well-branched stems. A tropical-inspired accent for colorful mixed arrangements and statement centerpieces.' },
-      { vendor: 'Megaflor', variety: 'Select',       tier: 'T3', sku_count:  3, default_description: 'Premium cut flower from Megaflor\'s Select line with strong, straight stems and well-formed blooms. A reliable workhorse for both retail and high-volume event floristry.' },
-      { vendor: 'Megaflor', variety: 'Blue Pacific Summer Skies', tier: 'T3', sku_count: 3, default_description: 'Pacific Giant delphinium in vivid cerulean-blue — tall branching spikes of large florets. A dramatic vertical statement for summer weddings and formal centerpieces.' },
-      { vendor: 'Megaflor', variety: 'Blue Sky Waltz', tier: 'T3', sku_count: 3, default_description: 'Delphinium Blue Sky Waltz with clear sky-blue florets and white bee centers on tall spikes. A graceful architectural accent for bridal and English-garden arrangements.' },
-      { vendor: 'Megaflor', variety: 'Bells of Ireland', tier: 'T3', sku_count: 2, default_description: 'Bells of Ireland (Moluccella laevis) — elegant chartreuse bell-shaped calyces along arching stems. Adds bold green structure and height to any contemporary or wedding arrangement.' },
-      { vendor: 'Megaflor', variety: 'Blue Sea Waltz', tier: 'T3', sku_count: 2, default_description: 'Delphinium Blue Sea Waltz with rich violet-blue florets and defined center eyes on tall spikes. A classic vertical accent for English-garden and romantic arrangements.' },
-      { vendor: 'Megaflor', variety: 'Bon Bon',      tier: 'T3', sku_count:  2, default_description: 'Megaflor Bon Bon with densely petaled, tightly cupped blooms in warm tones. A lush filler for mixed bouquets and centerpieces that need full, rounded texture.' },
-      { vendor: 'Megaflor', variety: 'Jumbo',        tier: 'T3', sku_count:  2, default_description: 'Oversized blooms from Megaflor\'s Jumbo variety on strong, straight stems. A bold focal-point flower for statement arrangements and large-scale event design.' },
-      { vendor: 'Megaflor', variety: 'Pacific',      tier: 'T3', sku_count:  2, default_description: 'Pacific Giant delphinium bearing large, richly colored florets on tall architectural spikes. A premium vertical statement flower for centerpieces and formal event design.' },
-      { vendor: 'Megaflor', variety: 'Pacific Blue Bird', tier: 'T3', sku_count: 2, default_description: 'Pacific Blue Bird delphinium from the Giant series with vivid blue florets and white eye centers. A dramatic, architecturally bold accent for formal and bridal arrangements.' },
-      { vendor: 'Megaflor', variety: 'Pacific Galahad', tier: 'T3', sku_count: 2, default_description: 'Pacific Galahad delphinium — pure white florets and bold green centers on tall Giant-series spikes. An elegant statement flower for formal and bridal design.' },
-      { vendor: 'Megaflor', variety: 'Pacific Summer Skies', tier: 'T3', sku_count: 2, default_description: 'Pacific Summer Skies delphinium with vivid cerulean florets on tall Giant-series spikes. A showstopping vertical accent for summer events and large-scale arrangements.' },
-      { vendor: 'Megaflor', variety: 'X',            tier: 'T3', sku_count:  2, default_description: 'Premium specialty cut flower from Megaflor. Distinctive form and color — verify variety details with your Megaflor account manager before publishing description copy.' },
-      // ── Flodecol ──────────────────────────────────────────────────────
-      { vendor: 'Flodecol', variety: 'Tinted',       tier: 'T3', sku_count: 10, default_description: 'Tinted alstroemeria from Flodecol with specially dyed blooms in unique, non-natural color tones. Sold by weight. A creative accent for themed, festive, and specialty arrangements.' },
-      { vendor: 'Flodecol', variety: 'Sky Waltz',    tier: 'T2', sku_count:  4, default_description: 'Alstroemeria Sky Waltz from Flodecol with soft pastel tones and graceful, open blooms. Long vase life and multiple blooms per stem — ideal for retail bunches and mixed bouquets.' },
-      { vendor: 'Flodecol', variety: 'Sea Waltz',    tier: 'T3', sku_count:  4, default_description: 'Alstroemeria Sea Waltz from Flodecol in cool, oceanic hues with reflexed petals. Long-lasting and reliable — well-suited for subscription bouquets and everyday retail use.' },
-      { vendor: 'Flodecol', variety: 'Bella Andes',  tier: 'T2', sku_count:  4, default_description: 'Bella Andes alstroemeria from Flodecol in warm sunset tones. Grown in the Colombian Andes for exceptional freshness — a reliable multi-bloom filler for mixed bouquets.' },
-      { vendor: 'Flodecol', variety: 'Serene',       tier: 'T2', sku_count:  4, default_description: 'Serene alstroemeria from Flodecol in soft, calming pastel tones with refined petal form. An elegant all-purpose filler for premium and luxury floral work.' },
-      { vendor: 'Flodecol', variety: 'Cosmic',       tier: 'T3', sku_count:  2, default_description: 'Cosmic alstroemeria from Flodecol in vibrant multi-color tones with distinctive markings. Sold by weight. A bold, festive accent for tropical and statement arrangements.' },
-      { vendor: 'Flodecol', variety: 'Xlence',       tier: 'T3', sku_count:  2, default_description: 'Xlence alstroemeria from Flodecol with exceptional stem strength and generous bloom density. Sold by weight. A premium high-volume option for event florals and installation work.' },
-      // ── Magic Flowers ─────────────────────────────────────────────────
-      { vendor: 'Magic Flowers', variety: 'Anthurium', tier: 'T3', sku_count: 5, default_description: 'Tropical anthuriums from Magic Flowers with glossy, heart-shaped spathes in rich tones. Low-maintenance and exceptionally long-lasting — up to 3 weeks in the vase.' },
-      { vendor: 'Magic Flowers', variety: 'Anthurium', tier: 'T2', sku_count: 4, default_description: 'Tropical anthuriums from Magic Flowers with glossy, heart-shaped spathes in rich tones. Low-maintenance and exceptionally long-lasting — up to 3 weeks in the vase.' },
-      { vendor: 'Magic Flowers', variety: 'Areca Palm', tier: 'T3', sku_count: 2, default_description: 'Areca palm fronds from Magic Flowers with feathery, arching leaflets. A lush tropical filler for large-scale arrangements, resort-style designs, and event installations.' },
-      { vendor: 'Magic Flowers', variety: 'Areca Palm', tier: 'T2', sku_count: 2, default_description: 'Areca palm fronds from Magic Flowers with feathery, arching leaflets. A lush tropical filler for large-scale arrangements, resort-style designs, and event installations.' },
-      { vendor: 'Magic Flowers', variety: 'Monstera', tier: 'T3', sku_count: 2, default_description: 'Monstera deliciosa leaves from Magic Flowers with their iconic split and fenestrated pattern. A contemporary statement leaf for editorial, luxury, and modern tropical arrangements.' },
-      { vendor: 'Magic Flowers', variety: 'Monstera', tier: 'T2', sku_count: 2, default_description: 'Monstera deliciosa leaves from Magic Flowers with their iconic split and fenestrated pattern. A contemporary statement leaf for editorial, luxury, and modern tropical arrangements.' },
-      { vendor: 'Magic Flowers', variety: 'Coccinea', tier: 'T3', sku_count: 3, default_description: 'Alstroemeria Coccinea from Magic Flowers in warm red-orange tones with distinctive dark vein markings. A vibrant tropical-inspired filler for festive and exotic arrangements.' },
-      { vendor: 'Magic Flowers', variety: 'Musa Mix', tier: 'T3', sku_count: 2, default_description: 'Musa (banana) foliage from Magic Flowers in a tropical mix of large, paddle-shaped leaves. Ideal for tropical island-style arrangements and large-scale event décor.' },
-      { vendor: 'Magic Flowers', variety: 'Congo',   tier: 'T3', sku_count:  2, default_description: 'Congo foliage from Magic Flowers with bold, architectural tropical leaves in deep green. A dramatic structural accent for modern floral design and high-end event work.' },
-      { vendor: 'Magic Flowers', variety: 'Philodendron Congo', tier: 'T2', sku_count: 2, default_description: 'Philodendron Congo from Magic Flowers with large, deeply ribbed leaves in bold emerald green. A statement tropical foliage for high-end floral design and event installations.' },
-      { vendor: 'Magic Flowers', variety: 'Galahad', tier: 'T2', sku_count: 4, default_description: 'Galahad variety from Magic Flowers with upright, structured stems and premium blooms. A reliable, sophisticated filler for mixed event and formal arrangements.' },
-      { vendor: 'Magic Flowers', variety: 'Mariane', tier: 'T2', sku_count: 4, default_description: 'Mariane variety from Magic Flowers with well-formed blooms and strong stems. A versatile mid-range filler suitable for both retail bouquets and event floristry.' },
-    ] satisfies DescriptionVariety[];
-  }
+
+
+
 
   // Resolve proposer emails via the shared RPC --------------------------
   const proposerIds = Array.from(
@@ -753,7 +511,7 @@ export default async function AdminCatalogApprovalQueuePage({
   }
 
   // Build view models ---------------------------------------------------
-  // Exclude price.formula_reset proposals — they're shown in BatchPriceResetPanel.
+  // Exclude price.formula_reset proposals — handled by separate batch panel.
   const visibleRows = rows.filter((p) => p.type !== 'price.formula_reset');
   const vms: ProposalRowVm[] = visibleRows.map((p) => {
     const cascade =
@@ -827,14 +585,11 @@ export default async function AdminCatalogApprovalQueuePage({
           totalCount={supplyTotalCount}
           pendingCorrections={pendingCorrections}
           historicalMetrics={historicalMetrics}
-          potentialUnlocks={[
-            ...(ingestBugTotal > 0 ? [{ label: 'Fix ingest pipeline', sku_count: ingestBugTotal, panel: 'ingest' }] satisfies PotentialUnlock[] : []),
-            ...(costGroups.filter(g => g.decision_type === 'confirm').length > 0
-              ? [{ label: 'Confirm cost sources', sku_count: costGroups.filter(g => g.decision_type === 'confirm').reduce((s, g) => s + g.sku_count, 0), panel: 'cost_source' }] satisfies PotentialUnlock[]
-              : []),
-            ...(openAlertSoleBlockers.length > 0 ? [{ label: 'Clear price alerts', sku_count: openAlertSoleBlockers.length, panel: 'price_alert' }] satisfies PotentialUnlock[] : []),
-            ...(descriptionVarieties.length > 0 ? [{ label: 'Add content descriptions', sku_count: DESCRIPTION_TOTAL, panel: 'description' }] satisfies PotentialUnlock[] : []),
-          ]}
+          potentialUnlocks={batchProposals.map((p) => ({
+            label: p.source_rationale || `Batch ${p.id.slice(0, 8)}`,
+            sku_count: (p.before_value?.batch_size as number | undefined) ?? 0,
+            panel: 'batch_proposals',
+          } satisfies PotentialUnlock))}
         />
 
         {/* Tab bar */}
@@ -901,52 +656,12 @@ export default async function AdminCatalogApprovalQueuePage({
           </div>
         )}
 
-        {/* Ingest pipeline bug — formula_deviation root cause */}
-        {status === 'awaiting_facu' && ingestBugTotal > 0 && (
-          <IngestPriceBugPanel
-            skus={ingestBugSkus}
-            totalCount={ingestBugTotal}
-            priorCorrectionCount={priorIngestCorrectionCount}
-            daysSinceFirstSurfaced={daysSinceFirstIngestSurfaced}
-            proposalId={ingestBugProposalId ?? undefined}
-          />
-        )}
-
-        {/* Cost source decisions — confirm, flag synthetic, or chase vendor */}
-        {status === 'awaiting_facu' && costGroups.length > 0 && (
-          <CostSourcePanel
-            groups={costGroups}
-            priorCorrectionCount={priorCostCorrectionCount}
-            daysSinceFirstSurfaced={daysSinceFirstCostSurfaced}
-          />
-        )}
-
-        {/* Open price alerts — 26 Ecoroses sole blockers */}
-        {status === 'awaiting_facu' && openAlertSoleBlockers.length > 0 && (
-          <OpenPriceAlertPanel
-            soleBlockers={openAlertSoleBlockers}
-            totalAffected={OPEN_ALERT_TOTAL}
-            priorCorrectionCount={priorAlertCorrectionCount}
-            daysSinceFirstSurfaced={daysSinceFirstAlertSurfaced}
-          />
-        )}
-
-        {/* Content descriptions — 301 SKUs across Megaflor / Flodecol / Magic Flowers */}
-        {status === 'awaiting_facu' && descriptionVarieties.length > 0 && (
-          <ContentDescriptionPanel
-            varieties={descriptionVarieties}
-            totalCount={DESCRIPTION_TOTAL}
-            priorCorrectionCount={priorDescriptionCount}
-            daysSinceFirstSurfaced={daysSinceFirstDescriptionSurfaced}
-          />
-        )}
-
-        {/* Batch K2K price reset — 443 Ecoroses SKUs */}
-        {status === 'awaiting_facu' && batchTotalCount > 0 && (
-          <BatchPriceResetPanel
-            rows={batchRows}
-            totalCount={batchTotalCount}
-            sourceArtifact={BATCH_PRICE_RESET_ARTIFACT}
+        {/* Price formula batch proposals — 7 batches v2 (SYMPTOM + ROOT CAUSE + FIX + DEPENDENCIES + DEPLOYMENT VERIFICATION) */}
+        {status === 'awaiting_facu' && batchProposals.length > 0 && (
+          <BatchPriceProposalPanel
+            proposals={batchProposals}
+            deployedSha={deployedSha}
+            deployedAt={deployedAt}
           />
         )}
 
