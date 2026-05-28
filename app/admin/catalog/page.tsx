@@ -73,6 +73,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import MorningSummaryHeader from './_components/MorningSummaryHeader';
+import BlockingChips from './_components/BlockingChips';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import {
@@ -509,6 +510,34 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const page = Math.min(pageNum, totalPages);
   const sliceStart = (page - 1) * PAGE_SIZE;
   const pageRows = filtered.slice(sliceStart, sliceStart + PAGE_SIZE);
+
+  // Fetch images + contents_note ONLY for visible rows (≤100). These columns
+  // are not on MirrorRow today and only the inline-edit chip strip needs them,
+  // so we keep the wide mirror fetch lean and join here per page.
+  const imagesById = new Map<number, string[] | null>();
+  const contentsById = new Map<number, string | null>();
+  try {
+    const pageIds = pageRows.map((r) => r.id);
+    if (pageIds.length > 0) {
+      const { data: extras, error: extrasErr } = await backup
+        .from('floropolis_inventory_mirror')
+        .select('id, images, contents_note')
+        .in('id', pageIds);
+      if (extrasErr) {
+        console.error('[admin/catalog] images/contents fetch error:', extrasErr);
+      } else {
+        for (const row of (extras ?? []) as Array<{ id: number; images: unknown; contents_note: string | null }>) {
+          const imgs = Array.isArray(row.images)
+            ? (row.images.filter((u): u is string => typeof u === 'string'))
+            : null;
+          imagesById.set(row.id, imgs && imgs.length > 0 ? imgs : null);
+          contentsById.set(row.id, row.contents_note ?? null);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[admin/catalog] images/contents threw:', err);
+  }
 
   // Gate breakdown (blocking + publishable_gap gates with SKU counts) --------
   const gateBreakdown: Array<{
@@ -1529,7 +1558,13 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </td>
                       )}
 
-                      {/* 12. Flags */}
+                      {/* 12. Flags — chip strip (BlockingChips) renders inline-editable
+                            chips for failing blocking-tier gates only (lean v2.1 set:
+                            cost_source / price=0 / image / unit / vendor / lead_time).
+                            Non-blocking flags (Rose price alert, box-unverified) and a
+                            +N overflow link sit alongside the chip strip. Perfect-gap
+                            and publishable-gap gates are intentionally NOT in chips
+                            yet — chip strip is "what blocks publishing" only. */}
                       <td className="px-3 py-2.5">
                         {r.failed_gates.length === 0 &&
                         r.farm_cost != null &&
@@ -1537,44 +1572,36 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         !r.has_open_price_alert ? (
                           <span className="text-[11px] text-emerald-700">clean</span>
                         ) : (
-                          <div className="flex flex-wrap gap-1">
-                            {r.has_open_price_alert && (
-                              <Link
-                                href={`/admin/catalog/${r.id}`}
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold hover:bg-orange-100 transition-colors"
-                                title="Rose flagged this price for review"
-                              >
-                                ⚠ price alert
-                              </Link>
-                            )}
-                            {r.failed_gates.slice(0, 3).map((g) => (
-                              <Link
-                                key={g.gate_id}
-                                href={`/admin/catalog/${r.id}?focus=${g.gate_id}`}
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 font-medium hover:bg-red-100 transition-colors"
-                                title={`-${g.weight} . ${g.display_label}`}
-                              >
-                                {g.display_label} (−{g.weight})
-                              </Link>
-                            ))}
-                            {r.failed_gates.length > 3 && (
-                              <Link
-                                href={`/admin/catalog/${r.id}`}
-                                className="text-[10px] text-slate-500 hover:text-slate-700 underline"
-                              >
-                                +{r.failed_gates.length - 3} more
-                              </Link>
-                            )}
-                            {r.farm_cost == null && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">
-                                no cost
-                              </span>
-                            )}
-                            {!r.box_verified && r.box_type && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">
-                                box unverified
-                              </span>
-                            )}
+                          <div className="flex flex-col gap-1">
+                            <BlockingChips
+                              sku={r}
+                              images={imagesById.get(r.id) ?? null}
+                              contents_note={contentsById.get(r.id) ?? null}
+                            />
+                            <div className="flex flex-wrap gap-1">
+                              {r.has_open_price_alert && (
+                                <Link
+                                  href={`/admin/catalog/${r.id}`}
+                                  className="text-[10px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold hover:bg-orange-100 transition-colors"
+                                  title="Rose flagged this price for review"
+                                >
+                                  ⚠ price alert
+                                </Link>
+                              )}
+                              {r.failed_gates.length > 3 && (
+                                <Link
+                                  href={`/admin/catalog/${r.id}`}
+                                  className="text-[10px] text-slate-500 hover:text-slate-700 underline"
+                                >
+                                  +{r.failed_gates.length - 3} more
+                                </Link>
+                              )}
+                              {!r.box_verified && r.box_type && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                                  box unverified
+                                </span>
+                              )}
+                            </div>
                           </div>
                         )}
                       </td>

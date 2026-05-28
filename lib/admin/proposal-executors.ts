@@ -1648,6 +1648,140 @@ async function execIngestPriceFieldBug(
 }
 
 // ---------------------------------------------------------------------------
+// mirror.field_correction — inline-edit from /admin/catalog chip strip.
+//
+// One proposal = one field on one row in floropolis_inventory_mirror gets fixed
+// in-place. Used by the /api/admin/catalog/inline-edit route which Job_PM ships
+// 2026-05-28 as Catalog Ship 1 (inline blocking-gate fixes from the catalog
+// list view).
+//
+// payload shape (set by /api/admin/catalog/inline-edit/route.ts):
+//   { field: string, gate: string, before: unknown, after: unknown }
+//
+// field is one of:
+//   cost_source      (string)            — sets the cost-source label; per
+//                                          perfect_inventory_bar v2.1 §1, Facu
+//                                          setting cost_source IS the verification
+//                                          signal; no Rose verifier needed for
+//                                          this branch in v1.
+//   price            (number, > 0)       — sets mirror.price directly.
+//   images           (string[], jsonb)   — sets mirror.images jsonb array (1 URL
+//                                          in v1; multi-image upload deferred).
+//   unit             ('Stem'|'Bunch'|'Box')
+//   vendor           (string)            — sets mirror.vendor.
+//   contents_note    (string ≤2000)      — sets mirror.contents_note.
+//   arrival_date     (YYYY-MM-DD string)
+//
+// Out of scope this version: farm_cost (needs Rose verifier per spec v2.1);
+// any field not in the allowlist above.
+// ---------------------------------------------------------------------------
+
+const MIRROR_FIELD_CORRECTION_ALLOWED_FIELDS = new Set<string>([
+  'cost_source',
+  'price',
+  'images',
+  'unit',
+  'vendor',
+  'contents_note',
+  'arrival_date',
+]);
+
+async function execMirrorFieldCorrection(
+  proposal: AdminProposal,
+  service: SupabaseClient,
+): Promise<ExecutorResult> {
+  const payload = payloadObject(proposal);
+  if (!payload) return fail('invalid_payload');
+  if (!proposal.target_id) return fail('missing_target_id');
+
+  const skuId = Number(proposal.target_id);
+  if (!Number.isFinite(skuId) || skuId <= 0) return fail('invalid_target_id');
+
+  const field = typeof payload.field === 'string' ? payload.field : '';
+  if (!MIRROR_FIELD_CORRECTION_ALLOWED_FIELDS.has(field)) {
+    return fail(`invalid_field: ${field}`);
+  }
+  if (payload.after === undefined) return fail('missing_after');
+
+  // Per-field server-side coercion + sanity (parity with the route, defense in depth).
+  let writeValue: unknown = payload.after;
+  if (field === 'price') {
+    const n = typeof writeValue === 'number' ? writeValue : Number(writeValue);
+    if (!Number.isFinite(n) || n <= 0) return fail('invalid_price: must be positive number');
+    writeValue = n;
+  } else if (field === 'images') {
+    if (!Array.isArray(writeValue)) return fail('invalid_images: must be string[]');
+    for (const u of writeValue) {
+      if (typeof u !== 'string') return fail('invalid_images: entries must be strings');
+      if (u.length > 600) return fail('invalid_images: url max 600 chars');
+    }
+  } else if (field === 'unit') {
+    if (typeof writeValue !== 'string' || !['Stem', 'Bunch', 'Box'].includes(writeValue)) {
+      return fail('invalid_unit: must be Stem|Bunch|Box');
+    }
+  } else if (field === 'arrival_date') {
+    if (typeof writeValue !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(writeValue)) {
+      return fail('invalid_arrival_date: must be YYYY-MM-DD');
+    }
+  } else if (field === 'contents_note') {
+    if (typeof writeValue !== 'string') return fail('invalid_contents_note: must be string');
+    if (writeValue.length > 2000) return fail('invalid_contents_note: max 2000 chars');
+  } else {
+    // cost_source, vendor — free text within bounds.
+    if (typeof writeValue !== 'string') return fail(`invalid_${field}: must be string`);
+    if (writeValue.trim().length === 0) return fail(`invalid_${field}: cannot be empty`);
+    if (writeValue.length > 400) return fail(`invalid_${field}: max 400 chars`);
+    writeValue = writeValue.trim();
+  }
+
+  // Read before-snapshot of the specific field (plus id for safety).
+  // We `select('*')` so the field name passes through PostgREST as a runtime
+  // string (TS can't type-check a dynamic select-list at compile time).
+  const { data: beforeRow, error: readErr } = await service
+    .from('floropolis_inventory_mirror')
+    .select('*')
+    .eq('id', skuId)
+    .maybeSingle();
+  if (readErr) return fail(`read_failed: ${readErr.message}`);
+  if (!beforeRow) return fail('sku_not_found');
+  const beforeRec = beforeRow as unknown as Record<string, unknown>;
+
+  // UPDATE just the one field.
+  const updatePatch: Record<string, unknown> = { [field]: writeValue };
+
+  const { data: afterRow, error: updErr } = await service
+    .from('floropolis_inventory_mirror')
+    .update(updatePatch)
+    .eq('id', skuId)
+    .select('*')
+    .maybeSingle();
+  if (updErr) return fail(`update_failed: ${updErr.message}`);
+  const afterRec = afterRow as unknown as Record<string, unknown> | null;
+
+  return {
+    ok: true,
+    auditEntries: [
+      {
+        proposal_id: proposal.id,
+        target_table: 'floropolis_inventory_mirror',
+        target_id: String(skuId),
+        before_jsonb: {
+          field,
+          gate: payload.gate ?? null,
+          before_value: beforeRec[field] ?? null,
+        },
+        after_jsonb: {
+          field,
+          gate: payload.gate ?? null,
+          after_value: afterRec?.[field] ?? writeValue,
+        },
+        applied_by_function: 'proposal-executors.execMirrorFieldCorrection',
+      },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
@@ -1765,6 +1899,8 @@ export async function executeProposal(
       return execContentsDescriptionBatchApprove(proposal, service);
     case 'ingest.price_field_bug':
       return execIngestPriceFieldBug(proposal, service);
+    case 'mirror.field_correction':
+      return execMirrorFieldCorrection(proposal, service);
     case 'cost_source.facu_correction':
     case 'price_alert.facu_correction':
     case 'contents_description.facu_correction':
@@ -1855,6 +1991,9 @@ export const KNOWN_PROPOSAL_TYPES: readonly string[] = [
   'vendor.pricelist_request', // Audit log: waiting on vendor to send pricelist
   // Ingest pipeline bug escalation (2026-05-23): Rose's ingest writes K2K price not formula price
   'ingest.price_field_bug',
+  // Inline blocking-gate edits from /admin/catalog chip strip (Catalog Ship 1, 2026-05-28).
+  // One proposal = one mirror field fixed in-place; auto-approved via the inline-edit route.
+  'mirror.field_correction',
   // Open price alert batch clear (2026-05-23): Facu acknowledges Ecoroses price changes
   'price_alert.batch_clear',
   // Contents description batch approve (2026-05-23): writes description template per variety×vendor×tier
