@@ -1,5 +1,5 @@
 // POST /api/admin/proposals/[id]/approve
-// v3 | 2026-05-27 | Job_PM [V8 SHADOW]
+// v4 | 2026-05-27 | Job_PM [V8 SHADOW]
 //
 // Approves a proposal. The flow:
 //   1. Auth + admin gate (email allowlist or client_profiles.status='admin').
@@ -13,21 +13,18 @@
 //      row, then UPDATE proposal status='approved'.
 //
 // Body (optional): { reason?: string } -- recorded on admin_approvals.
+//
+// v4 removed the post-approval execSync agent-fire block: it shelled out to
+// `python3 /Users/facu/Claude_MA_v8/...` which does not exist on Vercel (no
+// Python runtime, no local Mac path). It was dead code in production, silently
+// swallowed by try/catch. Cross-process agent firing, if reintroduced, belongs
+// in a Supabase Edge Function or webhook, not a Next.js route handler.
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { execSync } from 'child_process';
 import * as Sentry from '@sentry/nextjs';
-
-// Pipeline fix types that trigger auto-fire to their owning agent after approval.
-const PIPELINE_FIX_TYPES: Record<string, string> = {
-  'ingest.price_field_bug': 'Rose_BI',
-};
-const PIPELINE_FIX_DOMAINS: Record<string, string> = {
-  'ingest.price_field_bug': 'data_infra',
-};
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
@@ -285,48 +282,9 @@ export async function POST(
     );
   }
 
-  // 6. Fire owning agent for pipeline-fix proposal types (best-effort)
-  let agentFired: string | null = null;
-  let fireOutcome = 'not_applicable';
-  const owningAgent = PIPELINE_FIX_TYPES[proposal.type as string];
-  if (owningAgent) {
-    const domain = PIPELINE_FIX_DOMAINS[proposal.type as string] ?? 'data_infra';
-    const body = JSON.stringify({
-      proposal_id: proposal.id,
-      proposal_type: proposal.type,
-      facu_rationale: facuRationale,
-    });
-    try {
-      execSync(
-        `python3 /Users/facu/Claude_MA_v8/shared/scripts/send_and_fire.py` +
-        ` --to ${owningAgent}` +
-        ` --subject "Auto-fired: policy approved"` +
-        ` --body ${JSON.stringify(body)}` +
-        ` --priority P0` +
-        ` --domain ${domain}`,
-        { timeout: 15_000 },
-      );
-      agentFired = owningAgent;
-      fireOutcome = `agent_fired:${owningAgent}`;
-    } catch (fireErr) {
-      Sentry.captureException(fireErr, {
-        tags: { route: 'admin/proposals/approve', step: 'agent_fire' },
-        extra: { proposal_id: proposal.id, owning_agent: owningAgent },
-      });
-      fireOutcome = `agent_fire_failed:${owningAgent}`;
-    }
-
-    // Append fire result to the admin_approvals row (best-effort).
-    await service
-      .from('admin_approvals')
-      .update({ facu_rationale: `${facuRationale} | ${fireOutcome}` })
-      .eq('proposal_id', proposal.id);
-  }
-
   return NextResponse.json({
     ok: true,
     proposal: updated,
     audit_count: result.auditEntries.length,
-    agent_fired: agentFired,
   });
 }
