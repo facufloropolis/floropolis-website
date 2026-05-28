@@ -72,6 +72,7 @@ import { createBackupServerClient as createUserClient } from '@/lib/supabase/bac
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import MorningSummaryHeader from './_components/MorningSummaryHeader';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import {
   buildCatalog,
@@ -652,6 +653,25 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             ) : null;
           })()}
         </WiringSection>
+
+        {/* Morning Summary Header — UC-D-100..103 (BRD v0.3) */}
+        <MorningSummaryHeader
+          backup={backup}
+          mirror={mirrorRows.map((r) => ({
+            id: r.id,
+            vendor: r.vendor,
+            tier: r.tier,
+            live: r.live,
+            active: r.active,
+            arrival_date: r.arrival_date,
+            farm_cost: r.farm_cost,
+            price: r.price,
+          }))}
+          classifications={classifications.map((c) => ({
+            sku_id: c.sku_id,
+            status: c.status,
+          }))}
+        />
 
         {/* Supply Intelligence */}
         {(() => {

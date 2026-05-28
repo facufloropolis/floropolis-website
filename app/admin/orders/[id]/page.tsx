@@ -45,6 +45,7 @@ import InitDispatchButton from './InitDispatchButton';
 import EmailLogSection from './_components/EmailLogSection';
 import ConversationsSection from './_components/ConversationsSection';
 import OrderStatusActions from './OrderStatusActions';
+import FinancialStructurePanel from './FinancialStructurePanel';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -722,6 +723,13 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             </section>
 
             </WiringSection>
+
+            {/* Financial structure -- BRD UC-O-169 (cost / margin / GPM per line + order) */}
+            <FinancialStructurePanel
+              lines={lines}
+              orderSubtotal={order.subtotal}
+              orderCurrency={order.currency}
+            />
 
             {/* Payments ledger */}
             <WiringSection level={wm('payments-ledger').level} note={wm('payments-ledger').note} id="payments-ledger">
