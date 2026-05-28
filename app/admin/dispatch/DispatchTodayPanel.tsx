@@ -1,11 +1,18 @@
 'use client';
 // DispatchTodayPanel — full 3-column today layout matching /mockups/admin-dispatch.
-// v1 | 2026-05-21 | Job_PM [V8 SHADOW]
+// v2 | 2026-05-28 | Job_PM dispatch-v1-refactor [V8 SHADOW]
 //
 // Client component so the left column cards can expand/collapse and right/middle
 // can run API calls without full-page navigation.
+//
+// v2 (2026-05-28): FedEx clarification banner moved out of this component — it
+// now lives in /admin/dispatch page header so it shows on Today / Queued /
+// Historical views. The Yesterday's Arrivals card (server-fetched) is passed
+// in via the `yesterdayArrivalsSlot` prop so the middle column renders it
+// without breaking the client/server boundary.
 
 import { useState, useRef } from 'react';
+import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import DispatchPipelineStepper from './DispatchPipelineStepper';
 
@@ -64,6 +71,13 @@ interface Props {
   activePipelineStep: number;
   prospects: TodayProspect[];
   defaultDispatchId: string | null;
+  /** Server-rendered Yesterday's Arrivals card. Optional: omitted on
+   *  Queued / Historical day-blocks where yesterday context is irrelevant. */
+  yesterdayArrivalsSlot?: ReactNode;
+  /** Optional date label rendered above the stats line (used by Queued /
+   *  Historical multi-day grouping). When omitted the panel renders without
+   *  a date header (Today view). */
+  dayHeading?: string | null;
 }
 
 // ── Status helpers ────────────────────────────────────────────────────────
@@ -96,6 +110,8 @@ export default function DispatchTodayPanel({
   todayLabel,
   activePipelineStep,
   prospects,
+  yesterdayArrivalsSlot,
+  dayHeading,
 }: Props) {
   const router = useRouter();
   const [expanded, setExpanded] = useState<Set<number>>(
@@ -230,6 +246,13 @@ export default function DispatchTodayPanel({
 
   return (
     <div className="space-y-5">
+      {/* Day heading (Queued / Historical multi-day grouping). */}
+      {dayHeading && (
+        <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide border-b border-slate-200 pb-1.5">
+          {dayHeading}
+        </h2>
+      )}
+
       {/* Header strip */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3 text-sm text-slate-500 flex-wrap">
@@ -246,16 +269,6 @@ export default function DispatchTodayPanel({
             </span>
           )}
         </div>
-      </div>
-
-      {/* FedEx banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
-        <span className="text-blue-500 text-lg shrink-0">📦</span>
-        <p className="text-sm text-blue-800">
-          <strong>FedEx receives at Quito depot by 10pm ECT.</strong> Driver picks up at the farm in the afternoon —
-          confirmation usually arrives via WhatsApp.{' '}
-          <span className="text-blue-600 font-medium">→ Contacts: edgar.freire@fedex.com · Dominique Romero (dromero@entregas.ec)</span>
-        </p>
       </div>
 
       {/* 3-column grid */}
@@ -448,6 +461,9 @@ export default function DispatchTodayPanel({
               </a>
             )}
           </div>
+
+          {/* Yesterday's Arrivals — server-rendered, passed in via prop. */}
+          {yesterdayArrivalsSlot}
         </div>
 
         {/* ── RIGHT: Labels & Confirmations ── */}

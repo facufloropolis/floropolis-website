@@ -1,22 +1,28 @@
-// Admin dispatch manifest + Phase F 4-panel completion + Rose tabs.
-// v3 | 2026-05-19 | Job_PM disp-real [V8 SHADOW]
+// Admin dispatch manifest — v1 refactor: 3-tab structure (Today / Queued / Historical).
+// v4 | 2026-05-28 | Job_PM dispatch-v1-refactor [V8 SHADOW]
 //
 // BRD: catalog_BRD_PRD_v0.3 §5.3 Block 4 (UC-O-181..195) and Block 5
-// (UC-O-196..203). Top-level tabs added in v3:
-//   - Web (D1)         current behavior (D1 dispatches table + Phase F panels)
-//   - Upcoming (Rose)  read-only n8n_dispatch_queue (HARD BOUNDARY)
-//   - Recent (Rose)    read-only dispatch_batches + dispatch_events (30d)
-//   - Farm shipments   read-only farm_shipments (30d)
+// (UC-O-196..203). v4 refactor (Facu directive 2026-05-28):
+//   - 4-tab top-nav (Web / Upcoming / Recent / Farm shipments) collapsed to
+//     3-tab structure: Today (default), Queued (next 7 days), Historical
+//     (date-range picker).
+//   - FedEx clarification banner + DispatchDateNav moved into the page header
+//     so they're visible on all 3 tabs.
+//   - Yesterday's Arrivals card (mockup lines 294-305) added to the middle
+//     column of DispatchTodayPanel via the new YesterdayArrivalsCard server
+//     component.
 //
-// Phase F (Web tab) keeps:
-//   - 4-panel layout per /mockups/admin-dispatch
-//   - Date navigation (?date=YYYY-MM-DD)
+// Rose-data tabs (Upcoming, Recent, Farm shipments) are deferred from the v1
+// surface. The fetch functions are preserved — see TODO block below for the
+// restore path.
+//
+// Phase F (per-day body) keeps:
+//   - 3-column layout per /mockups/admin-dispatch (DispatchTodayPanel)
+//   - Date filtering (?date=YYYY-MM-DD)
 //   - Stage filter via DispatchPipelineWidget (?stage=quote..shipped)
-//   - 4 inner status sub-tabs (today / tomorrow / week / late)
 //
 // Constraints (rose_table_audit_v1.md section 4):
 //   - n8n_dispatch_queue : HARD READ-ONLY. No write paths, no buttons.
-//     Cancels go through admin_proposals (type='dispatch_cancel').
 //   - dispatch_batches / events / tracking / farm_shipments : JOB_READ_OK.
 //   - All Rose reads go through lib/supabase/prod-server.ts service-role client.
 //   - D1 writes still go through getBackupServiceClient() (supabase-backup).
@@ -43,11 +49,18 @@ import DispatchSampleBoxButton, { ProspectOption } from './DispatchSampleBoxButt
 import DispatchDateNav from './DispatchDateNav';
 import DispatchFeedbackForm from './DispatchFeedbackForm';
 
-import RoseUpcomingTab from './RoseUpcomingTab';
-import RoseRecentTab from './RoseRecentTab';
-import RoseFarmShipmentsTab from './RoseFarmShipmentsTab';
-import DispatchPipelineStepper from './DispatchPipelineStepper';
 import DispatchTodayPanel, { TodayRow } from './DispatchTodayPanel';
+import YesterdayArrivalsCard from './YesterdayArrivalsCard';
+import QueuedView, { type DayBlock as QueuedDayBlock } from './QueuedView';
+import HistoricalView, { type DayBlock as HistoricalDayBlock } from './HistoricalView';
+
+// TODO (Rose tabs deferred 2026-05-28): the Upcoming (Rose n8n_dispatch_queue),
+// Recent (Rose dispatch_batches), and Farm shipments tabs were dropped from the
+// v1 nav to focus the surface on the daily-dispatch loop. The data fetches
+// (RoseDispatchData.ts) are still imported and exercised so the fetch paths
+// don't bit-rot — see kb/projects/t1_tabs_perfect_spec.md for the restore path
+// (likely as a side-panel callout inside Queued, or a separate /admin/dispatch/rose
+// sub-route).
 import {
   fetchRoseQueueUpcoming,
   fetchRoseBatchesRecent,
@@ -63,8 +76,7 @@ type DispatchStatus =
   | 'delivered'
   | 'exception';
 
-type DispatchInnerTab = 'today' | 'tomorrow' | 'week' | 'late';
-type DispatchTopTab = 'web' | 'upcoming' | 'recent' | 'farms';
+type DispatchView = 'today' | 'queued' | 'historical';
 
 interface AddressSnapshot {
   recipient_name?: string | null;
@@ -158,19 +170,6 @@ function shipDateFromOrder(o: OrderRow): string {
   return addDaysIso(delivery, -Math.max(0, o.lead_time_days ?? 0));
 }
 
-function tabForRow(
-  targetIso: string,
-  todayIso: string,
-  weekEndIso: string,
-  dispatched: boolean,
-): DispatchInnerTab {
-  if (targetIso < todayIso && !dispatched) return 'late';
-  if (targetIso === todayIso) return 'today';
-  if (targetIso === addDaysIso(todayIso, 1)) return 'tomorrow';
-  if (targetIso >= todayIso && targetIso <= weekEndIso) return 'week';
-  return 'week';
-}
-
 function fmtDate(iso: string | null): string {
   if (!iso) return '-';
   return new Date(iso + 'T00:00:00Z').toLocaleDateString('en-US', {
@@ -181,16 +180,78 @@ function fmtDate(iso: string | null): string {
   });
 }
 
+function fmtDayHeading(iso: string, todayIso: string): string {
+  const tomorrowIso = addDaysIso(todayIso, 1);
+  const dt = new Date(iso + 'T00:00:00Z');
+  const weekday = dt.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+  const monthDay = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  if (iso === todayIso) return `Today · ${monthDay}`;
+  if (iso === tomorrowIso) return `Tomorrow · ${monthDay}`;
+  return `${weekday} · ${monthDay}`;
+}
+
 function stageForRow(r: ManifestRow): PipelineStage {
   const d = r.dispatch;
   if (!d) {
-    // No dispatch row yet -> Quote (or Cost confirmed if order is paid/fulfilled).
     if (r.order.status === 'paid' || r.order.status === 'fulfilled') return 'cost_confirmed';
     return 'quote';
   }
   if (d.status === 'in_transit' || d.status === 'delivered') return 'shipped';
   if (d.status === 'packed' || d.status === 'label_printed' || d.status === 'picked_up') return 'packed';
   return 'procured';
+}
+
+// Convert a ManifestRow into a serialisable TodayRow for DispatchTodayPanel.
+function manifestToTodayRow(r: ManifestRow): TodayRow {
+  return {
+    orderId: r.order.id,
+    orderNumber: r.order.order_number,
+    businessName: r.businessName,
+    city: r.order.shipping_address_snapshot?.city ?? null,
+    state: r.order.shipping_address_snapshot?.state ?? null,
+    farm:
+      r.order.order_lines?.find((l) => l.sku_vendor_snapshot)?.sku_vendor_snapshot ??
+      'Unknown',
+    boxesCount: r.boxesCount,
+    totalQty: r.totalQty,
+    dispatchId: r.dispatch?.id ?? null,
+    status: r.dispatch?.status ?? 'awaiting_pack',
+    trackingNumber: r.dispatch?.tracking_number ?? null,
+    labelUrl: r.dispatch?.label_url ?? null,
+    labelSignedUrl: r.labelSignedUrl,
+    driverPickupConfirmed: r.dispatch?.driver_pickup_confirmed ?? false,
+    driverPickupAt: r.dispatch?.driver_pickup_confirmed_at ?? null,
+    fedexConfirmed: r.dispatch?.fedex_confirmed ?? false,
+    fedexAt: r.dispatch?.fedex_confirmed_at ?? null,
+    whatsappPhone: r.order.shipping_address_snapshot?.phone ?? null,
+    comms: r.comms,
+    skus: (r.order.order_lines ?? []).map((l) => ({
+      name: l.sku_name_snapshot ?? `SKU ${l.sku_id}`,
+      qty: l.quantity ?? 0,
+    })),
+  };
+}
+
+// Derive the active Rose pipeline step from a set of rows on the same day.
+// 0:PREP 1:REVIEW 2:DISPATCH 3:LABELS 4:READ 5:EMAILS 6:SEND 7:LOG 8:PRE-ARRIVAL
+function derivePipelineStep(rows: ManifestRow[]): number {
+  if (rows.length === 0) return 0;
+  const dispatches = rows.map((r) => r.dispatch).filter((d): d is DispatchRow => d !== null);
+  if (dispatches.length === 0) return 2;
+  if (!dispatches.some((d) => d.label_url)) return 3;
+  if (!dispatches.some((d) => d.tracking_number)) return 4;
+  if (!dispatches.every((d) => d.fedex_confirmed)) return 5;
+  if (!dispatches.every((d) => d.driver_pickup_confirmed)) return 6;
+  return 7;
+}
+
+function totalBoxesForRows(rows: ManifestRow[]): number {
+  return rows.reduce((sum, r) => {
+    const shipped =
+      r.dispatch?.status === 'in_transit' || r.dispatch?.status === 'delivered';
+    if (shipped) return sum;
+    return sum + (r.boxesCount ?? 0);
+  }, 0);
 }
 
 export const metadata = {
@@ -200,9 +261,10 @@ export const metadata = {
 
 interface PageProps {
   searchParams: Promise<{
-    tab?: string;       // Web inner tab (today/tomorrow/week/late)
-    top?: string;       // Top-level tab (web/upcoming/recent/farms)
-    date?: string;
+    view?: string;      // today | queued | historical
+    date?: string;      // anchor date for the date-nav
+    from?: string;      // historical range start
+    to?: string;        // historical range end
     stage?: string;
   }>;
 }
@@ -231,31 +293,23 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
 
   const sp = await searchParams;
 
-  const topTab: DispatchTopTab =
-    sp.top === 'upcoming' || sp.top === 'recent' || sp.top === 'farms'
-      ? (sp.top as DispatchTopTab)
-      : 'web';
+  const activeView: DispatchView =
+    sp.view === 'queued' || sp.view === 'historical'
+      ? (sp.view as DispatchView)
+      : 'today';
 
-  // Fan-out Rose reads in parallel (only when we'll actually render them).
-  // Always run the fetches: they short-circuit fast when env is missing, and
-  // we use the configured/lastSyncedAt fields to render the tab strip badges.
-  const [upcomingData, recentData, farmsData] = await Promise.all([
-    fetchRoseQueueUpcoming(),
-    fetchRoseBatchesRecent(),
-    fetchFarmShipmentsRecent(),
-  ]);
-
-  // The Web (D1) tab does its full data fetch regardless of which top tab is
-  // active, because the top-tab strip needs to show the D1 count too.
   const todayIso = todayUtcIso();
   const dateParam =
     sp.date && /^\d{4}-\d{2}-\d{2}$/.test(sp.date) ? sp.date : null;
   const activeDate = dateParam ?? todayIso;
 
-  const activeInnerTab: DispatchInnerTab =
-    sp.tab === 'tomorrow' || sp.tab === 'week' || sp.tab === 'late'
-      ? (sp.tab as DispatchInnerTab)
-      : 'today';
+  // Historical range parsing
+  const fromParam =
+    sp.from && /^\d{4}-\d{2}-\d{2}$/.test(sp.from) ? sp.from : null;
+  const toParam =
+    sp.to && /^\d{4}-\d{2}-\d{2}$/.test(sp.to) ? sp.to : null;
+  const histFrom = fromParam ?? addDaysIso(todayIso, -7);
+  const histTo = toParam ?? (fromParam ?? todayIso);
 
   const validStages: PipelineStage[] = ['quote', 'cost_confirmed', 'procured', 'packed', 'shipped'];
   const activeStage: PipelineStage | null =
@@ -263,7 +317,16 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
       ? (sp.stage as PipelineStage)
       : null;
 
-  // Fetch orders that need dispatch (D1 tab) -------------------------------
+  // Rose-data fetches preserved (deferred from v1 nav — see TODO above).
+  // Run them in parallel so the fetch path stays exercised; we don't render
+  // their UI but their existence ensures the underlying queries are validated.
+  await Promise.all([
+    fetchRoseQueueUpcoming(),
+    fetchRoseBatchesRecent(),
+    fetchFarmShipmentsRecent(),
+  ]);
+
+  // Fetch orders that need dispatch ----------------------------------------
   const backup = getBackupServiceClient();
   const { data: ordersRaw, error: ordersErr } = await backup
     .from('orders')
@@ -334,7 +397,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
     );
   }
 
-  // Signed URLs for uploaded labels --------------------------------------
+  // Signed URLs for uploaded labels ---------------------------------------
   const labelSignedUrlByDispatchId: Record<string, string | null> = {};
   const dispatchesWithLabels = Object.values(dispatchesByOrderId).filter((d) => !!d.label_url);
   if (dispatchesWithLabels.length > 0) {
@@ -351,9 +414,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
     }
   }
 
-  // Build manifest rows --------------------------------------------------
-  const weekEndIso = addDaysIso(todayIso, 6);
-
+  // Build manifest rows ----------------------------------------------------
   const rowsAll: ManifestRow[] = orders.map((o) => {
     const dispatch = dispatchesByOrderId[o.id] ?? null;
     const totalQty = (o.order_lines ?? []).reduce((s, l) => s + (l.quantity ?? 0), 0);
@@ -386,55 +447,59 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
     pipelineCounts[stageForRow(r)] += 1;
   }
 
-  // Total boxes scheduled for the active date — drives the 2-box-minimum pill
-  // in the pipeline widget header. Counts every row whose dispatch_date (or, if
-  // null, derived ship date) matches the active date AND that hasn't already
-  // shipped (in_transit / delivered are out of the loading-truck count).
-  const totalBoxesForActiveDate = rowsAll.reduce((sum, r) => {
-    const rDate = r.dispatch?.dispatch_date ?? r.targetShipDate;
-    if (rDate !== activeDate) return sum;
-    const shipped =
-      r.dispatch?.status === 'in_transit' || r.dispatch?.status === 'delivered';
-    if (shipped) return sum;
-    return sum + (r.boxesCount ?? 0);
-  }, 0);
+  // Apply optional stage filter across the universe.
+  const stageFilteredRows = activeStage
+    ? rowsAll.filter((r) => stageForRow(r) === activeStage)
+    : rowsAll;
 
-  const counts: Record<DispatchInnerTab, number> = { today: 0, tomorrow: 0, week: 0, late: 0 };
-  for (const r of rowsAll) {
-    const dispatched =
-      r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
-    const t = tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched);
-    counts[t] += 1;
+  // Group all rows by effective day (dispatch_date or targetShipDate).
+  function rowDate(r: ManifestRow): string {
+    return r.dispatch?.dispatch_date ?? r.targetShipDate;
   }
 
-  let visible: ManifestRow[];
-  if (dateParam) {
-    visible = rowsAll.filter((r) => {
-      const rDate = r.dispatch?.dispatch_date ?? r.targetShipDate;
-      return rDate === dateParam;
-    });
-  } else {
-    visible = rowsAll.filter((r) => {
-      const dispatched =
-        r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
-      return tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched) === activeInnerTab;
+  // ── TODAY view ──────────────────────────────────────────────────────────
+  // Rows where effective day == activeDate.
+  const todayRows = stageFilteredRows.filter((r) => rowDate(r) === activeDate);
+  const totalBoxesForActiveDate = totalBoxesForRows(todayRows);
+  const activePipelineStep = derivePipelineStep(todayRows);
+
+  // ── QUEUED view ─────────────────────────────────────────────────────────
+  // Next 7 days starting from tomorrow (relative to activeDate).
+  const queuedBlocks: QueuedDayBlock[] = [];
+  for (let i = 1; i <= 7; i++) {
+    const iso = addDaysIso(activeDate, i);
+    const rowsForDay = stageFilteredRows.filter((r) => rowDate(r) === iso);
+    queuedBlocks.push({
+      isoDate: iso,
+      heading: fmtDayHeading(iso, todayIso),
+      rows: rowsForDay.map(manifestToTodayRow),
+      totalBoxes: totalBoxesForRows(rowsForDay),
+      activePipelineStep: derivePipelineStep(rowsForDay),
     });
   }
-  if (activeStage) {
-    visible = visible.filter((r) => stageForRow(r) === activeStage);
+
+  // ── HISTORICAL view ─────────────────────────────────────────────────────
+  // All days from histFrom to histTo inclusive.
+  const histBlocks: HistoricalDayBlock[] = [];
+  if (histFrom && histTo && histFrom <= histTo) {
+    let cur = histFrom;
+    // Hard cap at 60 days to bound rendering cost.
+    let steps = 0;
+    while (cur <= histTo && steps < 60) {
+      const rowsForDay = stageFilteredRows.filter((r) => rowDate(r) === cur);
+      histBlocks.push({
+        isoDate: cur,
+        heading: fmtDayHeading(cur, todayIso),
+        rows: rowsForDay.map(manifestToTodayRow),
+        totalBoxes: totalBoxesForRows(rowsForDay),
+        activePipelineStep: derivePipelineStep(rowsForDay),
+      });
+      cur = addDaysIso(cur, 1);
+      steps += 1;
+    }
   }
 
-  const byDate = visible.reduce(
-    (acc, r) => {
-      const k = r.dispatch?.dispatch_date ?? r.targetShipDate;
-      (acc[k] ??= []).push(r);
-      return acc;
-    },
-    {} as Record<string, ManifestRow[]>,
-  );
-  const sortedDates = Object.keys(byDate).sort();
-
-  // Load eligible prospects for the sample-box modal ---------------------
+  // Load eligible prospects for the sample-box modal ----------------------
   const { data: prospectsRaw } = await backup
     .from('sample_box_prospects')
     .select('id, business_name, contact_name, city, state, status')
@@ -444,42 +509,32 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   const prospects = (prospectsRaw ?? []) as unknown as ProspectOption[];
 
   const defaultDispatchId =
-    visible.find((r) => r.dispatch != null)?.dispatch?.id ?? null;
+    todayRows.find((r) => r.dispatch != null)?.dispatch?.id ?? null;
 
-  // Derive current pipeline step from today's dispatch state
-  // 0:PREP 1:REVIEW 2:DISPATCH 3:LABELS 4:READ 5:EMAILS 6:SEND 7:LOG 8:PRE-ARRIVAL
-  function derivePipelineStep(rows: ManifestRow[]): number {
-    if (rows.length === 0) return 0;
-    const dispatches = rows.map((r) => r.dispatch).filter(Boolean);
-    if (dispatches.length === 0) return 2; // Need to run FedEx Ship Manager
-    if (!dispatches.some((d) => d!.label_url)) return 3; // Need to upload labels
-    if (!dispatches.some((d) => d!.tracking_number)) return 4; // Rose reading labels
-    if (!dispatches.every((d) => d!.fedex_confirmed)) return 5; // Rose drafting farm emails
-    if (!dispatches.every((d) => d!.driver_pickup_confirmed)) return 6; // Facu sends emails
-    return 7; // Rose logging
-  }
-  const todayRows = rowsAll.filter((r) => {
-    const dispatched = r.dispatch != null && r.dispatch.status !== 'awaiting_pack' && r.dispatch.status !== 'exception';
-    return tabForRow(r.targetShipDate, todayIso, weekEndIso, dispatched) === 'today';
-  });
-  const activePipelineStep = derivePipelineStep(todayRows);
+  const todayLabel = fmtDate(todayIso);
 
-  const innerTabs: { key: DispatchInnerTab; label: string }[] = [
-    { key: 'today', label: 'Today' },
-    { key: 'tomorrow', label: 'Tomorrow' },
-    { key: 'week', label: 'This week' },
-    { key: 'late', label: 'Late' },
+  // View counts for the top-tab strip.
+  const queuedCount = queuedBlocks.reduce((s, b) => s + b.rows.length, 0);
+  const histCount = histBlocks.reduce((s, b) => s + b.rows.length, 0);
+
+  const viewTabs: { key: DispatchView; label: string; count: number | null }[] = [
+    { key: 'today', label: 'Today', count: todayRows.length },
+    { key: 'queued', label: 'Queued (next 7 days)', count: queuedCount },
+    { key: 'historical', label: 'Historical', count: activeView === 'historical' ? histCount : null },
   ];
 
-  const topTabs: { key: DispatchTopTab; label: string; count: number | null }[] = [
-    { key: 'web', label: 'Web (D1)', count: rowsAll.length },
-    { key: 'upcoming', label: 'Upcoming (Rose)', count: upcomingData.configured ? upcomingData.rows.length : null },
-    { key: 'recent', label: 'Recent (Rose)', count: recentData.configured ? recentData.rows.length : null },
-    { key: 'farms', label: 'Farm shipments', count: farmsData.configured ? farmsData.rows.length : null },
-  ];
-
-  // Preserve filters when navigating Web sub-tabs only; top-tab links reset them.
-  const topHref = (key: DispatchTopTab): string => `/admin/dispatch?top=${key}`;
+  const viewHref = (k: DispatchView): string => {
+    const params = new URLSearchParams();
+    params.set('view', k);
+    if (k === 'historical') {
+      params.set('from', histFrom);
+      params.set('to', histTo);
+    } else if (dateParam) {
+      params.set('date', dateParam);
+    }
+    if (activeStage) params.set('stage', activeStage);
+    return `/admin/dispatch?${params.toString()}`;
+  };
 
   const exportHref = `/api/admin/dispatch/export?date=${activeDate}`;
 
@@ -491,42 +546,50 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
     <>
       <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/admin-dispatch" pageLabel="/admin/dispatch" />
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+
+        {/* Header — visible on all views */}
+        <div className="flex items-start justify-between mb-5 flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Dispatch manifest</h1>
             <p className="text-slate-500 text-sm mt-1">
-              D1 orders (Web), Rose-owned dispatch queue + batches + farm shipments.
-              Rose tabs are HARD READ-ONLY: cancels go through admin_proposals.
+              D1 orders + Phase F dispatch loop. Today, queued (7 days), and historical views.
             </p>
           </div>
-          {topTab === 'web' && (
-            <div className="flex flex-col items-end gap-2">
-              <DispatchDateNav date={activeDate} todayIso={todayIso} />
-              <div className="flex items-center gap-2">
-                <a
-                  href={exportHref}
-                  className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-3 py-1.5 rounded-lg"
-                >
-                  Download FedEx CSV
-                </a>
-                <DispatchSampleBoxButton
-                  prospects={prospects}
-                  defaultDispatchId={defaultDispatchId}
-                />
-              </div>
+          <div className="flex flex-col items-end gap-2">
+            <DispatchDateNav date={activeDate} todayIso={todayIso} />
+            <div className="flex items-center gap-2">
+              <a
+                href={exportHref}
+                className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-500 px-3 py-1.5 rounded-lg"
+              >
+                Download FedEx CSV
+              </a>
+              <DispatchSampleBoxButton
+                prospects={prospects}
+                defaultDispatchId={defaultDispatchId}
+              />
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Top-level tabs */}
+        {/* FedEx clarification banner — visible on all views */}
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
+          <span className="text-blue-500 text-lg shrink-0">📦</span>
+          <p className="text-sm text-blue-800">
+            <strong>FedEx receives at Quito depot by 10pm ECT.</strong> Driver picks up at the farm in the afternoon —
+            confirmation usually arrives via WhatsApp.{' '}
+            <span className="text-blue-600 font-medium">→ Contacts: edgar.freire@fedex.com · Dominique Romero (dromero@entregas.ec)</span>
+          </p>
+        </div>
+
+        {/* Top-level view tabs */}
         <div className="flex gap-2 border-b border-slate-200 mb-6 overflow-x-auto">
-          {topTabs.map((t) => {
-            const active = t.key === topTab;
+          {viewTabs.map((t) => {
+            const active = t.key === activeView;
             return (
               <a
                 key={t.key}
-                href={topHref(t.key)}
+                href={viewHref(t.key)}
                 className={`px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
                   active
                     ? 'border-emerald-600 text-emerald-700'
@@ -546,84 +609,32 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
           })}
         </div>
 
-        {topTab === 'web' && (
-          <>
-            {/* Pipeline widget (Panel 4) */}
-            <WiringSection level={wm('pipeline-widget').level} note={wm('pipeline-widget').note} id="pipeline-widget">
-              <div className="mb-6">
-                <DispatchPipelineWidget
-                  counts={pipelineCounts}
-                  activeStage={activeStage}
-                  totalBoxes={totalBoxesForActiveDate}
-                />
-              </div>
-            </WiringSection>
+        {/* Pipeline widget (kept across views — shows global counts) */}
+        <WiringSection level={wm('pipeline-widget').level} note={wm('pipeline-widget').note} id="pipeline-widget">
+          <div className="mb-6">
+            <DispatchPipelineWidget
+              counts={pipelineCounts}
+              activeStage={activeStage}
+              totalBoxes={totalBoxesForActiveDate}
+            />
+          </div>
+        </WiringSection>
 
-            {/* Inner status tabs (hidden when explicit date filter is set) */}
-            {!dateParam && (
-              <div className="flex gap-2 border-b border-slate-200 mb-6 overflow-x-auto">
-                {innerTabs.map((t) => {
-                  const active = t.key === activeInnerTab;
-                  return (
-                    <a
-                      key={t.key}
-                      href={`/admin/dispatch?top=web&tab=${t.key}`}
-                      className={`px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
-                        active
-                          ? 'border-emerald-600 text-emerald-700'
-                          : 'border-transparent text-slate-500 hover:text-slate-800'
-                      }`}
-                    >
-                      {t.label}
-                      <span
-                        className={`ml-2 text-xs ${active ? 'text-emerald-700' : 'text-slate-400'}`}
-                      >
-                        ({counts[t.key]})
-                      </span>
-                    </a>
-                  );
-                })}
-              </div>
-            )}
-
-            <WiringSection level={wm('manifest-table').level} note={wm('manifest-table').note} id="manifest-table">
-            {visible.length === 0 ? (
+        {/* View body */}
+        <WiringSection level={wm('manifest-table').level} note={wm('manifest-table').note} id="manifest-table">
+          {activeView === 'today' && (
+            todayRows.length === 0 ? (
               <div className="text-center py-20 text-slate-400 border border-dashed border-slate-200 rounded-xl">
-                <p className="font-semibold text-slate-600">No orders in this view</p>
+                <p className="font-semibold text-slate-600">No orders for {todayLabel}</p>
                 <p className="text-sm mt-1">
-                  Try a different date, clear the stage filter, or check the Today tab.
+                  Check Queued for the next 7 days or use the date nav to inspect another day.
                 </p>
               </div>
-            ) : activeInnerTab === 'today' && !dateParam ? (
-              /* ── 3-column today layout via DispatchTodayPanel ── */
+            ) : (
               <DispatchTodayPanel
-                rows={visible.map((r): TodayRow => ({
-                  orderId: r.order.id,
-                  orderNumber: r.order.order_number,
-                  businessName: r.businessName,
-                  city: r.order.shipping_address_snapshot?.city ?? null,
-                  state: r.order.shipping_address_snapshot?.state ?? null,
-                  farm: r.order.order_lines?.find((l) => l.sku_vendor_snapshot)?.sku_vendor_snapshot ?? 'Unknown',
-                  boxesCount: r.boxesCount,
-                  totalQty: r.totalQty,
-                  dispatchId: r.dispatch?.id ?? null,
-                  status: r.dispatch?.status ?? 'awaiting_pack',
-                  trackingNumber: r.dispatch?.tracking_number ?? null,
-                  labelUrl: r.dispatch?.label_url ?? null,
-                  labelSignedUrl: r.labelSignedUrl,
-                  driverPickupConfirmed: r.dispatch?.driver_pickup_confirmed ?? false,
-                  driverPickupAt: r.dispatch?.driver_pickup_confirmed_at ?? null,
-                  fedexConfirmed: r.dispatch?.fedex_confirmed ?? false,
-                  fedexAt: r.dispatch?.fedex_confirmed_at ?? null,
-                  whatsappPhone: r.order.shipping_address_snapshot?.phone ?? null,
-                  comms: r.comms,
-                  skus: (r.order.order_lines ?? []).map((l) => ({
-                    name: l.sku_name_snapshot ?? `SKU ${l.sku_id}`,
-                    qty: l.quantity ?? 0,
-                  })),
-                }))}
+                rows={todayRows.map(manifestToTodayRow)}
                 totalBoxes={totalBoxesForActiveDate}
-                todayLabel={fmtDate(todayIso)}
+                todayLabel={todayLabel}
                 activePipelineStep={activePipelineStep}
                 prospects={prospects.map((p) => ({
                   id: p.id,
@@ -633,129 +644,102 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
                   state: p.state,
                 }))}
                 defaultDispatchId={defaultDispatchId}
+                yesterdayArrivalsSlot={<YesterdayArrivalsCard />}
               />
-            ) : (
-              /* ── Standard table for tomorrow / week / late / date-filter ── */
-              <div className="space-y-8">
-                {sortedDates.map((d) => (
-                  <section key={d}>
-                    <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-3">
-                      {fmtDate(d)}{' '}
-                      <span className="text-slate-400 font-normal normal-case">
-                        — {byDate[d].length} order{byDate[d].length === 1 ? '' : 's'}
-                      </span>
-                    </h2>
-                    <div className="border border-slate-200 rounded-xl overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead className="bg-slate-50 border-b border-slate-200">
-                          <tr>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Order</th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Customer</th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Status</th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">Communications</th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide w-64">Labels &amp; confirmations</th>
-                            <th className="text-left px-3 py-2.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {byDate[d].map((r) => {
-                            const status: DispatchStatus = r.dispatch?.status ?? 'awaiting_pack';
-                            const badge = STATUS_BADGE[status];
-                            const isDelivered = status === 'delivered';
-                            const skus = (r.order.order_lines ?? [])
-                              .filter((l) => l.sku_id != null)
-                              .map((l) => ({ sku_id: String(l.sku_id), sku_name: l.sku_name_snapshot ?? `SKU ${l.sku_id}` }));
-                            return (
-                              <tr key={r.order.id} className="hover:bg-slate-50 align-top">
-                                <td className="px-3 py-3 font-mono text-xs font-semibold text-slate-700">
-                                  <Link href={`/admin/orders/${r.order.id}`} className="hover:text-emerald-700 hover:underline">
-                                    {r.order.order_number}
-                                  </Link>
-                                  <div className="text-slate-400 font-normal mt-0.5">{r.boxesCount} box{r.boxesCount === 1 ? '' : 'es'} · {r.totalQty} stems</div>
-                                </td>
-                                <td className="px-3 py-3 text-slate-700 text-xs">
-                                  <div className="font-medium">{r.businessName}</div>
-                                  {r.order.shipping_address_snapshot?.city && (
-                                    <div className="text-slate-400">{r.order.shipping_address_snapshot.city}, {r.order.shipping_address_snapshot.state ?? ''}</div>
-                                  )}
-                                </td>
-                                <td className="px-3 py-3">
-                                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold border ${badge.cls}`}>{badge.label}</span>
-                                  {r.dispatch?.exception_note && <div className="text-xs text-red-600 mt-1 max-w-[200px]">{r.dispatch.exception_note}</div>}
-                                  {r.dispatch && (
-                                    <div className="text-xs text-slate-500 mt-1">
-                                      <div className="uppercase">{r.dispatch.carrier}</div>
-                                      <div className="font-mono text-slate-700">{r.dispatch.tracking_number ?? '-'}</div>
-                                    </div>
-                                  )}
-                                  {isDelivered && r.dispatch && (
-                                    <div className="mt-2">
-                                      <DispatchFeedbackForm dispatchId={r.dispatch.id} existingFeedbackCount={r.feedbackCount} skus={skus} />
-                                    </div>
-                                  )}
-                                </td>
-                                <td className="px-3 py-3">
-                                  {r.dispatch ? (
-                                    <DispatchCommunicationsPanel
-                                      dispatchId={r.dispatch.id}
-                                      orderNumber={r.order.order_number}
-                                      businessName={r.businessName}
-                                      recipientEmail={r.order.shipping_address_snapshot?.email ?? null}
-                                      comms={r.comms}
-                                    />
-                                  ) : (
-                                    <span className="text-xs text-slate-400 italic">Initialize dispatch to enable</span>
-                                  )}
-                                </td>
-                                <td className="px-3 py-3">
-                                  {r.dispatch ? (
-                                    <DispatchLabelsPanel
-                                      dispatchId={r.dispatch.id}
-                                      labelStoragePath={r.dispatch.label_url}
-                                      labelSignedUrl={r.labelSignedUrl}
-                                      driverPickupConfirmed={r.dispatch.driver_pickup_confirmed}
-                                      driverPickupAt={r.dispatch.driver_pickup_confirmed_at}
-                                      fedexConfirmed={r.dispatch.fedex_confirmed}
-                                      fedexAt={r.dispatch.fedex_confirmed_at}
-                                      driverWhatsappPhone={r.order.shipping_address_snapshot?.phone ?? null}
-                                    />
-                                  ) : (
-                                    <span className="text-xs text-slate-400 italic">-</span>
-                                  )}
-                                </td>
-                                <td className="px-3 py-3">
-                                  {r.dispatch ? (
-                                    <DispatchRowActions dispatchId={r.dispatch.id} status={status} trackingNumber={r.dispatch.tracking_number} />
-                                  ) : (
-                                    <span className="text-xs text-slate-400 italic">Initialize from /admin/orders/{r.order.id}</span>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                ))}
-              </div>
-            )}
-            </WiringSection>
+            )
+          )}
 
-            <p className="text-xs text-slate-400 mt-8">
-              Data source: supabase-backup orders + dispatches + dispatch_communications +
-              dispatch_feedback + sample_box_prospects. Service-role writes; admin gate on
-              every /api/admin/dispatch/* route. To initialize a dispatch for a paid order,
-              open the order detail page and click &quot;Initialize dispatch&quot;.
-              {' '}n8n_dispatch_queue is Rose-owned (JOB_READ_OK only); admin cancel of a
-              Rose-vendor email is an admin_proposals row of type=&apos;dispatch_cancel&apos;.
-            </p>
-          </>
+          {activeView === 'queued' && (
+            <QueuedView
+              blocks={queuedBlocks}
+              prospects={prospects.map((p) => ({
+                id: p.id,
+                business_name: p.business_name,
+                contact_name: p.contact_name,
+                city: p.city,
+                state: p.state,
+              }))}
+              defaultDispatchId={defaultDispatchId}
+              todayLabel={todayLabel}
+            />
+          )}
+
+          {activeView === 'historical' && (
+            <HistoricalView
+              fromIso={histFrom}
+              toIso={histTo}
+              blocks={histBlocks}
+              prospects={prospects.map((p) => ({
+                id: p.id,
+                business_name: p.business_name,
+                contact_name: p.contact_name,
+                city: p.city,
+                state: p.state,
+              }))}
+              defaultDispatchId={defaultDispatchId}
+              todayLabel={todayLabel}
+            />
+          )}
+        </WiringSection>
+
+        {/* Footer note + per-row feedback affordance for delivered orders.
+            BRD UC-O-196..203 — kept on the page (not in mockup) because it's
+            required for the post-delivery feedback loop. Currently surfaces
+            only on the Today view's delivered rows; once Historical shows
+            delivered orders, the feedback affordance is inline on each panel. */}
+        {activeView === 'today' && todayRows.some((r) => r.dispatch?.status === 'delivered') && (
+          <div className="mt-8 space-y-3">
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+              Delivered today — capture feedback
+            </h3>
+            {todayRows
+              .filter((r) => r.dispatch?.status === 'delivered')
+              .map((r) => {
+                const skus = (r.order.order_lines ?? [])
+                  .filter((l) => l.sku_id != null)
+                  .map((l) => ({
+                    sku_id: String(l.sku_id),
+                    sku_name: l.sku_name_snapshot ?? `SKU ${l.sku_id}`,
+                  }));
+                const badge = STATUS_BADGE[r.dispatch!.status];
+                return (
+                  <div
+                    key={r.order.id}
+                    className="bg-white border border-slate-200 rounded-xl p-4 flex items-start justify-between gap-4"
+                  >
+                    <div className="min-w-0">
+                      <Link
+                        href={`/admin/orders/${r.order.id}`}
+                        className="font-mono text-xs font-semibold text-slate-700 hover:text-emerald-700 hover:underline"
+                      >
+                        {r.order.order_number}
+                      </Link>
+                      <p className="text-sm text-slate-700 font-medium mt-0.5">{r.businessName}</p>
+                      <span
+                        className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${badge.cls}`}
+                      >
+                        {badge.label}
+                      </span>
+                    </div>
+                    <div className="shrink-0">
+                      <DispatchFeedbackForm
+                        dispatchId={r.dispatch!.id}
+                        existingFeedbackCount={r.feedbackCount}
+                        skus={skus}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         )}
 
-        {topTab === 'upcoming' && <RoseUpcomingTab data={upcomingData} />}
-        {topTab === 'recent' && <RoseRecentTab data={recentData} />}
-        {topTab === 'farms' && <RoseFarmShipmentsTab data={farmsData} />}
+        <p className="text-xs text-slate-400 mt-8">
+          Data source: supabase-backup orders + dispatches + dispatch_communications +
+          dispatch_feedback + sample_box_prospects. Service-role writes; admin gate on
+          every /api/admin/dispatch/* route. To initialize a dispatch for a paid order,
+          open the order detail page and click &quot;Initialize dispatch&quot;.
+        </p>
       </main>
     </>
   );
