@@ -11,6 +11,11 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import {
+  ACTIVE_PRICING_MARKET,
+  requireNumericPricingConstant,
+  type PricingConstantValueRow,
+} from '@/lib/pricing-constants';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
@@ -27,11 +32,6 @@ interface MirrorRow {
 interface BoxMasterRow {
   box_type: string;
   weight_kg: number | string | null;
-}
-
-interface PricingConstantRow {
-  id: string;
-  value_numeric: number | string | null;
 }
 
 interface ProposalRow {
@@ -179,7 +179,10 @@ export default async function AdminTodayPanel(): Promise<ReactNode> {
       .select('vendor, price, farm_cost, box_type, units_per_box, cost_source, tier')
       .limit(2000),
     svc.from('box_master').select('box_type, weight_kg'),
-    svc.from('pricing_constants').select('id, value_numeric'),
+    svc
+      .from('pricing_constants')
+      .select('id, market, value_numeric')
+      .eq('market', ACTIVE_PRICING_MARKET),
     svc
       .from('rose_queue')
       .select('id', { count: 'exact', head: true })
@@ -204,11 +207,9 @@ export default async function AdminTodayPanel(): Promise<ReactNode> {
   }
 
   // ── parse constants ──
-  const constants = (constantsRes.data ?? []) as PricingConstantRow[];
-  const fedexRate =
-    toNum(constants.find((c) => c.id === 'fedex_rate_per_kg')?.value_numeric) ?? 6.5;
-  const fuelMult =
-    toNum(constants.find((c) => c.id === 'fuel_surcharge_mult')?.value_numeric) ?? 1.25;
+  const constants = (constantsRes.data ?? []) as PricingConstantValueRow[];
+  const fedexRate = requireNumericPricingConstant(constants, 'fedex_rate_per_kg');
+  const fuelMult = requireNumericPricingConstant(constants, 'fuel_surcharge_mult');
 
   // ── box weight map ──
   const boxWeightMap = new Map<string, number>();

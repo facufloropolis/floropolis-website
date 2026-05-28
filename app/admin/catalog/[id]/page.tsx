@@ -32,6 +32,7 @@ import { getCostSourceMeta, getReliabilityCls } from '@/lib/admin/cost-source-re
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
+import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import { GATE_LABELS } from '@/lib/catalog-gates';
 import { lookupImportanceScore, FEATURED_SCORE_SEED } from '@/lib/admin/featured-scores-seed';
 import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
@@ -386,7 +387,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
       .eq('sku_id', skuId)
       .maybeSingle(),
     backup.from('floropolis_inventory_mirror').select('*').eq('id', skuId).maybeSingle(),
-    backup.from('pricing_constants').select('id, value_numeric, description, unit'),
+    backup
+      .from('pricing_constants')
+      .select('id, value_numeric, description, unit')
+      .eq('market', ACTIVE_PRICING_MARKET),
   ]);
 
   const cls = classRes.data as ClassificationRow | null;

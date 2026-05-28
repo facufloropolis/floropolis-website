@@ -40,6 +40,7 @@ import * as Sentry from '@sentry/nextjs';
 
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import {
   classifySingleSku,
   type MirrorRow,
@@ -322,7 +323,8 @@ export async function POST(
     backup
       .from('pricing_constants')
       .select('id, value_numeric')
-      .in('id', ['gpm_target', 'fedex_rate_per_kg', 'fuel_surcharge_mult']),
+      .in('id', ['gpm_target', 'fedex_rate_per_kg', 'fuel_surcharge_mult'])
+      .eq('market', ACTIVE_PRICING_MARKET),
     backup.from('box_master').select('box_type, weight_kg').eq('active', true),
     backup
       .from('catalog_classifications')

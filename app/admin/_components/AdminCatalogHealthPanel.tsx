@@ -10,6 +10,11 @@ import Link from 'next/link';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getProdReadClient } from '@/lib/supabase/prod-server';
 import { lookupImportanceScore } from '@/lib/admin/featured-scores-seed';
+import {
+  ACTIVE_PRICING_MARKET,
+  requireNumericPricingConstant,
+  type PricingConstantValueRow,
+} from '@/lib/pricing-constants';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
@@ -28,11 +33,6 @@ interface MirrorRow {
 interface BoxRow {
   box_type: string;
   weight_kg: number | string | null;
-}
-
-interface ConstantRow {
-  id: string;
-  value_numeric: number | string | null;
 }
 
 interface WeightRow {
@@ -114,7 +114,10 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
       .select('name, tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
       .limit(2000),
     svc.from('box_master').select('box_type, weight_kg'),
-    svc.from('pricing_constants').select('id, value_numeric'),
+    svc
+      .from('pricing_constants')
+      .select('id, market, value_numeric')
+      .eq('market', ACTIVE_PRICING_MARKET),
     svc.from('catalog_classifications').select('status, failing_gates'),
     svc.from('catalog_quality_weights').select('gate_id, weight, evaluated'),
     svc.from('orders').select('*', { count: 'exact', head: true })
@@ -138,7 +141,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
 
   const mirror = (mirrorRaw ?? []) as MirrorRow[];
   const boxes = (boxRaw ?? []) as BoxRow[];
-  const constants = (constRaw ?? []) as ConstantRow[];
+  const constants = (constRaw ?? []) as PricingConstantValueRow[];
   const classifications = (clsRaw ?? []) as ClassificationRow[];
   const weights = (weightsRaw ?? []) as WeightRow[];
 
@@ -147,9 +150,9 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   const unevalBonus = weights.filter((w) => !w.evaluated).reduce((s, w) => s + w.weight, 0);
 
   // Pricing constants
-  const fedexRate = toNum(constants.find((c) => c.id === 'fedex_rate_per_kg')?.value_numeric) ?? 6.5;
-  const fuelMult = toNum(constants.find((c) => c.id === 'fuel_surcharge_mult')?.value_numeric) ?? 1.25;
-  const gpmTarget = toNum(constants.find((c) => c.id === 'gpm_target')?.value_numeric) ?? 0.33;
+  const fedexRate = requireNumericPricingConstant(constants, 'fedex_rate_per_kg');
+  const fuelMult = requireNumericPricingConstant(constants, 'fuel_surcharge_mult');
+  const gpmTarget = requireNumericPricingConstant(constants, 'gpm_target');
   const boxWeightMap = new Map(boxes.map((b) => [b.box_type, toNum(b.weight_kg) ?? 0]));
 
   // ── Tier breakdown ──────────────────────────────────────────────────────────

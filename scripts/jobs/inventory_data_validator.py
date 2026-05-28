@@ -80,9 +80,10 @@ import urllib.request
 
 
 # === Constants per Rose's pricing_formula.md (Section 1) ===
-# These are FALLBACKS. At runtime, load_pricing_constants() and load_box_master()
-# pull live values from `pricing_constants` and `box_master`. Edits via
-# /admin/catalog/config flow through on the next validator run.
+# Pricing constants must come from the canonical market-scoped rows in
+# pricing_constants. Box weights still retain a local fallback because that
+# retrofit is a later slice.
+PRICING_MARKET = "Ecuador"
 GPM_TARGET = 0.33                 # gross profit margin on selling price
 FEDEX_RATE_PER_KG = 6.50           # USD per kg
 FUEL_SURCHARGE_MULT = 1.25         # 25% fuel surcharge
@@ -243,37 +244,35 @@ def execute_sql(query: str) -> list[dict]:
 
 
 def load_pricing_constants() -> None:
-    """Load GPM_TARGET, FEDEX_RATE_PER_KG, FUEL_SURCHARGE_MULT from pricing_constants
-    table. Mutate module globals. On any failure or empty table, leave hardcoded
-    fallbacks in place and set CONFIG_LOAD_FALLBACK['pricing_constants']=True.
+    """Load canonical Ecuador-scoped pricing constants.
+
+    This validator is part of the live pricing/audit chain, so missing rows must
+    fail loudly. Silent fallback would hide drift from the canonical config.
     """
     global GPM_TARGET, FEDEX_RATE_PER_KG, FUEL_SURCHARGE_MULT
-    try:
-        rows = execute_sql(
-            "SELECT id, value_numeric FROM pricing_constants "
-            "WHERE id IN ('gpm_target','fedex_rate_per_kg','fuel_surcharge_mult')"
-        )
-    except Exception as e:
-        print(f"pricing_constants read failed ({e}); using hardcoded fallback", file=sys.stderr)
-        CONFIG_LOAD_FALLBACK["pricing_constants"] = True
-        return
-
+    rows = execute_sql(
+        "SELECT id, value_numeric FROM pricing_constants "
+        f"WHERE market = '{PRICING_MARKET}' "
+        "AND id IN ('gpm_target','fedex_rate_per_kg','fuel_surcharge_mult')"
+    )
     if not rows:
-        print("pricing_constants empty; using hardcoded fallback", file=sys.stderr)
-        CONFIG_LOAD_FALLBACK["pricing_constants"] = True
-        return
+        raise RuntimeError(
+            f"pricing_constants has no rows for market={PRICING_MARKET}"
+        )
 
     by_id = {r["id"]: r.get("value_numeric") for r in rows}
     try:
-        if by_id.get("gpm_target") is not None:
-            GPM_TARGET = float(by_id["gpm_target"])
-        if by_id.get("fedex_rate_per_kg") is not None:
-            FEDEX_RATE_PER_KG = float(by_id["fedex_rate_per_kg"])
-        if by_id.get("fuel_surcharge_mult") is not None:
-            FUEL_SURCHARGE_MULT = float(by_id["fuel_surcharge_mult"])
+        GPM_TARGET = float(by_id["gpm_target"])
+        FEDEX_RATE_PER_KG = float(by_id["fedex_rate_per_kg"])
+        FUEL_SURCHARGE_MULT = float(by_id["fuel_surcharge_mult"])
+    except KeyError as e:
+        raise RuntimeError(
+            f"pricing_constants missing required key for market={PRICING_MARKET}: {e.args[0]}"
+        ) from e
     except (TypeError, ValueError) as e:
-        print(f"pricing_constants parse failed ({e}); using hardcoded fallback", file=sys.stderr)
-        CONFIG_LOAD_FALLBACK["pricing_constants"] = True
+        raise RuntimeError(
+            f"pricing_constants parse failed for market={PRICING_MARKET}: {e}"
+        ) from e
 
 
 def load_box_master() -> None:
@@ -850,7 +849,8 @@ def run_validation() -> dict:
     INVENTORY_TABLE env var defaults to 'floropolis_inventory' (prod).
     Set to 'floropolis_inventory_mirror' when running against supabase-backup.
     """
-    # Load live config from DB (with fallback to hardcoded constants)
+    # Load live config from DB. pricing_constants must succeed; box_master still
+    # retains a fallback until the vendor-box slices land.
     load_pricing_constants()
     load_box_master()
     load_gate_tiers()

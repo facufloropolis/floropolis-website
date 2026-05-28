@@ -74,6 +74,7 @@ import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import MorningSummaryHeader from './_components/MorningSummaryHeader';
 import { getWiringForPage } from '@/lib/admin/wiring';
+import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import {
   buildCatalog,
   GPM_BAND_CLS,
@@ -399,7 +400,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   try {
     const { data, error } = await backup
       .from('pricing_constants')
-      .select('id, value_numeric');
+      .select('id, value_numeric')
+      .eq('market', ACTIVE_PRICING_MARKET);
     if (error) console.error('[admin/catalog] pricing_constants error:', error);
     pricingConstants = (data ?? []) as unknown as PricingConstantRow[];
   } catch (err) {

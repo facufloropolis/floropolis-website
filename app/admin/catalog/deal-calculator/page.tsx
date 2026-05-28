@@ -50,6 +50,11 @@ export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import {
+  ACTIVE_PRICING_MARKET,
+  requireNumericPricingConstant,
+  type PricingConstantValueRow,
+} from '@/lib/pricing-constants';
 import DealCalculatorClient from './DealCalculatorClient';
 import type { DealSku, DealBox, DealConstants } from './DealCalculatorClient';
 
@@ -108,7 +113,7 @@ export default async function AdminDealCalculatorPage() {
   // Data fetch ---------------------------------------------------------
   const backup = getBackupServiceClient();
 
-  const [mirrorRes, boxesRes] = await Promise.all([
+  const [mirrorRes, boxesRes, constantsRes] = await Promise.all([
     backup
       .from('floropolis_inventory_mirror')
       .select(
@@ -119,6 +124,10 @@ export default async function AdminDealCalculatorPage() {
       .not('cost_source', 'is', null) // v2.1: "1 source verified" — cost_source IS the signal
       .limit(ROW_LIMIT),
     backup.from('box_master').select('box_type, weight_kg'),
+    backup
+      .from('pricing_constants')
+      .select('id, market, value_numeric')
+      .eq('market', ACTIVE_PRICING_MARKET),
   ]);
 
   if (mirrorRes.error) {
@@ -127,9 +136,13 @@ export default async function AdminDealCalculatorPage() {
   if (boxesRes.error) {
     console.error('[admin/catalog/deal-calculator] box_master fetch error:', boxesRes.error);
   }
+  if (constantsRes.error) {
+    console.error('[admin/catalog/deal-calculator] pricing_constants fetch error:', constantsRes.error);
+  }
 
   const mirrorRows = (mirrorRes.data ?? []) as unknown as MirrorRowRaw[];
   const boxRows = (boxesRes.data ?? []) as unknown as BoxMasterRowRaw[];
+  const constantRows = (constantsRes.data ?? []) as PricingConstantValueRow[];
 
   // Shape into client props -------------------------------------------
   const skus: DealSku[] = mirrorRows
@@ -167,9 +180,9 @@ export default async function AdminDealCalculatorPage() {
     .filter((b): b is DealBox => b !== null);
 
   const constants: DealConstants = {
-    gpm: 0.33,
-    fedex_rate_per_kg: 6.5,
-    fuel_surcharge: 1.25,
+    gpm: requireNumericPricingConstant(constantRows, 'gpm_target'),
+    fedex_rate_per_kg: requireNumericPricingConstant(constantRows, 'fedex_rate_per_kg'),
+    fuel_surcharge: requireNumericPricingConstant(constantRows, 'fuel_surcharge_mult'),
   };
 
   // Render -------------------------------------------------------------

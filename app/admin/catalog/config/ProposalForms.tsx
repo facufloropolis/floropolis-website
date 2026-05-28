@@ -21,6 +21,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { pricingConstantTargetId } from '@/lib/pricing-constants';
 import type {
   BoxMasterRow,
   PricingConstantRow,
@@ -200,7 +201,15 @@ export function PricingConstantsProposeForm({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const initial = row.value_numeric == null ? '' : String(row.value_numeric);
+  const allowedValues = Array.isArray(row.allowed_values)
+    ? row.allowed_values.filter((v): v is string => typeof v === 'string' && v.length > 0)
+    : [];
+  const isTextConstant = allowedValues.length > 0;
+  const initial = isTextConstant
+    ? (row.value_text ?? '')
+    : row.value_numeric == null
+      ? ''
+      : String(row.value_numeric);
   const [value, setValue] = useState(initial);
   const [reason, setReason] = useState('');
   // Phase D: Rose contract P3/P4 fields.
@@ -218,10 +227,27 @@ export function PricingConstantsProposeForm({
   }
 
   async function submit() {
-    const n = Number(value);
-    if (!Number.isFinite(n)) {
-      setError('value_numeric must be a number');
-      return;
+    let payload: Record<string, unknown>;
+    let beforeValue: Record<string, unknown>;
+    let afterValue: Record<string, unknown>;
+
+    if (isTextConstant) {
+      if (!allowedValues.includes(value)) {
+        setError(`Value must be one of: ${allowedValues.join(', ')}`);
+        return;
+      }
+      payload = { value_text: value, market: row.market, urgency_tier: urgencyTier };
+      beforeValue = { value_text: row.value_text ?? null, market: row.market };
+      afterValue = { value_text: value, market: row.market };
+    } else {
+      const n = Number(value);
+      if (!Number.isFinite(n)) {
+        setError('value_numeric must be a number');
+        return;
+      }
+      payload = { value_numeric: n, market: row.market, urgency_tier: urgencyTier };
+      beforeValue = { value_numeric: row.value_numeric ?? null, market: row.market };
+      afterValue = { value_numeric: n, market: row.market };
     }
     if (reason.trim().length < 5) {
       setError('Reason / rationale is mandatory (>=5 chars).');
@@ -232,16 +258,16 @@ export function PricingConstantsProposeForm({
     const r = await postProposal({
       type: 'pricing_constants.update',
       target_table: 'pricing_constants',
-      target_id: row.id,
-      payload: { value_numeric: n, urgency_tier: urgencyTier },
+      target_id: pricingConstantTargetId(row.id, row.market),
+      payload,
       notes: reason.trim(),
       source_rationale: reason.trim(),
       source_artifact: sourceArtifact.trim() ? sourceArtifact.trim() : null,
       source_table: 'pricing_constants',
-      source_id: row.id,
+      source_id: pricingConstantTargetId(row.id, row.market),
       source_agent: 'job',
-      before_value: { value_numeric: row.value_numeric ?? null },
-      after_value: { value_numeric: n },
+      before_value: beforeValue,
+      after_value: afterValue,
     });
     setBusy(false);
     if (!r.ok) {
@@ -268,7 +294,7 @@ export function PricingConstantsProposeForm({
   return (
     <div className="text-left bg-white border border-emerald-300 rounded-lg p-3 shadow-sm w-72">
       <p className="text-xs font-semibold text-slate-900 mb-2">
-        Propose edit to <span className="font-mono">{row.id}</span>
+        Propose edit to <span className="font-mono">{row.id}:{row.market}</span>
       </p>
       <p className="text-[11px] text-orange-700 mb-3">
         Cascade impact: applies to all {totalSkus} SKUs.
@@ -276,14 +302,29 @@ export function PricingConstantsProposeForm({
       <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
         New value {row.unit ? `(${row.unit})` : ''}
       </label>
-      <input
-        type="number"
-        step="0.0001"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={busy}
-        className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-      />
+      {isTextConstant ? (
+        <select
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          disabled={busy}
+          className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+        >
+          {allowedValues.map((v) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type="number"
+          step="0.0001"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          disabled={busy}
+          className="w-full text-sm font-mono border border-slate-300 rounded-md px-2 py-1 mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+        />
+      )}
       <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
         Reason / rationale (mandatory)
       </label>

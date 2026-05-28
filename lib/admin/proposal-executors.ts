@@ -21,6 +21,11 @@
 //   3. Wire UI to POST { type: <new>, target_table, target_id?, payload }.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import {
+  ACTIVE_PRICING_MARKET,
+  parsePricingConstantTargetId,
+  pricingConstantTargetId,
+} from '@/lib/pricing-constants';
 
 export interface AdminProposal {
   id: string;
@@ -123,25 +128,37 @@ async function execPricingConstantsUpdate(
   const payload = payloadObject(proposal);
   if (!payload) return fail('invalid_payload');
   if (!proposal.target_id) return fail('missing_target_id');
+  const parsed = parsePricingConstantTargetId(proposal.target_id);
+  const constantId = parsed.id;
+  const payloadMarket =
+    typeof payload.market === 'string' && payload.market.trim().length > 0
+      ? payload.market.trim()
+      : null;
+  const market = parsed.market ?? payloadMarket ?? ACTIVE_PRICING_MARKET;
+  const auditTargetId = pricingConstantTargetId(constantId, market);
 
   const { data: before, error: readErr } = await service
     .from('pricing_constants')
     .select('*')
-    .eq('id', proposal.target_id)
+    .eq('id', constantId)
+    .eq('market', market)
     .maybeSingle();
   if (readErr) return fail(`read_failed: ${readErr.message}`);
   if (!before) return fail('target_not_found');
 
   const update: Record<string, unknown> = {
-    ...payload,
     updated_at: new Date().toISOString(),
   };
+  if (payload.value_numeric !== undefined) update.value_numeric = payload.value_numeric;
+  if (payload.value_text !== undefined) update.value_text = payload.value_text;
+  if (payload.allowed_values !== undefined) update.allowed_values = payload.allowed_values;
   if (proposal.proposed_by) update.updated_by = proposal.proposed_by;
 
   const { data: after, error: updErr } = await service
     .from('pricing_constants')
     .update(update)
-    .eq('id', proposal.target_id)
+    .eq('id', constantId)
+    .eq('market', market)
     .select('*')
     .maybeSingle();
   if (updErr) return fail(`update_failed: ${updErr.message}`);
@@ -152,7 +169,7 @@ async function execPricingConstantsUpdate(
       {
         proposal_id: proposal.id,
         target_table: 'pricing_constants',
-        target_id: proposal.target_id,
+        target_id: auditTargetId,
         before_jsonb: before as Record<string, unknown>,
         after_jsonb: (after ?? null) as Record<string, unknown> | null,
         applied_by_function: 'proposal-executors.execPricingConstantsUpdate',

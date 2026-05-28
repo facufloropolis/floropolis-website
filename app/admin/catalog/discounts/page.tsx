@@ -44,6 +44,7 @@ export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
@@ -270,6 +271,7 @@ export default async function AdminCatalogDiscountsPage() {
     .from('pricing_constants')
     .select('value_numeric')
     .eq('id', 'gpm_target')
+    .eq('market', ACTIVE_PRICING_MARKET)
     .maybeSingle();
   const gpmTarget = (() => {
     const v = (gpmRow as { value_numeric?: number | string | null } | null)
@@ -279,7 +281,7 @@ export default async function AdminCatalogDiscountsPage() {
       const n = Number(v);
       if (Number.isFinite(n)) return n;
     }
-    return 0.33; // sensible default per pricing_constants seed
+    throw new Error(`Missing pricing_constants.gpm_target for market=${ACTIVE_PRICING_MARKET}`);
   })();
 
   // Scope option lists ---------------------------------------------------

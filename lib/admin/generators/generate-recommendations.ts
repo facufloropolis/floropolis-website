@@ -25,6 +25,11 @@
 //   deviation_pct:    abs((price - expected) / expected) * 100
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import {
+  ACTIVE_PRICING_MARKET,
+  requireNumericPricingConstant,
+  type PricingConstantValueRow,
+} from '@/lib/pricing-constants';
 
 export interface GeneratorStats {
   formula_reset: { created: number; skipped: number; errors: number };
@@ -110,18 +115,17 @@ export async function generateRecommendationProposals(
   // 1. Load shared reference data
   // -------------------------------------------------------------------------
   const [pcResult, bmResult] = await Promise.all([
-    service.from('pricing_constants').select('id, value_numeric'),
+    service
+      .from('pricing_constants')
+      .select('id, market, value_numeric')
+      .eq('market', ACTIVE_PRICING_MARKET),
     service.from('box_master').select('box_type, weight_kg'),
   ]);
 
-  const pcRows = (pcResult.data ?? []) as Array<{ id: string; value_numeric: number | null }>;
-  const pricingConstants: Record<string, number> = {};
-  for (const r of pcRows) {
-    if (r.id && r.value_numeric != null) pricingConstants[r.id] = r.value_numeric;
-  }
-  const gpm = pricingConstants['gpm_target'] ?? 0.33;
-  const fedex = pricingConstants['fedex_rate_per_kg'] ?? 6.5;
-  const fuel = pricingConstants['fuel_surcharge_mult'] ?? 1.25;
+  const pcRows = (pcResult.data ?? []) as PricingConstantValueRow[];
+  const gpm = requireNumericPricingConstant(pcRows, 'gpm_target');
+  const fedex = requireNumericPricingConstant(pcRows, 'fedex_rate_per_kg');
+  const fuel = requireNumericPricingConstant(pcRows, 'fuel_surcharge_mult');
 
   const bmRows = (bmResult.data ?? []) as Array<{ box_type: string; weight_kg: number }>;
   const boxMaster: Record<string, number> = {};

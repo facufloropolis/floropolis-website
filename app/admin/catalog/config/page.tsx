@@ -67,7 +67,10 @@ export interface BoxMasterRow {
 
 export interface PricingConstantRow {
   id: string;
+  market: string;
   value_numeric: number | string | null;
+  value_text: string | null;
+  allowed_values: string[] | null;
   description: string;
   unit: string | null;
   updated_at: string | null;
@@ -227,8 +230,9 @@ export default async function AdminCatalogConfigPage({
       .order('box_type', { ascending: true }),
     backup
       .from('pricing_constants')
-      .select('id, value_numeric, description, unit, updated_at')
-      .order('id', { ascending: true }),
+      .select('id, market, value_numeric, value_text, allowed_values, description, unit, updated_at')
+      .order('id', { ascending: true })
+      .order('market', { ascending: true }),
     backup
       .from('shipping_config_v2')
       .select('id, origin_country, dest_port, zone, fuel_pct, dim_divisor, rel_number, effective_from, effective_until')
@@ -752,6 +756,11 @@ function PricingPanel({
     (acc, c) => (!acc || (c.updated_at && c.updated_at > acc) ? (c.updated_at ?? acc) : acc),
     null,
   );
+  const fmtValue = (c: PricingConstantRow): string => {
+    if (c.value_text && c.value_text.trim().length > 0) return c.value_text;
+    if (c.value_numeric == null) return '-';
+    return String(c.value_numeric);
+  };
   return (
     <>
       {/* Source provenance bar */}
@@ -767,6 +776,7 @@ function PricingPanel({
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr className="text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
               <th className="px-4 py-2.5">Id</th>
+              <th className="px-4 py-2.5">Market</th>
               <th className="px-4 py-2.5">Description</th>
               <th className="px-4 py-2.5 text-right">Value</th>
               <th className="px-4 py-2.5">Unit</th>
@@ -776,11 +786,12 @@ function PricingPanel({
           </thead>
           <tbody>
             {constants.map((c) => (
-              <tr key={c.id} className="border-b border-slate-100 last:border-b-0">
+              <tr key={`${c.id}:${c.market}`} className="border-b border-slate-100 last:border-b-0">
                 <td className="px-4 py-2.5 font-mono text-xs text-slate-900">{c.id}</td>
+                <td className="px-4 py-2.5 text-xs text-slate-600">{c.market}</td>
                 <td className="px-4 py-2.5 text-xs text-slate-600">{c.description}</td>
                 <td className="px-4 py-2.5 text-right font-mono text-sm text-slate-900">
-                  {c.value_numeric == null ? '-' : String(c.value_numeric)}
+                  {fmtValue(c)}
                 </td>
                 <td className="px-4 py-2.5 text-xs text-slate-500">{c.unit ?? '-'}</td>
                 <td className="px-4 py-2.5 text-xs text-slate-500">{fmtDate(c.updated_at)}</td>
@@ -788,9 +799,9 @@ function PricingPanel({
                   <div className="flex items-center justify-end gap-2 flex-wrap">
                     <PricingConstantsProposeForm row={c} totalSkus={totalSkus} />
                     <ConfigFlagRoseForm
-                      itemId={c.id}
-                      itemLabel={c.description}
-                      currentValue={c.value_numeric == null ? '—' : String(c.value_numeric)}
+                      itemId={`${c.id}:${c.market}`}
+                      itemLabel={`${c.description} (${c.market})`}
+                      currentValue={fmtValue(c)}
                       sourceTable="pricing_constants"
                       reasonCode="pricing_question"
                     />

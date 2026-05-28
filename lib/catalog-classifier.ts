@@ -137,6 +137,17 @@ function resolveBoxWeight(
   return null;
 }
 
+function requirePricingConstant(
+  constants: Record<string, number>,
+  key: 'gpm_target' | 'fedex_rate_per_kg' | 'fuel_surcharge_mult',
+): number {
+  const value = constants[key];
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new Error(`Missing classifier pricing constant: ${key}`);
+  }
+  return value;
+}
+
 function computeExpectedPrice(
   row: MirrorRow,
   config: ClassifierConfig,
@@ -144,9 +155,9 @@ function computeExpectedPrice(
   const cost = toNum(row.farm_cost);
   if (cost <= 0) return null;
 
-  const gpm = config.pricingConstants.gpm_target ?? 0.33;
-  const fedex = config.pricingConstants.fedex_rate_per_kg ?? 6.5;
-  const fuel = config.pricingConstants.fuel_surcharge_mult ?? 1.25;
+  const gpm = requirePricingConstant(config.pricingConstants, 'gpm_target');
+  const fedex = requirePricingConstant(config.pricingConstants, 'fedex_rate_per_kg');
+  const fuel = requirePricingConstant(config.pricingConstants, 'fuel_surcharge_mult');
 
   const vendor = (row.vendor ?? '').toLowerCase();
   if (vendor.includes('usa')) {
