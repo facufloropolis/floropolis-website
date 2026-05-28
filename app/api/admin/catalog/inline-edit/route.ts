@@ -282,7 +282,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       target_table: 'floropolis_inventory_mirror',
       target_id: String(skuId),
       payload: proposalPayload,
-      warnings: null,
+      warnings: [],
       status: 'awaiting_facu',
       proposed_by: auth.userId,
       notes: null,
