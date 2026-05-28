@@ -23,8 +23,10 @@
 //   FedEx rate     = 6.50   USD/kg, Ecuador origin
 //   Fuel surcharge = 1.25   (25% multiplier)
 //
-// Magic Flowers is excluded from the SKU universe (ghost vendor — circular per
-// Job_PM/kb/projects/perfect_inventory_bar.md §82).
+// Magic Flowers IS included in the SKU universe (per perfect_inventory_bar v2.1
+// 2026-05-28 — their exclusion applies only to live-source determination, not
+// to T2/T3 publishable). Their products are sellable from this tool when basics
+// are present (cost source + farm_cost + active).
 //
 // ============================================================================
 // Data fetch
@@ -112,9 +114,9 @@ export default async function AdminDealCalculatorPage() {
       .select(
         'id, name, vendor, tier, variety, length, unit, category, farm_cost, price, box_type, units_per_box, total_stems',
       )
-      .neq('vendor', 'Magic Flowers')
       .eq('active', true)
       .not('farm_cost', 'is', null)
+      .not('cost_source', 'is', null) // v2.1: "1 source verified" — cost_source IS the signal
       .limit(ROW_LIMIT),
     backup.from('box_master').select('box_type, weight_kg'),
   ]);
@@ -192,7 +194,7 @@ export default async function AdminDealCalculatorPage() {
         <p className="text-[11px] text-slate-400 mt-1">
           UC-P-156 MVP — calculator only, nothing is saved.{' '}
           {skus.length.toLocaleString()} active SKUs available (
-          {ROW_LIMIT.toLocaleString()}-row server cap — Magic Flowers excluded).
+          {ROW_LIMIT.toLocaleString()}-row server cap · all vendors incl. Magic Flowers · v2.1).
           Best on desktop.
         </p>
       </div>

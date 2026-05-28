@@ -3,8 +3,9 @@
 //
 // Renders 4 widgets above the supply-intelligence panel on /admin/catalog:
 //   UC-D-100  Counts by source × vendor (publishable universe per Perfect
-//             Inventory Bar v2 — k2k_live OR T2[+5..+180] OR T3[+14..+180],
-//             Magic Flowers excluded, farm_cost required).
+//             Inventory Bar v2.1 — k2k_live OR T2[+5..+180] OR T3[+14..+180],
+//             farm_cost required. Magic Flowers excluded ONLY from k2k_live
+//             branch (ghost vendor); INCLUDED in T2/T3 catalog.
 //   UC-D-101  Live going down DoD flag (depends on mirror_snapshot_daily;
 //             gracefully renders "pending Rose snapshot pipeline" if missing).
 //   UC-D-102  Above-formula vendor flag (count of SKUs where price exceeds
@@ -26,7 +27,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 // ---------------------------------------------------------------------------
 // Config (Perfect Inventory Bar v2 — kept in one place so it's obvious what
 // rules this widget encodes; pulled from kb/projects/perfect_inventory_bar.md
-// §6 tier windows. Magic Flowers excluded per §6 "live verification". The
+// §6 tier windows. Per v2.1: Magic Flowers excluded ONLY from live source. The
 // 0.67 number is the *legacy* default GPM used here ONLY for a rough flag —
 // real pricing is computed in catalog-model.ts from country-scoped config.)
 // ---------------------------------------------------------------------------
@@ -97,9 +98,13 @@ function todayISO(base: Date): string {
 type Bucket = 'k2k_live' | 't2_catalog' | 't3_catalog';
 
 function bucketize(r: MirrorPick, today: Date): Bucket | null {
-  if (r.vendor && MAGIC_FLOWERS_PATTERN.test(r.vendor)) return null;
   if (toNum(r.farm_cost) == null) return null;
-  if (r.live === true && r.active !== false) return 'k2k_live';
+  // Per perfect_inventory_bar v2.1 (Facu 2026-05-28): Magic Flowers is excluded
+  // ONLY from the live-source determination (ghost vendor — circular K2K signal,
+  // we ghost-upload on their behalf). They ARE included in T2/T3 publishable
+  // when basics are present (cost + image + unit + tier window).
+  const isMagicFlowers = r.vendor != null && MAGIC_FLOWERS_PATTERN.test(r.vendor);
+  if (r.live === true && r.active !== false && !isMagicFlowers) return 'k2k_live';
   if (r.arrival_date) {
     const arr = new Date(r.arrival_date + 'T00:00:00Z').getTime();
     const t = today.getTime();
@@ -293,7 +298,7 @@ export default async function MorningSummaryHeader({
           Morning summary
         </span>
         <span className="text-[10px] text-slate-400">
-          publishable universe (Perfect Inventory Bar v2 · Magic Flowers excluded)
+          publishable universe (Perfect Inventory Bar v2.1 · Magic Flowers in T2/T3 only)
         </span>
       </div>
 
