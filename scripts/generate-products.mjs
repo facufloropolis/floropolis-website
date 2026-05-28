@@ -284,16 +284,23 @@ async function fetchAllRest(baseUrl, key, table, params = {}) {
 async function fetchBackupGate() {
   console.log("\n=== BACKUP GATE FETCH (supabase-backup) ===");
 
-  // Publishable SKUs from catalog_classifications (status='publishable').
-  const clsRows = await fetchAllRest(BACKUP_URL, BACKUP_KEY, "catalog_classifications", {
+  // Publishable SKUs: status='publishable' OR status='perfect' (perfect is a superset of publishable).
+  // The classifier writes 'perfect' for 100-score SKUs and 'publishable' for partial-pass SKUs.
+  // Both are safe to show on site; 'blocked' is the only exclude state.
+  const clsPublishable = await fetchAllRest(BACKUP_URL, BACKUP_KEY, "catalog_classifications", {
     select: "sku_id,status",
     status: "eq.publishable",
   });
+  const clsPerfect = await fetchAllRest(BACKUP_URL, BACKUP_KEY, "catalog_classifications", {
+    select: "sku_id,status",
+    status: "eq.perfect",
+  });
+  const clsRows = [...clsPublishable, ...clsPerfect];
   const publishableSet = new Set();
   for (const r of clsRows) {
     if (r.sku_id != null) publishableSet.add(Number(r.sku_id));
   }
-  console.log(`  catalog_classifications publishable: ${publishableSet.size}`);
+  console.log(`  catalog_classifications publishable: ${clsPublishable.length} + perfect: ${clsPerfect.length} = ${publishableSet.size} total`);
 
   // Active hide overrides from visibility_overrides.
   // Active = decision='hide' AND (expires_at IS NULL OR expires_at > now()).
