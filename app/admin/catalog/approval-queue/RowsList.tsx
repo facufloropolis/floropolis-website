@@ -1,5 +1,5 @@
 // Client-side rows list for /admin/catalog/approval-queue.
-// v2 | 2026-05-26 | Job_PM [V8 SHADOW]
+// v3 | 2026-05-27 | Job_PM [V8 SHADOW] — DecisionContextCard: 4-field decision-readiness panel
 //
 // The page server-component computes everything (proposals, cascade summaries,
 // audit rows, proposer emails, filter chip universes) and hands it here.
@@ -267,6 +267,9 @@ export default function RowsList({
                   </div>
                 )}
 
+                {/* Decision context: symptom / root cause / fix / dependencies */}
+                <DecisionContextCard payload={p.payload_raw} />
+
                 {/* Cascade impact */}
                 <div className="border-t border-slate-100 pt-3 mb-3">
                   <div className="flex justify-between items-center">
@@ -465,6 +468,8 @@ function BucketedList({
                       </div>
                     )}
 
+                    <DecisionContextCard payload={p.payload_raw} />
+
                     <div className="border-t border-slate-100 pt-3 mb-3">
                       <span className="text-xs font-semibold text-slate-700">
                         Cascade impact:{' '}
@@ -521,6 +526,40 @@ function BucketedList({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// DecisionContextCard — renders symptom/root_cause/fix_preview/dependency_resolution
+// from payload_raw. Only visible when at least one field is populated.
+function DecisionContextCard({ payload }: { payload: Record<string, unknown> | null }) {
+  if (!payload) return null;
+  const symptom = typeof payload.symptom === 'string' ? payload.symptom : null;
+  const rootCause = typeof payload.root_cause === 'string' ? payload.root_cause : null;
+  const fixPreview = typeof payload.fix_preview === 'string' ? payload.fix_preview : null;
+  const dep = typeof payload.dependency_resolution === 'string' ? payload.dependency_resolution : null;
+  if (!symptom && !rootCause && !fixPreview && !dep) return null;
+
+  const rows: { label: string; color: string; text: string }[] = [
+    ...(symptom ? [{ label: 'Symptom', color: 'text-red-700', text: symptom }] : []),
+    ...(rootCause ? [{ label: 'Root cause', color: 'text-amber-700', text: rootCause }] : []),
+    ...(fixPreview ? [{ label: 'Fix on approve', color: 'text-emerald-700', text: fixPreview }] : []),
+    ...(dep ? [{ label: 'Dependencies', color: 'text-violet-700', text: dep }] : []),
+  ];
+
+  return (
+    <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2">
+      <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold">
+        Decision context
+      </div>
+      {rows.map((r) => (
+        <div key={r.label} className="flex items-start gap-2">
+          <span className={`text-[10px] font-semibold uppercase tracking-wide shrink-0 w-24 pt-0.5 ${r.color}`}>
+            {r.label}
+          </span>
+          <span className="text-xs text-slate-700 leading-snug">{r.text}</span>
+        </div>
+      ))}
     </div>
   );
 }
