@@ -1,23 +1,22 @@
 // BlockingChips — inline "what's blocking" chip strip for /admin/catalog rows.
-// v1 | 2026-05-28 | Job_PM Catalog Ship 1 [V8 SHADOW]
+// v2 | 2026-05-28 | Job_PM Catalog Ship 1 + v2.2 amendment [V8 SHADOW]
 //
-// Renders chips for failing BLOCKING-tier gates only (lean v2.1 set per
-// kb/projects/perfect_inventory_bar.md). Drops perfect-gap + publishable-gap
-// gates — the chip strip is "what blocks publishing", nothing else.
+// Renders chips for failing BLOCKING-tier gates per perfect_inventory_bar v2.2:
+//   pricing  (red)   — missing_cost_source, price_zero
+//   trust    (amber) — missing_image, missing_unit, missing_vendor_name
 //
-// Categories (chip color):
-//   pricing      (red)   — missing_cost_source, price_zero
-//   trust        (amber) — missing_image, missing_unit, missing_vendor_name
-//   fulfillment  (blue)  — t2_outside_5d_window, t3_outside_14d_window,
-//                          missing_arrival_date
+// FULFILLMENT GATES DROPPED (v2.2, Facu 2026-05-28): the lead_time family
+// (t2_outside_5d_window / t3_outside_14d_window / missing_arrival_date) is
+// NO LONGER a blocking-publish gate. T2/T3 publishability is on tier +
+// commitment + basics; arrival_date is informational only (vendor's expected
+// delivery, useful for follow-up when stale, NOT a publish blocker). Stale
+// arrival now surfaces as a small inline informational hint, not a chip.
 //
-// catalog-model.ts folds the three lead_time gates into a single 'lead_time'
-// entry in failed_gates (so the weight bucket sums correctly). We re-derive the
-// specific failing lead-time gate here from sku.tier + sku.arrival_date + today
-// so the chip points at the right edit form.
+// catalog_quality_weights.evaluated=false for those 4 gates (lead_time +
+// 3 variants) so the classifier no longer treats them as blockers either.
 //
-// Click → opens InlineEditPanel (client component). Server component itself —
-// no useState / useEffect — gate derivation runs at render time on the server.
+// Click chip → opens InlineEditPanel (client component). Server component
+// itself — no useState / useEffect — gate derivation runs at render time.
 //
 // RACI: read-only computation off CatalogV2Row + raw mirror image state. No
 // writes from this component. Writes happen in /api/admin/catalog/inline-edit.
@@ -26,10 +25,10 @@ import type { CatalogV2Row } from '@/lib/admin/catalog-model';
 import InlineEditPanel from './InlineEditPanel';
 
 // ---------------------------------------------------------------------------
-// Lean v2.1 blocking gate set + per-gate chip metadata
+// Lean v2.2 blocking gate set + per-gate chip metadata
 // ---------------------------------------------------------------------------
 
-export type ChipCategory = 'pricing' | 'trust' | 'fulfillment';
+export type ChipCategory = 'pricing' | 'trust';
 
 export type GateId =
   | 'missing_cost_source'
@@ -37,18 +36,13 @@ export type GateId =
   | 'missing_image'
   | 'missing_unit'
   | 'missing_vendor_name'
-  | 'missing_contents_description'
-  | 't2_outside_5d_window'
-  | 't3_outside_14d_window'
-  | 'missing_arrival_date';
+  | 'missing_contents_description';
 
 export interface ChipDescriptor {
   gate_id: GateId;
   category: ChipCategory;
   short_label: string;
-  // Field on floropolis_inventory_mirror the InlineEditPanel will UPDATE.
   target_field: string;
-  // Current value (read-only context) shown at the top of the edit form.
   before_value: string | number | null;
 }
 
@@ -59,9 +53,6 @@ const CHIP_LABEL: Record<GateId, string> = {
   missing_unit: 'unit missing',
   missing_vendor_name: 'vendor missing',
   missing_contents_description: 'contents missing',
-  t2_outside_5d_window: 'T2 outside 5–180d',
-  t3_outside_14d_window: 'T3 outside 14–180d',
-  missing_arrival_date: 'arrival_date missing',
 };
 
 const CHIP_CATEGORY: Record<GateId, ChipCategory> = {
@@ -71,12 +62,8 @@ const CHIP_CATEGORY: Record<GateId, ChipCategory> = {
   missing_unit: 'trust',
   missing_vendor_name: 'trust',
   missing_contents_description: 'trust',
-  t2_outside_5d_window: 'fulfillment',
-  t3_outside_14d_window: 'fulfillment',
-  missing_arrival_date: 'fulfillment',
 };
 
-// Mirror field the inline edit writes to (single source of truth for executor).
 const CHIP_TARGET_FIELD: Record<GateId, string> = {
   missing_cost_source: 'cost_source',
   price_zero: 'price',
@@ -84,39 +71,25 @@ const CHIP_TARGET_FIELD: Record<GateId, string> = {
   missing_unit: 'unit',
   missing_vendor_name: 'vendor',
   missing_contents_description: 'contents_note',
-  t2_outside_5d_window: 'arrival_date',
-  t3_outside_14d_window: 'arrival_date',
-  missing_arrival_date: 'arrival_date',
 };
 
 const BLOCKING_GATE_SET = new Set<string>(Object.keys(CHIP_LABEL));
 
 // ---------------------------------------------------------------------------
-// Derive failing blocking gates from CatalogV2Row
+// Stale arrival_date detector — informational ONLY (not a chip).
+// Per v2.2: T2/T3 commitment IS the publish signal. Arrival_date being
+// outside the tier window means the vendor's expected delivery is stale,
+// useful as a follow-up signal but NOT a publish blocker.
 // ---------------------------------------------------------------------------
-
-/**
- * Un-fold the lead_time bucket back to the specific gate that fired.
- * catalog-model.ts (line ~439) folds t2_outside_5d_window / t3_outside_14d_window /
- * missing_arrival_date into a single 'lead_time' entry on failed_gates. We need
- * to know which one actually fired so the chip + InlineEditPanel target the
- * right field. Re-derivation matches Rose's classifier logic:
- *   - tier T2: window is 5–180 days from today (spec v2.1 §2.1)
- *   - tier T3: window is 14–180 days
- *   - no arrival_date set → missing_arrival_date
- */
-function unfoldLeadTime(sku: CatalogV2Row, todayMs: number): GateId | null {
-  if (!sku.arrival_date) return 'missing_arrival_date';
+function staleArrivalLabel(sku: CatalogV2Row, todayMs: number): string | null {
+  if (!sku.arrival_date) return null;
   const arrMs = new Date(sku.arrival_date + 'T00:00:00').getTime();
-  if (!Number.isFinite(arrMs)) return 'missing_arrival_date';
+  if (!Number.isFinite(arrMs)) return null;
   const days = Math.round((arrMs - todayMs) / 86400000);
   const tier = (sku.tier || '').toUpperCase();
-  if (tier === 'T2') {
-    if (days < 5 || days > 180) return 't2_outside_5d_window';
-  } else if (tier === 'T3') {
-    if (days < 14 || days > 180) return 't3_outside_14d_window';
-  }
-  return null; // lead_time was in failed_gates but row no longer outside window
+  if (tier === 'T2' && (days < 5 || days > 180)) return sku.arrival_date;
+  if (tier === 'T3' && (days < 14 || days > 180)) return sku.arrival_date;
+  return null;
 }
 
 export interface BlockingChipsProps {
@@ -136,7 +109,7 @@ export default function BlockingChips({ sku, images, contents_note }: BlockingCh
   })();
 
   // Build chip descriptors from failed_gates (filtered to blocking lean set)
-  // + raw row-state derivations (price_zero, missing_image, missing_unit, etc.).
+  // + raw row-state derivations.
   const chips: ChipDescriptor[] = [];
   const seen = new Set<GateId>();
 
@@ -152,17 +125,12 @@ export default function BlockingChips({ sku, images, contents_note }: BlockingCh
     });
   }
 
-  // 1. Walk the classifier's failed_gates (the source of truth Rose validates).
-  //    Filter to blocking lean set; unfold lead_time.
+  // 1. Walk the classifier's failed_gates (source of truth Rose validates).
+  //    Filter to v2.2 blocking lean set. lead_time and its variants are now
+  //    diagnostic-only and never appear as chips.
   for (const fg of sku.failed_gates) {
-    if (fg.gate_id === 'lead_time') {
-      const specific = unfoldLeadTime(sku, todayMs);
-      if (specific) pushChip(specific, sku.arrival_date ?? null);
-      continue;
-    }
     if (BLOCKING_GATE_SET.has(fg.gate_id)) {
       const gid = fg.gate_id as GateId;
-      // Derive before_value per gate from row state.
       let before: string | number | null = null;
       switch (gid) {
         case 'missing_cost_source':
@@ -183,9 +151,6 @@ export default function BlockingChips({ sku, images, contents_note }: BlockingCh
         case 'missing_contents_description':
           before = contents_note;
           break;
-        case 'missing_arrival_date':
-          before = sku.arrival_date ?? null;
-          break;
         default:
           before = null;
       }
@@ -194,7 +159,7 @@ export default function BlockingChips({ sku, images, contents_note }: BlockingCh
   }
 
   // 2. Safety-net derivations off raw row state — fire even when the classifier
-  //    hasn't caught up. These mirror the lean v2.1 blocking-gate definitions
+  //    hasn't caught up. These mirror the lean v2.2 blocking-gate definitions
   //    so the chip strip is honest about what's blocking publish RIGHT NOW.
   if (!sku.cost_source || sku.cost_source.trim() === '') {
     pushChip('missing_cost_source', sku.cost_source ?? null);
@@ -212,7 +177,30 @@ export default function BlockingChips({ sku, images, contents_note }: BlockingCh
     pushChip('missing_vendor_name', sku.vendor || null);
   }
 
-  if (chips.length === 0) return null;
+  // 3. Informational only: stale arrival_date hint (v2.2 — NOT a blocker).
+  const staleArrival = staleArrivalLabel(sku, todayMs);
 
-  return <InlineEditPanel sku_id={sku.id} sku_name={sku.name} sku_vendor={sku.vendor} sku_status={sku.publication_status} chips={chips} />;
+  if (chips.length === 0 && !staleArrival) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {chips.length > 0 && (
+        <InlineEditPanel
+          sku_id={sku.id}
+          sku_name={sku.name}
+          sku_vendor={sku.vendor}
+          sku_status={sku.publication_status}
+          chips={chips}
+        />
+      )}
+      {staleArrival && (
+        <span
+          className="text-[10px] italic text-slate-400 ml-1"
+          title="Informational only — vendor's expected delivery is outside the tier commitment window. T2/T3 publishability is on tier + commitment, not on arrival_date. Vendor follow-up suggested."
+        >
+          arrival {staleArrival} stale
+        </span>
+      )}
+    </div>
+  );
 }

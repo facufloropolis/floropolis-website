@@ -29,14 +29,13 @@ import type { ChipCategory, ChipDescriptor, GateId } from './BlockingChips';
 const CHIP_CLS: Record<ChipCategory, string> = {
   pricing: 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100',
   trust: 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100',
-  fulfillment: 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100',
 };
 
 // ---------------------------------------------------------------------------
 // Per-gate input config — drives the form field rendered inside the modal
 // ---------------------------------------------------------------------------
 
-type InputKind = 'text' | 'url' | 'select_unit' | 'date' | 'price' | 'textarea';
+type InputKind = 'text' | 'url' | 'select_unit' | 'price' | 'textarea';
 
 const INPUT_KIND: Record<GateId, InputKind> = {
   missing_cost_source: 'text',
@@ -45,9 +44,6 @@ const INPUT_KIND: Record<GateId, InputKind> = {
   missing_unit: 'select_unit',
   missing_vendor_name: 'text',
   missing_contents_description: 'textarea',
-  t2_outside_5d_window: 'date',
-  t3_outside_14d_window: 'date',
-  missing_arrival_date: 'date',
 };
 
 const INPUT_LABEL: Record<GateId, string> = {
@@ -57,9 +53,6 @@ const INPUT_LABEL: Record<GateId, string> = {
   missing_unit: 'Unit',
   missing_vendor_name: 'Vendor name',
   missing_contents_description: 'Contents description',
-  t2_outside_5d_window: 'Arrival date',
-  t3_outside_14d_window: 'Arrival date',
-  missing_arrival_date: 'Arrival date',
 };
 
 const INPUT_PLACEHOLDER: Record<GateId, string> = {
@@ -69,9 +62,6 @@ const INPUT_PLACEHOLDER: Record<GateId, string> = {
   missing_unit: '',
   missing_vendor_name: 'Vendor name as it should appear on PDP',
   missing_contents_description: 'What\'s in the box (variety, length, count)',
-  t2_outside_5d_window: '',
-  t3_outside_14d_window: '',
-  missing_arrival_date: '',
 };
 
 // ---------------------------------------------------------------------------
@@ -372,17 +362,6 @@ function renderInput(
         <option value="Bunch">Bunch</option>
         <option value="Box">Box</option>
       </select>
-    );
-  }
-  if (kind === 'date') {
-    return (
-      <input
-        id="inline-edit-after"
-        type="date"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={common}
-      />
     );
   }
   if (kind === 'price') {
