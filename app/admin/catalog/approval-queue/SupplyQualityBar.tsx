@@ -298,6 +298,20 @@ export default function SupplyQualityBar({
 
       {/* Track record row — below the grid */}
       <HistoricalMetricsSection metrics={historicalMetrics} />
+
+      {/* Data plane status footer note — Facu directive 2026-05-27 */}
+      <div className="mt-3 pt-2 border-t border-slate-100 text-[10px] text-slate-500 flex items-center gap-1.5">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+        <span>
+          5 data dependencies pending —{' '}
+          <a
+            href="/admin#data-plane-status"
+            className="text-emerald-700 hover:underline font-medium"
+          >
+            see /admin Data Plane Status
+          </a>
+        </span>
+      </div>
     </div>
   );
 }

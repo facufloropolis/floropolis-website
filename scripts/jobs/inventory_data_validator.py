@@ -661,8 +661,12 @@ def classify_row(row: dict, validate_result: dict) -> dict:
     gate_score = max(0, min(len(EVALUATED_GATE_IDS), len(EVALUATED_GATE_IDS) - len(failing_evaluated)))
 
     # Status routing — 3 tiers from catalog_quality_weights.tier (loaded at startup).
-    # stock_live_mismatch is an informational signal; it doesn't affect publication status.
-    actionable = [g for g in failing if g != "stock_live_mismatch"]
+    # Per Facu directive 2026-05-27 (LIVING perfect_inventory_bar v2): only gates
+    # marked evaluated=true in catalog_quality_weights affect status. Dropped gates
+    # (formula_deviation, margin_unknown, open_price_alert, stock_live_mismatch)
+    # are still appended to failing[] for diagnostic visibility but do NOT block,
+    # do NOT prevent "perfect", and do NOT reduce gate_score.
+    actionable = failing_evaluated
     if not actionable:
         status = "perfect"
     elif any(GATE_TIERS.get(g, "publishable_gap") == "blocking" for g in actionable):

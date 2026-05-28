@@ -22,6 +22,7 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 import AdminTodayPanel from './_components/AdminTodayPanel';
 import AdminCatalogHealthPanel from './_components/AdminCatalogHealthPanel';
 import AdminRecentActivity from './_components/AdminRecentActivity';
+import DataPlaneStatusPanel from './_components/DataPlaneStatusPanel';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -64,6 +65,9 @@ export default async function AdminIndexPage() {
           <h1 className="text-2xl font-bold text-slate-900 mb-1">Today</h1>
           <p className="text-sm text-slate-500">What needs you, ranked by priority.</p>
         </div>
+
+        {/* Data plane status — what's NOT yet connected (Facu directive 2026-05-27) */}
+        <DataPlaneStatusPanel />
 
         <div className="grid grid-cols-12 gap-4">
           {/* Today panel (left ~2/3) */}

@@ -35,6 +35,7 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 import { GATE_LABELS } from '@/lib/catalog-gates';
 import { lookupImportanceScore, FEATURED_SCORE_SEED } from '@/lib/admin/featured-scores-seed';
 import DetailActionPanel from '@/app/admin/_components/DetailActionPanel';
+import PendingBadge from '@/app/admin/_components/PendingBadge';
 
 import {
   AdminActions,
@@ -516,6 +517,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                 {qfid ?? '(null)'} . units_per_box:{' '}
                 {mirror?.units_per_box ?? '-'}
               </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                <PendingBadge label="box dims: vendor-scoped pending" />
+                <PendingBadge label="live API feed pending — using stale flag" />
+              </div>
               {cls && (
                 <p className="text-xs text-slate-500 mt-2">
                   Last validated {fmtDate(cls.last_validated_at)} . Last
@@ -681,6 +686,10 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           title="Cost breakdown"
           subtitle={`Rose's formula -- transparent calc per stem (origin: ${breakdown?.origin ?? 'unknown'})`}
         >
+          <div className="mb-3 flex flex-wrap items-center gap-1.5">
+            <PendingBadge label="country pricing pending" title="GPM / FedEx / fuel constants are global today — country-scoped split pending Rose schema migration" />
+            <PendingBadge label="vendor-scoped box dims pending" title="box_master is global per box_type today — per-vendor box dims pending Rose schema migration" />
+          </div>
           {!mirror ? (
             <p className="text-xs text-slate-500 italic">
               No mirror row to compute against.
