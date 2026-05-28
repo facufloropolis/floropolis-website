@@ -1,23 +1,25 @@
-# Daily funnel report -- only deliverable per Nahua rule for next 2 weeks
-# v1 | 2026-05-17 | Job_PM [V8 SHADOW]
+# Weekly funnel digest -- D0 cron per master_plan.md KPI #2
+# v2 | 2026-05-28 | Job_PM [V8 SHADOW]
 #
-# Pulls Supabase funnel metrics + experiment deltas + emails to faculavino@gmail.com.
-# If SMTP secrets aren't set, prints to workflow log only (no email).
+# Pulls Supabase funnel metrics (L7/P7) + experiment deltas + emails to faculavino@gmail.com.
+# Runs Monday 06:00 PDT (13:00 UTC). If BREVO_API_KEY not set, prints to log only.
 #
-# Required secrets (in addition to D0's SUPABASE_URL + SUPABASE_SERVICE_KEY):
-#   BREVO_API_KEY -- pulled from existing Vercel env (Facu has had Brevo for marketing 67d+)
+# Required secrets:
+#   SUPABASE_URL         -- main project: https://swhglnjyuorkycpgkmec.supabase.co
+#   SUPABASE_SERVICE_KEY -- service role key for main project (or anon key -- execute_sql is public)
+#   BREVO_API_KEY        -- Brevo transactional API key (from Vercel env)
 #
 # Optional secrets:
 #   REPORT_TO        -- recipient (default: faculavino@gmail.com)
 #   REPORT_FROM      -- sender email (default: facu@floropolis.com -- must be verified in Brevo)
 #   REPORT_FROM_NAME -- sender display name (default: "Floropolis BI")
 
-name: Funnel daily
+name: Funnel weekly digest
 
 on:
   schedule:
-    # Daily at 13:00 UTC = 06:00 PDT
-    - cron: '0 13 * * *'
+    # Every Monday at 13:00 UTC = 06:00 PDT
+    - cron: '0 13 * * 1'
   workflow_dispatch:
 
 jobs:
