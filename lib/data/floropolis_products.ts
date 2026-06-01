@@ -1,6 +1,6 @@
 /**
  * Auto-generated product catalog from Supabase floropolis_inventory.
- * Generated: 2026-05-28T18:57:34.431Z
+ * Generated: 2026-06-01T19:00:04.557Z
  * Total products: 195
  * Tiers: {"T3":195}
  *
@@ -1183,7 +1183,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": "QB: 10 bunches × 10 stems = 100 stems",
-    "available_from": "2026-06-03"
+    "available_from": "2026-06-07"
   },
   {
     "id": 7248,
@@ -1338,7 +1338,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 10 bunches × 10 stems = 100 stems",
-    "available_from": "2026-06-03"
+    "available_from": "2026-06-07"
   },
   {
     "id": 7253,
@@ -4128,7 +4128,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-03"
+    "available_from": "2026-06-07"
   },
   {
     "id": 7520,
@@ -5120,7 +5120,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-03"
+    "available_from": "2026-06-07"
   },
   {
     "id": 7596,
