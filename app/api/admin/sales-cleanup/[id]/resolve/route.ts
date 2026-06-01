@@ -1,9 +1,13 @@
 // POST /api/admin/sales-cleanup/[id]/resolve
-// v2 | 2026-05-22 | Job_PM [V8 SHADOW]
+// v3 | 2026-05-29 | Codex safety lock
 //
 // Calls public.sales_cleanup_resolve RPC (deployed 2026-05-22).
-// Auth: ADMIN_EMAILS. Both Facu and JJ can resolve (full admin, per Facu 2026-05-22).
-// User email passed explicitly to RPC since service-role JWT has no user email.
+// Auth: Facu-only for write path.
+//
+// Phase-0 lock (catalog priority): this PROD write path is disabled by default.
+// To enable explicitly:
+//   ENABLE_PROD_SALES_CLEANUP_RESOLVE=true
+// and actor email must be facu@floropolis.com.
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,12 +16,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getProdReadClient } from '@/lib/supabase/prod-server';
 
-const ADMIN_EMAILS = [
-  'facu@floropolis.com',
-  'jjpj@crescoinversiones.com',
-  'jjpj@floropolis.com',
-  'jjp@floropolis.com',
-];
+const FACU_EMAIL = 'facu@floropolis.com';
 
 export async function POST(
   req: NextRequest,
@@ -27,8 +26,23 @@ export async function POST(
 
   const userClient = await createUserClient();
   const { data: { user } } = await userClient.auth.getUser();
-  if (!user?.email || !ADMIN_EMAILS.includes(user.email.toLowerCase())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  const actorEmail = user?.email?.toLowerCase() ?? '';
+
+  if (actorEmail !== FACU_EMAIL) {
+    return NextResponse.json(
+      { error: `Unauthorized. Only ${FACU_EMAIL} can execute this PROD write.` },
+      { status: 403 },
+    );
+  }
+
+  const enabled = (process.env.ENABLE_PROD_SALES_CLEANUP_RESOLVE ?? '').toLowerCase() === 'true';
+  if (!enabled) {
+    return NextResponse.json(
+      {
+        error: 'sales-cleanup resolve is locked (catalog priority mode). Set ENABLE_PROD_SALES_CLEANUP_RESOLVE=true to unlock explicitly.',
+      },
+      { status: 423 },
+    );
   }
 
   const prod = getProdReadClient();
@@ -60,7 +74,7 @@ export async function POST(
     p_id: id,
     p_action: body.resolution_action,
     p_note: body.resolution_note ?? null,
-    p_user_email: user.email,
+    p_user_email: actorEmail,
     p_apply_pattern: body.apply_as_pattern ?? null,
   });
 
