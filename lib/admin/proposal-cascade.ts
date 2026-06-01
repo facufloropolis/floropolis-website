@@ -17,7 +17,13 @@
 // (which is owned by another agent and we are blocked from touching during Phase C).
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getProdReadClient } from '@/lib/supabase/prod-server';
+// 2026-06-01: removed `getProdReadClient` import. Per Facu directive 2026-05-31
+// (inbox 59f5b8db) — BACKUP(Sandbox) → PROD = NUNCA writes, and BACKUP deps on
+// PROD must be minimized. Verifier confirmed there were no PROD writes in this
+// file (only reads). Reads are now switched to BACKUP equivalents post catalog
+// rebuild S-0: canonical_cost lives in BACKUP with sku_id uuid FK, and live
+// counts come from floropolis_inventory_mirror (BACKUP) — sync cadence is
+// Cleanup workstream lane.
 
 export interface CascadeSummary {
   affected_sku_count: number;
@@ -167,9 +173,11 @@ export async function computeCascadeSummary(
   }
 
   // ----- canonical_cost: approve / reject / delete -----------------------
-  // Rose v1.0 cascade (inbox 2026-05-20 00:10Z): join canonical_cost_sku_link
-  // to floropolis_inventory on PROD project. PostgREST doesn't do COUNT(DISTINCT)
-  // cleanly so we fetch sku_id list + headcount the live rows separately.
+  // 2026-06-01: switched from PROD canonical_cost_sku_link + floropolis_inventory
+  // to BACKUP canonical_cost.sku_id (uuid FK, backfilled per catalog rebuild S-0)
+  // + floropolis_inventory_mirror (note: mirror sync cadence is Cleanup lane).
+  // Semantics changed: BACKUP canonical_cost has 1-to-1 sku_id FK (vs PROD's
+  // many-to-many sku_link table). Cascade impact is now 0 or 1 SKU per cost row.
   if (
     t === 'approve_cost_row' ||
     t === 'reject_cost_row' ||
@@ -178,39 +186,41 @@ export async function computeCascadeSummary(
     const costId =
       (input.payload.cost_id as number | string | undefined) ?? input.target_id;
     if (costId == null) return empty('missing cost_id in payload + target_id');
-    const prod = getProdReadClient();
-    if (!prod) return empty('prod_supabase_unset — set PROD_SUPABASE_SERVICE_KEY in Vercel');
 
-    const { data: links, error: linkErr } = await prod
-      .from('canonical_cost_sku_link')
+    const { data: costRow, error: costErr } = await service
+      .from('canonical_cost')
       .select('sku_id')
-      .eq('cost_id', costId);
-    if (linkErr) return empty(`link_query_failed: ${linkErr.message}`);
-    const skuIds = (links ?? [])
-      .map((r) => (r as { sku_id?: number | null }).sku_id)
-      .filter((v): v is number => typeof v === 'number');
+      .eq('id', costId)
+      .maybeSingle();
+    if (costErr) return empty(`canonical_cost_query_failed: ${costErr.message}`);
 
-    let liveCount = 0;
-    if (skuIds.length > 0) {
-      const { count, error: invErr } = await prod
-        .from('floropolis_inventory')
-        .select('id', { count: 'exact', head: true })
-        .in('id', skuIds)
-        .eq('live', true);
-      if (invErr) return empty(`inventory_count_failed: ${invErr.message}`);
-      liveCount = count ?? 0;
+    const linkedSkuId = (costRow as { sku_id?: string | null } | null)?.sku_id ?? null;
+    if (!linkedSkuId) {
+      return {
+        affected_sku_count: 0,
+        affected_skus_sample: [],
+        warnings: ['no linked SKU (canonical_cost.sku_id is NULL — likely PRELIMINARY row)'],
+        computed_at,
+        computed_by: COMPUTED_BY,
+      };
     }
 
+    const { count: liveCount, error: invErr } = await service
+      .from('floropolis_inventory_mirror')
+      .select('id', { count: 'exact', head: true })
+      .eq('id', linkedSkuId)
+      .eq('live', true);
+    if (invErr) return empty(`mirror_count_failed: ${invErr.message}`);
+
     const warnings: string[] = [];
-    if (skuIds.length === 0) warnings.push('no linked SKUs (likely PRELIMINARY cost row with sku_id=null)');
-    if (liveCount > 0) warnings.push(`${liveCount} live inventory rows`);
-    if (t === 'delete_cost_row' && skuIds.length > 0) {
-      warnings.push(`WARN: deleting cost with ${skuIds.length} linked SKUs`);
+    if ((liveCount ?? 0) > 0) warnings.push(`${liveCount} live row in mirror (note: mirror sync cadence may be stale — Cleanup lane)`);
+    if (t === 'delete_cost_row' && linkedSkuId) {
+      warnings.push(`WARN: deleting cost linked to SKU ${linkedSkuId}`);
     }
 
     return {
-      affected_sku_count: skuIds.length,
-      affected_skus_sample: skuIds.slice(0, 10),
+      affected_sku_count: 1,
+      affected_skus_sample: [linkedSkuId],
       warnings,
       computed_at,
       computed_by: COMPUTED_BY,
@@ -218,8 +228,8 @@ export async function computeCascadeSummary(
   }
 
   // ----- canonical_cost: resolve_conflict --------------------------------
-  // Two conflicting cost_ids come in payload.before_cost_id + after_cost_id
-  // (or payload.cost_ids[]). Show linked + live count per side so Facu picks.
+  // 2026-06-01: same migration as above. Each cost_id resolves to 0 or 1 sku
+  // via BACKUP canonical_cost.sku_id FK. Live count from floropolis_inventory_mirror.
   if (t === 'resolve_conflict') {
     const beforeId = input.payload.before_cost_id as number | undefined;
     const afterId = input.payload.after_cost_id as number | undefined;
@@ -229,36 +239,35 @@ export async function computeCascadeSummary(
       : [beforeId, afterId].filter((v): v is number => typeof v === 'number');
     if (ids.length < 2) return empty('missing both cost_ids for conflict');
 
-    const prod = getProdReadClient();
-    if (!prod) return empty('prod_supabase_unset — set PROD_SUPABASE_SERVICE_KEY in Vercel');
-
-    const perSide: Array<{ cost_id: number; linked: number; live: number }> = [];
+    const perSide: Array<{ cost_id: number; linked: number; live: number; sku_id: string | null }> = [];
     for (const id of ids) {
-      const { data: links, error: linkErr } = await prod
-        .from('canonical_cost_sku_link')
+      const { data: costRow, error: costErr } = await service
+        .from('canonical_cost')
         .select('sku_id')
-        .eq('cost_id', id);
-      if (linkErr) return empty(`link_query_failed cost_id=${id}: ${linkErr.message}`);
-      const skuIds = (links ?? [])
-        .map((r) => (r as { sku_id?: number | null }).sku_id)
-        .filter((v): v is number => typeof v === 'number');
+        .eq('id', id)
+        .maybeSingle();
+      if (costErr) return empty(`canonical_cost_query_failed cost_id=${id}: ${costErr.message}`);
+      const skuId = (costRow as { sku_id?: string | null } | null)?.sku_id ?? null;
+
       let live = 0;
-      if (skuIds.length > 0) {
-        const { count } = await prod
-          .from('floropolis_inventory')
+      if (skuId) {
+        const { count } = await service
+          .from('floropolis_inventory_mirror')
           .select('id', { count: 'exact', head: true })
-          .in('id', skuIds)
+          .eq('id', skuId)
           .eq('live', true);
         live = count ?? 0;
       }
-      perSide.push({ cost_id: id, linked: skuIds.length, live });
+      perSide.push({ cost_id: id, linked: skuId ? 1 : 0, live, sku_id: skuId });
     }
 
     const total = perSide.reduce((s, r) => s + r.linked, 0);
     return {
       affected_sku_count: total,
-      affected_skus_sample: [],
-      warnings: perSide.map((r) => `cost_id=${r.cost_id}: ${r.linked} linked SKU(s), ${r.live} live`),
+      affected_skus_sample: perSide
+        .map((r) => r.sku_id)
+        .filter((s): s is string => s !== null),
+      warnings: perSide.map((r) => `cost_id=${r.cost_id}: ${r.linked} linked SKU, ${r.live} live (mirror)`),
       computed_at,
       computed_by: COMPUTED_BY,
     };
