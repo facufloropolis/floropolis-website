@@ -41,6 +41,11 @@ jobs:
       - name: TypeScript check (J.4 -- BLOCKING)
         run: npx tsc --noEmit
 
+      - name: PROD write boundary (admin_backup Phase 0 -- BLOCKING, DECISION_LOCK_003)
+        # Guard contra regresiones: ningún path de /admin puede escribir a PROD.
+        # Stdlib-only, ya PASS en main (2026-06-01). Un fail = un write a PROD reintroducido.
+        run: python3 scripts/verify_prod_write_boundary.py
+
       - name: ESLint (J.4 -- WARNING for first run until local install issue verified)
         continue-on-error: true
         run: npm run lint
