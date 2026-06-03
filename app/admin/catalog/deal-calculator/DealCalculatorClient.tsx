@@ -24,7 +24,7 @@ import { useMemo, useState } from 'react';
 // ---------------------------------------------------------------------------
 
 export interface DealSku {
-  id: number;
+  id: string;
   name: string;
   vendor: string;
   tier: string;
@@ -52,7 +52,7 @@ export interface DealConstants {
 
 interface DealLine {
   // skuId is unique per line — Add-line on the same SKU twice is blocked.
-  skuId: number;
+  skuId: string;
   qty: number;
   // null = use formula_price; number = explicit override (can be < cost).
   enteredPrice: number | null;
@@ -126,7 +126,7 @@ export default function DealCalculatorClient({
 
   // SKU-by-id lookup (used by every line) -------------------------------
   const skuById = useMemo(() => {
-    const m = new Map<number, DealSku>();
+    const m = new Map<string, DealSku>();
     for (const s of skus) m.set(s.id, s);
     return m;
   }, [skus]);
@@ -145,7 +145,7 @@ export default function DealCalculatorClient({
       .slice(0, 12); // keep the dropdown short
   }, [search, skus, lines]);
 
-  function addLine(skuId: number) {
+  function addLine(skuId: string) {
     setLines((cur) => {
       if (cur.some((l) => l.skuId === skuId)) return cur;
       return [...cur, { skuId, qty: 1, enteredPrice: null }];
@@ -153,11 +153,11 @@ export default function DealCalculatorClient({
     setSearch('');
   }
 
-  function removeLine(skuId: number) {
+  function removeLine(skuId: string) {
     setLines((cur) => cur.filter((l) => l.skuId !== skuId));
   }
 
-  function setQty(skuId: number, qty: number) {
+  function setQty(skuId: string, qty: number) {
     setLines((cur) =>
       cur.map((l) =>
         l.skuId === skuId
@@ -167,7 +167,7 @@ export default function DealCalculatorClient({
     );
   }
 
-  function setEntered(skuId: number, raw: string) {
+  function setEntered(skuId: string, raw: string) {
     setLines((cur) =>
       cur.map((l) => {
         if (l.skuId !== skuId) return l;

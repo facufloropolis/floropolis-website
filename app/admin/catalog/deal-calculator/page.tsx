@@ -151,8 +151,8 @@ export default async function AdminDealCalculatorPage() {
       // SKU is unusable without farm_cost (defensive — query already filters it).
       if (farm_cost == null) return null;
       const sku: DealSku = {
-        id: r.id,
-        name: r.name ?? `#${r.id}`,
+        id: r.sku_id,
+        name: r.name ?? `#${r.sku_id}`,
         vendor: r.vendor ?? '',
         tier: r.tier ?? '',
         variety: r.variety ?? '',
