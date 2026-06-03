@@ -52,12 +52,17 @@
 //     - cost_source ILIKE '%_k2k_%' AND live=true  -> K2K live
 //   De-dupe by SKU id (the same row can satisfy multiple buckets).
 //
-// quality_score:
-//   sum(weight WHERE gate is PASSING) -- 0..100.
-//   When validator emits a failing_gate, that gate's weight is SUBTRACTED.
-//   Gates with evaluated=false in the weights table are PRESUMED PASSING today
-//   (we don't have data to fail them on); their weight still counts toward 100
-//   so the perfect threshold remains correctly calibrated.
+// quality_score (charter-approved normalization; /admin/catalog/config states
+//   "Every other gate affects score only"):
+//   = 100 × (earned active non-blocking weight) / (total active non-blocking weight),
+//   where active = evaluated=true AND tier != 'blocking'.
+//   - BLOCKING-tier gates contribute ZERO to the score: they are binary publish
+//     gates, and their weights are display-priority only (status, not score).
+//   - Placeholders (evaluated=false, the perfect_gap signals) are EXCLUDED from
+//     the denominator -- no auto-credit; they are simply not scored yet.
+//   - quality_score = null when total active non-blocking weight = 0
+//     (unscored ≠ broken). Weights stay data-driven from catalog_quality_weights;
+//     this module never hardcodes a weight value.
 //
 // status_band derives from quality_score:
 //   100: perfect
@@ -100,10 +105,10 @@ export interface QualityThresholdRow {
 }
 
 export interface ClassificationRow {
-  sku_id: string;
+  sku_id: string; // uuid (dim_sku.sku_id) since the 2026-06-03 re-key
   status: string;
   failing_gates: string[] | null;
-  gate_score: number;
+  blocking_gate_count: number; // # of failing BLOCKING gates (replaces deprecated 0-16 gate_score)
   vendor: string | null;
   tier: string | null;
   variety: string | null;
@@ -270,13 +275,6 @@ export function bandFor(score: number | null): StatusBand {
   return 'broken';
 }
 
-// Gate IDs that fold into the "lead_time" weight bucket (all three are blocking).
-const LEAD_TIME_GATE_IDS = new Set([
-  't2_outside_5d_window',
-  't3_outside_14d_window',
-  'missing_arrival_date',
-]);
-
 export function publicationStatusFor(
   failedGates: FailedGateDetail[],
   weightsByGate: Map<string, QualityWeightRow>,
@@ -428,47 +426,47 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
     const unevaluated_gate_ids: string[] = [];
 
     if (cls) {
-      // Normalize failing_gates -- can be jsonb array or null. Also includes
-      // formula_deviation_<pct> variants which we normalize back to base id.
+      // failing_gates is the current-spec gate vocabulary only (re-keyed +
+      // recomputed 2026-06-03): blocking + publishable_gap ids, no deprecated
+      // tokens, no perfect_gap placeholders. Take it verbatim -- no normalization.
       const rawFails = Array.isArray(cls.failing_gates) ? cls.failing_gates : [];
       const normalized = new Set<string>();
       for (const g of rawFails) {
-        if (typeof g !== 'string') continue;
-        if (g.startsWith('formula_deviation_')) normalized.add('formula_deviation');
-        else if (
-          g === 't2_outside_5d_window' ||
-          g === 't3_outside_14d_window' ||
-          g === 'missing_arrival_date'
-        ) {
-          // All three fold into the "lead_time" weight bucket.
-          normalized.add('lead_time');
-        } else {
-          normalized.add(g);
-        }
+        if (typeof g === 'string') normalized.add(g);
       }
 
-      let score = 0;
+      // Score = 100 × earned / total over the ACTIVE NON-BLOCKING weights
+      // (evaluated=true AND tier != 'blocking'). Blocking gates carry the publish
+      // decision, not the score, so they are excluded from both numerator and
+      // denominator. Unevaluated placeholders are excluded too (no auto-credit).
+      let activeNonBlockingTotal = 0;
+      let earnedNonBlocking = 0;
       for (const [gate_id, w] of weightsByGate.entries()) {
         if (!w.evaluated) {
+          // perfect_gap placeholders -- surfaced as "not yet scored", never credited.
           unevaluated_gate_ids.push(gate_id);
-          // Presumed passing -- credit the weight (perfect_min_score = 100 still attainable).
-          score += w.weight;
           continue;
         }
         if (normalized.has(gate_id)) {
-          // failing -- record detail, do NOT credit weight
+          // failing -- record detail (any tier), do NOT credit weight
           failed_gates.push({
             gate_id,
             display_label: w.display_label,
             weight: w.weight,
             category: w.category,
           });
-        } else {
-          score += w.weight;
         }
+        if (w.tier === 'blocking') continue; // weight is display-priority only
+        activeNonBlockingTotal += w.weight;
+        if (!normalized.has(gate_id)) earnedNonBlocking += w.weight;
       }
-      // Clamp 0..100 (the seed guarantees sum=100, but be defensive).
-      quality_score = Math.max(0, Math.min(100, score));
+      // null when nothing scorable is active (unscored ≠ broken). Otherwise
+      // normalize earned/total to 0..100. Weights are data-driven from
+      // catalog_quality_weights; no value is assumed here.
+      quality_score =
+        activeNonBlockingTotal > 0
+          ? Math.max(0, Math.min(100, (earnedNonBlocking / activeNonBlockingTotal) * 100))
+          : null;
       // Sort failures by weight desc -- most impactful first in the UI.
       failed_gates.sort((a, b) => b.weight - a.weight);
     }
@@ -628,8 +626,8 @@ export interface RecommendedAction {
 
 /**
  * Pick the single most impactful action for this row, based on the
- * highest-weight failed gate. Lead time + formula deviation route to
- * Rose escalation (data quality cycle); the others route to the SKU's
+ * highest-weight failed gate. Cost-source + box-dims route to Rose
+ * escalation (data quality cycle); the others route to the SKU's
  * /admin/catalog/[id] page where ProposeForms surface the relevant edit.
  */
 export function recommendAction(row: CatalogV2Row): RecommendedAction {
@@ -650,12 +648,8 @@ export function recommendAction(row: CatalogV2Row): RecommendedAction {
     };
   }
   const top = row.failed_gates[0];
-  // Gates Rose owns (data quality cycle).
+  // Gates Rose owns (data quality cycle). Current-spec ids only.
   const roseGates = new Set([
-    'formula_deviation',
-    'lead_time',
-    'open_price_alert',
-    'cost_unverified',
     'missing_cost_source',
     'missing_box_dims',
   ]);
