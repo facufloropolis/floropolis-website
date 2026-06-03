@@ -585,7 +585,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
             const allRows = mirror
               ? [
                   {
-                    id: mirror.id,
+                    sku_id: mirror.sku_id,
                     vendor: mirror.vendor,
                     color: (mirror as Record<string, unknown>).color as string | null,
                     farm_cost: mirror.farm_cost,
@@ -645,12 +645,12 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                       const isOutlier = cost != null && median != null && cost > median * 1.25;
                       const meta = getCostSourceMeta(s.cost_source ?? null);
                       return (
-                        <tr key={s.id} className={`border-t ${s.isThis ? 'border-slate-200 bg-emerald-50' : 'border-slate-100 hover:bg-slate-50'}`}>
+                        <tr key={s.sku_id} className={`border-t ${s.isThis ? 'border-slate-200 bg-emerald-50' : 'border-slate-100 hover:bg-slate-50'}`}>
                           <td className="px-2 py-1.5">
                             {s.isThis ? (
                               <span className="font-semibold text-emerald-800">{s.vendor ?? '-'} <span className="text-[10px] font-normal">(this SKU)</span></span>
                             ) : (
-                              <Link href={`/admin/catalog/${s.id}`} className="text-emerald-700 hover:underline">{s.vendor ?? '-'}</Link>
+                              <Link href={`/admin/catalog/${s.sku_id}`} className="text-emerald-700 hover:underline">{s.vendor ?? '-'}</Link>
                             )}
                           </td>
                           <td className="px-2 py-1.5 text-slate-600">{s.color ?? '—'}</td>
