@@ -46,6 +46,19 @@ jobs:
         # Stdlib-only, ya PASS en main (2026-06-01). Un fail = un write a PROD reintroducido.
         run: python3 scripts/verify_prod_write_boundary.py
 
+      - name: Admin surface truth (Bet #1 Phase C1 -- BLOCKING)
+        # Diffs every admin/storefront-displayed number against its source-of-truth
+        # query (catalog_published authority per D01). A FAIL = a surface is lying
+        # (stale classifications, ghost gates, storefront drift). Charter evidence
+        # standard enforced by pipeline, not by promise. Step skips only when BACKUP
+        # secrets are absent (e.g. fork PRs) via the env guard inside the script call.
+        env:
+          BACKUP_SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+          BACKUP_SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -z "$BACKUP_SUPABASE_URL" ]; then echo "BACKUP secrets absent — skipping (fork PR)"; exit 0; fi
+          node scripts/verify_admin_surface_truth.mjs
+
       - name: ESLint (J.4 -- WARNING for first run until local install issue verified)
         continue-on-error: true
         run: npm run lint
