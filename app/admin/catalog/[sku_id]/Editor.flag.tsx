@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface FlagToggleProps {
-  skuId: number;
+  skuId: string;
   field: 'is_on_deal' | 'is_best_seller' | 'is_featured';
   value: boolean;
 }
