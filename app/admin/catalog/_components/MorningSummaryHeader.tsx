@@ -169,7 +169,7 @@ async function fetchTopSellers(
       .in('orders.status', ['paid', 'fulfilled']);
     if (error || !data) return null;
     const byId = new Map<number, TopSellerRow>();
-    const classBySku = new Map<number, string | null>();
+    const classBySku = new Map<string, string | null>();
     for (const c of classifications) classBySku.set(c.sku_id, c.status);
     for (const row of data as unknown as Array<{
       sku_id: number;
@@ -192,7 +192,7 @@ async function fetchTopSellers(
           vendor: row.sku_vendor_snapshot,
           gmv,
           units,
-          status: classBySku.get(row.sku_id) ?? null,
+          status: classBySku.get(String(row.sku_id)) ?? null,
         });
       }
     }
