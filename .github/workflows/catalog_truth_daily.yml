@@ -1,0 +1,55 @@
+# Catalog Truth — daily
+# v1 | 2026-06-03 | Job_PM (CPO)
+#
+# REPLACES the retired inventory_data_validator (inventory_validator_daily.yml) —
+# Facu-approved 2026-06-03. The old 25-gate validator wrote a classifications
+# table keyed to the (truncated) bigint mirror with a deprecated gate vocab. The
+# pipeline now is:
+#   1. refresh_classifications.mjs — re-evaluate the current 13-gate spec from
+#      silver and upsert ONLY changed catalog_classifications rows (keeps the
+#      uuid-keyed table fresh as chrome/costs/box dims move).
+#   2. price_snapshot.mjs — record the computed sell price + input vector per
+#      published SKU into price_history (price observability; flags >2% shifts).
+#   3. verify_admin_surface_truth.mjs — BLOCKING: fails the run if any admin
+#      surface disagrees with the source of truth (so a stale surface is a
+#      detectable, run-failing event, not a CEO discovery).
+#
+# Runs against supabase BACKUP (ibckhcjvyxzrhvdiazbx) ONLY. Required secrets:
+#   BACKUP_SUPABASE_URL, BACKUP_SUPABASE_SERVICE_KEY
+#
+# NOTE: 20260603_price_history.sql must be applied to BACKUP before the first
+# LIVE run, or price_snapshot's insert will fail (table missing). refresh +
+# verify do not depend on it.
+
+name: Catalog Truth (daily) — classifications refresh + price snapshot + surface verify
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # 10:00 UTC daily
+  workflow_dispatch:
+
+jobs:
+  catalog-truth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BACKUP_SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+      BACKUP_SUPABASE_SERVICE_KEY: ${{ secrets.BACKUP_SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh catalog_classifications (LIVE)
+        run: node scripts/jobs/refresh_classifications.mjs
+
+      - name: Snapshot computed prices (LIVE)
+        run: node scripts/jobs/price_snapshot.mjs
+
+      - name: Verify admin surface truth (BLOCKING)
+        run: node scripts/verify_admin_surface_truth.mjs
