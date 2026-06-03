@@ -100,7 +100,7 @@ export interface QualityThresholdRow {
 }
 
 export interface ClassificationRow {
-  sku_id: number;
+  sku_id: string;
   status: string;
   failing_gates: string[] | null;
   gate_score: number;
@@ -391,7 +391,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
   }
   const classBySku = new Map<string, ClassificationRow>();
   for (const c of classifications) {
-    if (c && c.sku_id != null) classBySku.set(String(c.sku_id), c);
+    if (c && c.sku_id != null) classBySku.set(c.sku_id, c);
   }
   const boxByType = new Map<string, BoxMasterRow>();
   for (const b of boxMaster ?? []) {
