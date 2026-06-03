@@ -62,7 +62,7 @@ function toNum(v: number | string | null | undefined): number | null {
 }
 
 interface ClassificationPick {
-  sku_id: number;
+  sku_id: string;
   status: string | null;
 }
 
