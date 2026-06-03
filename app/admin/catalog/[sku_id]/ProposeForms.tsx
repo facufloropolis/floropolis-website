@@ -82,7 +82,7 @@ function ErrorBanner({ error }: { error: string }) {
 // HideSkuForm -- visibility_rule.create
 // ---------------------------------------------------------------------------
 
-export function HideSkuForm({ skuId }: { skuId: number }) {
+export function HideSkuForm({ skuId }: { skuId: string }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
@@ -174,7 +174,7 @@ export function DiscountSkuForm({
   skuId,
   currentPrice,
 }: {
-  skuId: number;
+  skuId: string;
   currentPrice: number | null;
 }) {
   const [open, setOpen] = useState(false);
@@ -349,7 +349,7 @@ export function PriceCorrectionForm({
   farmCost,
   shippingPerStem,
 }: {
-  skuId: number;
+  skuId: string;
   currentPrice: number | null;
   farmCost: number | null;
   shippingPerStem: number | null;
@@ -423,7 +423,7 @@ export function PriceCorrectionForm({
     setError(null);
     const r = await submitProposal({
       type: 'price_correction.propose',
-      target_table: 'floropolis_inventory_mirror',
+      target_table: 'v_catalog_admin',
       target_id: String(skuId),
       payload: {
         new_price: newPrice,
@@ -435,7 +435,7 @@ export function PriceCorrectionForm({
         is_temporary: true,
       },
       notes: `Price correction SKU ${skuId}: $${currentPrice?.toFixed(2) ?? '?'} → $${newPrice.toFixed(2)} (GPM ${gpm != null ? (gpm * 100).toFixed(1) + '%' : '?'}). Reason: ${reason.trim()}`,
-      source_table: 'floropolis_inventory_mirror',
+      source_table: 'v_catalog_admin',
       source_id: String(skuId),
       source_rationale: reason.trim(),
       before_value: currentPrice,
@@ -627,7 +627,7 @@ export function ProposeMirrorFieldForm({
   helpText,
   requireArtifact,
 }: {
-  skuId: number;
+  skuId: string;
   field: 'description' | 'image_url' | 'category';
   label: string;
   current: string | null;
@@ -799,7 +799,7 @@ export function FlagBoxDimToCeoButton({
   skuId,
   boxType,
 }: {
-  skuId: number;
+  skuId: string;
   boxType: string | null;
 }) {
   const [open, setOpen] = useState(false);

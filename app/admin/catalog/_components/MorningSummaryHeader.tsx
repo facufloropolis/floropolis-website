@@ -44,7 +44,7 @@ const FLAG_TOLERANCE = 1.05;          // >5% above formula
 // Minimal row types — local, no shared lib dependency
 // ---------------------------------------------------------------------------
 interface MirrorPick {
-  id: number;
+  id: string;
   vendor: string | null;
   tier: string | null;
   live: boolean | null;
@@ -220,7 +220,7 @@ export default async function MorningSummaryHeader({
   today.setUTCHours(0, 0, 0, 0);
 
   // ── UC-D-100: Counts by source × vendor ────────────────────────────────
-  const classStatusBySku = new Map<number, string | null>();
+  const classStatusBySku = new Map<string, string | null>();
   for (const c of classifications) classStatusBySku.set(c.sku_id, c.status);
 
   type Bucketed = MirrorPick & { __bucket: Bucket };

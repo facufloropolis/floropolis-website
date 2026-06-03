@@ -19,7 +19,7 @@ interface SaveResult {
 }
 
 async function postUpdate(
-  skuId: number,
+  skuId: string,
   field: string,
   value: unknown,
 ): Promise<SaveResult> {
@@ -48,7 +48,7 @@ async function postUpdate(
 }
 
 async function postAdminAction(
-  skuId: number,
+  skuId: string,
   action: 'force_publish' | 'force_hide' | 'forward_to_rose' | 'reset',
   notes?: string,
 ): Promise<SaveResult> {
@@ -85,7 +85,7 @@ interface SaverState {
   error: string | null;
 }
 
-function useSaver(skuId: number): {
+function useSaver(skuId: string): {
   state: SaverState;
   save: (field: string, value: unknown) => Promise<boolean>;
 } {
@@ -121,7 +121,7 @@ export function PriceEditor({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: number | null;
 }) {
   const { state, save } = useSaver(skuId);
@@ -163,7 +163,7 @@ export function MarginStatusEditor({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: string | null;
 }) {
   const { state, save } = useSaver(skuId);
@@ -193,7 +193,7 @@ export function MarginStatusEditor({
   );
 }
 
-export function VerifyCostButton({ skuId }: { skuId: number }) {
+export function VerifyCostButton({ skuId }: { skuId: string }) {
   const { state, save } = useSaver(skuId);
   return (
     <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export function CostSourceEditor({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: string | null;
 }) {
   const { state, save } = useSaver(skuId);
@@ -247,7 +247,7 @@ export function CostSourceEditor({
   );
 }
 
-export function ClearPriceAlertButton({ skuId }: { skuId: number }) {
+export function ClearPriceAlertButton({ skuId }: { skuId: string }) {
   const { state, save } = useSaver(skuId);
   return (
     <div className="flex items-center gap-2">
@@ -270,7 +270,7 @@ export function DateEditor({
   current,
   label,
 }: {
-  skuId: number;
+  skuId: string;
   field: 'arrival_date' | 'deal_expiry';
   current: string | null;
   label: string;
@@ -307,7 +307,7 @@ export function ImagesEditor({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: string[];
 }) {
   const { state, save } = useSaver(skuId);
@@ -377,7 +377,7 @@ export function ContentsNoteEditor({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: string | null;
 }) {
   const { state, save } = useSaver(skuId);
@@ -411,7 +411,7 @@ export function VendorEditor({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: string | null;
 }) {
   const { state, save } = useSaver(skuId);
@@ -448,7 +448,7 @@ export function LiveToggleButton({
   skuId,
   current,
 }: {
-  skuId: number;
+  skuId: string;
   current: boolean | null;
 }) {
   // 2026-05-19 — per Rose contract v1.0 PB-1: this button NO LONGER writes to
@@ -519,7 +519,7 @@ export function LiveToggleButton({
   );
 }
 
-export function AcceptDeviationButton({ skuId }: { skuId: number }) {
+export function AcceptDeviationButton({ skuId }: { skuId: string }) {
   const router = useRouter();
   const [state, setState] = useState<SaverState>({ busy: false, error: null });
   return (
@@ -561,7 +561,7 @@ export function SchemaTodoStub({ column }: { column: string }) {
   return (
     <div className="text-xs text-slate-500 italic">
       Schema TODO: add column <span className="font-mono">{column}</span> to
-      floropolis_inventory_mirror (Rose owns). No editor available yet --
+      v_catalog_admin (read-only view — edits go through admin_proposals). No editor available yet --
       tracked in /admin/catalog/config future migration list.
     </div>
   );
@@ -572,7 +572,7 @@ export function SchemaTodoStub({ column }: { column: string }) {
 // ---------------------------------------------------------------------------
 
 interface AdminActionsProps {
-  skuId: number;
+  skuId: string;
   currentReviewerNotes: string | null;
 }
 
@@ -671,7 +671,7 @@ export function AskRoseButton({
   gateId,
   gateLabel,
 }: {
-  skuId: number;
+  skuId: string;
   gateId: string;
   gateLabel: string;
 }) {

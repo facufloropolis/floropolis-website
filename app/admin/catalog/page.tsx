@@ -330,9 +330,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   let mirrorRows: MirrorRow[] = [];
   try {
     const { data, error } = await backup
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select(
-        'id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, has_open_price_alert, live, active, arrival_date',
+        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, has_open_price_alert, live, active, arrival_date',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -345,8 +345,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const classifications: ClassificationRow[] = [];
   try {
     if (mirrorRows.length > 0) {
-      const ids = mirrorRows.map((r) => r.id).filter((id) => Number.isFinite(id));
-      const chunks: number[][] = [];
+      const ids = mirrorRows.map((r) => r.sku_id).filter((id): id is string => typeof id === 'string');
+      const chunks: string[][] = [];
       for (let i = 0; i < ids.length; i += 500) chunks.push(ids.slice(i, i + 500));
       for (const chunk of chunks) {
         const { data, error } = await backup
@@ -514,24 +514,24 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   // Fetch images + contents_note ONLY for visible rows (≤100). These columns
   // are not on MirrorRow today and only the inline-edit chip strip needs them,
   // so we keep the wide mirror fetch lean and join here per page.
-  const imagesById = new Map<number, string[] | null>();
-  const contentsById = new Map<number, string | null>();
+  const imagesById = new Map<string, string[] | null>();
+  const contentsById = new Map<string, string | null>();
   try {
     const pageIds = pageRows.map((r) => r.id);
     if (pageIds.length > 0) {
       const { data: extras, error: extrasErr } = await backup
-        .from('floropolis_inventory_mirror')
-        .select('id, images, contents_note')
-        .in('id', pageIds);
+        .from('v_catalog_admin')
+        .select('sku_id, images, contents_note')
+        .in('sku_id', pageIds);
       if (extrasErr) {
         console.error('[admin/catalog] images/contents fetch error:', extrasErr);
       } else {
-        for (const row of (extras ?? []) as Array<{ id: number; images: unknown; contents_note: string | null }>) {
+        for (const row of (extras ?? []) as Array<{ sku_id: string; images: unknown; contents_note: string | null }>) {
           const imgs = Array.isArray(row.images)
             ? (row.images.filter((u): u is string => typeof u === 'string'))
             : null;
-          imagesById.set(row.id, imgs && imgs.length > 0 ? imgs : null);
-          contentsById.set(row.id, row.contents_note ?? null);
+          imagesById.set(row.sku_id, imgs && imgs.length > 0 ? imgs : null);
+          contentsById.set(row.sku_id, row.contents_note ?? null);
         }
       }
     }
@@ -689,7 +689,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         <MorningSummaryHeader
           backup={backup}
           mirror={mirrorRows.map((r) => ({
-            id: r.id,
+            id: r.sku_id,
             vendor: r.vendor,
             tier: r.tier,
             live: r.live,
@@ -1690,7 +1690,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           Commodity default (25) for unknowns. Recalibrate monthly vs realized add-to-cart rate per variety. GPM = (price - cost - shipping) / price. Shipping per
           stem = ceil(box_weight_kg) * fedex_rate_per_kg * fuel_surcharge_mult /
           units_per_box. Sources: supabase-backup
-          public.floropolis_inventory_mirror, public.catalog_classifications,
+          public.v_catalog_admin, public.catalog_classifications,
           public.catalog_quality_weights, public.catalog_quality_thresholds,
           public.box_master, public.pricing_constants.
         </p>

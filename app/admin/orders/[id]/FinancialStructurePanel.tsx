@@ -3,7 +3,7 @@
 //
 // Per-line cost breakdown so Facu can approve orders seeing the margin /
 // GPM / cost structure inline. Server-rendered. Reads
-// floropolis_inventory_mirror (farm_cost, box_type, units_per_box, vendor)
+// v_catalog_admin (farm_cost, box_type, units_per_box, vendor)
 // and box_master (weight_kg) via the supabase-backup service client.
 //
 // Formula (canonical -- Rose_BI/pricing_formula.md):
@@ -54,7 +54,7 @@ interface Props {
 }
 
 interface InventoryMirrorRow {
-  id: number;
+  sku_id: string;
   farm_cost: number | string | null;
   box_type: string | null;
   units_per_box: number | string | null;
@@ -126,9 +126,9 @@ export default async function FinancialStructurePanel({
   if (skuIds.length > 0) {
     const svc = getBackupServiceClient();
     const { data: invData, error: invErr } = await svc
-      .from('floropolis_inventory_mirror')
-      .select('id, farm_cost, box_type, units_per_box, vendor')
-      .in('id', skuIds);
+      .from('v_catalog_admin')
+      .select('sku_id, farm_cost, box_type, units_per_box, vendor')
+      .in('sku_id', skuIds);
     if (invErr) {
       console.error('[FinancialStructurePanel] inventory_mirror fetch failed:', invErr);
     }
@@ -153,8 +153,8 @@ export default async function FinancialStructurePanel({
     }
   }
 
-  const invBySku = new Map<number, InventoryMirrorRow>();
-  for (const r of inventoryRows) invBySku.set(r.id, r);
+  const invBySku = new Map<number | string, InventoryMirrorRow>();
+  for (const r of inventoryRows) invBySku.set(r.sku_id, r);
   const boxWeightByType = new Map<string, number>();
   for (const r of boxRows) {
     const w = toNum(r.weight_kg);
@@ -404,7 +404,7 @@ export default async function FinancialStructurePanel({
       )}
 
       <p className="px-5 py-3 text-[11px] text-slate-400 border-t border-slate-100">
-        Source: floropolis_inventory_mirror (farm_cost, box_type, units_per_box) +
+        Source: v_catalog_admin (farm_cost, box_type, units_per_box) +
         box_master (weight_kg). Formula: Rose_BI/pricing_formula.md. Margin
         badges are informational only -- thin or negative margin does not block
         the order (Facu directive 2026-05-27).

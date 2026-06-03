@@ -77,7 +77,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
     { data: profilesRaw },
   ] = await Promise.all([
     svc.from('catalog_classifications').select('sku_id, vendor, tier, status, failing_gates, gate_score'),
-    svc.from('floropolis_inventory_mirror').select('id, vendor, tier, live').limit(2000),
+    svc.from('v_catalog_admin').select('sku_id, vendor, tier, live').limit(2000),
     svc.from('catalog_quality_weights').select('gate_id, weight, evaluated'),
     svc.from('vendor_profiles').select('vendor_name, admin_notes, updated_at, updated_by'),
   ]);
@@ -87,7 +87,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
   const unevalBonus = weights.filter((w) => !w.evaluated).reduce((s, w) => s + w.weight, 0);
 
   const classifications = (clsRaw ?? []) as ClsRow[];
-  const mirror = (mirrorRaw ?? []) as { id: number; vendor: string | null; tier: string | null; live: boolean }[];
+  const mirror = (mirrorRaw ?? []) as { sku_id: string; vendor: string | null; tier: string | null; live: boolean }[];
   const profiles = (profilesRaw ?? []) as ProfileRow[];
 
   // Build live count per vendor from mirror

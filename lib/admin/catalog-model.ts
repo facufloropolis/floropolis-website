@@ -110,7 +110,7 @@ export interface ClassificationRow {
 }
 
 export interface MirrorRow {
-  id: number;
+  sku_id: string;
   name: string;
   vendor: string | null;
   tier: string | null;
@@ -173,7 +173,7 @@ export interface FailedGateDetail {
 
 export interface CatalogV2Row {
   // Identity
-  id: number;
+  id: string;
   name: string;
   vendor: string;
   tier: string;
@@ -389,9 +389,9 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
   for (const w of weights) {
     if (w && typeof w.gate_id === 'string') weightsByGate.set(w.gate_id, w);
   }
-  const classBySku = new Map<number, ClassificationRow>();
+  const classBySku = new Map<string, ClassificationRow>();
   for (const c of classifications) {
-    if (c && c.sku_id != null) classBySku.set(c.sku_id, c);
+    if (c && c.sku_id != null) classBySku.set(String(c.sku_id), c);
   }
   const boxByType = new Map<string, BoxMasterRow>();
   for (const b of boxMaster ?? []) {
@@ -420,7 +420,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
   // Compute per-row ------------------------------------------------------
   const rows: CatalogV2Row[] = universeRows.map((r) => {
     const buckets = deriveBuckets(r);
-    const cls = classBySku.get(r.id) ?? null;
+    const cls = classBySku.get(r.sku_id) ?? null;
 
     // Quality score
     let quality_score: number | null = null;
@@ -525,7 +525,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       unitsPerBox != null ? Math.floor(totalStems / unitsPerBox) : null;
 
     return {
-      id: r.id,
+      id: r.sku_id,
       name: r.name,
       vendor: r.vendor ?? 'Unknown',
       tier: r.tier ?? '',

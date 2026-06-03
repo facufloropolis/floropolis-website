@@ -1,7 +1,7 @@
 // Admin Catalog -- per-SKU control plane.
 // v2 | 2026-05-18 | Job_PM admin-port X2 [V8 SHADOW]
 //
-// Lands on /admin/catalog/[id]. Sections (ported from
+// Lands on /admin/catalog/[sku_id]. Sections (ported from
 // app/mockups/admin-catalog/[sku]/page.tsx, mapped to real Supabase tables):
 //
 //   1. Header (quality_family, vendor, price, status, gate score)
@@ -16,9 +16,9 @@
 //   8. Propose change cluster -- new client island wired to /api/admin/proposals
 //
 // All writes funnel through:
-//   POST /api/admin/catalog/sku/[id]/update         -- single-field mirror writes
-//   POST /api/admin/catalog/sku/[id]/admin-action   -- catalog_classifications status
-//   POST /api/admin/proposals                       -- new admin_proposals row
+//   POST /api/admin/catalog/sku/[sku_id]/update         -- single-field catalog writes
+//   POST /api/admin/catalog/sku/[sku_id]/admin-action   -- catalog_classifications status
+//   POST /api/admin/proposals                           -- new admin_proposals row
 
 export const dynamic = 'force-dynamic';
 
@@ -67,7 +67,7 @@ import {
 } from './ProposeForms';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ sku_id: string }>;
 }
 
 interface ClassificationRow {
@@ -88,7 +88,7 @@ interface ClassificationRow {
 }
 
 interface MirrorRow {
-  id: number;
+  sku_id: string;
   name: string | null;
   variety: string | null;
   length: string | null;
@@ -172,7 +172,7 @@ interface RoseQueueRow {
 }
 
 interface SiblingSkuRow {
-  id: number;
+  sku_id: string;
   vendor: string | null;
   name: string | null;
   variety: string | null;
@@ -382,9 +382,9 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
     redirect('/');
   }
 
-  const { id } = await params;
-  const skuId = Number.parseInt(id, 10);
-  if (!Number.isFinite(skuId)) notFound();
+  const { sku_id } = await params;
+  const skuId = sku_id;
+  if (!skuId) notFound();
 
   const backup = getBackupServiceClient();
 
@@ -396,7 +396,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
       )
       .eq('sku_id', skuId)
       .maybeSingle(),
-    backup.from('floropolis_inventory_mirror').select('*').eq('id', skuId).maybeSingle(),
+    backup.from('v_catalog_admin').select('*').eq('sku_id', skuId).maybeSingle(),
     backup
       .from('pricing_constants')
       .select('id, value_numeric, description, unit')
@@ -431,13 +431,13 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
   // variety+length is the practical primary since quality_family_id is NULL on ~98% of rows.
   const qfid = mirror?.quality_family_id ?? cls?.quality_family_id ?? null;
   let siblings: SiblingSkuRow[] = [];
-  const siblingSelect = 'id, vendor, name, variety, color, length, price, farm_cost, cost_source, scrape_date, stock, live, tier, k2k_listed_price_avg';
+  const siblingSelect = 'sku_id, vendor, name, variety, color, length, price, farm_cost, cost_source, stock, live, tier';
   if (qfid) {
     const { data: siblingRows } = await backup
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select(siblingSelect)
       .eq('quality_family_id', qfid)
-      .neq('id', skuId)
+      .neq('sku_id', skuId)
       .limit(30);
     siblings = (siblingRows ?? []) as SiblingSkuRow[];
   }
@@ -445,11 +445,11 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
   let varietyComps: SiblingSkuRow[] = [];
   if (mirror?.variety && mirror?.length) {
     const { data: vcRows } = await backup
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select(siblingSelect)
       .eq('variety', mirror.variety)
       .eq('length', mirror.length)
-      .neq('id', skuId)
+      .neq('sku_id', skuId)
       .limit(40);
     varietyComps = ((vcRows ?? []) as SiblingSkuRow[]).sort(
       (a, b) => (toNumOrNull(a.farm_cost) ?? 999) - (toNumOrNull(b.farm_cost) ?? 999),
@@ -491,7 +491,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
     ? FEATURED_SCORE_SEED.find((e) => e.match_terms.every((t) => (mirror?.name ?? '').toLowerCase().includes(t)))
     : null;
 
-  const wiringEntry = getWiringForPage('/admin/catalog/[id]');
+  const wiringEntry = getWiringForPage('/admin/catalog/[sku_id]');
   const wm = (id: string) =>
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
@@ -1085,7 +1085,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         <WiringSection level={wm('raw-mirror').level} note={wm('raw-mirror').note} id="raw-mirror">
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
-            Raw fields (floropolis_inventory_mirror)
+            Raw fields (v_catalog_admin)
           </h2>
           {mirror ? (
             <>
@@ -1143,7 +1143,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
             </>
           ) : (
             <p className="text-sm text-slate-500 border border-dashed border-slate-200 rounded-lg p-4">
-              No row in floropolis_inventory_mirror for id {skuId}. The mirror
+              No row in v_catalog_admin for sku_id {skuId}. The view
               truncates daily -- check the next reload cycle.
             </p>
           )}
@@ -1329,7 +1329,7 @@ function CostSourcePanel({
   skuId,
 }: {
   mirror: MirrorRow | null;
-  skuId: number;
+  skuId: string;
 }) {
   if (!mirror) {
     return (
@@ -1484,7 +1484,7 @@ function GateFixer({
   mirror,
 }: {
   gateId: string;
-  skuId: number;
+  skuId: string;
   mirror: MirrorRow | null;
 }) {
   if (!mirror) {
@@ -1709,7 +1709,7 @@ function FlagRow({
   value,
 }: {
   label: string;
-  skuId: number;
+  skuId: string;
   field: 'is_on_deal' | 'is_best_seller' | 'is_featured';
   value: boolean;
 }) {

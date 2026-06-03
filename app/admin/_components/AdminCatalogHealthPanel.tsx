@@ -110,7 +110,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
     { count: clientsPending },
     { count: orphanCount },
   ] = await Promise.all([
-    svc.from('floropolis_inventory_mirror')
+    svc.from('v_catalog_admin')
       .select('name, tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
       .limit(2000),
     svc

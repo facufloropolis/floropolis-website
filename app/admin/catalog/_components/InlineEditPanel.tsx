@@ -8,7 +8,7 @@
 // Submit posts to /api/admin/catalog/inline-edit which:
 //   1. Inserts admin_proposals (type='mirror.field_correction')
 //   2. Immediately POSTs /api/admin/proposals/[id]/approve so the executor
-//      writes through to floropolis_inventory_mirror in the same handshake.
+//      writes through to the canonical tables via apply_quality_proposal() in the same handshake.
 //
 // Rationale field is REQUIRED. Min 20 chars before Submit enables. Empty or
 // auto-defaulted rationales are blocked at the input level + re-checked on

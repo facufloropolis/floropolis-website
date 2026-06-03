@@ -264,11 +264,11 @@ export default async function AdminCatalogConfigPage({
       .eq('status', 'awaiting_facu')
       .order('proposed_at', { ascending: false }),
     backup
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select('vendor, box_type')
       .not('box_type', 'is', null),
     backup
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select('*', { count: 'exact', head: true }),
     backup
       .from('catalog_quality_weights')

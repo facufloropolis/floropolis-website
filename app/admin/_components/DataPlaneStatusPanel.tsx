@@ -61,7 +61,7 @@ const ROSE_DEPS: Dependency[] = [
     id: 'k2k-live-feed',
     name: 'Real-time K2K API live feed',
     status: 'PENDING',
-    today: 'Stale floropolis_inventory_mirror.live flag (untrusted — refreshed on ingest cycle, not real-time).',
+    today: 'Stale live flag — v_catalog_admin reflects catalog_published presence (publishable = active), not real-time stock.',
     target: 'Live feed with extracted_at + valid_until + source_vendor (Magic Flowers excluded).',
     impact: '"Live" badges + fast-lane delivery windows not reliable until API feed ships.',
     routed: 'routed to Nahua 2026-05-27',

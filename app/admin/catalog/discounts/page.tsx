@@ -25,11 +25,10 @@
 //      valid range, status. No inline edit on this pass -- pause/expire
 //      ship in a follow-up.
 //
-// Scope value resolution: vendors come from floropolis_inventory_mirror.vendor
-// (distinct), categories from .category (distinct), SKUs from .id (with name
-// + price for the GPM warning). Clients come from client_profiles +
-// get_client_emails RPC; paid_order_count is derived from a single
-// COUNT-by-buyer query.
+// Scope value resolution: vendors come from v_catalog_admin.vendor (distinct),
+// categories from .category (distinct), SKUs from .sku_id (with name + price
+// for the GPM warning). Clients come from client_profiles + get_client_emails
+// RPC; paid_order_count is derived from a single COUNT-by-buyer query.
 //
 // Access:
 //   - Middleware guards /admin and restricts to ADMIN_EMAILS or
@@ -288,13 +287,13 @@ export default async function AdminCatalogDiscountsPage() {
   // We pull a slim facet slice of inventory mirror to get vendors + categories
   // + a SKU pick-list with name + price (for the GPM warning).
   const { data: facetRaw } = await backup
-    .from('floropolis_inventory_mirror')
-    .select('id,name,variety,length,vendor,category,price')
+    .from('v_catalog_admin')
+    .select('sku_id,name,variety,length,vendor,category,price')
     .order('name', { ascending: true })
     .limit(2000);
 
   type FacetRow = {
-    id: number;
+    sku_id: string;
     name: string | null;
     variety: string | null;
     length: string | null;
@@ -318,11 +317,11 @@ export default async function AdminCatalogDiscountsPage() {
 
   const skuOptions: ScopeOption[] = facets.slice(0, 1000).map((r) => {
     const label = [r.name, r.variety, r.length].filter(Boolean).join(' / ') ||
-      `SKU #${r.id}`;
+      `SKU #${r.sku_id}`;
     const priceN = r.price == null ? null : Number(r.price);
     return {
-      value: String(r.id),
-      label: `${label} (#${r.id})`,
+      value: String(r.sku_id),
+      label: `${label} (#${r.sku_id})`,
       unitPrice: priceN != null && Number.isFinite(priceN) ? priceN : null,
     };
   });

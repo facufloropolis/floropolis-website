@@ -185,7 +185,7 @@ export default async function AdminTodayPanel(): Promise<ReactNode> {
 
   const [mirrorRes, boxRes, constantsRes, queueRes, proposalsRes] = await Promise.all([
     svc
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select('vendor, price, farm_cost, box_type, units_per_box, cost_source, tier')
       .limit(2000),
     svc

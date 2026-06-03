@@ -151,7 +151,7 @@ function tabHref(s: Status): string {
 
 // Read pre-computed cascade_summary from the row. If empty (old rows) we
 // expose a legacy fallback flag the caller uses to drive a single follow-up
-// query against floropolis_inventory_mirror. New rows skip that path entirely.
+// query against v_catalog_admin. New rows skip that path entirely.
 function cascadeFromSummary(
   cs: Record<string, unknown> | null,
 ): { value: number | null; label: string } | null {
@@ -430,7 +430,7 @@ export default async function AdminCatalogApprovalQueuePage({
     );
     if (wantedBoxTypes.length > 0) {
       const { data: mirrorRows } = await backup
-        .from('floropolis_inventory_mirror')
+        .from('v_catalog_admin')
         .select('box_type')
         .in('box_type', wantedBoxTypes);
       for (const row of (mirrorRows ?? []) as { box_type: string | null }[]) {
@@ -442,8 +442,8 @@ export default async function AdminCatalogApprovalQueuePage({
   let legacyTotalSkuCount: number | null = null;
   if (legacyNeedsTotal) {
     const { count } = await backup
-      .from('floropolis_inventory_mirror')
-      .select('id', { count: 'exact', head: true });
+      .from('v_catalog_admin')
+      .select('sku_id', { count: 'exact', head: true });
     legacyTotalSkuCount = count ?? 0;
   }
 

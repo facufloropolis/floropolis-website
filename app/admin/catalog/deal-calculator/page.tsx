@@ -33,11 +33,10 @@
 // ============================================================================
 // Server-side, one round-trip via getBackupServiceClient (supabase-backup
 // service role). Two queries in parallel:
-//   1. floropolis_inventory_mirror — limited to first 1000 rows (this is a
-//      phone-tool; Facu searches by a few chars and the list narrows. The full
-//      universe is ~5000 rows but the wire payload + client-side filter cost is
-//      not worth it for an MVP. If the limit becomes a problem in practice,
-//      raise it or add server-side search.)
+//   1. v_catalog_admin — limited to first 1000 rows (this is a phone-tool;
+//      Facu searches by a few chars and the list narrows. The full universe is
+//      ~547 SKUs from catalog_published. Raise limit or add server-side search
+//      if the cap becomes a problem.)
 //   2. box_master — small table (~20 rows), all fetched.
 //
 // RACI: this page is DISPLAY + CALCULATOR. The formula constants below are
@@ -66,7 +65,7 @@ export const metadata = {
 };
 
 interface MirrorRowRaw {
-  id: number;
+  sku_id: string;
   name: string | null;
   vendor: string | null;
   tier: string | null;
@@ -115,9 +114,9 @@ export default async function AdminDealCalculatorPage() {
 
   const [mirrorRes, boxesRes, constantsRes] = await Promise.all([
     backup
-      .from('floropolis_inventory_mirror')
+      .from('v_catalog_admin')
       .select(
-        'id, name, vendor, tier, variety, length, unit, category, farm_cost, price, box_type, units_per_box, total_stems',
+        'sku_id, name, vendor, tier, variety, length, unit, category, farm_cost, price, box_type, units_per_box, total_stems',
       )
       .eq('active', true)
       .not('farm_cost', 'is', null)
