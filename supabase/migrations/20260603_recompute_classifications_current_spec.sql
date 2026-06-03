@@ -115,6 +115,11 @@ CREATE TABLE catalog_classifications (
   reviewer_at         timestamptz,
   reviewer_user_id    uuid,
   reviewer_notes      text,
+  -- Re-added 2026-06-03 (Job_PM execution review): 11 files read these two
+  -- columns (mapping pages, SKU detail, export, executors). Dropping them
+  -- breaks the admin. Nullable; recompute leaves them null.
+  quality_family_id   uuid,
+  availability_window_override_id uuid,
   created_at          timestamptz NOT NULL DEFAULT now()
 );
 
