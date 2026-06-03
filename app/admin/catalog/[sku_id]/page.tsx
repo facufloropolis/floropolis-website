@@ -71,9 +71,9 @@ interface PageProps {
 }
 
 interface ClassificationRow {
-  sku_id: number;
+  sku_id: string;
   status: string;
-  gate_score: number;
+  blocking_gate_count: number;
   failing_gates: string[] | null;
   vendor: string | null;
   tier: string | null;
@@ -188,32 +188,26 @@ interface SiblingSkuRow {
   k2k_listed_price_avg: number | string | null;
 }
 
-// All 16 gate IDs the validator can emit (plus the stock_live_mismatch signal).
-// Gates 14/15 are marked schema_todo: the underlying columns do not exist yet.
+// Current-spec gate vocab (catalog_quality_weights, 2026-06-03 recompute).
+// Only the 8 EVALUATED gates can appear in failing_gates: 6 blocking + 2
+// publishable_gap. The 5 perfect_gap gates are weight=0 / evaluated=false and
+// are never written to failing_gates, so they are not listed here. Deprecated
+// gate_ids (cost_unverified, open_price_alert, margin_unknown, formula_deviation,
+// stock_live_mismatch, lead-time windows, missing_arrival_date) and the old
+// schema_todo gates were dropped by the recompute and removed here.
 type GateMeta = {
   id: string;
-  schemaTodo?: 'last_harvested_date' | 'vase_life_days';
 };
 
 const ALL_GATES: GateMeta[] = [
   { id: 'price_zero' },
-  { id: 'margin_unknown' },
-  { id: 'formula_deviation' },
   { id: 'missing_cost_source' },
-  { id: 'cost_unverified' },
-  { id: 'open_price_alert' },
-  { id: 'missing_box_dims' },
-  { id: 'missing_units_or_bunch' },
+  { id: 'missing_vendor_name' },
   { id: 'missing_unit' },
+  { id: 'missing_box_dims' },
   { id: 'missing_image' },
   { id: 'missing_contents_description' },
-  { id: 'missing_arrival_date' },
-  { id: 't2_outside_5d_window' },
-  { id: 't3_outside_14d_window' },
-  { id: 'missing_vendor_name' },
-  { id: 'stock_live_mismatch' },
-  { id: 'missing_last_harvested', schemaTodo: 'last_harvested_date' },
-  { id: 'missing_vase_life', schemaTodo: 'vase_life_days' },
+  { id: 'missing_units_or_bunch' },
 ];
 
 function fmtDate(iso: string | null): string {
@@ -392,7 +386,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
     backup
       .from('catalog_classifications')
       .select(
-        'sku_id, status, gate_score, failing_gates, vendor, tier, variety, last_validated_at, last_changed_at, reviewer_action, reviewer_at, reviewer_notes, created_at, quality_family_id',
+        'sku_id, status, blocking_gate_count, failing_gates, vendor, tier, variety, last_validated_at, last_changed_at, reviewer_action, reviewer_at, reviewer_notes, created_at, quality_family_id',
       )
       .eq('sku_id', skuId)
       .maybeSingle(),
@@ -561,7 +555,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                     {statusBadge(cls.status).label}
                   </span>
                   <span className="text-xs font-mono text-slate-600 border border-slate-200 rounded-full px-2.5 py-1 bg-slate-50">
-                    gate score {cls.gate_score}/16
+                    {cls.blocking_gate_count} blocking gate{cls.blocking_gate_count === 1 ? '' : 's'} failing
                   </span>
                 </>
               )}
@@ -1011,7 +1005,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         <WiringSection level={wm('gate-status').level} note={wm('gate-status').note} id="gate-status">
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
-            Gate status (16)
+            Gate status ({ALL_GATES.length})
           </h2>
 
           {!cls && (
@@ -1024,28 +1018,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           <div className="space-y-2">
             {ALL_GATES.map((gate) => {
               const failing = failingSet.has(gate.id);
-              const todoCol = gate.schemaTodo;
               const label = GATE_LABELS[gate.id] ?? gate.id;
-              if (todoCol) {
-                return (
-                  <details
-                    key={gate.id}
-                    className="border border-slate-200 bg-slate-50 rounded-lg"
-                  >
-                    <summary className="cursor-pointer px-3 py-2 text-sm flex items-center gap-2">
-                      <span className="text-slate-400">~</span>
-                      <span className="font-mono text-xs text-slate-500">{gate.id}</span>
-                      <span className="text-slate-600">{label}</span>
-                      <span className="ml-auto text-[11px] text-slate-500 italic">
-                        schema TODO
-                      </span>
-                    </summary>
-                    <div className="px-3 pb-3">
-                      <SchemaTodoStub column={todoCol} />
-                    </div>
-                  </details>
-                );
-              }
               if (!failing) {
                 return (
                   <div

@@ -22,7 +22,7 @@ const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 // ── types ─────────────────────────────────────────────────────────────────────
 
 interface WeightRow { gate_id: string; weight: number; evaluated: boolean; }
-interface ClsRow { sku_id: number; vendor: string | null; tier: string | null; status: string; failing_gates: unknown; gate_score: number | null; }
+interface ClsRow { sku_id: string; vendor: string | null; tier: string | null; status: string; failing_gates: unknown; }
 interface ProfileRow { vendor_name: string; admin_notes: string | null; updated_at: string | null; updated_by: string | null; }
 
 interface VendorStat {
@@ -76,7 +76,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
     { data: weightsRaw },
     { data: profilesRaw },
   ] = await Promise.all([
-    svc.from('catalog_classifications').select('sku_id, vendor, tier, status, failing_gates, gate_score'),
+    svc.from('catalog_classifications').select('sku_id, vendor, tier, status, failing_gates'),
     svc.from('v_catalog_admin').select('sku_id, vendor, tier, live').limit(2000),
     svc.from('catalog_quality_weights').select('gate_id, weight, evaluated'),
     svc.from('vendor_profiles').select('vendor_name, admin_notes, updated_at, updated_by'),
@@ -271,7 +271,7 @@ function VendorCard({ stat }: { stat: VendorStat }) {
                   />
                 </div>
                 <p className="text-[10px] text-slate-400">
-                  Weighted: price · cost · image · description · lead time
+                  Weighted: price · cost · image · vendor · unit · box · description
                 </p>
               </>
             ) : (

@@ -90,19 +90,23 @@ function todayISO(base: Date): string {
 }
 
 // ---------------------------------------------------------------------------
-// Publishable-universe filter — replicates ops.publishable_inventory rules
-// inline. (The view does not exist in supabase-backup today; verified via
-// information_schema.tables 2026-05-27. When it ships, swap this filter for
-// a direct SELECT * FROM ops.publishable_inventory.)
+// Source split (DECORATION, not a universe gate).
+//
+// DOCTRINE (Facu, locked — see kb k2k_as_parallel_signal): K2K `live` is a
+// PARALLEL SIGNAL, never a membership predicate. The universe of "which SKUs
+// count" = the classification/publishability spine (catalog_classifications),
+// NOT mirror.live=true. This helper only LABELS a SKU by tier / live-ness for
+// the per-source annotation; it never decides whether a SKU is in the universe.
+// A SKU with live=false (or outside any T2/T3 window) still counts — it just
+// lands in the 'other' annotation bucket instead of being dropped.
 // ---------------------------------------------------------------------------
-type Bucket = 'k2k_live' | 't2_catalog' | 't3_catalog';
+type SourceLabel = 'k2k_live' | 't2_catalog' | 't3_catalog' | 'other';
 
-function bucketize(r: MirrorPick, today: Date): Bucket | null {
-  if (toNum(r.farm_cost) == null) return null;
-  // Per perfect_inventory_bar v2.1 (Facu 2026-05-28): Magic Flowers is excluded
-  // ONLY from the live-source determination (ghost vendor — circular K2K signal,
-  // we ghost-upload on their behalf). They ARE included in T2/T3 publishable
-  // when basics are present (cost + image + unit + tier window).
+function sourceLabel(r: MirrorPick | undefined, today: Date): SourceLabel {
+  if (!r) return 'other';
+  // Magic Flowers is excluded ONLY from the live-source annotation (ghost
+  // vendor — circular K2K signal). It is NOT excluded from the universe; it
+  // simply annotates as T2/T3 or other, same as any non-live SKU.
   const isMagicFlowers = r.vendor != null && MAGIC_FLOWERS_PATTERN.test(r.vendor);
   if (r.live === true && r.active !== false && !isMagicFlowers) return 'k2k_live';
   if (r.arrival_date) {
@@ -112,7 +116,7 @@ function bucketize(r: MirrorPick, today: Date): Bucket | null {
     if (r.tier === 'T2' && days >= T2_MIN_DAYS && days <= T2_MAX_DAYS) return 't2_catalog';
     if (r.tier === 'T3' && days >= T3_MIN_DAYS && days <= T3_MAX_DAYS) return 't3_catalog';
   }
-  return null;
+  return 'other';
 }
 
 // ---------------------------------------------------------------------------
@@ -156,6 +160,7 @@ async function probeYesterdayLive(
 async function fetchTopSellers(
   backup: SupabaseClient,
   classifications: ClassificationPick[],
+  uuidByFi: Map<string, string>,
 ): Promise<TopSellerRow[] | null> {
   try {
     const since = new Date();
@@ -192,7 +197,11 @@ async function fetchTopSellers(
           vendor: row.sku_vendor_snapshot,
           gmv,
           units,
-          status: classBySku.get(String(row.sku_id)) ?? null,
+          // order_lines.sku_id is the legacy bigint id; classifications key on
+          // dim_sku uuid post-recompute. Bridge via product_chrome (uuidByFi);
+          // unmatched rows degrade honestly to null status. INTERIM until S5
+          // adds the uuid FK to order_lines.
+          status: classBySku.get(uuidByFi.get(String(row.sku_id)) ?? '') ?? null,
         });
       }
     }
@@ -220,36 +229,75 @@ export default async function MorningSummaryHeader({
   today.setUTCHours(0, 0, 0, 0);
 
   // ── UC-D-100: Counts by source × vendor ────────────────────────────────
-  const classStatusBySku = new Map<string, string | null>();
-  for (const c of classifications) classStatusBySku.set(c.sku_id, c.status);
+  // UNIVERSE = the classification/publishability spine (one row per classified
+  // SKU). K2K `live` is a PARALLEL SIGNAL, never a membership gate — every
+  // classified SKU counts; `live`/tier only ANNOTATE which source bucket it
+  // shows under. (Bug fix: the old code gated the universe on mirror.live=true,
+  // dropping classified-but-not-live SKUs entirely.)
+  const mirrorBySku = new Map<string, MirrorPick>();
+  for (const r of mirror) mirrorBySku.set(r.id, r);
 
-  type Bucketed = MirrorPick & { __bucket: Bucket };
-  const universe: Bucketed[] = [];
-  for (const r of mirror) {
-    const b = bucketize(r, today);
-    if (b) universe.push({ ...r, __bucket: b });
+  // ── uuid ↔ legacy-id bridge (INTERIM until S5 re-key + S6 live_signal) ──
+  // Post-recompute the classification spine keys on dim_sku.sku_id (uuid),
+  // while mirror rows + order_lines still key on the legacy bigint id.
+  // product_chrome carries both (sku_id uuid, fi_id legacy) for ~550 SKUs —
+  // unmatched SKUs degrade honestly to the 'other' bucket / null decoration
+  // rather than silently miscounting.
+  const fiByUuid = new Map<string, string>();
+  const uuidByFi = new Map<string, string>();
+  try {
+    const { data: bridge } = await backup.from('product_chrome').select('sku_id, fi_id');
+    for (const b of (bridge ?? []) as Array<{ sku_id: string; fi_id: number | string | null }>) {
+      if (b.fi_id == null) continue;
+      fiByUuid.set(b.sku_id, String(b.fi_id));
+      uuidByFi.set(String(b.fi_id), b.sku_id);
+    }
+  } catch {
+    // bridge unavailable → decoration degrades to 'other'; universe unaffected
   }
 
-  const bySource: Record<Bucket, { total: number; publishable: number; held: number }> = {
+  type UniverseRow = {
+    sku_id: string;
+    status: string | null;
+    label: SourceLabel;
+    vendor: string | null;
+    farm_cost: number | string | null;
+    price: number | string | null;
+  };
+  const universe: UniverseRow[] = classifications.map((c) => {
+    const m = mirrorBySku.get(fiByUuid.get(c.sku_id) ?? '');
+    return {
+      sku_id: c.sku_id,
+      status: c.status,
+      label: sourceLabel(m, today),
+      vendor: m?.vendor ?? null,
+      farm_cost: m?.farm_cost ?? null,
+      price: m?.price ?? null,
+    };
+  });
+
+  const bySource: Record<SourceLabel, { total: number; publishable: number; held: number }> = {
     k2k_live:    { total: 0, publishable: 0, held: 0 },
     t2_catalog:  { total: 0, publishable: 0, held: 0 },
     t3_catalog:  { total: 0, publishable: 0, held: 0 },
+    other:       { total: 0, publishable: 0, held: 0 },
   };
   const byVendor = new Map<string, { total: number; publishable: number }>();
   for (const r of universe) {
-    const slot = bySource[r.__bucket];
+    const slot = bySource[r.label];
     slot.total += 1;
-    const status = classStatusBySku.get(r.id);
-    if (status === 'perfect' || status === 'publishable') slot.publishable += 1;
+    const pub = r.status === 'perfect' || r.status === 'publishable';
+    if (pub) slot.publishable += 1;
     else slot.held += 1;
     const v = r.vendor ?? '(unknown)';
     const vs = byVendor.get(v) ?? { total: 0, publishable: 0 };
     vs.total += 1;
-    if (status === 'perfect' || status === 'publishable') vs.publishable += 1;
+    if (pub) vs.publishable += 1;
     byVendor.set(v, vs);
   }
-  const totalAll = bySource.k2k_live.total + bySource.t2_catalog.total + bySource.t3_catalog.total;
-  const pubAll = bySource.k2k_live.publishable + bySource.t2_catalog.publishable + bySource.t3_catalog.publishable;
+  // Universe totals = full classification spine (NOT just live SKUs).
+  const totalAll = universe.length;
+  const pubAll = universe.filter((r) => r.status === 'perfect' || r.status === 'publishable').length;
   const topVendors = Array.from(byVendor.entries())
     .sort((a, b) => b[1].total - a[1].total)
     .slice(0, 5)
@@ -260,6 +308,8 @@ export default async function MorningSummaryHeader({
     }));
 
   // ── UC-D-101: Live going down DoD ──────────────────────────────────────
+  // `todayLive` is a decoration count of the live ANNOTATION — it counts how
+  // many universe SKUs are currently K2K-live, it does NOT define the universe.
   const yesterdayLive = await probeYesterdayLive(backup, addDaysISO(today, -1));
   const todayLive = bySource.k2k_live.total;
   let dodBadge: 'pending' | 'down' | 'flat' = 'pending';
@@ -283,7 +333,7 @@ export default async function MorningSummaryHeader({
   }
 
   // ── UC-D-103: Top sellers L30D ─────────────────────────────────────────
-  const topSellers = await fetchTopSellers(backup, classifications);
+  const topSellers = await fetchTopSellers(backup, classifications, uuidByFi);
 
   // Helper for filter deep-link URLs
   const url = (qs: Record<string, string>) => {
@@ -298,7 +348,7 @@ export default async function MorningSummaryHeader({
           Morning summary
         </span>
         <span className="text-[10px] text-slate-400">
-          publishable universe (Perfect Inventory Bar v2.1 · Magic Flowers in T2/T3 only)
+          universe = classification spine · K2K live is a parallel signal (annotation, not a gate)
         </span>
       </div>
 
@@ -339,6 +389,16 @@ export default async function MorningSummaryHeader({
               href={url({ source: 't3' })}
               tone="slate"
             />
+            {bySource.other.total > 0 && (
+              <SourceRow
+                label="Other (not live / no window)"
+                total={bySource.other.total}
+                pub={bySource.other.publishable}
+                held={bySource.other.held}
+                href="/admin/catalog"
+                tone="slate"
+              />
+            )}
           </div>
           {topVendors.length > 0 && (
             <div className="mt-3 pt-3 border-t border-slate-100">

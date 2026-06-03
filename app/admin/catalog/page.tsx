@@ -351,7 +351,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
       for (const chunk of chunks) {
         const { data, error } = await backup
           .from('catalog_classifications')
-          .select('sku_id, status, gate_score, failing_gates, vendor, tier, variety')
+          .select('sku_id, status, blocking_gate_count, failing_gates, vendor, tier, variety')
           .in('sku_id', chunk);
         if (error) {
           console.error('[admin/catalog] classifications error:', error);
@@ -492,7 +492,6 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
       if (flagFilter === 'missing_cost' && r.farm_cost != null) return false;
       if (flagFilter === 'no_box_dims' && r.box_verified) return false;
       if (flagFilter === 'failed_gates' && r.failed_gates.length === 0) return false;
-      if (flagFilter === 'cost_unverified' && !r.failed_gates.some((g: { gate_id: string }) => g.gate_id === 'cost_unverified')) return false;
       if (flagFilter === 'cost_flagged' && !(r.cost_source != null && r.cost_source.toUpperCase().startsWith('FLAGGED_'))) return false;
     }
 
@@ -1185,7 +1184,6 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                   { value: 'all', label: 'All' },
                   { value: 'price_alert', label: '⚠ Price alerts (Rose)' },
                   { value: 'missing_cost', label: 'Missing cost' },
-                  { value: 'cost_unverified', label: 'Cost unverified / stale' },
                   { value: 'cost_flagged', label: 'Cost source FLAGGED' },
                   { value: 'no_box_dims', label: 'Box not verified' },
                   { value: 'failed_gates', label: 'Has failing gates' },

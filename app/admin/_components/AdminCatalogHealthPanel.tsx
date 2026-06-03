@@ -83,17 +83,19 @@ function ScoreBar({ score, max = 100 }: { score: number; max?: number }) {
 
 // ── main component ────────────────────────────────────────────────────────────
 
+// Current-spec gate vocab (catalog_quality_weights, 2026-06-03 recompute).
+// Only the 8 evaluated gate_ids can appear in failing_gates; deprecated IDs
+// (cost_unverified, formula_deviation, open_price_alert, stock_live_mismatch,
+// margin_unknown, lead-time windows, missing_arrival_date) were dropped.
 const GATE_SHORT: Record<string, string> = {
-  cost_unverified: 'Cost unverified',
-  formula_deviation: 'Price ≠ formula',
-  missing_contents_description: 'No box description',
-  open_price_alert: 'Price alert open',
-  stock_live_mismatch: 'Stock/live mismatch',
-  margin_unknown: 'Margin unknown',
-  t3_outside_14d_window: 'T3 date too close',
-  missing_arrival_date: 'No arrival date',
+  price_zero: 'No price set',
+  missing_cost_source: 'No cost source',
+  missing_vendor_name: 'No vendor name',
+  missing_unit: 'No unit',
+  missing_box_dims: 'No box dims',
   missing_image: 'Missing image',
-  t2_outside_5d_window: 'T2 date too close',
+  missing_contents_description: 'No box description',
+  missing_units_or_bunch: 'No units / bunch',
 };
 
 export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {

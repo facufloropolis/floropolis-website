@@ -333,8 +333,9 @@ export default async function AdminCatalogConfigPage({
   const totalSkus = totalSkusRes.count ?? 0;
 
   // Per-gate failing SKU counts for the quality panel ---------------------
-  // Fetch failing_gates from catalog_classifications and normalize gate IDs
-  // to match catalog_quality_weights.gate_id entries.
+  // failing_gates now contains ONLY current-spec gate_ids (the 2026-06-03
+  // recompute keyed catalog_classifications to dim_sku.sku_id and dropped the
+  // deprecated 25-gate vocab). Count gate_ids verbatim — no normalization.
   const gateFailCount = new Map<string, number>();
   try {
     const { data: classRows, error: classErr } = await backup
@@ -349,13 +350,9 @@ export default async function AdminCatalogConfigPage({
         const seen = new Set<string>();
         for (const g of row.failing_gates) {
           if (typeof g !== 'string') continue;
-          let normalized: string;
-          if (g.startsWith('formula_deviation_')) normalized = 'formula_deviation';
-          else if (g === 't2_outside_5d_window' || g === 't3_outside_14d_window' || g === 'missing_arrival_date') normalized = 'lead_time';
-          else normalized = g;
-          if (!seen.has(normalized)) {
-            seen.add(normalized);
-            gateFailCount.set(normalized, (gateFailCount.get(normalized) ?? 0) + 1);
+          if (!seen.has(g)) {
+            seen.add(g);
+            gateFailCount.set(g, (gateFailCount.get(g) ?? 0) + 1);
           }
         }
       }
@@ -1368,10 +1365,15 @@ function QualityPanel({
           <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-3">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">Per-gate weights</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                3 gates are placeholders (greyed out) — auto-credited until mirror schema supports them.
-                Sum of active gates: <span className="font-semibold">{weights.filter(w => w.evaluated).reduce((a, w) => a + Number(w.weight), 0)}</span> / 100.
-              </p>
+              {(() => {
+                const placeholderCount = weights.filter(w => !w.evaluated).length;
+                return (
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {placeholderCount} gate{placeholderCount === 1 ? ' is a placeholder' : 's are placeholders'} (greyed out) — auto-credited until mirror schema supports them.
+                    Sum of active gates: <span className="font-semibold">{weights.filter(w => w.evaluated).reduce((a, w) => a + Number(w.weight), 0)}</span> / 100.
+                  </p>
+                );
+              })()}
             </div>
             <div className="text-right">
               <span

@@ -256,10 +256,10 @@ export default async function AdminCatalogApprovalQueuePage({
   {
     const [{ count: blocked }, { count: publishable }, { count: perfect }, { count: total }] =
       await Promise.all([
-        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }).eq('status', 'blocked'),
-        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }).eq('status', 'publishable'),
-        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }).eq('status', 'perfect'),
-        backup.from('catalog_classifications').select('id', { count: 'exact', head: true }),
+        backup.from('catalog_classifications').select('sku_id', { count: 'exact', head: true }).eq('status', 'blocked'),
+        backup.from('catalog_classifications').select('sku_id', { count: 'exact', head: true }).eq('status', 'publishable'),
+        backup.from('catalog_classifications').select('sku_id', { count: 'exact', head: true }).eq('status', 'perfect'),
+        backup.from('catalog_classifications').select('sku_id', { count: 'exact', head: true }),
       ]);
     supplyBlockedCount    = blocked    ?? 0;
     supplyPublishableCount = publishable ?? 0;
