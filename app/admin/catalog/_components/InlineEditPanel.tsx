@@ -69,7 +69,7 @@ const INPUT_PLACEHOLDER: Record<GateId, string> = {
 // ---------------------------------------------------------------------------
 
 export interface InlineEditPanelProps {
-  sku_id: number;
+  sku_id: string;
   sku_name: string;
   sku_vendor: string;
   sku_status: 'blocked' | 'publishable' | 'perfect';
