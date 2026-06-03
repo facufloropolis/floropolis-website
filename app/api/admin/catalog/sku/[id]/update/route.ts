@@ -1,11 +1,18 @@
 // POST /api/admin/catalog/sku/[id]/update
-// v1 | 2026-05-18 | Job_PM CAT-S4 [V8 SHADOW]
+// v2 | 2026-06-03 | Job_PM — re-keyed to catalog_classifications uuid schema.
+//
+// [id] is the sku_id UUID (dim_sku spine / catalog_classifications PK). The
+// editable surface still lives on the bigint-keyed floropolis_inventory_mirror,
+// so we resolve uuid -> mirror bigint id via product_chrome.fi_id before writing.
+// After the mirror write we re-run the classifier on the fresh mirror row and
+// UPSERT catalog_classifications (keyed by uuid sku_id) so the detail page
+// reflects the new state on router.refresh().
+//
+// NOTE (flag): this route still writes the deprecated bigint mirror. The mirror
+// is being retired in favor of the dim_sku/canonical_cost silver spine; once the
+// admin editor writes silver directly, the uuid->fi_id resolution below can go.
 //
 // Body: { field: string, value: unknown }
-//
-// Single-field write to floropolis_inventory_mirror. After write, re-runs the
-// 16-gate classifier on JUST this row and UPSERTs catalog_classifications so the
-// detail page reflects the new state on router.refresh().
 //
 // Whitelist (only these fields are writable from the admin SKU editor):
 //   price                 numeric  (>= 0)
@@ -73,6 +80,16 @@ const ALLOWED_FIELDS = new Set([
 ]);
 
 const SCHEMA_TODO_FIELDS = new Set(['last_harvested_date', 'vase_life_days']);
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Blocking gate tier ids (current 13-gate model) used to derive blocking_gate_count.
+const LEAD_TIME_GATE_IDS = new Set([
+  't2_outside_5d_window',
+  't3_outside_14d_window',
+  'missing_arrival_date',
+]);
 
 const MARGIN_STATUSES = new Set(['TRACKED', 'PENDING', 'UNKNOWN', 'OVERRIDE']);
 const UNIT_VALUES = new Set(['Stem', 'Bunch', 'Box']);
@@ -236,9 +253,9 @@ export async function POST(
 
   // Params ---------------------------------------------------------------
   const { id } = await ctx.params;
-  const skuId = Number.parseInt(id, 10);
-  if (!Number.isFinite(skuId) || skuId <= 0) {
-    return NextResponse.json({ error: 'invalid_sku_id' }, { status: 400 });
+  const skuUuid = (id ?? '').trim();
+  if (!UUID_RE.test(skuUuid)) {
+    return NextResponse.json({ error: 'invalid_sku_id', detail: 'sku_id must be a uuid' }, { status: 400 });
   }
 
   // Body -----------------------------------------------------------------
@@ -280,15 +297,42 @@ export async function POST(
     );
   }
 
-  // Update mirror --------------------------------------------------------
+  // Resolve uuid -> mirror bigint id (product_chrome.fi_id) -------------
   const backup = getBackupServiceClient();
+  const { data: chromeRow, error: chromeErr } = await backup
+    .from('product_chrome')
+    .select('fi_id')
+    .eq('sku_id', skuUuid)
+    .maybeSingle();
+  if (chromeErr) {
+    Sentry.captureException(chromeErr, {
+      tags: { route: 'admin/catalog/sku/update', step: 'resolve_fi_id' },
+    });
+    return NextResponse.json(
+      { error: 'resolve_failed', detail: chromeErr.message },
+      { status: 500 },
+    );
+  }
+  const mirrorId =
+    chromeRow && chromeRow.fi_id != null ? Number(chromeRow.fi_id) : null;
+  if (mirrorId == null || !Number.isFinite(mirrorId)) {
+    return NextResponse.json(
+      {
+        error: 'no_mirror_mapping',
+        detail: `sku_id ${skuUuid} has no product_chrome.fi_id; the editable mirror row cannot be resolved (mirror retirement pending)`,
+      },
+      { status: 409 },
+    );
+  }
+
+  // Update mirror --------------------------------------------------------
   const { error: updErr } = await backup
     .from('floropolis_inventory_mirror')
     .update({ [field]: coerced.value })
-    .eq('id', skuId);
+    .eq('id', mirrorId);
   if (updErr) {
     Sentry.captureException(updErr, {
-      tags: { route: 'admin/catalog/sku/update', field, sku_id: String(skuId) },
+      tags: { route: 'admin/catalog/sku/update', field, sku_id: skuUuid },
     });
     return NextResponse.json(
       { error: 'update_failed', detail: updErr.message },
@@ -300,7 +344,7 @@ export async function POST(
   const { data: freshRow, error: readErr } = await backup
     .from('floropolis_inventory_mirror')
     .select('*')
-    .eq('id', skuId)
+    .eq('id', mirrorId)
     .maybeSingle();
   if (readErr || !freshRow) {
     // Update succeeded but re-classify failed -- log + return partial success
@@ -329,7 +373,7 @@ export async function POST(
     backup
       .from('catalog_classifications')
       .select('status, last_changed_at, reviewer_action')
-      .eq('sku_id', skuId)
+      .eq('sku_id', skuUuid)
       .maybeSingle(),
     backup.from('catalog_quality_weights').select('gate_id, tier'),
   ]);
@@ -365,7 +409,7 @@ export async function POST(
 
   // Preserve admin overrides: if reviewer_action is set and status is
   // admin_overridden_*, don't clobber it -- only refresh failing_gates +
-  // gate_score + last_validated_at. The override stays in force.
+  // blocking_gate_count + last_validated_at. The override stays in force.
   const existingCls = existingClsRes.data;
   const isAdminOverridden =
     typeof existingCls?.status === 'string' &&
@@ -376,14 +420,22 @@ export async function POST(
   const statusChanged =
     !existingCls || existingCls.status !== nextStatus;
 
+  // blocking_gate_count replaces the deprecated 0-16 gate_score. It is the count
+  // of FAILING gates whose tier is 'blocking' (current 13-gate model). Lead-time
+  // gate ids fold into the 'lead_time' weight bucket for tier lookup.
+  const blockingGateCount = classification.failing_gates.filter((g) => {
+    const key = LEAD_TIME_GATE_IDS.has(g) ? 'lead_time' : g;
+    return gateTiers[key] === 'blocking';
+  }).length;
+
   const { error: clsErr } = await backup
     .from('catalog_classifications')
     .upsert(
       {
-        sku_id: skuId,
+        sku_id: skuUuid,
         status: nextStatus,
         failing_gates: classification.failing_gates,
-        gate_score: classification.gate_score,
+        blocking_gate_count: blockingGateCount,
         vendor: classification.vendor,
         tier: classification.tier,
         variety: classification.variety,
@@ -412,7 +464,7 @@ export async function POST(
     reclassified: true,
     classification: {
       status: nextStatus,
-      gate_score: classification.gate_score,
+      blocking_gate_count: blockingGateCount,
       failing_gates: classification.failing_gates,
     },
   });

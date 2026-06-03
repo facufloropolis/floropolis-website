@@ -1,21 +1,20 @@
 // POST /api/admin/catalog/sku/[id]/admin-action
-// v1 | 2026-05-18 | Job_PM CAT-S4 [V8 SHADOW]
+// v2 | 2026-06-03 | Job_PM — re-keyed to catalog_classifications uuid schema.
 //
-// Body: { action: 'force_publish' | 'force_hide' | 'forward_to_rose' | 'reset',
-//         notes?: string }
+// [id] is the sku_id uuid (FK dim_sku). Body: { action: 'force_publish' |
+// 'force_hide' | 'forward_to_rose' | 'reset', notes?: string }
 //
 // Per-SKU twin of /api/admin/catalog/approval-queue/action (which handles
-// bulk lists). This route only touches catalog_classifications -- the mirror
-// row is left alone.
+// bulk lists). This route only touches catalog_classifications.
 //
 //   force_publish   -> status='admin_overridden_publish', reviewer_action='approve_publish'
 //   force_hide      -> status='admin_overridden_hide',    reviewer_action='reject_hide'
-//   forward_to_rose -> status='needs_data_fix',           reviewer_action='forward_to_rose'
-//   reset           -> clears reviewer_*; status -> 'needs_data_fix' so the next
-//                      validator run reclassifies cleanly. (We do not eagerly
-//                      re-run the 16 gates here because the operator typically
-//                      pairs reset with a /api/admin/catalog/sku/[id]/update
-//                      call right after.)
+//   forward_to_rose -> status='blocked',                  reviewer_action='forward_to_rose'
+//   reset           -> clears reviewer_*; status -> 'blocked' (safe default) so the
+//                      next validator/recompute run reclassifies cleanly. (We do
+//                      not eagerly re-run the gates here.)
+// Note: the deprecated 'needs_data_fix' status is gone from the CHECK; a row
+// that needs Rose to fix data is 'blocked' until the recompute clears it.
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -50,11 +49,14 @@ function mapAction(action: AdminAction): {
     case 'force_hide':
       return { status: 'admin_overridden_hide', reviewer_action: 'reject_hide' };
     case 'forward_to_rose':
-      return { status: 'needs_data_fix', reviewer_action: 'forward_to_rose' };
+      return { status: 'blocked', reviewer_action: 'forward_to_rose' };
     case 'reset':
-      return { status: 'needs_data_fix', reviewer_action: null };
+      return { status: 'blocked', reviewer_action: null };
   }
 }
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(
   req: NextRequest,
@@ -79,9 +81,9 @@ export async function POST(
   }
 
   const { id } = await ctx.params;
-  const skuId = Number.parseInt(id, 10);
-  if (!Number.isFinite(skuId) || skuId <= 0) {
-    return NextResponse.json({ error: 'invalid_sku_id' }, { status: 400 });
+  const skuId = (id ?? '').trim();
+  if (!UUID_RE.test(skuId)) {
+    return NextResponse.json({ error: 'invalid_sku_id', detail: 'sku_id must be a uuid' }, { status: 400 });
   }
 
   let body: ActionBody;

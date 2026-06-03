@@ -2,11 +2,20 @@
 """
 Catalog Review Notify Daily -- daily email to Facu summarizing the catalog
 approval queue.
-v1 | 2026-05-18 | Job_PM [V8 SHADOW] (CAT-S6)
+v2 | 2026-06-03 | Job_PM — compatibility re-key to the uuid classifications schema.
 
-Reads `catalog_classifications` where reviewer_action='awaiting' AND
-status='needs_facu_review' and emails Facu a triage summary so he knows there
-are rows waiting on his decision in /admin/catalog/approval-queue.
+!! RETIREMENT FLAG (2026-06-03): this notifier was built around the deprecated
+   status='needs_facu_review' value, which no longer exists in the
+   catalog_classifications CHECK (now blocked/publishable/perfect/
+   admin_overridden_publish/admin_overridden_hide). The "awaiting review" queue
+   is now expressed purely by reviewer_action='awaiting'. Re-keyed minimally:
+   the dead status filter is dropped and gate_score -> blocking_gate_count.
+   Whether this daily email survives the recompute is FLAGGED for Facu review;
+   do not extend it.
+
+Reads `catalog_classifications` where reviewer_action='awaiting' and emails Facu
+a triage summary so he knows there are rows waiting on his decision in
+/admin/catalog/approval-queue.
 
 DIFFERENT from inventory_data_validator.py (Subagent A) and
 catalog_audit_daily.py:
@@ -104,15 +113,16 @@ def execute_sql(query: str) -> list[dict]:
 def fetch_awaiting_rows() -> list[dict]:
     """Pull all rows currently flagged as awaiting Facu's review.
 
-    Filter: reviewer_action='awaiting' AND status='needs_facu_review'.
+    Filter: reviewer_action='awaiting'. (The deprecated status='needs_facu_review'
+    filter was dropped — that status no longer exists in the schema; the awaiting
+    queue is expressed by reviewer_action alone.) sku_id is now a uuid.
     Returns the minimal columns we need for aggregation.
     """
     return execute_sql(
-        "SELECT sku_id, vendor, tier, variety, failing_gates, gate_score, "
+        "SELECT sku_id, vendor, tier, variety, failing_gates, blocking_gate_count, "
         "last_validated_at, last_changed_at "
         "FROM catalog_classifications "
         "WHERE reviewer_action = 'awaiting' "
-        "  AND status = 'needs_facu_review' "
         "ORDER BY last_changed_at DESC, sku_id ASC"
     )
 

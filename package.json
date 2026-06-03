@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -H 127.0.0.1",
     "dev:network": "next dev -H 0.0.0.0",
+    "prebuild": "node scripts/generate-products.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

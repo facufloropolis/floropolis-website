@@ -216,14 +216,24 @@ async function checkCatalogGrid() {
 // CHECK 2 — Config page failing counts: classifications-derived vs live recompute.
 // ---------------------------------------------------------------------------
 async function checkConfigFailingCounts() {
+  // DISPLAYED path is keyed to the post-2026-06-03 uuid schema: catalog_classifications
+  // is now keyed on sku_id uuid (FK dim_sku) and failing_gates holds ONLY current-spec
+  // (13-gate vocab) gate_ids. We still derive displayed per-gate counts by exploding
+  // failing_gates; the recompute makes those counts match the live truth (so this
+  // check should flip FAIL->PASS after the migration is applied).
   const queries_used = [
-    "SELECT failing_gates FROM catalog_classifications",
+    "SELECT sku_id, failing_gates FROM catalog_classifications",
     "SELECT d.sku_id, pc.images, pc.description FROM dim_sku d LEFT JOIN product_chrome pc ON pc.sku_id=d.sku_id WHERE COALESCE(d.quarantined,false)=false",
   ];
 
-  // DISPLAYED: per-gate failing counts derived from the stale classifications table.
+  // DISPLAYED: per-gate failing counts derived from the classifications table
+  // (current-spec gate vocab only; uuid-keyed). We select only failing_gates +
+  // sku_id — the post-migration blocking_gate_count column is not needed for the
+  // displayed-vs-truth comparison, and selecting it would break this read on the
+  // pre-migration schema. (status routing now uses blocking_gate_count>0; this
+  // check verifies the per-gate counts the config page renders.)
   const cls = await restSelectAll("catalog_classifications", {
-    select: "failing_gates",
+    select: "sku_id,failing_gates",
   });
   const displayedByGate = {};
   for (const row of cls) {

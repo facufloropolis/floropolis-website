@@ -1,7 +1,24 @@
 #!/usr/bin/env python3
 """
 SUBAGENT A: Inventory Data Validator (Job_PM-owned)
-v1.2 | 2026-05-18 | Job_PM [V8 SHADOW]
+v1.3 | 2026-06-03 | Job_PM — compatibility re-key + RETIREMENT FLAG
+
+================================================================================
+!! RETIREMENT FLAG (2026-06-03) — FLAGGED FOR REVIEW, do NOT extend this job. !!
+This job's whole premise (read bigint-keyed floropolis_inventory[_mirror], run
+the deprecated 25/16-gate model, UPSERT bigint-keyed catalog_classifications with
+gate_score) is SUPERSEDED by:
+  - the uuid-keyed catalog_classifications schema (sku_id uuid FK dim_sku,
+    blocking_gate_count instead of gate_score, current 13-gate vocab), and
+  - the recompute migration 20260603_recompute_classifications_current_spec.sql,
+    which derives classifications from the silver spine (dim_sku + canonical_cost
+    + product_chrome + box_master_mirror) — the new source of truth.
+The catalog_classifications UPSERT below is therefore DISABLED by default
+(WRITE_CLASSIFICATIONS=false) because it would (a) write bigint mirror ids that
+violate the new uuid FK, and (b) re-introduce the deprecated gate vocab the
+recompute exists to remove. The threshold-alerting half (email on data-quality
+breaches) is still useful and left running. Retirement decision pending Facu.
+================================================================================
 
 Continuous validation of `floropolis_inventory` data quality. Catches what Rose's
 pipeline might miss before customers see it. Per Facu directive 2026-05-17:
@@ -806,11 +823,22 @@ def upsert_classifications(classifications: list[dict], batch_size: int = 200) -
         else:
             # status unchanged -> preserve prior last_changed_at
             last_changed = prior["last_changed_at"] or now_iso
+        # NOTE: blocking_gate_count (current schema) = # of FAILING blocking gates,
+        # NOT the deprecated 0-16 gate_score (which counted PASSED gates). We derive
+        # it from failing_gates + GATE_TIERS. sku_int here is a bigint mirror id and
+        # is INCOMPATIBLE with the new uuid FK — see RETIREMENT FLAG; this payload is
+        # only sent when WRITE_CLASSIFICATIONS=true (off by default).
+        blocking_count = sum(
+            1 for g in c.get("failing_gates", [])
+            if GATE_TIERS.get("lead_time" if g in (
+                "t2_outside_5d_window", "t3_outside_14d_window", "missing_arrival_date"
+            ) else g) == "blocking"
+        )
         payload.append({
             "sku_id": sku_int,
             "status": c["status"],
             "failing_gates": c["failing_gates"],
-            "gate_score": int(c["gate_score"]),
+            "blocking_gate_count": int(blocking_count),
             "vendor": c.get("vendor"),
             "tier": c.get("tier"),
             "variety": c.get("variety"),
@@ -945,15 +973,24 @@ def run_validation() -> dict:
 
     vendor_dev = vendor_deviation_summary(all_results)
 
-    # Upsert classifications into catalog_classifications (CAT-S2)
+    # Upsert classifications into catalog_classifications (CAT-S2).
+    # DISABLED by default — see RETIREMENT FLAG at top of file. The recompute
+    # migration is now the authority for catalog_classifications, and this job's
+    # bigint mirror ids violate the new uuid FK. Set WRITE_CLASSIFICATIONS=true
+    # to force the legacy write (will fail against the new schema by design).
     classification_summary = summarize_classifications(classifications)
     rows_written = 0
     upsert_error: str | None = None
-    try:
-        rows_written = upsert_classifications(classifications)
-    except Exception as e:  # noqa: BLE001
-        upsert_error = f"{type(e).__name__}: {e}"
-        print(f"catalog_classifications upsert failed: {upsert_error}", file=sys.stderr)
+    write_enabled = os.environ.get("WRITE_CLASSIFICATIONS", "").lower() in ("1", "true", "yes")
+    if not write_enabled:
+        upsert_error = "skipped: WRITE_CLASSIFICATIONS not set (deprecated; recompute migration is authority)"
+        print(f"catalog_classifications upsert {upsert_error}", file=sys.stderr)
+    else:
+        try:
+            rows_written = upsert_classifications(classifications)
+        except Exception as e:  # noqa: BLE001
+            upsert_error = f"{type(e).__name__}: {e}"
+            print(f"catalog_classifications upsert failed: {upsert_error}", file=sys.stderr)
 
     return {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),

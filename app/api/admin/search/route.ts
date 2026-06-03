@@ -1,8 +1,9 @@
 // /api/admin/search -- backs the Cmd+K command palette in the v2 admin shell.
-// v1 | 2026-05-19 | Job_PM SHELL-V2 [V8 SHADOW]
+// v2 | 2026-06-03 | Job_PM — re-keyed SKU search to the uuid spine.
 //
 // Returns up to ~12 hits across three sources:
-//   - SKUs (catalog_classifications joined with floropolis_inventory_mirror)
+//   - SKUs (v_catalog_admin, uuid sku_id; name/variety/vendor ilike). Links to
+//     the uuid-keyed detail page /admin/catalog/<sku_id>.
 //   - Orders (orders.order_number ilike)
 //   - Screens (static list, mirrored in AdminCommandPalette.tsx for client-side
 //     instant filter -- this endpoint does not return screens)
@@ -61,43 +62,46 @@ export async function GET(request: Request) {
   const like = `%${q.replace(/[%_]/g, (m) => `\\${m}`)}%`;
   const hits: SearchHit[] = [];
 
-  // SKU hits -- search floropolis_inventory_mirror by name/variety/vendor, and
-  // by numeric id if q parses as an integer.
+  // SKU hits -- search v_catalog_admin (uuid spine) by name/variety/vendor, or
+  // by exact sku_id uuid if q is a uuid. Links to the uuid-keyed detail page.
   try {
-    const skuQuery = svc
-      .from('floropolis_inventory_mirror')
-      .select('id, name, vendor, variety, length')
-      .limit(8);
-
-    const asInt = parseInt(q, 10);
-    if (Number.isFinite(asInt) && String(asInt) === q) {
-      const { data } = await skuQuery.eq('id', asInt);
-      (data ?? []).forEach((r) => {
-        const row = r as { id: number; name: string | null; vendor: string | null; variety: string | null; length: number | null };
+    type SkuRow = {
+      sku_id: string;
+      name: string | null;
+      vendor: string | null;
+      variety: string | null;
+      length: string | null;
+    };
+    const pushSku = (rows: SkuRow[]) => {
+      for (const row of rows) {
         hits.push({
           type: 'sku',
-          id: String(row.id),
-          label: row.name ?? `SKU #${row.id}`,
-          sub: [row.vendor, row.variety, row.length ? `${row.length}cm` : null].filter(Boolean).join(' . '),
-          href: `/admin/catalog/${row.id}`,
+          id: String(row.sku_id),
+          label: row.name ?? `SKU ${row.sku_id}`,
+          sub: [row.vendor, row.variety, row.length ? `${row.length}cm` : null]
+            .filter(Boolean)
+            .join(' . '),
+          href: `/admin/catalog/${row.sku_id}`,
         });
-      });
+      }
+    };
+
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(q);
+    if (isUuid) {
+      const { data } = await svc
+        .from('v_catalog_admin')
+        .select('sku_id, name, vendor, variety, length')
+        .eq('sku_id', q)
+        .limit(8);
+      pushSku((data ?? []) as SkuRow[]);
     } else {
       const { data } = await svc
-        .from('floropolis_inventory_mirror')
-        .select('id, name, vendor, variety, length')
+        .from('v_catalog_admin')
+        .select('sku_id, name, vendor, variety, length')
         .or(`name.ilike.${like},variety.ilike.${like},vendor.ilike.${like}`)
         .limit(8);
-      (data ?? []).forEach((r) => {
-        const row = r as { id: number; name: string | null; vendor: string | null; variety: string | null; length: number | null };
-        hits.push({
-          type: 'sku',
-          id: String(row.id),
-          label: row.name ?? `SKU #${row.id}`,
-          sub: [row.vendor, row.variety, row.length ? `${row.length}cm` : null].filter(Boolean).join(' . '),
-          href: `/admin/catalog/${row.id}`,
-        });
-      });
+      pushSku((data ?? []) as SkuRow[]);
     }
   } catch (err) {
     console.error('[admin/search] sku', err);

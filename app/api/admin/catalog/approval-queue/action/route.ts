@@ -1,14 +1,15 @@
 // POST /api/admin/catalog/approval-queue/action
-// v1 | 2026-05-18 | Job_PM CAT-S5 [V8 SHADOW]
+// v2 | 2026-06-03 | Job_PM — re-keyed to catalog_classifications uuid schema.
 //
-// Body: { sku_ids: number[], action: 'approve_publish'|'reject_hide'|'forward_to_rose', notes?: string }
+// Body: { sku_ids: string[] (uuid), action: 'approve_publish'|'reject_hide'|'forward_to_rose', notes?: string }
 //
 // Updates catalog_classifications.reviewer_action / reviewer_at /
-// reviewer_user_id / reviewer_notes for the given SKU IDs. When action is
-// 'approve_publish' or 'reject_hide' the matching status flips to the
-// admin_overridden_* terminal state so the /shop filter respects Facu's call.
-// 'forward_to_rose' parks the row back on Rose by setting status =
-// 'needs_data_fix' and leaving the reviewer trail.
+// reviewer_user_id / reviewer_notes for the given SKU IDs (uuid, FK dim_sku).
+// When action is 'approve_publish' or 'reject_hide' the matching status flips to
+// the admin_overridden_* terminal state so the /shop filter respects Facu's call.
+// 'forward_to_rose' parks the row back on Rose by setting status = 'blocked'
+// (the only blocked-equivalent state in the current CHECK; the deprecated
+// 'needs_data_fix' status no longer exists) and leaving the reviewer trail.
 //
 // Admin gate same as the rest of /admin: session user + client_profiles.status='admin'.
 
@@ -35,13 +36,15 @@ const VALID_ACTIONS: readonly ReviewerAction[] = [
   'forward_to_rose',
 ];
 
-function parseSkuIds(raw: unknown): number[] | null {
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function parseSkuIds(raw: unknown): string[] | null {
   if (!Array.isArray(raw)) return null;
-  const out: number[] = [];
+  const out: string[] = [];
   for (const v of raw) {
-    const n = Number(v);
-    if (!Number.isFinite(n) || n <= 0) return null;
-    out.push(Math.trunc(n));
+    if (typeof v !== 'string' || !UUID_RE.test(v.trim())) return null;
+    out.push(v.trim());
   }
   return out;
 }
@@ -49,7 +52,9 @@ function parseSkuIds(raw: unknown): number[] | null {
 function statusForAction(action: ReviewerAction): string {
   if (action === 'approve_publish') return 'admin_overridden_publish';
   if (action === 'reject_hide') return 'admin_overridden_hide';
-  return 'needs_data_fix';
+  // forward_to_rose: no 'needs_data_fix' status in the current CHECK; a row that
+  // needs Rose to fix data is blocked from publish until fixed.
+  return 'blocked';
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -84,7 +89,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const skuIds = parseSkuIds(body.sku_ids);
   if (!skuIds || skuIds.length === 0) {
     return NextResponse.json(
-      { error: 'invalid_sku_ids', detail: 'must be a non-empty array of positive ints' },
+      { error: 'invalid_sku_ids', detail: 'must be a non-empty array of sku_id uuids' },
       { status: 400 },
     );
   }
