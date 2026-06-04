@@ -357,7 +357,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('v_catalog_admin')
       .select(
-        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, arrival_date',
+        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, arrival_date, availability_min_days_ahead, availability_max_days_ahead',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -1441,9 +1441,10 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                             SELLING UNIT (suffix derived from r.unit). Falls back to
                             the model-derived per-stem value when the view has none. */}
                       <td className="px-3 py-2.5 text-right text-slate-700">
-                        {r.delivery_cost != null
-                          ? fmtDelivery(r.delivery_cost, r.unit)
-                          : fmtUsd(r.shipping_per_stem)}
+                        <div>{r.delivery_cost != null ? fmtUsd(r.delivery_cost) : fmtUsd(r.shipping_per_stem)}</div>
+                        {r.total_stems > 0 && (
+                          <div className="text-[9px] text-slate-400">{r.total_stems} stems/box</div>
+                        )}
                       </td>
 
                       {/* 7. Price */}
@@ -1511,8 +1512,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                                 </div>
                               )}
                               {r.price_floor != null && (
-                                <div className="text-[9px] text-slate-400" title="Price floor (minimum to clear margin floor)">
-                                  floor ${r.price_floor.toFixed(2)}
+                                <div className="text-[9px] text-slate-400" title="Minimum price = (cost + delivery) / 0.95 — below this the 5% GPM (rep commission) floor breaks">
+                                  min price ${r.price_floor.toFixed(2)}
                                 </div>
                               )}
                             </div>
@@ -1537,57 +1538,19 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </div>
                       </td>
 
-                      {/* 10. Avail — "live" label for k2k stems; "next batch" for arrival_date */}
+                      {/* 10. Avail — TIER COMMITMENT WINDOW (v2.2 doctrine: T2/T3 = tier
+                            + commitment, never arrival dates). Window from
+                            catalog_availability_windows via v_catalog_admin. Live K2K
+                            decoration returns with S6 live_signal. */}
                       <td className="px-3 py-2.5 text-right">
-                        {r.buckets.includes('k2k_live') ? (
-                          // K2K live: show boxes or stems
-                          r.boxes_available != null && r.boxes_available > 0 ? (
-                            <div>
-                              <div className="text-slate-700">{r.boxes_available.toLocaleString()} boxes</div>
-                              <div className="text-[10px] text-emerald-600 font-medium">live</div>
+                        {r.availability_min_days_ahead != null && r.availability_max_days_ahead != null ? (
+                          <div>
+                            <div className={`text-[10px] font-medium ${r.tier === 'T2' ? 'text-blue-600' : 'text-slate-500'}`}>
+                              {r.tier} · ships {r.availability_min_days_ahead}–{r.availability_max_days_ahead}d
                             </div>
-                          ) : r.total_stems > 0 ? (
-                            <div>
-                              <div className="text-slate-700">{r.total_stems.toLocaleString()} stems</div>
-                              <div className="text-[10px] text-amber-600 font-medium">⚠ data</div>
-                            </div>
-                          ) : (
-                            <div className="text-[10px] text-slate-400">0 boxes</div>
-                          )
-                        ) : r.buckets.includes('t2') ? (
-                          // T2: farm commitment — show date as context only, no alarming
-                          (() => {
-                            if (!r.arrival_date) {
-                              return <div className="text-[10px] text-blue-600">T2 · date TBD</div>;
-                            }
-                            const arrDate = new Date(r.arrival_date + 'T00:00:00');
-                            const dateStr = arrDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            const isPast = arrDate < today;
-                            return (
-                              <div>
-                                <div className="text-[10px] text-blue-600 font-medium">T2 · {dateStr}</div>
-                                {isPast && <div className="text-[10px] text-slate-400">date stale</div>}
-                              </div>
-                            );
-                          })()
-                        ) : r.buckets.includes('t3') ? (
-                          // T3: farm commitment — show date as context only, no alarming
-                          (() => {
-                            if (!r.arrival_date) {
-                              return <div className="text-[10px] text-slate-500">T3 · date TBD</div>;
-                            }
-                            const arrDate = new Date(r.arrival_date + 'T00:00:00');
-                            const dateStr = arrDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            const isPast = arrDate < today;
-                            return (
-                              <div>
-                                <div className="text-[10px] text-slate-500 font-medium">T3 · {dateStr}</div>
-                                {isPast && <div className="text-[10px] text-slate-400">date stale</div>}
-                              </div>
-                            );
-                          })()
+                          </div>
                         ) : (
-                          <span className="text-[10px] text-slate-400">—</span>
+                          <span className="text-[10px] text-slate-400">no window</span>
                         )}
                       </td>
 
