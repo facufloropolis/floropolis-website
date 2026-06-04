@@ -78,6 +78,7 @@ import { getWiringForPage } from '@/lib/admin/wiring';
 import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import {
   buildCatalog,
+  gpmBandFor,
   GPM_BAND_CLS,
   VISIBILITY_BADGE_CLS,
   PUBLICATION_STATUS_CLS,
@@ -85,6 +86,7 @@ import {
   type BoxMasterRow,
   type CatalogV2Row,
   type ClassificationRow,
+  type MarginStatus,
   type MirrorRow,
   type PricingConstantRow,
   type PublicationStatus,
@@ -207,6 +209,29 @@ function fmtGpm(n: number | null): string {
   return `${(n * 100).toFixed(0)}%`;
 }
 
+// Selling-unit suffix for the Delivery column. v_catalog_admin.unit is free text
+// ('stem' | 'Stem' | 'bunch' | 'Box' | 'na' | ...). Normalize to a clean suffix;
+// fall back to '/unit' for unknowns so we never render a misleading label.
+function unitSuffix(unit: string | null | undefined): string {
+  const u = (unit ?? '').trim().toLowerCase();
+  if (u === 'stem' || u === 'stems') return '/stem';
+  if (u === 'bunch' || u === 'bunches') return '/bunch';
+  if (u === 'box' || u === 'boxes') return '/box';
+  return '/unit';
+}
+
+// Delivery cost PER SELLING UNIT — "$0.46/stem", "$2.71/box", "$0.28/bunch".
+function fmtDelivery(n: number | null, unit: string | null | undefined): string {
+  if (n == null) return '--';
+  return `$${n.toFixed(2)}${unitSuffix(unit)}`;
+}
+
+// margin_status badge (ok = subtle/none, below_floor = red, unpriced = amber).
+const MARGIN_STATUS_BADGE: Record<Exclude<MarginStatus, 'ok'>, { label: string; cls: string }> = {
+  below_floor: { label: 'BELOW FLOOR', cls: 'bg-red-100 text-red-800 border border-red-200' },
+  unpriced:    { label: 'UNPRICED',    cls: 'bg-amber-100 text-amber-800 border border-amber-200' },
+};
+
 function buildUrl(
   base: Record<string, string | undefined>,
   override: Record<string, string | undefined>,
@@ -232,10 +257,10 @@ function sortRows(rows: CatalogV2Row[], key: SortKey, dir: SortDir): CatalogV2Ro
       case 'name': return r.name.toLowerCase();
       case 'box': return (r.box_type ?? '').toLowerCase();
       case 'cost': return r.farm_cost ?? -1;
-      case 'delivery': return r.shipping_per_stem ?? -1;
+      case 'delivery': return r.delivery_cost ?? r.shipping_per_stem ?? -1;
       case 'price': return r.price ?? -1;
-      case 'gpm': return r.gpm ?? -1;
-      case 'margin': return r.margin_per_stem ?? -999;
+      case 'gpm': return r.gpm_actual ?? r.gpm ?? -1;
+      case 'margin': return r.margin ?? r.margin_per_stem ?? -999;
       case 'sources': return r.buckets.includes('k2k_live') ? 3 : r.buckets.includes('t2') ? 2 : r.buckets.includes('t3') ? 1 : 0;
       case 'avail': return r.total_stems;
       case 'visibility': return r.visibility;
@@ -332,7 +357,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('v_catalog_admin')
       .select(
-        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, has_open_price_alert, live, active, arrival_date',
+        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, arrival_date',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -666,11 +691,22 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             for (const r of universeRows) counts[r.publication_status]++;
             const parts = order
               .filter((s) => counts[s] > 0)
-              .map((s) => (
-                <span key={s} className={`font-medium ${cls[s]}`}>
-                  {counts[s]} {labels[s]}
-                </span>
-              ));
+              .map((s) =>
+                s === 'blocked' ? (
+                  <Link
+                    key={s}
+                    href="/admin/catalog/blocked"
+                    className={`font-medium underline decoration-dotted underline-offset-2 hover:decoration-solid ${cls[s]}`}
+                    title="See what is NOT publishable, grouped by failing gate"
+                  >
+                    {counts[s]} {labels[s]} →
+                  </Link>
+                ) : (
+                  <span key={s} className={`font-medium ${cls[s]}`}>
+                    {counts[s]} {labels[s]}
+                  </span>
+                ),
+              );
             return parts.length > 0 ? (
               <div className="mt-2 text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 {parts.map((el, i) => (
@@ -1401,9 +1437,13 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      {/* 6. Delivery (per-stem shipping cost) */}
+                      {/* 6. Delivery — REAL delivery_cost from v_catalog_admin, PER
+                            SELLING UNIT (suffix derived from r.unit). Falls back to
+                            the model-derived per-stem value when the view has none. */}
                       <td className="px-3 py-2.5 text-right text-slate-700">
-                        {fmtUsd(r.shipping_per_stem)}
+                        {r.delivery_cost != null
+                          ? fmtDelivery(r.delivery_cost, r.unit)
+                          : fmtUsd(r.shipping_per_stem)}
                       </td>
 
                       {/* 7. Price */}
@@ -1413,32 +1453,71 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </span>
                       </td>
 
-                      {/* 8. GPM */}
-                      <td className="px-3 py-2.5 text-right">
-                        {r.gpm_band ? (
-                          <span className={`font-semibold ${GPM_BAND_CLS[r.gpm_band]}`}>
-                            {fmtGpm(r.gpm)}
-                          </span>
-                        ) : (
-                          <span className="text-slate-400 text-xs">--</span>
-                        )}
-                      </td>
+                      {/* 8. GPM — REAL gpm_actual from v_catalog_admin (fraction),
+                            band-colored. Falls back to the model-derived gpm. */}
+                      {(() => {
+                        const gpmShown = r.gpm_actual ?? r.gpm;
+                        const band = r.gpm_actual != null ? gpmBandFor(r.gpm_actual) : r.gpm_band;
+                        return (
+                          <td className="px-3 py-2.5 text-right">
+                            {gpmShown != null && band ? (
+                              <span className={`font-semibold ${GPM_BAND_CLS[band]}`}>
+                                {fmtGpm(gpmShown)}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 text-xs">--</span>
+                            )}
+                          </td>
+                        );
+                      })()}
 
-                      {/* 8b. Margin $ — reads r.margin_per_stem from buildCatalog; no arithmetic here */}
+                      {/* 8b. Margin $ — REAL margin per SELLING UNIT from
+                            v_catalog_admin + margin_status badge (below_floor=red,
+                            unpriced=amber, ok=subtle). Falls back to model margin_per_stem. */}
                       <td className="px-3 py-2.5 text-right">
                         {(() => {
-                          if (r.margin_per_stem == null) {
-                            return <span className="text-slate-400 text-xs">—</span>;
-                          }
-                          const cls =
-                            r.gpm_band === 'green'
-                              ? 'text-emerald-700 font-semibold'
-                              : r.gpm_band === 'amber'
-                              ? 'text-amber-600 font-semibold'
-                              : 'text-red-600 font-semibold';
-                          return <span className={cls}>${r.margin_per_stem.toFixed(2)}</span>;
+                          const marginShown = r.margin ?? r.margin_per_stem;
+                          const usingReal = r.margin != null;
+                          const badge =
+                            r.margin_status && r.margin_status !== 'ok'
+                              ? MARGIN_STATUS_BADGE[r.margin_status]
+                              : null;
+                          return (
+                            <div className="flex flex-col items-end gap-0.5">
+                              {marginShown != null ? (
+                                <span
+                                  className={
+                                    r.margin_status === 'below_floor'
+                                      ? 'text-red-600 font-semibold'
+                                      : r.gpm_band === 'green'
+                                      ? 'text-emerald-700 font-semibold'
+                                      : r.gpm_band === 'amber'
+                                      ? 'text-amber-600 font-semibold'
+                                      : 'text-slate-700 font-semibold'
+                                  }
+                                >
+                                  ${marginShown.toFixed(2)}
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 text-xs">—</span>
+                              )}
+                              {badge ? (
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-semibold ${badge.cls}`}>
+                                  {badge.label}
+                                </span>
+                              ) : (
+                                <div className="text-[10px] text-slate-400">
+                                  per {unitSuffix(usingReal ? r.unit : 'stem').slice(1)}
+                                </div>
+                              )}
+                              {r.price_floor != null && (
+                                <div className="text-[9px] text-slate-400" title="Price floor (minimum to clear margin floor)">
+                                  floor ${r.price_floor.toFixed(2)}
+                                </div>
+                              )}
+                            </div>
+                          );
                         })()}
-                        <div className="text-[10px] text-slate-400">per stem</div>
                       </td>
 
                       {/* 9. Sources */}

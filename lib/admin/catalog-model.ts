@@ -133,6 +133,13 @@ export interface MirrorRow {
   units_per_box: number | string | null;
   box_type: string | null;
   margin_status: string | null;
+  // REAL DB-computed economics from v_catalog_admin (per selling unit). These are
+  // authoritative — the view already did the arithmetic. This module carries them
+  // through verbatim (no recompute); page.tsx renders them.
+  delivery_cost: number | string | null; // shipping cost per SELLING UNIT (stem/bunch/box)
+  gpm_actual: number | string | null;     // gross product margin as a fraction (0..1)
+  margin: number | string | null;         // $ margin per selling unit
+  price_floor: number | string | null;    // minimum price to clear the floor
   has_open_price_alert: boolean | null;
   live: boolean;
   active: boolean;
@@ -168,6 +175,8 @@ export type UniverseBucket = 't2' | 't3' | 'k2k_live';
 
 export type GpmBand = 'green' | 'amber' | 'red';
 export type Visibility = 'live' | 'hidden' | 'draft';
+// Margin floor status from v_catalog_admin.margin_status.
+export type MarginStatus = 'ok' | 'below_floor' | 'unpriced';
 
 export interface FailedGateDetail {
   gate_id: string;
@@ -221,6 +230,14 @@ export interface CatalogV2Row {
   // Margin per stem in $ (price - farm_cost - shipping_per_stem). null when price or cost missing.
   // shipping treated as 0 when null (US domestic: delivery baked into farm_cost; no separate leg).
   margin_per_stem: number | null;
+  // ── REAL DB-computed economics (per SELLING UNIT) — authoritative, carried
+  //    verbatim from v_catalog_admin. Prefer these over the model-derived
+  //    per-stem values for display. unit drives the suffix (/stem, /bunch, /box).
+  delivery_cost: number | null;   // delivery cost per selling unit
+  gpm_actual: number | null;       // gpm fraction (0..1) computed by the view
+  margin: number | null;           // $ margin per selling unit
+  price_floor: number | null;      // floor price per selling unit
+  margin_status: MarginStatus | null; // ok | below_floor | unpriced
   // Gap to perfect threshold (perfect_min_score - quality_score). null when unscored.
   gap_to_perfect: number | null;
   // Visibility (derived from live + active)
@@ -336,6 +353,11 @@ export function deriveVisibility(row: MirrorRow): Visibility {
   if (row.live && row.active) return 'live';
   if (row.active && !row.live) return 'hidden';
   return 'draft';
+}
+
+export function normalizeMarginStatus(v: string | null | undefined): MarginStatus | null {
+  if (v === 'ok' || v === 'below_floor' || v === 'unpriced') return v;
+  return null;
 }
 
 export function gpmBandFor(gpm: number | null): GpmBand | null {
@@ -558,6 +580,12 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       gpm,
       gpm_band,
       margin_per_stem,
+      // REAL DB-computed economics — carried verbatim (no recompute here).
+      delivery_cost: asNum(r.delivery_cost),
+      gpm_actual: asNum(r.gpm_actual),
+      margin: asNum(r.margin),
+      price_floor: asNum(r.price_floor),
+      margin_status: normalizeMarginStatus(r.margin_status),
       gap_to_perfect,
       has_open_price_alert: r.has_open_price_alert === true,
       visibility: deriveVisibility(r),
