@@ -73,6 +73,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import MorningSummaryHeader from './_components/MorningSummaryHeader';
+import CatalogPulseStrip from './_components/CatalogPulseStrip';
 import BlockingChips from './_components/BlockingChips';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
@@ -677,6 +678,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           <span className="mx-1.5">/</span>
           <span className="text-slate-700 font-medium">Catalog</span>
         </nav>
+
+        {/* Facu's Desk — Zone 1: the pulse (10s trust band, above everything) */}
+        <CatalogPulseStrip backup={backup} />
 
         {/* Header + state toggle */}
         <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">
