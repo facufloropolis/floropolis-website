@@ -1,0 +1,45 @@
+-- =============================================================================
+-- UNIVERSE RECOVERY RECORD — 2026-06-04 | Job_PM | Facu-approved live ("OK do it")
+-- All operations below were APPLIED to BACKUP (ibckhcjvyxzrhvdiazbx) via MCP;
+-- authoritative SQL bodies live in supabase_migrations.schema_migrations under
+-- these names (this file = repo audit trail + rollback map):
+--
+-- 1. dim_sku_color_in_natural_key_20260604
+--    sku_natural_key rebuilt 7-part -> 8-part (appends color_normalized, 'na'
+--    sentinel). ROOT CAUSE FIX: color-blind key collapsed 85 Facu-approved
+--    Megaflor color-variants into 27 at the S1 "exact-dup" dedup (verified vs
+--    untouched PROD originals: 85 rows = 85 distinct variants, zero dups).
+--    DOWN: drop column, re-add prior 7-part expression + unique index.
+--
+-- 2. reseed_megaflor_color_variants_20260604_v3
+--    +64 dim_sku identities from PROD originals (read-only fetch):
+--    53 active Megaflor color variants + 10 'x' QUARANTINED (Facu's documented
+--    data-error call) + 1 MF 'tropical mini fiesta sample' QUARANTINED (pending
+--    Facu). source_provenance='reseed:color_blind_dedup_recovery_20260604:...'
+--    Existing BACKUP cost rows re-linked to rightful identities by cost_id.
+--    DOWN: DELETE FROM dim_sku WHERE source_provenance LIKE 'reseed:color_blind%'
+--          + restore prior canonical_cost.sku_id links from facu_approved_note trail.
+--
+-- 3. restore_deleted_megaflor_cost_rows_20260604
+--    The "52 deduped rows" (= exactly the deleted Megaflor costs, 85-33) restored
+--    with ORIGINAL PROD cost_ids + values; facu_approved=true; provenance note
+--    per row. DOWN: DELETE FROM canonical_cost WHERE facu_approved_note LIKE
+--    '%S1 deletion reversal%'.
+--
+-- 4. v_catalog_admin_computed_pricing_20260604
+--    price/delivery_cost/gpm_actual/margin/price_floor computed LIVE from
+--    pricing_constants + box_master_mirror (formula: cost/(1-gpm)+delivery;
+--    floor=(cost+delivery)/0.95 — 5% GPM = rep commission, Facu 2026-06-04).
+--    margin_status: ok | below_floor | unpriced (NEVER ok on missing inputs).
+--    Verified: 544/544 priced, parity with generate-products.mjs computation.
+--
+-- 5. 20260604_chrome_inserts_mf_flodecol_84.sql (sibling file, full SQL)
+--    84 verified chrome rows (76 MF + 8 Flodecol) from the matcher's exact/fuzzy
+--    set; matched_by='vendor_ext_mf_flodecol_20260604'.
+--
+-- POST-STATE (verified): spine 949 / active 937 / classifications 937
+-- (631 publishable / 306 blocked) / catalog_published 629. Facu's 943 approved
+-- universe reconciles: 937 active + 11 quarantined-with-disposition + 7 legacy
+-- artifacts (costless, typed review list — chrome re-map pending).
+-- =============================================================================
+SELECT 'record-only file: operations applied via MCP, see header' AS note;
