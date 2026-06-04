@@ -467,6 +467,83 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   });
   const { rows: universeRows, summary, perfect_min_score } = built;
 
+  // Full classification universe (the publishability spine) -------------------
+  // CRITICAL: buildCatalog's `universeRows`/`summary` derive ONLY from the mirror
+  // (v_catalog_admin = catalog_published = the 683 published storefront rows),
+  // and the `classifications` array above is fetched `.in(mirror sku_ids)` — so
+  // it is ALSO truncated to the published set. Neither sees blocked-only SKUs
+  // nor a 100%-blocked vendor (e.g. Olimpo). The real universe is the FULL
+  // classification spine (catalog_classifications, one row per classified SKU,
+  // 937 rows). Fetch it independently here and rebase every summary number on it.
+  type FullClassRow = { sku_id: string; status: string | null; tier: string | null; vendor: string | null };
+  const fullClassifications: FullClassRow[] = [];
+  try {
+    // Paginate the full table (no mirror filter). Small table; ~1k rows.
+    const PAGE = 1000;
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await backup
+        .from('catalog_classifications')
+        .select('sku_id, status, tier, vendor')
+        .range(from, from + PAGE - 1);
+      if (error) {
+        console.error('[admin/catalog] full classifications error:', error);
+        break;
+      }
+      const batch = (data ?? []) as unknown as FullClassRow[];
+      fullClassifications.push(...batch);
+      if (batch.length < PAGE) break;
+    }
+  } catch (err) {
+    console.error('[admin/catalog] full classifications threw:', err);
+  }
+  // Whether the spine fetch succeeded — if empty (query failed), summary sections
+  // fall back to honest "not connected" rather than a fake all-zero universe.
+  const spineLoaded = fullClassifications.length > 0;
+
+  const classUniverse = {
+    total: fullClassifications.length,
+    publishable: fullClassifications.filter((c) => c.status !== 'blocked').length,
+    blocked: fullClassifications.filter((c) => c.status === 'blocked').length,
+    t2: fullClassifications.filter((c) => c.tier === 'T2').length,
+    t3: fullClassifications.filter((c) => c.tier === 'T3').length,
+    publishedView: mirrorRows.length, // rows actually on the storefront view
+  };
+  // Per-vendor coverage over the full spine (so 100%-blocked vendors appear).
+  const classVendorMap = new Map<string, { total: number; publishable: number; blocked: number }>();
+  for (const c of fullClassifications) {
+    const v = (c.vendor ?? '(unknown)').trim() || '(unknown)';
+    const s = classVendorMap.get(v) ?? { total: 0, publishable: 0, blocked: 0 };
+    s.total += 1;
+    if (c.status === 'blocked') s.blocked += 1;
+    else s.publishable += 1; // non-blocked (publishable/perfect) counts as publishable
+    classVendorMap.set(v, s);
+  }
+  const classVendorList = Array.from(classVendorMap.entries())
+    .map(([vendor, s]) => ({
+      vendor,
+      ...s,
+      pct: s.total > 0 ? Math.round((s.publishable / s.total) * 100) : 0,
+    }))
+    .sort((a, b) => a.pct - b.pct || b.total - a.total); // worst coverage first
+
+  // Quarantined dim_sku count — SKUs that exist in dim_sku but are excluded from
+  // the classification spine (data-integrity quarantine). Derived (dim_sku total
+  // − classified), never hardcoded. Null on failure → honest "—", never a fake 0.
+  let quarantinedCount: number | null = null;
+  try {
+    const { count: dimTotal, error } = await backup
+      .from('dim_sku')
+      .select('sku_id', { count: 'exact', head: true });
+    if (error) {
+      console.error('[admin/catalog] dim_sku count error:', error);
+    } else if (dimTotal != null && spineLoaded) {
+      quarantinedCount = Math.max(0, dimTotal - fullClassifications.length);
+    }
+  } catch (err) {
+    console.error('[admin/catalog] quarantined count threw:', err);
+    quarantinedCount = null;
+  }
+
   // Facets ---------------------------------------------------------------
   const vendorSet = new Set<string>();
   const categorySet = new Set<string>();
@@ -615,26 +692,34 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                   Blocked → what&apos;s missing &amp; who fixes it
                 </Link>
               </div>
+              {/* UNIVERSE-FIRST header — the full classification spine (937),
+                  not the published-only mirror (683). Real states (published /
+                  blocked / quarantined) replace the retired live/hidden/draft
+                  mirror semantics. Counts derived from the spine + a dim_sku
+                  count; tier split computed over the full universe. */}
               <p className="text-sm text-slate-500 mt-0.5">
-                {summary.universe.total.toLocaleString()} SKUs across {allVendors.length}{' '}
-                vendors{countryCount > 0 ? ` / ${countryCount} countries` : ''}.{' '}
+                {classUniverse.total.toLocaleString()} SKUs across {classVendorList.length}{' '}
+                vendors{countryCount > 0 ? ` / ${countryCount} countries` : ''}
+                {' — '}
                 <span className="text-emerald-700 font-medium">
-                  {summary.universe.k2k_live} K2K live
-                </span>{' / '}
+                  {classUniverse.publishedView.toLocaleString()} published
+                </span>{' · '}
+                <Link
+                  href="/admin/catalog/blocked"
+                  className="text-red-700 font-medium underline decoration-dotted underline-offset-2 hover:decoration-solid"
+                  title="Everything NOT publishable, grouped by failing gate"
+                >
+                  {classUniverse.blocked.toLocaleString()} blocked →
+                </Link>{' · '}
+                <span className="text-slate-500">
+                  {quarantinedCount != null ? quarantinedCount.toLocaleString() : '—'} quarantined
+                </span>
+                {'. '}
                 <span className="text-blue-700 font-medium">
-                  {summary.universe.t2} T2
+                  {classUniverse.t2.toLocaleString()} T2
                 </span>{' / '}
                 <span className="text-slate-600 font-medium">
-                  {summary.universe.t3} T3
-                </span>{' . '}
-                <span className="text-emerald-700">
-                  {universeRows.filter((r) => r.visibility === 'live').length} live
-                </span>{' / '}
-                <span className="text-slate-500">
-                  {universeRows.filter((r) => r.visibility === 'hidden').length} hidden
-                </span>{' / '}
-                <span className="text-amber-700">
-                  {universeRows.filter((r) => r.visibility === 'draft').length} draft
+                  {classUniverse.t3.toLocaleString()} T3
                 </span>
               </p>
               <p className="text-[11px] text-slate-400 mt-1">
@@ -643,16 +728,19 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                   : `Reality per Rose's layer state: gaps visible, ghost still alive`}
               </p>
               {viewMode === 'target' && (() => {
-                const todayPublishable = universeRows.filter((r) => r.publication_status !== 'blocked').length;
-                const targetPublishable = universeRows.length;
-                const todayPct = universeRows.length > 0 ? Math.round((todayPublishable / universeRows.length) * 100) : 0;
+                // Rebased on the full classification spine (937), not the
+                // published-only mirror — "today publishable" = non-blocked.
+                const universeTotal = spineLoaded ? classUniverse.total : universeRows.length;
+                const todayPublishable = spineLoaded ? classUniverse.publishable : universeRows.filter((r) => r.publication_status !== 'blocked').length;
+                const targetPublishable = universeTotal;
+                const todayPct = universeTotal > 0 ? Math.round((todayPublishable / universeTotal) * 100) : 0;
                 return (
                   <div className="mt-2 flex items-center gap-4 text-xs">
                     <span className="text-slate-500">Today:</span>
-                    <span className="font-semibold text-slate-700">{todayPublishable}/{universeRows.length} publishable ({todayPct}%)</span>
+                    <span className="font-semibold text-slate-700">{todayPublishable}/{universeTotal} publishable ({todayPct}%)</span>
                     <span className="text-slate-400">→</span>
                     <span className="text-slate-500">Target:</span>
-                    <span className="font-semibold text-emerald-700">{targetPublishable}/{universeRows.length} publishable (100%)</span>
+                    <span className="font-semibold text-emerald-700">{targetPublishable}/{universeTotal} publishable (100%)</span>
                     <span className="text-[11px] text-slate-400">if all improvement-queue items resolved</span>
                   </div>
                 );
@@ -697,7 +785,18 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               blocked:     'blocked',
             };
             const counts: Record<PublicationStatus, number> = { perfect: 0, publishable: 0, blocked: 0 };
-            for (const r of universeRows) counts[r.publication_status]++;
+            if (spineLoaded) {
+              // Rebase on the full spine (937). 'perfect' is a quality-score
+              // concept the model only computes over published rows; keep it,
+              // and derive 'publishable' = (spine publishable − perfect) so the
+              // three states sum to the full universe and 'blocked' = real 248.
+              const perfectN = universeRows.filter((r) => r.publication_status === 'perfect').length;
+              counts.perfect = perfectN;
+              counts.blocked = classUniverse.blocked;
+              counts.publishable = Math.max(0, classUniverse.publishable - perfectN);
+            } else {
+              for (const r of universeRows) counts[r.publication_status]++;
+            }
             const parts = order
               .filter((s) => counts[s] > 0)
               .map((s) =>
@@ -742,7 +841,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             farm_cost: r.farm_cost,
             price: r.price,
           }))}
-          classifications={classifications.map((c) => ({
+          classifications={(spineLoaded ? fullClassifications : classifications).map((c) => ({
             sku_id: c.sku_id,
             status: c.status,
             tier: c.tier,
@@ -798,38 +897,63 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             .sort((a, b) => b[1] - a[1])
             .slice(0, 4);
 
-          const darkVendors = vendorList.filter((v) => v.perfect === 0 && v.total > 3);
+          // Dark vendors = 0% PUBLISHED over the FULL spine (not perfect over
+          // published-only). A 100%-blocked vendor (Olimpo) now surfaces here.
+          const darkVendors = spineLoaded
+            ? classVendorList.filter((v) => v.pct === 0 && v.total > 3)
+            : vendorList.filter((v) => v.perfect === 0 && v.total > 3);
+
+          // Vendor coverage rebased on the full classification universe so every
+          // vendor (incl. 100%-blocked ones) appears: total / published / blocked.
+          const coverageVendors = spineLoaded
+            ? classVendorList
+            : vendorList.map((v) => ({ vendor: v.vendor, total: v.total, publishable: v.perfect, blocked: v.total - v.perfect, pct: v.pct }));
+          const skusAnalyzed = spineLoaded ? classUniverse.total : universeRows.length;
 
           return (
             <div className="mb-5 rounded-xl border border-slate-200 bg-white overflow-hidden">
               <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Supply intelligence</span>
-                <span className="text-[10px] text-slate-400">{universeRows.length} SKUs analyzed</span>
+                <span className="text-[10px] text-slate-400">{skusAnalyzed.toLocaleString()} SKUs analyzed (full universe)</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
 
-                {/* Vendor coverage */}
+                {/* Vendor coverage — full universe: published / blocked / % published */}
                 <div className="p-3">
                   <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">Vendor coverage</div>
-                  <div className="space-y-1">
-                    {vendorList.slice(0, 5).map(({ vendor, total, perfect, pct }) => (
+                  <div className="space-y-1.5">
+                    {coverageVendors.slice(0, 6).map(({ vendor, total, publishable, blocked, pct }) => (
                       <div key={vendor} className="flex items-center justify-between gap-2">
                         <Link
                           href={buildUrl(rawFilters, { vendor, tab: undefined })}
-                          className="text-[11px] text-slate-700 hover:text-emerald-700 truncate max-w-[110px]"
+                          className="text-[11px] text-slate-700 hover:text-emerald-700 truncate max-w-[100px]"
                           title={vendor}
                         >
                           {vendor}
                         </Link>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <div className="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <span className="text-[10px] text-emerald-700 font-semibold tabular-nums">{publishable}</span>
+                          <span className="text-[9px] text-slate-300">/</span>
+                          {blocked > 0 ? (
+                            <Link
+                              href="/admin/catalog/blocked"
+                              className="text-[10px] text-red-600 font-semibold tabular-nums hover:underline"
+                              title={`${blocked} blocked — see what's missing`}
+                            >
+                              {blocked}🚫
+                            </Link>
+                          ) : (
+                            <span className="text-[10px] text-slate-300 tabular-nums">0</span>
+                          )}
+                          <span className="text-[9px] text-slate-300">of {total}</span>
+                          <div className="w-12 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                             <div
-                              className={`h-1.5 rounded-full ${pct === 0 ? 'bg-red-400' : pct < 30 ? 'bg-amber-400' : 'bg-emerald-500'}`}
+                              className={`h-1.5 rounded-full ${pct === 0 ? 'bg-red-400' : pct < 50 ? 'bg-amber-400' : 'bg-emerald-500'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>
-                          <span className={`text-[10px] font-semibold ${pct === 0 ? 'text-red-600' : pct < 30 ? 'text-amber-600' : 'text-emerald-700'}`}>
-                            {perfect}/{total}
+                          <span className={`text-[10px] font-semibold w-8 text-right ${pct === 0 ? 'text-red-600' : pct < 50 ? 'text-amber-600' : 'text-emerald-700'}`}>
+                            {pct}%
                           </span>
                         </div>
                       </div>
@@ -933,21 +1057,40 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         {(() => {
           type VHealth = {
             vendor: string;
-            total: number;
-            live: number;
+            total: number;       // FULL universe (spine) total
+            published: number;   // non-blocked on the spine
+            blocked: number;     // blocked on the spine
             avgGpm: number | null;
             missingCost: number;
             openAlerts: number;
             avgQuality: number | null;
           };
           const vhMap = new Map<string, VHealth>();
+          const ensure = (vendor: string): VHealth => {
+            let v = vhMap.get(vendor);
+            if (!v) {
+              v = { vendor, total: 0, published: 0, blocked: 0, avgGpm: null, missingCost: 0, openAlerts: 0, avgQuality: null };
+              vhMap.set(vendor, v);
+            }
+            return v;
+          };
+          // Universe totals from the full spine so 100%-blocked vendors appear.
+          if (spineLoaded) {
+            for (const cv of classVendorList) {
+              const v = ensure(cv.vendor);
+              v.total = cv.total;
+              v.published = cv.publishable;
+              v.blocked = cv.blocked;
+            }
+          }
+          // Per-vendor data-quality signals from the published model rows. (Cost
+          // /GPM/alerts only exist for published SKUs; a fully-blocked vendor
+          // legitimately shows — for these.)
           for (const r of universeRows) {
-            const v = vhMap.get(r.vendor) ?? { vendor: r.vendor, total: 0, live: 0, avgGpm: null, missingCost: 0, openAlerts: 0, avgQuality: null };
-            v.total++;
-            if (r.visibility === 'live') v.live++;
+            const v = ensure(r.vendor);
+            if (!spineLoaded) { v.total++; if (r.publication_status !== 'blocked') v.published++; else v.blocked++; }
             if (r.farm_cost == null) v.missingCost++;
             if (r.has_open_price_alert) v.openAlerts++;
-            vhMap.set(r.vendor, v);
           }
           // Compute averages
           const gpmSum = new Map<string, { sum: number; n: number }>();
@@ -992,7 +1135,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                     <tr className="text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
                       <th className="px-4 py-2">Vendor</th>
                       <th className="px-4 py-2 text-right">SKUs</th>
-                      <th className="px-4 py-2 text-right">Live</th>
+                      <th className="px-4 py-2 text-right">Published</th>
+                      <th className="px-4 py-2 text-right">Blocked</th>
                       <th className="px-4 py-2 text-right">Avg quality</th>
                       <th className="px-4 py-2 text-right">Avg GPM</th>
                       <th className="px-4 py-2 text-right">Missing cost</th>
@@ -1009,7 +1153,18 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </td>
                         <td className="px-4 py-2 text-right text-slate-700">{v.total}</td>
                         <td className="px-4 py-2 text-right">
-                          <span className={v.live > 0 ? 'text-emerald-700 font-semibold' : 'text-slate-400'}>{v.live}</span>
+                          <span className={v.published > 0 ? 'text-emerald-700 font-semibold' : 'text-slate-400'}>{v.published}</span>
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          {v.blocked > 0 ? (
+                            <Link
+                              href="/admin/catalog/blocked"
+                              className={`font-semibold hover:underline ${v.published === 0 ? 'text-red-700' : 'text-red-600'}`}
+                              title={v.published === 0 ? '100% blocked — vendor fully dark' : `${v.blocked} blocked`}
+                            >
+                              {v.blocked}{v.published === 0 ? ' ⚠' : ''}
+                            </Link>
+                          ) : <span className="text-slate-300">—</span>}
                         </td>
                         <td className="px-4 py-2 text-right">
                           {v.avgQuality != null ? (
