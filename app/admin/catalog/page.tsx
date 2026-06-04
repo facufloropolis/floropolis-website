@@ -357,7 +357,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('v_catalog_admin')
       .select(
-        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, arrival_date, availability_min_days_ahead, availability_max_days_ahead',
+        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, arrival_date, availability_min_days_ahead, availability_max_days_ahead, valid_delivery_days_of_week',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -605,7 +605,16 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">
           <div className="flex items-start justify-between mb-5">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Unified Catalog</h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-slate-900">Unified Catalog</h1>
+                <Link
+                  href="/admin/catalog/blocked"
+                  className="inline-flex items-center text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700 border border-red-200 font-semibold hover:bg-red-100"
+                  title="Everything NOT publishable, grouped by failing gate, with owner and repair state"
+                >
+                  Blocked → what&apos;s missing &amp; who fixes it
+                </Link>
+              </div>
               <p className="text-sm text-slate-500 mt-0.5">
                 {summary.universe.total.toLocaleString()} SKUs across {allVendors.length}{' '}
                 vendors{countryCount > 0 ? ` / ${countryCount} countries` : ''}.{' '}
@@ -1543,12 +1552,29 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                             catalog_availability_windows via v_catalog_admin. Live K2K
                             decoration returns with S6 live_signal. */}
                       <td className="px-3 py-2.5 text-right">
-                        {r.availability_min_days_ahead != null && r.availability_max_days_ahead != null ? (
-                          <div>
-                            <div className={`text-[10px] font-medium ${r.tier === 'T2' ? 'text-blue-600' : 'text-slate-500'}`}>
-                              {r.tier} · ships {r.availability_min_days_ahead}–{r.availability_max_days_ahead}d
-                            </div>
-                          </div>
+                        {r.availability_min_days_ahead != null ? (
+                          (() => {
+                            // First available delivery = today + min_days_ahead, advanced
+                            // to the next valid delivery weekday (ISO Mon=1; from
+                            // catalog_availability_windows.valid_delivery_days_of_week).
+                            const shipDays = (r.valid_delivery_days_of_week ?? [1, 2, 4, 5]) as number[];
+                            const d = new Date(today);
+                            d.setDate(d.getDate() + r.availability_min_days_ahead);
+                            for (let i = 0; i < 7; i++) {
+                              const iso = d.getDay() === 0 ? 7 : d.getDay();
+                              if (shipDays.includes(iso)) break;
+                              d.setDate(d.getDate() + 1);
+                            }
+                            const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                            return (
+                              <div title={`${r.tier} window: orderable ${r.availability_min_days_ahead}–${r.availability_max_days_ahead} days out · delivery days: Mon/Tue/Thu/Fri`}>
+                                <div className={`text-[11px] font-medium ${r.tier === 'T2' ? 'text-blue-600' : 'text-slate-600'}`}>
+                                  from {dateStr}
+                                </div>
+                                <div className="text-[9px] text-slate-400">{r.tier} · {r.availability_min_days_ahead}–{r.availability_max_days_ahead}d</div>
+                              </div>
+                            );
+                          })()
                         ) : (
                           <span className="text-[10px] text-slate-400">no window</span>
                         )}
@@ -1591,8 +1617,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                       {effectiveTab === 'improvement-queue' && (
                         <td className="px-3 py-2.5 text-right">
                           {r.gap_to_perfect != null ? (
-                            <span className={r.gap_to_perfect >= 30 ? 'text-red-600 font-semibold' : 'text-amber-600 font-semibold'}>
-                              −{r.gap_to_perfect}
+                            <span
+                              className={r.gap_to_perfect >= 30 ? 'text-red-600 font-semibold' : 'text-amber-600 font-semibold'}
+                              title="Points to perfect = 100 − quality score. Quality score = % of ACTIVE quality signals earned (today: contents description + units/bunch exactness). Blocking gates do not score — they block."
+                            >
+                              −{r.gap_to_perfect} pts
                             </span>
                           ) : (
                             <span className="text-slate-400 text-xs">—</span>

@@ -146,6 +146,7 @@ export interface MirrorRow {
   arrival_date: string | null;
   availability_min_days_ahead: number | null;
   availability_max_days_ahead: number | null;
+  valid_delivery_days_of_week: number[] | null;
   country?: string | null;
 }
 
@@ -222,6 +223,7 @@ export interface CatalogV2Row {
   arrival_date: string | null;
   availability_min_days_ahead: number | null;
   availability_max_days_ahead: number | null;
+  valid_delivery_days_of_week: number[] | null;
   country: string | null;
   // Box + shipping
   box_type: string | null;
@@ -578,6 +580,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       arrival_date: r.arrival_date,
       availability_min_days_ahead: r.availability_min_days_ahead ?? null,
       availability_max_days_ahead: r.availability_max_days_ahead ?? null,
+      valid_delivery_days_of_week: r.valid_delivery_days_of_week ?? null,
       country: r.country ?? null,
       box_type: r.box_type ?? null,
       box_verified: boxVerified,
