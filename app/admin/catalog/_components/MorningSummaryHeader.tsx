@@ -1,15 +1,22 @@
 // Morning Summary Header — UC-D-100..103 (BRD v0.3 §Group 1)
-// v1 | 2026-05-27 | Job_PM Sub-Agent B [V8 SHADOW]
+// v2 | 2026-06-04 | Job_PM [V8 SHADOW]
+//   - Tier split (UC-D-100) now reads catalog_classifications.tier (the
+//     classification spine), NOT stale mirror arrival-date windows. Per
+//     perfect_inventory_bar v2.2: T2/T3 = tier COMMITMENT, never arrival
+//     windows. K2K live is surfaced as an honest "not connected" annotation,
+//     never a zero that reads like data.
+//   - Price integrity (UC-D-102) replaces the deprecated above-formula proxy
+//     (hardcoded cost/0.67+$0.50, 5% tolerance, "all within tolerance" on
+//     empty data). Reads v_catalog_admin.margin_status (real computed column).
 //
 // Renders 4 widgets above the supply-intelligence panel on /admin/catalog:
-//   UC-D-100  Counts by source × vendor (publishable universe per Perfect
-//             Inventory Bar v2.1 — k2k_live OR T2[+5..+180] OR T3[+14..+180],
-//             farm_cost required. Magic Flowers excluded ONLY from k2k_live
-//             branch (ghost vendor); INCLUDED in T2/T3 catalog.
+//   UC-D-100  Counts by tier (T2 / T3 / other) from the classification spine.
+//             K2K live shown as a separate "not connected (S6)" annotation.
 //   UC-D-101  Live going down DoD flag (depends on mirror_snapshot_daily;
 //             gracefully renders "pending Rose snapshot pipeline" if missing).
-//   UC-D-102  Above-formula vendor flag (count of SKUs where price exceeds
-//             (farm_cost/0.67)+$0.50 by >5%).
+//   UC-D-102  Price integrity: unpriced + below_floor counts from
+//             v_catalog_admin.margin_status. Green ONLY when both are zero AND
+//             priced count > 0 (never green on empty data).
 //   UC-D-103  Top sellers L30D supply glance (orders + order_lines joined
 //             to catalog_classifications; renders placeholder if absent).
 //
@@ -18,27 +25,12 @@
 // /admin/catalog (rounded-xl border border-slate-200 bg-white).
 //
 // RACI: derives display-only values from Rose-owned tables; no writes, no
-// recomputation of canonical metrics. Above-formula is a quick *flag count*,
-// not a precise margin number — fine arithmetic for catalog_model.ts.
+// recomputation of canonical metrics. Price integrity reads margin_status,
+// which is computed live in v_catalog_admin from pricing_constants — this
+// widget does NO pricing arithmetic of its own.
 
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-// ---------------------------------------------------------------------------
-// Config (Perfect Inventory Bar v2 — kept in one place so it's obvious what
-// rules this widget encodes; pulled from kb/projects/perfect_inventory_bar.md
-// §6 tier windows. Per v2.1: Magic Flowers excluded ONLY from live source. The
-// 0.67 number is the *legacy* default GPM used here ONLY for a rough flag —
-// real pricing is computed in catalog-model.ts from country-scoped config.)
-// ---------------------------------------------------------------------------
-const T2_MIN_DAYS = 5;
-const T2_MAX_DAYS = 180;
-const T3_MIN_DAYS = 14;
-const T3_MAX_DAYS = 180;
-const MAGIC_FLOWERS_PATTERN = /magic\s*flower/i;
-const FLAG_GPM_DENOM = 0.67;          // legacy default — rough flag only
-const FLAG_DELIVERY_PER_STEM = 0.5;   // inline placeholder for the flag count
-const FLAG_TOLERANCE = 1.05;          // >5% above formula
 
 // ---------------------------------------------------------------------------
 // Minimal row types — local, no shared lib dependency
@@ -55,15 +47,18 @@ interface MirrorPick {
   price: number | string | null;
 }
 
-function toNum(v: number | string | null | undefined): number | null {
-  if (v == null) return null;
-  const n = typeof v === 'string' ? parseFloat(v) : v;
-  return Number.isFinite(n) ? n : null;
-}
-
 interface ClassificationPick {
   sku_id: string;
   status: string | null;
+  // Tier COMMITMENT from the classification spine (perfect_inventory_bar v2.2),
+  // NOT an arrival-date window. 'T2' | 'T3' | null (→ 'other' bucket).
+  tier: string | null;
+  vendor: string | null;
+}
+
+interface PriceIntegrityRow {
+  margin_status: string | null;
+  price: number | string | null;
 }
 
 interface TopSellerRow {
@@ -76,8 +71,7 @@ interface TopSellerRow {
 }
 
 // ---------------------------------------------------------------------------
-// Date helper — YYYY-MM-DD relative to UTC today (Rose stores arrival_date
-// as a date type, so a naive YYYY-MM-DD compare is the right shape).
+// Date helper — YYYY-MM-DD relative to UTC today.
 // ---------------------------------------------------------------------------
 function addDaysISO(base: Date, days: number): string {
   const d = new Date(base);
@@ -85,38 +79,45 @@ function addDaysISO(base: Date, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function todayISO(base: Date): string {
-  return base.toISOString().slice(0, 10);
+// ---------------------------------------------------------------------------
+// Tier bucket (from the classification spine, NOT mirror windows).
+// ---------------------------------------------------------------------------
+type TierBucket = 't2' | 't3' | 'other';
+
+function tierBucket(tier: string | null): TierBucket {
+  if (tier === 'T2') return 't2';
+  if (tier === 'T3') return 't3';
+  return 'other';
 }
 
 // ---------------------------------------------------------------------------
-// Source split (DECORATION, not a universe gate).
-//
-// DOCTRINE (Facu, locked — see kb k2k_as_parallel_signal): K2K `live` is a
-// PARALLEL SIGNAL, never a membership predicate. The universe of "which SKUs
-// count" = the classification/publishability spine (catalog_classifications),
-// NOT mirror.live=true. This helper only LABELS a SKU by tier / live-ness for
-// the per-source annotation; it never decides whether a SKU is in the universe.
-// A SKU with live=false (or outside any T2/T3 window) still counts — it just
-// lands in the 'other' annotation bucket instead of being dropped.
+// Price integrity fetch — reads v_catalog_admin.margin_status (real computed
+// column: 'ok' | 'below_floor' | 'unpriced'). Returns null if the view is
+// unreachable, so the widget can render an honest "source unavailable" note
+// instead of a fake zero.
 // ---------------------------------------------------------------------------
-type SourceLabel = 'k2k_live' | 't2_catalog' | 't3_catalog' | 'other';
-
-function sourceLabel(r: MirrorPick | undefined, today: Date): SourceLabel {
-  if (!r) return 'other';
-  // Magic Flowers is excluded ONLY from the live-source annotation (ghost
-  // vendor — circular K2K signal). It is NOT excluded from the universe; it
-  // simply annotates as T2/T3 or other, same as any non-live SKU.
-  const isMagicFlowers = r.vendor != null && MAGIC_FLOWERS_PATTERN.test(r.vendor);
-  if (r.live === true && r.active !== false && !isMagicFlowers) return 'k2k_live';
-  if (r.arrival_date) {
-    const arr = new Date(r.arrival_date + 'T00:00:00Z').getTime();
-    const t = today.getTime();
-    const days = Math.round((arr - t) / (1000 * 60 * 60 * 24));
-    if (r.tier === 'T2' && days >= T2_MIN_DAYS && days <= T2_MAX_DAYS) return 't2_catalog';
-    if (r.tier === 'T3' && days >= T3_MIN_DAYS && days <= T3_MAX_DAYS) return 't3_catalog';
+async function fetchPriceIntegrity(
+  backup: SupabaseClient,
+): Promise<{ unpriced: number; belowFloor: number; priced: number } | null> {
+  try {
+    const { data, error } = await backup
+      .from('v_catalog_admin')
+      .select('margin_status, price')
+      .limit(5000);
+    if (error || !data) return null;
+    let unpriced = 0;
+    let belowFloor = 0;
+    let priced = 0;
+    for (const row of data as unknown as PriceIntegrityRow[]) {
+      const ms = row.margin_status;
+      if (ms === 'unpriced') unpriced += 1;
+      else if (ms === 'below_floor') belowFloor += 1;
+      if (row.price != null) priced += 1;
+    }
+    return { unpriced, belowFloor, priced };
+  } catch {
+    return null;
   }
-  return 'other';
 }
 
 // ---------------------------------------------------------------------------
@@ -128,9 +129,6 @@ async function probeYesterdayLive(
   backup: SupabaseClient,
   yesterdayISO: string,
 ): Promise<number | null> {
-  // RPC-less existence check via attempting the query and swallowing the
-  // "relation does not exist" error path. Cheaper than a separate
-  // information_schema round-trip.
   try {
     const { data, error } = await backup
       .from('mirror_snapshot_daily')
@@ -139,7 +137,6 @@ async function probeYesterdayLive(
       .eq('source', 'live')
       .limit(1);
     if (error) return null;
-    // We need a real count; use a HEAD/exact query.
     const { count, error: cErr } = await backup
       .from('mirror_snapshot_daily')
       .select('sku_id', { count: 'exact', head: true })
@@ -228,63 +225,33 @@ export default async function MorningSummaryHeader({
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
 
-  // ── UC-D-100: Counts by source × vendor ────────────────────────────────
+  // ── UC-D-100: Counts by tier ────────────────────────────────────────────
   // UNIVERSE = the classification/publishability spine (one row per classified
-  // SKU). K2K `live` is a PARALLEL SIGNAL, never a membership gate — every
-  // classified SKU counts; `live`/tier only ANNOTATE which source bucket it
-  // shows under. (Bug fix: the old code gated the universe on mirror.live=true,
-  // dropping classified-but-not-live SKUs entirely.)
-  const mirrorBySku = new Map<string, MirrorPick>();
-  for (const r of mirror) mirrorBySku.set(r.id, r);
-
-  // ── uuid ↔ legacy-id bridge (INTERIM until S5 re-key + S6 live_signal) ──
-  // Post-recompute the classification spine keys on dim_sku.sku_id (uuid),
-  // while mirror rows + order_lines still key on the legacy bigint id.
-  // product_chrome carries both (sku_id uuid, fi_id legacy) for ~550 SKUs —
-  // unmatched SKUs degrade honestly to the 'other' bucket / null decoration
-  // rather than silently miscounting.
-  const fiByUuid = new Map<string, string>();
-  const uuidByFi = new Map<string, string>();
-  try {
-    const { data: bridge } = await backup.from('product_chrome').select('sku_id, fi_id');
-    for (const b of (bridge ?? []) as Array<{ sku_id: string; fi_id: number | string | null }>) {
-      if (b.fi_id == null) continue;
-      fiByUuid.set(b.sku_id, String(b.fi_id));
-      uuidByFi.set(String(b.fi_id), b.sku_id);
-    }
-  } catch {
-    // bridge unavailable → decoration degrades to 'other'; universe unaffected
-  }
-
+  // SKU). Tier bucket comes from classifications.tier (the COMMITMENT), NOT a
+  // mirror arrival-date window (deprecated semantics, perfect_inventory_bar
+  // v2.2). Vendor decoration also comes from classifications.vendor — the
+  // mirror is no longer consulted for this widget's split.
   type UniverseRow = {
     sku_id: string;
     status: string | null;
-    label: SourceLabel;
+    bucket: TierBucket;
     vendor: string | null;
-    farm_cost: number | string | null;
-    price: number | string | null;
   };
-  const universe: UniverseRow[] = classifications.map((c) => {
-    const m = mirrorBySku.get(fiByUuid.get(c.sku_id) ?? '');
-    return {
-      sku_id: c.sku_id,
-      status: c.status,
-      label: sourceLabel(m, today),
-      vendor: m?.vendor ?? null,
-      farm_cost: m?.farm_cost ?? null,
-      price: m?.price ?? null,
-    };
-  });
+  const universe: UniverseRow[] = classifications.map((c) => ({
+    sku_id: c.sku_id,
+    status: c.status,
+    bucket: tierBucket(c.tier),
+    vendor: c.vendor,
+  }));
 
-  const bySource: Record<SourceLabel, { total: number; publishable: number; held: number }> = {
-    k2k_live:    { total: 0, publishable: 0, held: 0 },
-    t2_catalog:  { total: 0, publishable: 0, held: 0 },
-    t3_catalog:  { total: 0, publishable: 0, held: 0 },
-    other:       { total: 0, publishable: 0, held: 0 },
+  const byTier: Record<TierBucket, { total: number; publishable: number; held: number }> = {
+    t2:    { total: 0, publishable: 0, held: 0 },
+    t3:    { total: 0, publishable: 0, held: 0 },
+    other: { total: 0, publishable: 0, held: 0 },
   };
   const byVendor = new Map<string, { total: number; publishable: number }>();
   for (const r of universe) {
-    const slot = bySource[r.label];
+    const slot = byTier[r.bucket];
     slot.total += 1;
     const pub = r.status === 'perfect' || r.status === 'publishable';
     if (pub) slot.publishable += 1;
@@ -295,7 +262,7 @@ export default async function MorningSummaryHeader({
     if (pub) vs.publishable += 1;
     byVendor.set(v, vs);
   }
-  // Universe totals = full classification spine (NOT just live SKUs).
+  // Universe totals = full classification spine.
   const totalAll = universe.length;
   const pubAll = universe.filter((r) => r.status === 'perfect' || r.status === 'publishable').length;
   const topVendors = Array.from(byVendor.entries())
@@ -308,10 +275,11 @@ export default async function MorningSummaryHeader({
     }));
 
   // ── UC-D-101: Live going down DoD ──────────────────────────────────────
-  // `todayLive` is a decoration count of the live ANNOTATION — it counts how
-  // many universe SKUs are currently K2K-live, it does NOT define the universe.
+  // Live count is a parallel-signal decoration sourced from the mirror's live
+  // flag — it never gates the universe. (S6 will replace this with a real
+  // connected live-signal pipeline.)
   const yesterdayLive = await probeYesterdayLive(backup, addDaysISO(today, -1));
-  const todayLive = bySource.k2k_live.total;
+  const todayLive = mirror.filter((m) => m.live === true && m.active !== false).length;
   let dodBadge: 'pending' | 'down' | 'flat' = 'pending';
   let dodDelta = 0;
   let dodPct = 0;
@@ -321,15 +289,22 @@ export default async function MorningSummaryHeader({
     dodBadge = (dodDelta < 0 || dodPct < -5) ? 'down' : 'flat';
   }
 
-  // ── UC-D-102: Above-formula vendor flag ────────────────────────────────
-  // Rough flag, not canonical pricing. Skip rows where farm_cost is null.
-  let aboveFormulaCount = 0;
-  for (const r of universe) {
-    const cost = toNum(r.farm_cost);
-    const px = toNum(r.price);
-    if (cost == null || px == null) continue;
-    const expected = (cost / FLAG_GPM_DENOM) + FLAG_DELIVERY_PER_STEM;
-    if (px > expected * FLAG_TOLERANCE) aboveFormulaCount += 1;
+  // ── UC-D-102: Price integrity ──────────────────────────────────────────
+  // Reads v_catalog_admin.margin_status (real computed column). Green ONLY
+  // when unpriced == 0 AND below_floor == 0 AND priced > 0 — never green on
+  // empty/disconnected data.
+  const priceIntegrity = await fetchPriceIntegrity(backup);
+
+  // ── uuid ↔ legacy-id bridge (for Top sellers status decoration) ─────────
+  const uuidByFi = new Map<string, string>();
+  try {
+    const { data: bridge } = await backup.from('product_chrome').select('sku_id, fi_id');
+    for (const b of (bridge ?? []) as Array<{ sku_id: string; fi_id: number | string | null }>) {
+      if (b.fi_id == null) continue;
+      uuidByFi.set(String(b.fi_id), b.sku_id);
+    }
+  } catch {
+    // bridge unavailable → top-seller status degrades to null; universe unaffected
   }
 
   // ── UC-D-103: Top sellers L30D ─────────────────────────────────────────
@@ -348,15 +323,15 @@ export default async function MorningSummaryHeader({
           Morning summary
         </span>
         <span className="text-[10px] text-slate-400">
-          universe = classification spine · K2K live is a parallel signal (annotation, not a gate)
+          universe = classification spine · tier = commitment (not arrival window)
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 lg:divide-x divide-slate-100">
-        {/* ── Widget A: UC-D-100 Counts by source ── */}
+        {/* ── Widget A: UC-D-100 Counts by tier ── */}
         <div className="p-4">
           <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">
-            Counts by source
+            Counts by tier
           </div>
           <div className="text-2xl font-bold text-slate-900 leading-none">
             {totalAll.toLocaleString()}
@@ -366,39 +341,40 @@ export default async function MorningSummaryHeader({
           </div>
           <div className="mt-3 space-y-1.5">
             <SourceRow
-              label="K2K live"
-              total={bySource.k2k_live.total}
-              pub={bySource.k2k_live.publishable}
-              held={bySource.k2k_live.held}
-              href={url({ source: 'k2k_live' })}
-              tone="emerald"
-            />
-            <SourceRow
-              label="T2 (+5–180d)"
-              total={bySource.t2_catalog.total}
-              pub={bySource.t2_catalog.publishable}
-              held={bySource.t2_catalog.held}
+              label="T2"
+              total={byTier.t2.total}
+              pub={byTier.t2.publishable}
+              held={byTier.t2.held}
               href={url({ source: 't2' })}
               tone="blue"
             />
             <SourceRow
-              label="T3 (+14–180d)"
-              total={bySource.t3_catalog.total}
-              pub={bySource.t3_catalog.publishable}
-              held={bySource.t3_catalog.held}
+              label="T3"
+              total={byTier.t3.total}
+              pub={byTier.t3.publishable}
+              held={byTier.t3.held}
               href={url({ source: 't3' })}
               tone="slate"
             />
-            {bySource.other.total > 0 && (
+            {byTier.other.total > 0 && (
               <SourceRow
-                label="Other (not live / no window)"
-                total={bySource.other.total}
-                pub={bySource.other.publishable}
-                held={bySource.other.held}
+                label="Other (no tier)"
+                total={byTier.other.total}
+                pub={byTier.other.publishable}
+                held={byTier.other.held}
                 href="/admin/catalog"
                 tone="slate"
               />
             )}
+          </div>
+          {/* K2K live: honest "not connected" annotation — never a zero that
+              reads like data (Facu directive: mark clearly what is NOT wired). */}
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="text-[11px] font-medium text-slate-400">K2K live signal</span>
+            <span className="text-[10px] text-slate-400">
+              <span className="font-semibold tabular-nums">—</span>{' '}
+              not connected (S6)
+            </span>
           </div>
           {topVendors.length > 0 && (
             <div className="mt-3 pt-3 border-t border-slate-100">
@@ -469,35 +445,66 @@ export default async function MorningSummaryHeader({
           </p>
         </div>
 
-        {/* ── Widget C: UC-D-102 Above-formula ── */}
+        {/* ── Widget C: UC-D-102 Price integrity ── */}
         <div className="p-4">
           <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">
-            Above-formula price
+            Price integrity
           </div>
-          <div className="text-2xl font-bold leading-none">
-            {aboveFormulaCount > 0 ? (
-              <span className="text-amber-700">{aboveFormulaCount.toLocaleString()}</span>
-            ) : (
-              <span className="text-emerald-700">0</span>
-            )}
-            <span className="text-[11px] font-medium text-slate-500 ml-1.5">SKUs flagged</span>
-          </div>
-          <div className="mt-3">
-            {aboveFormulaCount > 0 ? (
-              <Link
-                href={url({ flag: 'above-formula' })}
-                className="inline-flex items-center text-[11px] px-2 py-1 rounded bg-amber-50 text-amber-700 border border-amber-200 font-semibold hover:bg-amber-100"
-              >
-                {aboveFormulaCount} priced above formula → deep dive
-              </Link>
-            ) : (
-              <span className="inline-flex items-center text-[11px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                All within tolerance
-              </span>
-            )}
-          </div>
+          {priceIntegrity == null ? (
+            <p className="text-[11px] text-slate-500 mt-1">
+              Price integrity: source unavailable (v_catalog_admin query failed).
+            </p>
+          ) : (() => {
+            const { unpriced, belowFloor, priced } = priceIntegrity;
+            const clean = unpriced === 0 && belowFloor === 0 && priced > 0;
+            const issues = unpriced + belowFloor;
+            return (
+              <>
+                <div className="text-2xl font-bold leading-none">
+                  {clean ? (
+                    <span className="text-emerald-700">0</span>
+                  ) : (
+                    <span className="text-amber-700">{issues.toLocaleString()}</span>
+                  )}
+                  <span className="text-[11px] font-medium text-slate-500 ml-1.5">
+                    {clean ? 'price issues' : 'SKUs flagged'}
+                  </span>
+                </div>
+                <div className="mt-3 space-y-1.5">
+                  {clean ? (
+                    <span className="inline-flex items-center text-[11px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      All {priced.toLocaleString()} priced SKUs at/above floor
+                    </span>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      <div
+                        className={`inline-flex items-center justify-between gap-2 text-[11px] px-2 py-1 rounded border font-semibold ${
+                          unpriced > 0
+                            ? 'bg-red-50 text-red-700 border-red-200'
+                            : 'bg-slate-50 text-slate-400 border-slate-200'
+                        }`}
+                      >
+                        <span>Unpriced</span>
+                        <span className="tabular-nums">{unpriced.toLocaleString()}</span>
+                      </div>
+                      <div
+                        className={`inline-flex items-center justify-between gap-2 text-[11px] px-2 py-1 rounded border font-semibold ${
+                          belowFloor > 0
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-slate-50 text-slate-400 border-slate-200'
+                        }`}
+                      >
+                        <span>Below floor</span>
+                        <span className="tabular-nums">{belowFloor.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
           <p className="text-[10px] text-slate-400 mt-3 leading-snug">
-            Quick flag only. Formula proxy = (farm_cost / 0.67) + $0.50/stem; canonical pricing lives in catalog-model.ts.
+            price = farm_cost/(1−GPM)+delivery, computed live from pricing_constants; floor = (cost+delivery)/0.95 (5% GPM = rep commission)
           </p>
         </div>
 

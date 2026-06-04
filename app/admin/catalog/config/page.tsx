@@ -1089,17 +1089,37 @@ function VisibilityPanel({
         lands in rose_queue.
       </div>
       {Object.keys(byOrigin)
-        .sort()
+        // Pin Ecuador first (the only live origin); other origins are pending
+        // pipeline and render greyed-out below it (Facu directive verbatim:
+        // "grey them out and put Ecuador on the top").
+        .sort((a, b) => {
+          const aEc = a === 'Ecuador' ? 0 : 1;
+          const bEc = b === 'Ecuador' ? 0 : 1;
+          if (aEc !== bEc) return aEc - bEc;
+          return a.localeCompare(b);
+        })
         .map((origin) => {
           const rows = byOrigin[origin];
           const anyAccepted = rows.some((r) => r.accepted);
           const allAccepted = rows.every((r) => r.accepted);
+          const isEcuador = origin === 'Ecuador';
           return (
-            <div key={origin} className="border border-slate-200 rounded-xl overflow-hidden">
+            <div
+              key={origin}
+              className={
+                'border border-slate-200 rounded-xl overflow-hidden' +
+                (isEcuador ? '' : ' opacity-60')
+              }
+            >
               <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <p className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
                     Origin: {origin}
+                    {!isEcuador && (
+                      <span className="ml-2 normal-case font-medium text-slate-400">
+                        (pending pipeline)
+                      </span>
+                    )}
                   </p>
                   <p className="text-[11px] text-slate-500">
                     {allAccepted

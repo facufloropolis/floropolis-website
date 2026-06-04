@@ -700,6 +700,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           classifications={classifications.map((c) => ({
             sku_id: c.sku_id,
             status: c.status,
+            tier: c.tier,
+            vendor: c.vendor,
           }))}
         />
 
