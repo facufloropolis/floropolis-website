@@ -12,7 +12,7 @@
 //            RECOMMENDATION / proposer + age), ranked by unblock value v1.
 //   Zone 3 — Your knowledge: the four live micro-questions only Facu can answer,
 //            seeded from a static const array, two with live counts/tables.
-//   Zone 4 — What the machine did (collapsed): last 10 catalog_repair_state_log rows.
+//   Zone 4 — What the machine did (collapsed): last 10 improvement_loop_state_log rows.
 //
 // Read-only honesty v1: NO write actions. Decisions deep-link to the existing
 // /admin/catalog/approval-queue decide UI; knowledge questions name the channel
@@ -22,7 +22,7 @@
 // client_profiles.status='admin'; non-admin -> redirect('/')).
 //
 // Data sources (supabase-backup): admin_proposals, v_catalog_admin (unpriced
-// count), box_master_mirror, catalog_repair_state_log.
+// count), box_master_mirror, improvement_loop_state_log.
 //
 // Style: emerald-600 primary, slate scale, ASCII-clean copy. No new design lang.
 
@@ -303,15 +303,15 @@ export default async function FacusDeskPage() {
     else boxRows = (data ?? []) as unknown as BoxRow[];
   }
 
-  // Zone 4 — last 10 repair-log transitions ---------------------------------
+  // Zone 4 — last 10 improvement-loop transitions ---------------------------
   let repairLog: RepairLogRow[] = [];
   {
     const { data, error } = await backup
-      .from('catalog_repair_state_log')
+      .from('improvement_loop_state_log')
       .select('actor, from_state, to_state, at')
       .order('at', { ascending: false })
       .limit(10);
-    if (error) console.error('[admin/desk] repair_state_log:', error);
+    if (error) console.error('[admin/desk] improvement_loop_state_log:', error);
     else repairLog = (data ?? []) as unknown as RepairLogRow[];
   }
 
@@ -336,7 +336,7 @@ export default async function FacusDeskPage() {
             then the knowledge only you can give. Read-only v1: decisions
             deep-link to the existing decide UI; one-click decide here lands in
             v2. Sources: admin_proposals, v_catalog_admin, box_master_mirror,
-            catalog_repair_state_log (supabase-backup).
+            improvement_loop_state_log (supabase-backup).
           </p>
         </div>
         <Link
@@ -602,14 +602,14 @@ export default async function FacusDeskPage() {
           <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-slate-700 select-none">
             What the machine did
             <span className="ml-2 text-xs font-normal text-slate-400">
-              last {repairLog.length} repair-loop transition
+              last {repairLog.length} improvement-loop transition
               {repairLog.length === 1 ? '' : 's'} — read-only proof the loop runs
             </span>
           </summary>
           <div className="px-4 pb-4">
             {repairLog.length === 0 ? (
               <div className="text-xs text-slate-400">
-                catalog_repair_state_log: no rows / source unavailable
+                improvement_loop_state_log: no rows / source unavailable
               </div>
             ) : (
               <table className="w-full text-xs">
@@ -644,7 +644,7 @@ export default async function FacusDeskPage() {
       <p className="text-xs text-slate-400">
         Read-only v1. Sources: supabase-backup admin_proposals
         (status=awaiting_facu), v_catalog_admin (margin_status=unpriced),
-        box_master_mirror (active), catalog_repair_state_log. Decisions are
+        box_master_mirror (active), improvement_loop_state_log. Decisions are
         decided in /admin/catalog/approval-queue until Desk v2 ships inline
         actions.
       </p>

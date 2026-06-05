@@ -3,8 +3,8 @@
 //
 // Facu's ask: "a view on what is NOT publishable." This server component reads
 // catalog_classifications WHERE status='blocked', joins dim_sku for the SKU
-// basics (color/size), and LEFT JOINs catalog_repair_state (latest non-verified
-// row per sku+gate) to show where each blocker sits in the repair loop.
+// basics (color/size), and LEFT JOINs improvement_loop_state (latest non-verified
+// row per sku+gate) to show where each blocker sits in the improvement loop.
 //
 // Grouped by FAILING GATE. Each section carries an owner (per the charter rule):
 //   missing_image / missing_contents_description -> Job_PM
@@ -18,7 +18,7 @@
 // Data sources (supabase-backup):
 //   public.catalog_classifications (status, failing_gates jsonb, vendor, tier, variety)
 //   public.dim_sku                 (color_normalized, size_cm, size_grams)
-//   public.catalog_repair_state    (state, owner_agent — latest non-verified per sku+gate)
+//   public.improvement_loop_state  (state, owner_agent — latest non-verified per sku+gate)
 //
 // Style: emerald-600 primary, slate scale, ASCII-clean copy — mirrors
 // /admin/catalog/approval-queue/page.tsx conventions.
@@ -89,7 +89,7 @@ const OWNER_CLS: Record<Owner, string> = {
   Rose_BI: 'bg-blue-50 text-blue-700 border border-blue-200',
 };
 
-// Repair-loop state chip. open=grey, routed=blue, landed=green; untracked=slate.
+// Improvement-loop state chip. open=grey, routed=blue, landed=green; untracked=slate.
 type RepairState = 'open' | 'routed' | 'landed' | 're_scored' | 'verified';
 const REPAIR_CHIP: Record<RepairState | 'untracked', { label: string; cls: string }> = {
   open:      { label: 'open',      cls: 'bg-slate-100 text-slate-600 border border-slate-200' },
@@ -225,12 +225,12 @@ export default async function AdminCatalogBlockedPage() {
   for (let i = 0; i < blockedIds.length; i += 500) {
     const chunk = blockedIds.slice(i, i + 500);
     const { data, error } = await backup
-      .from('catalog_repair_state')
+      .from('improvement_loop_state')
       .select('sku_id, gate_id, state, owner_agent, opened_at, routed_at, landed_at, rescored_at')
       .in('sku_id', chunk)
       .neq('state', 'verified');
     if (error) {
-      console.error('[admin/catalog/blocked] repair_state:', error);
+      console.error('[admin/catalog/blocked] improvement_loop_state:', error);
       continue;
     }
     for (const r of (data ?? []) as unknown as RepairRow[]) {
@@ -316,7 +316,7 @@ export default async function AdminCatalogBlockedPage() {
             Every SKU with a blocking gate failing, grouped by the gate that
             blocks it. Owner per the charter: image and contents copy are Job_PM;
             cost / box / units data are Rose_BI. Read-only view. Source:
-            catalog_classifications + dim_sku + catalog_repair_state on
+            catalog_classifications + dim_sku + improvement_loop_state on
             supabase-backup.
           </p>
         </div>
@@ -348,9 +348,9 @@ export default async function AdminCatalogBlockedPage() {
           <div className="text-[11px] mt-1.5 text-slate-400">Distinct blocked SKUs per gate owner</div>
         </div>
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <div className="text-[11px] uppercase tracking-wide text-blue-700/70">Repair loop in flight</div>
+          <div className="text-[11px] uppercase tracking-wide text-blue-700/70">Improvement loop in flight</div>
           <div className="text-2xl font-bold mt-0.5 text-blue-900">{inFlightSkus.size.toLocaleString()}</div>
-          <div className="text-[11px] mt-0.5 text-blue-700/70">Blocked SKUs with a tracked repair row</div>
+          <div className="text-[11px] mt-0.5 text-blue-700/70">Blocked SKUs with a tracked improvement-loop row</div>
         </div>
       </div>
 
@@ -386,7 +386,7 @@ export default async function AdminCatalogBlockedPage() {
                       <th className="px-4 py-2">Color</th>
                       <th className="px-4 py-2">Size</th>
                       <th className="px-4 py-2">Tier</th>
-                      <th className="px-4 py-2">Repair state</th>
+                      <th className="px-4 py-2">Loop state</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -429,7 +429,7 @@ export default async function AdminCatalogBlockedPage() {
         Read-only v1. Routing a blocked SKU to Rose is available per-SKU on the
         SKU detail page via /api/admin/rose-queue; a bulk action is not wired
         here. Sources: supabase-backup catalog_classifications (status=blocked),
-        dim_sku (color/size), catalog_repair_state (latest non-verified per
+        dim_sku (color/size), improvement_loop_state (latest non-verified per
         sku+gate).
       </p>
     </main>

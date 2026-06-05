@@ -25,6 +25,7 @@ import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
+import CanonicalCostsPanel from './_components/CanonicalCostsPanel';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import {
@@ -175,6 +176,7 @@ function parseTab(v: string | string[] | undefined): TabKey {
 interface SearchParams {
   panel?: string | string[];
   tab?: string | string[];
+  costVendor?: string | string[];
 }
 
 export default async function AdminCatalogConfigPage({
@@ -488,6 +490,16 @@ export default async function AdminCatalogConfigPage({
             />
           </WiringSection>
         )}
+
+        {/* Canonical costs (Rose source of truth) -- read-only window.
+            CEO directive 2026-06-05: canonical costs live in admin/config.
+            Standalone section (not part of the propose->approve panel switcher)
+            because it is read-only; corrections route to Rose next iteration. */}
+        <section id="canonical-costs" className="mt-12 pt-8 border-t border-slate-200">
+          <CanonicalCostsPanel
+            vendor={Array.isArray(sp.costVendor) ? sp.costVendor[0] : sp.costVendor}
+          />
+        </section>
 
         <p className="text-xs text-slate-400 mt-10">
           Data sources: supabase-backup public.box_master, public.pricing_constants,

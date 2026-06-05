@@ -16,8 +16,8 @@
 //     strip renders "source unavailable" / "—" for it — NEVER a fake zero.
 //
 // RACI: read-only against Rose's tables (catalog_classifications, dim_sku,
-// admin_proposals) + Job's catalog_repair_state. The only write is to Job's own
-// catalog_pulse_snapshots (audit/derived, not canonical supply).
+// admin_proposals) + Job's improvement_loop_state + plan_state. The only write
+// is to Job's own catalog_pulse_snapshots (audit/derived, not canonical supply).
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -32,8 +32,23 @@ export interface PulseLimiter {
   gateId: string;            // e.g. 'missing_contents_description'
   label: string;            // friendly label, falls back to humanized gate id
   count: number;            // SKUs failing this gate (the #1 limiter)
-  owner: string | null;     // owner_agent from catalog_repair_state, if known
+  owner: string | null;     // owner_agent from improvement_loop_state, if known
   inFlight: number | null;  // repairs in flight (routed|landed|re_scored) for it
+}
+
+/**
+ * Plan adherence — Facu-visible drift detection. Computed live from plan_state +
+ * improvement_loop_state on every render. NEVER cached in a snapshot: the
+ * staleness counter MUST climb on its own when no batch closes.
+ */
+export interface PlanAdherence {
+  // null when plan_state is unavailable / empty.
+  currentPhase: number | null;
+  phaseLabel: string | null;
+  streakCount: number | null;
+  // Whole days since MAX(verified_at) on verified rows. null === no verified
+  // batch yet (rendered honestly as alert, never a fake green).
+  daysSinceVerified: number | null;
 }
 
 export interface Pulse {
@@ -59,6 +74,9 @@ export interface Pulse {
   firstVisit: boolean;
 
   limiter: PulseLimiter | null;
+
+  /** plan phase + streak + verified-batch staleness (live, never snapshotted). */
+  plan: PlanAdherence;
 
   /** the captured_at of the prior snapshot used for deltas, ISO, if any. */
   priorAt: string | null;
@@ -145,15 +163,15 @@ export async function fetchPulse(backup: SupabaseClient): Promise<Pulse> {
   let repairsVerified: Metric = null;
   try {
     const open = await backup
-      .from('catalog_repair_state')
+      .from('improvement_loop_state')
       .select('*', { count: 'exact', head: true })
       .eq('state', 'open');
     const inflight = await backup
-      .from('catalog_repair_state')
+      .from('improvement_loop_state')
       .select('*', { count: 'exact', head: true })
       .in('state', ['routed', 'landed', 're_scored']);
     const verified = await backup
-      .from('catalog_repair_state')
+      .from('improvement_loop_state')
       .select('*', { count: 'exact', head: true })
       .eq('state', 'verified');
     if (!open.error) repairsOpen = open.count ?? null;
@@ -177,6 +195,11 @@ export async function fetchPulse(backup: SupabaseClient): Promise<Pulse> {
 
   // --- #1 limiter: top failing gate by SKU count from classifications -------
   const limiter = await fetchTopLimiter(backup);
+
+  // --- plan adherence: phase + streak + verified-batch staleness ------------
+  // Computed live every render; intentionally NOT folded into the snapshot so
+  // the staleness counter keeps climbing on its own when no batch closes.
+  const plan = await fetchPlanAdherence(backup);
 
   // --- prior snapshot (latest) for deltas; tolerate missing table -----------
   let prior: Record<string, number | string> | null = null;
@@ -248,8 +271,57 @@ export async function fetchPulse(backup: SupabaseClient): Promise<Pulse> {
     deltas,
     firstVisit,
     limiter,
+    plan,
     priorAt,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Plan adherence
+// ---------------------------------------------------------------------------
+
+async function fetchPlanAdherence(backup: SupabaseClient): Promise<PlanAdherence> {
+  let currentPhase: number | null = null;
+  let phaseLabel: string | null = null;
+  let streakCount: number | null = null;
+
+  // plan_state is a single-row table. Read it best-effort; any failure leaves
+  // the phase/streak null and the chip degrades honestly.
+  try {
+    const { data, error } = await backup
+      .from('plan_state')
+      .select('current_phase, phase_label, streak_count')
+      .limit(1)
+      .maybeSingle();
+    if (!error && data) {
+      if (typeof data.current_phase === 'number') currentPhase = data.current_phase;
+      if (typeof data.phase_label === 'string') phaseLabel = data.phase_label;
+      if (typeof data.streak_count === 'number') streakCount = data.streak_count;
+    }
+  } catch (err) {
+    console.error('[pulse] plan_state read failed:', err);
+  }
+
+  // Staleness: whole days since the most recent verified batch. null verified =
+  // honest "no verified batches yet" alert (never a fake green).
+  let daysSinceVerified: number | null = null;
+  try {
+    const { data, error } = await backup
+      .from('improvement_loop_state')
+      .select('verified_at')
+      .eq('state', 'verified')
+      .order('verified_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!error && data && typeof data.verified_at === 'string') {
+      const ms = Date.now() - new Date(data.verified_at).getTime();
+      daysSinceVerified = Math.max(0, Math.floor(ms / (24 * 60 * 60 * 1000)));
+    }
+  } catch (err) {
+    console.error('[pulse] verified-batch staleness read failed:', err);
+  }
+
+  return { currentPhase, phaseLabel, streakCount, daysSinceVerified };
 }
 
 // ---------------------------------------------------------------------------
@@ -322,7 +394,7 @@ async function fetchTopLimiter(backup: SupabaseClient): Promise<PulseLimiter | n
   let inFlight: number | null = null;
   try {
     const ownerRow = await backup
-      .from('catalog_repair_state')
+      .from('improvement_loop_state')
       .select('owner_agent')
       .eq('gate_id', topGate)
       .neq('state', 'verified')
@@ -332,7 +404,7 @@ async function fetchTopLimiter(backup: SupabaseClient): Promise<PulseLimiter | n
       owner = ownerRow.data.owner_agent;
     }
     const flight = await backup
-      .from('catalog_repair_state')
+      .from('improvement_loop_state')
       .select('*', { count: 'exact', head: true })
       .eq('gate_id', topGate)
       .in('state', ['routed', 'landed', 're_scored']);

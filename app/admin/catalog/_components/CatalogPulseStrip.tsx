@@ -21,10 +21,80 @@
 
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { fetchPulse, type Metric } from '@/lib/admin/pulse';
+import { fetchPulse, type Metric, type PlanAdherence } from '@/lib/admin/pulse';
 
 function fmtNum(v: Metric): string {
   return typeof v === 'number' ? v.toLocaleString() : '—';
+}
+
+// Small inline chip used by the plan-adherence row. Tone drives the color so the
+// staleness guard reads at a glance (green ok / amber warn / red breach).
+function Chip({
+  tone,
+  children,
+}: {
+  tone: 'neutral' | 'ok' | 'warn' | 'alert';
+  children: React.ReactNode;
+}) {
+  const cls =
+    tone === 'alert'
+      ? 'bg-red-50 text-red-700 border-red-200'
+      : tone === 'warn'
+        ? 'bg-amber-50 text-amber-800 border-amber-200'
+        : tone === 'ok'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : 'bg-slate-50 text-slate-600 border-slate-200';
+  return (
+    <span
+      className={`text-[11px] px-2 py-0.5 rounded font-medium border ${cls} whitespace-nowrap`}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Plan-adherence row: phase, streak, and the self-climbing verified-batch
+// staleness guard. All three facts come live from the DB (plan_state +
+// improvement_loop_state) — no hardcode, no snapshot caching.
+function PlanAdherenceRow({ plan }: { plan: PlanAdherence }) {
+  const n = plan.daysSinceVerified;
+  // Staleness tone + copy. null = no verified batch yet -> honest alert.
+  let staleTone: 'ok' | 'warn' | 'alert';
+  let staleText: string;
+  if (n === null) {
+    staleTone = 'alert';
+    staleText = 'last verified batch: no verified batches yet';
+  } else if (n > 14) {
+    staleTone = 'alert';
+    staleText = `last verified batch: ${n}d ago (guard 14d BREACHED)`;
+  } else if (n >= 10) {
+    staleTone = 'warn';
+    staleText = `last verified batch: ${n}d ago`;
+  } else {
+    staleTone = 'ok';
+    staleText = `last verified batch: ${n}d ago`;
+  }
+
+  const phaseChip =
+    plan.currentPhase === null
+      ? 'Phase: source unavailable'
+      : `Phase ${plan.currentPhase}${plan.phaseLabel ? ` — ${plan.phaseLabel}` : ''}`;
+
+  const streakChip =
+    plan.streakCount === null
+      ? 'streak: source unavailable'
+      : `streak: ${plan.streakCount} batch${plan.streakCount === 1 ? '' : 'es'}`;
+
+  return (
+    <div className="px-4 py-2 border-t border-slate-100 flex flex-wrap items-center gap-2">
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mr-1">
+        Plan adherence
+      </span>
+      <Chip tone="neutral">{phaseChip}</Chip>
+      <Chip tone="neutral">{streakChip}</Chip>
+      <Chip tone={staleTone}>{staleText}</Chip>
+    </div>
+  );
 }
 
 // Renders the delta annotation: ▲+12 (green) / ▼−85 (also green when it's a
@@ -159,6 +229,9 @@ export default async function CatalogPulseStrip({ backup }: { backup: SupabaseCl
           <span className="text-[11px] text-slate-400">awaiting you</span>
         </Cell>
       </div>
+
+      {/* Plan adherence — phase / streak / verified-batch staleness guard */}
+      <PlanAdherenceRow plan={pulse.plan} />
     </div>
   );
 }
