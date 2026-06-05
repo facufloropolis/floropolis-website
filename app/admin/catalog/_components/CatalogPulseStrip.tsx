@@ -149,9 +149,9 @@ export default async function CatalogPulseStrip({ backup }: { backup: SupabaseCl
             Your decisions
           </span>
           <Link
-            href="/admin/catalog/approval-queue"
+            href="/admin/desk"
             className="text-lg font-bold text-slate-900 tabular-nums leading-none hover:underline decoration-dotted underline-offset-2 w-fit"
-            title="Proposals awaiting your decision"
+            title="Facu's Desk — your decisions ranked + knowledge questions"
           >
             {fmtNum(pulse.decisionsWaiting)}
             <span className="text-slate-400 font-normal"> →</span>

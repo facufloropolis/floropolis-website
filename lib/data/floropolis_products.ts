@@ -1,6 +1,6 @@
 /**
  * Auto-generated product catalog from the BACKUP publish authority (catalog_published).
- * Generated: 2026-06-04T21:21:52.415Z
+ * Generated: 2026-06-05T13:00:04.251Z
  * Total products: 683
  * Tiers: {"T2":301,"T3":382}
  *
@@ -73,7 +73,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1533747392,
@@ -105,7 +105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1451212610,
@@ -137,7 +137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1679049717,
@@ -169,7 +169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1591959141,
@@ -201,7 +201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1260246635,
@@ -233,7 +233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1022048606,
@@ -265,7 +265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1980343877,
@@ -297,7 +297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 259912200,
@@ -329,7 +329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1412114850,
@@ -361,7 +361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1471780674,
@@ -393,7 +393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1624763395,
@@ -425,7 +425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 10 bunches × 10 stems = 100 stems",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 510344253,
@@ -457,7 +457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1110653811,
@@ -489,7 +489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 170882348,
@@ -521,7 +521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 670223611,
@@ -553,7 +553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 252617437,
@@ -585,7 +585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1205086294,
@@ -617,7 +617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 928555420,
@@ -649,7 +649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1887693062,
@@ -681,7 +681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 778032734,
@@ -713,7 +713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1598335393,
@@ -745,7 +745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1013062347,
@@ -777,7 +777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1109748901,
@@ -809,7 +809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 448937963,
@@ -841,7 +841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 402069621,
@@ -873,7 +873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 620896085,
@@ -905,7 +905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 217548219,
@@ -937,7 +937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1150721268,
@@ -969,7 +969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 445193982,
@@ -1001,7 +1001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 660274630,
@@ -1033,7 +1033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1218647055,
@@ -1065,7 +1065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 694993589,
@@ -1097,7 +1097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1095129933,
@@ -1129,7 +1129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1316644732,
@@ -1161,7 +1161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 562130278,
@@ -1193,7 +1193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 452380301,
@@ -1225,7 +1225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1986354331,
@@ -1257,7 +1257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1383968291,
@@ -1289,7 +1289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 621297826,
@@ -1321,7 +1321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 991432208,
@@ -1353,7 +1353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1117133344,
@@ -1385,7 +1385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1950104029,
@@ -1417,7 +1417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1346677060,
@@ -1449,7 +1449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1327702819,
@@ -1481,7 +1481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 182572148,
@@ -1513,7 +1513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1188079294,
@@ -1545,7 +1545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1277990059,
@@ -1577,7 +1577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1551204555,
@@ -1609,7 +1609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 541567025,
@@ -1641,7 +1641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 781448070,
@@ -1673,7 +1673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1585049879,
@@ -1705,7 +1705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1422799259,
@@ -1737,7 +1737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1497118003,
@@ -1769,7 +1769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 196099634,
@@ -1801,7 +1801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 32906702,
@@ -1833,7 +1833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 413013748,
@@ -1865,7 +1865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 74420040,
@@ -1897,7 +1897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 490074113,
@@ -1929,7 +1929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 722648630,
@@ -1961,7 +1961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1157413395,
@@ -1993,7 +1993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1852659931,
@@ -2025,7 +2025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 206746986,
@@ -2057,7 +2057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 501983080,
@@ -2089,7 +2089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 468696829,
@@ -2121,7 +2121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 69402343,
@@ -2153,7 +2153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1229139133,
@@ -2185,7 +2185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1223791565,
@@ -2217,7 +2217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1301148438,
@@ -2249,7 +2249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1276517086,
@@ -2281,7 +2281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1958885342,
@@ -2313,7 +2313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1274524489,
@@ -2345,7 +2345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 729148413,
@@ -2377,7 +2377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 474192460,
@@ -2409,7 +2409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 276944238,
@@ -2441,7 +2441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 441611874,
@@ -2473,7 +2473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1854512518,
@@ -2505,7 +2505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1541172477,
@@ -2537,7 +2537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 8810780,
@@ -2569,7 +2569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1126269879,
@@ -2601,7 +2601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1114927323,
@@ -2633,7 +2633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 911004341,
@@ -2665,7 +2665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1180544524,
@@ -2697,7 +2697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1789536678,
@@ -2729,7 +2729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1113986981,
@@ -2761,7 +2761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 154413138,
@@ -2793,7 +2793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 68867522,
@@ -2825,7 +2825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 204356369,
@@ -2857,7 +2857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1181200946,
@@ -2889,7 +2889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 563760713,
@@ -2921,7 +2921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 106156496,
@@ -2953,7 +2953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 903997389,
@@ -2985,7 +2985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1724418639,
@@ -3017,7 +3017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 967118158,
@@ -3049,7 +3049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 982900190,
@@ -3081,7 +3081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1755743112,
@@ -3113,7 +3113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 383281528,
@@ -3145,7 +3145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 662756953,
@@ -3177,7 +3177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 233885638,
@@ -3209,7 +3209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 805525074,
@@ -3241,7 +3241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1366397941,
@@ -3273,7 +3273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1951287318,
@@ -3305,7 +3305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1721424391,
@@ -3337,7 +3337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1218765411,
@@ -3369,7 +3369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 382307213,
@@ -3401,7 +3401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1720261765,
@@ -3433,7 +3433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1636642909,
@@ -3465,7 +3465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1662692137,
@@ -3497,7 +3497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1868100260,
@@ -3529,7 +3529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1821305941,
@@ -3561,7 +3561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 431103462,
@@ -3593,7 +3593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 72948137,
@@ -3625,7 +3625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 503959285,
@@ -3657,7 +3657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1394823518,
@@ -3689,7 +3689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1004110808,
@@ -3721,7 +3721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 707080838,
@@ -3753,7 +3753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 854131391,
@@ -3785,7 +3785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1528147546,
@@ -3817,7 +3817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 866656808,
@@ -3849,7 +3849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1192523377,
@@ -3881,7 +3881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 732272845,
@@ -3913,7 +3913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1488591546,
@@ -3945,7 +3945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1467913242,
@@ -3977,7 +3977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 127066880,
@@ -4009,7 +4009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 25504750,
@@ -4041,7 +4041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 984940674,
@@ -4073,7 +4073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1629944755,
@@ -4105,7 +4105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 988060814,
@@ -4137,7 +4137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 186566149,
@@ -4169,7 +4169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 787715248,
@@ -4201,7 +4201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 664231325,
@@ -4233,7 +4233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 414882792,
@@ -4265,7 +4265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 108638086,
@@ -4297,7 +4297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 382148325,
@@ -4329,7 +4329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1304725016,
@@ -4361,7 +4361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1041463086,
@@ -4393,7 +4393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 238052248,
@@ -4425,7 +4425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 543396891,
@@ -4457,7 +4457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1062380670,
@@ -4489,7 +4489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1135365382,
@@ -4521,7 +4521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1655001869,
@@ -4553,7 +4553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 162787706,
@@ -4585,7 +4585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1388819906,
@@ -4617,7 +4617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 662055630,
@@ -4649,7 +4649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 45133395,
@@ -4681,7 +4681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1378837012,
@@ -4713,7 +4713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1875876366,
@@ -4745,7 +4745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1580241301,
@@ -4777,7 +4777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 958961615,
@@ -4809,7 +4809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 998700778,
@@ -4841,7 +4841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1926885871,
@@ -4873,7 +4873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 897965239,
@@ -4905,7 +4905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1444309171,
@@ -4937,7 +4937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1290817822,
@@ -4969,7 +4969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 20121578,
@@ -5001,7 +5001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 731253827,
@@ -5033,7 +5033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1972334044,
@@ -5065,7 +5065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1134250684,
@@ -5097,7 +5097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 256582055,
@@ -5129,7 +5129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1337707294,
@@ -5161,7 +5161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1615769930,
@@ -5193,7 +5193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 117610818,
@@ -5225,7 +5225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1439505088,
@@ -5257,7 +5257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1113070281,
@@ -5289,7 +5289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1687197613,
@@ -5321,7 +5321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 931697633,
@@ -5353,7 +5353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1164146459,
@@ -5385,7 +5385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 255205632,
@@ -5417,7 +5417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 126775419,
@@ -5449,7 +5449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 214069697,
@@ -5481,7 +5481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 605180448,
@@ -5513,7 +5513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 867647540,
@@ -5545,7 +5545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1589055789,
@@ -5577,7 +5577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 454221334,
@@ -5609,7 +5609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1104856838,
@@ -5641,7 +5641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 210685326,
@@ -5673,7 +5673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 675603413,
@@ -5705,7 +5705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1101982026,
@@ -5737,7 +5737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1186824678,
@@ -5769,7 +5769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1297809199,
@@ -5801,7 +5801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1341509471,
@@ -5833,7 +5833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1087769214,
@@ -5865,7 +5865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1240365083,
@@ -5897,7 +5897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1012586812,
@@ -5929,7 +5929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1842902670,
@@ -5961,7 +5961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 835250871,
@@ -5993,7 +5993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1900936526,
@@ -6025,7 +6025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 620552692,
@@ -6057,7 +6057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 615179172,
@@ -6089,7 +6089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1826268316,
@@ -6121,7 +6121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 19285899,
@@ -6153,7 +6153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1459882292,
@@ -6185,7 +6185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 609447648,
@@ -6217,7 +6217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 548480506,
@@ -6249,7 +6249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 955483900,
@@ -6281,7 +6281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 851929934,
@@ -6313,7 +6313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 158355342,
@@ -6345,7 +6345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 992558,
@@ -6377,7 +6377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1042371612,
@@ -6409,7 +6409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1759787027,
@@ -6441,7 +6441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 139606228,
@@ -6473,7 +6473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1308507107,
@@ -6505,7 +6505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1523177434,
@@ -6537,7 +6537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1039912988,
@@ -6569,7 +6569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 408286968,
@@ -6601,7 +6601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1709532955,
@@ -6633,7 +6633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1650651794,
@@ -6665,7 +6665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1421592930,
@@ -6697,7 +6697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 874020227,
@@ -6729,7 +6729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 483761581,
@@ -6761,7 +6761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1166881017,
@@ -6793,7 +6793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1446932430,
@@ -6825,7 +6825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1720708569,
@@ -6857,7 +6857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 13845116,
@@ -6889,7 +6889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 69231298,
@@ -6921,7 +6921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1067774573,
@@ -6953,7 +6953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1966564902,
@@ -6985,7 +6985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 841291833,
@@ -7017,7 +7017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 517377546,
@@ -7049,7 +7049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 803207698,
@@ -7081,7 +7081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1063179752,
@@ -7113,7 +7113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1374005017,
@@ -7145,7 +7145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1925027449,
@@ -7177,7 +7177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1128950859,
@@ -7209,7 +7209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 126874850,
@@ -7241,7 +7241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 324916313,
@@ -7273,7 +7273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 289535146,
@@ -7305,7 +7305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1197126588,
@@ -7337,7 +7337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1285423582,
@@ -7369,7 +7369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1474953358,
@@ -7401,7 +7401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 280679289,
@@ -7433,7 +7433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1042847301,
@@ -7465,7 +7465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 810082502,
@@ -7497,7 +7497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1322729507,
@@ -7529,7 +7529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1782625392,
@@ -7561,7 +7561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1495748382,
@@ -7593,7 +7593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1519794012,
@@ -7625,7 +7625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 270142631,
@@ -7657,7 +7657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 471797532,
@@ -7689,7 +7689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1782583328,
@@ -7721,7 +7721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1806522723,
@@ -7753,7 +7753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1822169178,
@@ -7785,7 +7785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 581029787,
@@ -7817,7 +7817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 903193944,
@@ -7849,7 +7849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 998708231,
@@ -7881,7 +7881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 123386005,
@@ -7913,7 +7913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 355971934,
@@ -7945,7 +7945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 164603117,
@@ -7977,7 +7977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 118753422,
@@ -8009,7 +8009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1373604547,
@@ -8041,7 +8041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 433374510,
@@ -8073,7 +8073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 247242900,
@@ -8105,7 +8105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 812692943,
@@ -8137,7 +8137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 731619760,
@@ -8169,7 +8169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 134789132,
@@ -8201,7 +8201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 830044067,
@@ -8233,7 +8233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1359722180,
@@ -8265,7 +8265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1140568357,
@@ -8297,7 +8297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1297409610,
@@ -8329,7 +8329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1941171140,
@@ -8361,7 +8361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1653656608,
@@ -8393,7 +8393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 41,
     "contents_note": "Hanging Heliconias,Banana Fingers,Tropical Greens",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 513491633,
@@ -8425,7 +8425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 52,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 748732334,
@@ -8457,7 +8457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 51,
     "contents_note": "Heliconias,Gingers,Tropical Foliage",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 214010144,
@@ -8489,7 +8489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 41,
     "contents_note": "Tropical Heliconias,Foliage",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 417617596,
@@ -8521,7 +8521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 50,
     "contents_note": "Heliconias,Gingers,Musa,Tropical Foliage",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1117170392,
@@ -8553,7 +8553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 43,
     "contents_note": "Heliconias,Gingers,Tropical Foliage",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 303387751,
@@ -8585,7 +8585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 66,
     "contents_note": "Heliconias,Gingers,Tropical Foliage",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 636343084,
@@ -8617,7 +8617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 113,
     "contents_note": "Heliconias,Gingers,Musa,Tropical Foliage",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1426784970,
@@ -8649,7 +8649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 41,
     "contents_note": "Gingers,Heliconias,Tropical Greens",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1705810868,
@@ -8681,7 +8681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 90,
     "contents_note": "Monsteras, Phi Xantal, Dieffenbachia, Pandanus, Areca Palms, Cordelyne",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 962359908,
@@ -8713,7 +8713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 43,
     "contents_note": "Cordelyne, Dracaena Sanderiana, Pandanus, Croto, Curly Pandanus, Aspidistra, Marginata, Philodendro Esmeralda, Podocarpus, Sanseveria",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 138899492,
@@ -8745,7 +8745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 90,
     "contents_note": "Palma Raphis, Areca Palm, Pandanus Variegated, Accordeon, Davalia, Cordelyne green, Cordelyne Xerox, Eucalypto Silver Dollar, Schiflera",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1678341575,
@@ -8777,7 +8777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 115,
     "contents_note": "Masajeana, Phi. Lemon, Dieffenbachia, Pandanus, Lettuce Fern, Cordelyne",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 277236121,
@@ -8809,7 +8809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 24,
     "contents_note": "Ginger King Plus Red,Ginger King Nicole,Torch Ginger Red,Torch Ginger Pink",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1042110575,
@@ -8841,7 +8841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 24,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 897029737,
@@ -8873,7 +8873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 36,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1199847529,
@@ -8905,7 +8905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 395281020,
@@ -8937,7 +8937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 50,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1688321004,
@@ -8969,7 +8969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1028739834,
@@ -9001,7 +9001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 20,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1113385979,
@@ -9033,7 +9033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 10,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1330956133,
@@ -9065,7 +9065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 15,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1573645000,
@@ -9097,7 +9097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 30,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 134588034,
@@ -9129,7 +9129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 50,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 24434793,
@@ -9161,7 +9161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 990484977,
@@ -9193,7 +9193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1315678772,
@@ -9225,7 +9225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 20,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1090887134,
@@ -9257,7 +9257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 835687361,
@@ -9289,7 +9289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1553155042,
@@ -9321,7 +9321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1587205947,
@@ -9353,7 +9353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 4,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 234599714,
@@ -9385,7 +9385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 6913651,
@@ -9417,7 +9417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1570327271,
@@ -9449,7 +9449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1511737938,
@@ -9481,7 +9481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 30,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1080156627,
@@ -9513,7 +9513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 765288114,
@@ -9545,7 +9545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 180,
     "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 767551117,
@@ -9577,7 +9577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 95,
     "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 844203053,
@@ -9609,7 +9609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 54,
     "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 1136248023,
@@ -9641,7 +9641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 20,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 864434671,
@@ -9673,7 +9673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 10,
     "contents_note": null,
-    "available_from": "2026-06-09"
+    "available_from": "2026-06-10"
   },
   {
     "id": 333995595,
@@ -9686,7 +9686,7 @@ export const products: Product[] = [
     "price": 1.3087,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
+    "units_per_box": 120,
     "box_type": "EB",
     "stock": 0,
     "vendor": "Megaflor",
@@ -9703,9 +9703,9 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
+    "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 907805744,
@@ -9718,7 +9718,7 @@ export const products: Product[] = [
     "price": 1.1594,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
+    "units_per_box": 120,
     "box_type": "EB",
     "stock": 0,
     "vendor": "Megaflor",
@@ -9735,9 +9735,9 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
+    "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 860930389,
@@ -9769,7 +9769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1806869114,
@@ -9801,7 +9801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1926510727,
@@ -9833,7 +9833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 694784589,
@@ -9865,7 +9865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 56515590,
@@ -9897,7 +9897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1195303248,
@@ -9929,7 +9929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1864623590,
@@ -9961,7 +9961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1249949784,
@@ -9993,7 +9993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1213595507,
@@ -10006,7 +10006,7 @@ export const products: Product[] = [
     "price": 1.3833,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
+    "units_per_box": 120,
     "box_type": "EB",
     "stock": 0,
     "vendor": "Megaflor",
@@ -10023,9 +10023,9 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
+    "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1906362142,
@@ -10057,7 +10057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 534562670,
@@ -10089,7 +10089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 156077739,
@@ -10121,7 +10121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 520870924,
@@ -10153,7 +10153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1139341423,
@@ -10185,7 +10185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 925937544,
@@ -10217,7 +10217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 24636045,
@@ -10249,7 +10249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 541268827,
@@ -10281,7 +10281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 971922648,
@@ -10313,7 +10313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1814235232,
@@ -10345,7 +10345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1866356046,
@@ -10377,7 +10377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1923683047,
@@ -10409,7 +10409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 213669463,
@@ -10441,7 +10441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1199572378,
@@ -10473,7 +10473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1583892262,
@@ -10505,7 +10505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1078695469,
@@ -10537,7 +10537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1076697043,
@@ -10569,7 +10569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1896009326,
@@ -10601,7 +10601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 233770130,
@@ -10633,7 +10633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1429373514,
@@ -10665,7 +10665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 302715951,
@@ -10697,7 +10697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1038922592,
@@ -10729,7 +10729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 359899706,
@@ -10761,7 +10761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1528359681,
@@ -10793,7 +10793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 581127092,
@@ -10825,7 +10825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1920711830,
@@ -10857,7 +10857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1798493610,
@@ -10889,7 +10889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 819963470,
@@ -10921,7 +10921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 787462029,
@@ -10953,7 +10953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 870669511,
@@ -10985,7 +10985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1391275133,
@@ -11017,7 +11017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1087103454,
@@ -11049,7 +11049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 86639652,
@@ -11081,7 +11081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 943639487,
@@ -11113,7 +11113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 143310734,
@@ -11145,7 +11145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1644989263,
@@ -11177,7 +11177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1117846806,
@@ -11209,7 +11209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 145353066,
@@ -11241,7 +11241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1282605765,
@@ -11273,7 +11273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 35322608,
@@ -11305,7 +11305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 92104550,
@@ -11337,7 +11337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 485899411,
@@ -11369,7 +11369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1684417731,
@@ -11401,7 +11401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 185408393,
@@ -11433,7 +11433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1699365862,
@@ -11465,7 +11465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 41607320,
@@ -11497,7 +11497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 930331522,
@@ -11529,7 +11529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1908028337,
@@ -11561,7 +11561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 237988026,
@@ -11593,7 +11593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 31147527,
@@ -11625,7 +11625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1400755706,
@@ -11657,7 +11657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1290395318,
@@ -11689,7 +11689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1654489605,
@@ -11721,7 +11721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1172479364,
@@ -11753,7 +11753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 818485833,
@@ -11785,7 +11785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1295442529,
@@ -11817,7 +11817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1932240390,
@@ -11849,7 +11849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1354965449,
@@ -11881,7 +11881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 931027383,
@@ -11913,7 +11913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 508634404,
@@ -11945,7 +11945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 760184499,
@@ -11977,7 +11977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1896672316,
@@ -12009,7 +12009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1148503490,
@@ -12041,7 +12041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1276869272,
@@ -12073,7 +12073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1993156875,
@@ -12105,7 +12105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1386879965,
@@ -12137,7 +12137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1747588412,
@@ -12169,7 +12169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 485022348,
@@ -12201,7 +12201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1941652486,
@@ -12233,7 +12233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1936049013,
@@ -12265,7 +12265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1009187738,
@@ -12297,7 +12297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1333657039,
@@ -12329,7 +12329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1995605805,
@@ -12361,7 +12361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 196648205,
@@ -12393,7 +12393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 953146572,
@@ -12425,7 +12425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1735241655,
@@ -12457,7 +12457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1773636498,
@@ -12489,7 +12489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 833393988,
@@ -12521,7 +12521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1970587698,
@@ -12553,7 +12553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1386821930,
@@ -12585,7 +12585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 671768548,
@@ -12617,7 +12617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1190213239,
@@ -12649,7 +12649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 824080005,
@@ -12681,7 +12681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 266047291,
@@ -12713,7 +12713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1516570586,
@@ -12745,7 +12745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1405974699,
@@ -12777,7 +12777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1258677727,
@@ -12809,7 +12809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 130630075,
@@ -12841,7 +12841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1546844686,
@@ -12873,7 +12873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 811386992,
@@ -12905,7 +12905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 788404951,
@@ -12937,7 +12937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 201805443,
@@ -12969,7 +12969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 444189071,
@@ -13001,7 +13001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 187260031,
@@ -13033,7 +13033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 673691968,
@@ -13065,7 +13065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 641502299,
@@ -13097,7 +13097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1340680763,
@@ -13129,7 +13129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 299964127,
@@ -13161,7 +13161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1206386926,
@@ -13193,7 +13193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 826570506,
@@ -13225,7 +13225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 576138063,
@@ -13257,7 +13257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 628875275,
@@ -13289,7 +13289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1674391324,
@@ -13321,7 +13321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1439328875,
@@ -13353,7 +13353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1997608478,
@@ -13385,7 +13385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 384683408,
@@ -13417,7 +13417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 35335481,
@@ -13449,7 +13449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1854869412,
@@ -13481,7 +13481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1297257824,
@@ -13513,7 +13513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1852342225,
@@ -13545,7 +13545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1875807622,
@@ -13577,7 +13577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 112093824,
@@ -13609,7 +13609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 186941189,
@@ -13641,7 +13641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 286030805,
@@ -13673,7 +13673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1151063424,
@@ -13705,7 +13705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1463846457,
@@ -13737,7 +13737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1239230914,
@@ -13769,7 +13769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 918372422,
@@ -13801,7 +13801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1986833405,
@@ -13833,7 +13833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 612558760,
@@ -13865,7 +13865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1677875930,
@@ -13897,7 +13897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 151110139,
@@ -13929,7 +13929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1610301383,
@@ -13961,7 +13961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 675744847,
@@ -13993,7 +13993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 181856160,
@@ -14025,7 +14025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 471577856,
@@ -14057,7 +14057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 832481653,
@@ -14089,7 +14089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 111897072,
@@ -14121,7 +14121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 283785855,
@@ -14153,7 +14153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1221960185,
@@ -14185,7 +14185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 195820887,
@@ -14217,7 +14217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 122774373,
@@ -14249,7 +14249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1055695821,
@@ -14281,7 +14281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 817140667,
@@ -14313,7 +14313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 68336148,
@@ -14345,7 +14345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1828104,
@@ -14377,7 +14377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 741850077,
@@ -14409,7 +14409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1120357146,
@@ -14441,7 +14441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1924692250,
@@ -14473,7 +14473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 932779151,
@@ -14505,7 +14505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1647426747,
@@ -14537,7 +14537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 105741033,
@@ -14569,7 +14569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1505778866,
@@ -14601,7 +14601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 500136959,
@@ -14633,7 +14633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1000449152,
@@ -14665,7 +14665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1552746111,
@@ -14697,7 +14697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1952680346,
@@ -14729,7 +14729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1289240992,
@@ -14761,7 +14761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 50661675,
@@ -14793,7 +14793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1085571211,
@@ -14825,7 +14825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1964043521,
@@ -14857,7 +14857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 906352082,
@@ -14889,7 +14889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 352495636,
@@ -14921,7 +14921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1640042872,
@@ -14953,7 +14953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 810273256,
@@ -14985,7 +14985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 236597431,
@@ -15017,7 +15017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1071138459,
@@ -15049,7 +15049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1230835984,
@@ -15081,7 +15081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1662983195,
@@ -15113,7 +15113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 244522810,
@@ -15145,7 +15145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 74478144,
@@ -15177,7 +15177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1944291331,
@@ -15209,7 +15209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 237996780,
@@ -15241,7 +15241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 49597875,
@@ -15273,7 +15273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1742728831,
@@ -15305,7 +15305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1568091882,
@@ -15337,7 +15337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1848180822,
@@ -15369,7 +15369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 223441414,
@@ -15401,7 +15401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1118499957,
@@ -15433,7 +15433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1654230303,
@@ -15465,7 +15465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1347030476,
@@ -15497,7 +15497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 787264492,
@@ -15529,7 +15529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 225500641,
@@ -15561,7 +15561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1162857118,
@@ -15593,7 +15593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 887713308,
@@ -15625,7 +15625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 628902141,
@@ -15657,7 +15657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1219026048,
@@ -15689,7 +15689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 788667798,
@@ -15721,7 +15721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1636865054,
@@ -15753,7 +15753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 702238527,
@@ -15785,7 +15785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1666760381,
@@ -15817,7 +15817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 334001614,
@@ -15849,7 +15849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 589734779,
@@ -15881,7 +15881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1392891117,
@@ -15913,7 +15913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 753910563,
@@ -15945,7 +15945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 852120750,
@@ -15977,7 +15977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1733393589,
@@ -16009,7 +16009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 811255193,
@@ -16041,7 +16041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 211622658,
@@ -16073,7 +16073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1243569421,
@@ -16105,7 +16105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 765827406,
@@ -16137,7 +16137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 54712756,
@@ -16169,7 +16169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1325094157,
@@ -16201,7 +16201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1295572755,
@@ -16233,7 +16233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 48423167,
@@ -16265,7 +16265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1166481672,
@@ -16297,7 +16297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1829685683,
@@ -16329,7 +16329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 982979544,
@@ -16361,7 +16361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1369876608,
@@ -16393,7 +16393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1861453671,
@@ -16425,7 +16425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1649743304,
@@ -16457,7 +16457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 29151185,
@@ -16489,7 +16489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1610957938,
@@ -16521,7 +16521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 343977320,
@@ -16553,7 +16553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1905731007,
@@ -16585,7 +16585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1238322499,
@@ -16617,7 +16617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1750462269,
@@ -16649,7 +16649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1759387292,
@@ -16681,7 +16681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 673036134,
@@ -16713,7 +16713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 926840204,
@@ -16745,7 +16745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 204233912,
@@ -16777,7 +16777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1886324140,
@@ -16809,7 +16809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1314644855,
@@ -16841,7 +16841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 369815224,
@@ -16873,7 +16873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 392390395,
@@ -16905,7 +16905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 140470906,
@@ -16937,7 +16937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 197670295,
@@ -16969,7 +16969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 61032798,
@@ -17001,7 +17001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 758320648,
@@ -17033,7 +17033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1365433138,
@@ -17065,7 +17065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 917086176,
@@ -17097,7 +17097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 812114057,
@@ -17129,7 +17129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1211172682,
@@ -17161,7 +17161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 415502146,
@@ -17193,7 +17193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1241664641,
@@ -17225,7 +17225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1418238330,
@@ -17257,7 +17257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 560491661,
@@ -17289,7 +17289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1919685187,
@@ -17321,7 +17321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1817168265,
@@ -17353,7 +17353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 848860155,
@@ -17385,7 +17385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 221984966,
@@ -17417,7 +17417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1759037839,
@@ -17449,7 +17449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 383866043,
@@ -17481,7 +17481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 21941998,
@@ -17513,7 +17513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 981836956,
@@ -17545,7 +17545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1866462862,
@@ -17577,7 +17577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1910327689,
@@ -17609,7 +17609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1456997018,
@@ -17641,7 +17641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 648814139,
@@ -17673,7 +17673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 316469923,
@@ -17705,7 +17705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1847264446,
@@ -17737,7 +17737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1379758712,
@@ -17769,7 +17769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 982169392,
@@ -17801,7 +17801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 337937178,
@@ -17833,7 +17833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 282310759,
@@ -17865,7 +17865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 685327314,
@@ -17897,7 +17897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 115139108,
@@ -17929,7 +17929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1140167829,
@@ -17961,7 +17961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 417523448,
@@ -17993,7 +17993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 162169144,
@@ -18025,7 +18025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 140031343,
@@ -18057,7 +18057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1962126055,
@@ -18089,7 +18089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 343089551,
@@ -18121,7 +18121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 100438777,
@@ -18153,7 +18153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1029076270,
@@ -18185,7 +18185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1196789381,
@@ -18217,7 +18217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1840482593,
@@ -18249,7 +18249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 767964168,
@@ -18281,7 +18281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 250829618,
@@ -18313,7 +18313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 99705257,
@@ -18345,7 +18345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 97033196,
@@ -18377,7 +18377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 272113151,
@@ -18409,7 +18409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 164129953,
@@ -18441,7 +18441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1577810992,
@@ -18473,7 +18473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 908745758,
@@ -18505,7 +18505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1242998035,
@@ -18537,7 +18537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 586951395,
@@ -18569,7 +18569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 744867643,
@@ -18601,7 +18601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 306046223,
@@ -18633,7 +18633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 556819245,
@@ -18665,7 +18665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 825385374,
@@ -18697,7 +18697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 949723698,
@@ -18729,7 +18729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1465390390,
@@ -18761,7 +18761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 521316883,
@@ -18793,7 +18793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1698313818,
@@ -18825,7 +18825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 519570428,
@@ -18857,7 +18857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1334095251,
@@ -18889,7 +18889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 10 bunches × 10 stems = 100 stems",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 234531452,
@@ -18921,7 +18921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 778388464,
@@ -18953,7 +18953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 64620486,
@@ -18985,7 +18985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1518422780,
@@ -19017,7 +19017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1742010406,
@@ -19049,7 +19049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1921811320,
@@ -19081,7 +19081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1649358428,
@@ -19113,7 +19113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1269910372,
@@ -19145,7 +19145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1901004066,
@@ -19177,7 +19177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 625287262,
@@ -19209,7 +19209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 218021670,
@@ -19241,7 +19241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 645199704,
@@ -19273,7 +19273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1012821406,
@@ -19305,7 +19305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 478575795,
@@ -19337,7 +19337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1095895425,
@@ -19369,7 +19369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 177985019,
@@ -19401,7 +19401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1384032695,
@@ -19433,7 +19433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 434665639,
@@ -19465,7 +19465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1336202987,
@@ -19497,7 +19497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1123908469,
@@ -19529,7 +19529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1558437525,
@@ -19561,7 +19561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1744571969,
@@ -19593,7 +19593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 323333144,
@@ -19625,7 +19625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 99704431,
@@ -19657,7 +19657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 367167237,
@@ -19689,7 +19689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1253843572,
@@ -19721,7 +19721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1707660985,
@@ -19753,7 +19753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1866051877,
@@ -19785,7 +19785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1333202248,
@@ -19817,7 +19817,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 1166931479,
+    "sku_id": "5007d9f7-7abb-470b-b345-58a46831f836",
+    "name": "Magical Lagoon Blue 60cm",
+    "category": "Thistle",
+    "color": "blue",
+    "variety": "magical lagoon",
+    "length": "60 cm",
+    "price": 1.0102,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "magical-lagoon-blue-60cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637250.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 120,
+    "contents_note": null,
+    "available_from": "2026-06-19"
   },
   {
     "id": 509762702,
@@ -19849,39 +19881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 1166931479,
-    "sku_id": "5007d9f7-7abb-470b-b345-58a46831f836",
-    "name": "Magical Lagoon Blue 60cm",
-    "category": "Thistle",
-    "color": "blue",
-    "variety": "magical lagoon",
-    "length": "60 cm",
-    "price": 1.0102,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "magical-lagoon-blue-60cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637250.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 179448508,
@@ -19914,7 +19914,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 686612937,
@@ -19946,263 +19946,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 651237842,
-    "sku_id": "eac7c905-bede-41a7-b01e-34faead8451a",
-    "name": "Elegance Yellow 35 cm",
-    "category": "Other",
-    "color": "yellow",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-yellow-35cm",
-    "images": [
-      "/images/shop/ranunculus/yellow.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 368388850,
-    "sku_id": "d2d6c35f-f833-46bc-b2c4-365bc1cd4f32",
-    "name": "Elegance Hot Pink 35 cm",
-    "category": "Other",
-    "color": "hot pink",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-hot-pink-35cm",
-    "images": [
-      "/images/shop/ranunculus/hot-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 715776396,
-    "sku_id": "d1937ac8-b4b5-4ce8-9826-328365ab5d2f",
-    "name": "Elegance White 35 cm",
-    "category": "Other",
-    "color": "white",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-35cm",
-    "images": [
-      "/images/shop/ranunculus/white.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 866798968,
-    "sku_id": "b35871f3-2aab-43d7-8c23-aebfe091ae5f",
-    "name": "Elegance Assorted 35 cm",
-    "category": "Other",
-    "color": "assorted",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-assorted-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-assorted.jpg"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 507244860,
-    "sku_id": "94b39a0f-47a5-4d6b-b2ee-957a5c9c4183",
-    "name": "Elegance Burgundy 35 cm",
-    "category": "Other",
-    "color": "burgundy",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.3535,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-burgundy-35cm",
-    "images": [
-      "/images/shop/ranunculus/burgundy.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 588506541,
-    "sku_id": "dd29ad84-81f6-422c-be40-2ea065ce3047",
-    "name": "Elegance Brown 35 cm",
-    "category": "Other",
-    "color": "chocolate",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-brown-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-brown.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 828285018,
-    "sku_id": "d3e7f893-94ef-4b84-8518-ef8140b7a96c",
-    "name": "Elegance Cream 35 cm",
-    "category": "Other",
-    "color": "cream",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-cream-35cm",
-    "images": [
-      "/images/shop/ranunculus/cream.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 254437038,
-    "sku_id": "588eaa09-4256-4e9b-a578-f7bb5403f032",
-    "name": "Elegance Red 35 cm",
-    "category": "Other",
-    "color": "red",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-red-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-red.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 680151583,
@@ -20234,7 +19978,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 588506541,
+    "sku_id": "dd29ad84-81f6-422c-be40-2ea065ce3047",
+    "name": "Elegance Brown 35 cm",
+    "category": "Other",
+    "color": "chocolate",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.3087,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-brown-35cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-brown.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
   },
   {
     "id": 1134181255,
@@ -20266,7 +20042,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 828285018,
+    "sku_id": "d3e7f893-94ef-4b84-8518-ef8140b7a96c",
+    "name": "Elegance Cream 35 cm",
+    "category": "Other",
+    "color": "cream",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.3087,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-cream-35cm",
+    "images": [
+      "/images/shop/ranunculus/cream.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
   },
   {
     "id": 504518875,
@@ -20298,16 +20106,176 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 380421049,
-    "sku_id": "1d86697d-6499-4b36-ae32-6e51bb971ae5",
-    "name": "Elegance Peach 40 cm",
+    "id": 254437038,
+    "sku_id": "588eaa09-4256-4e9b-a578-f7bb5403f032",
+    "name": "Elegance Red 35 cm",
     "category": "Other",
-    "color": "peach",
+    "color": "red",
     "variety": "elegance",
-    "length": "40 cm",
+    "length": "35 cm",
+    "price": 1.2639,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-red-35cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-red.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 715776396,
+    "sku_id": "d1937ac8-b4b5-4ce8-9826-328365ab5d2f",
+    "name": "Elegance White 35 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2639,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-35cm",
+    "images": [
+      "/images/shop/ranunculus/white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 866798968,
+    "sku_id": "b35871f3-2aab-43d7-8c23-aebfe091ae5f",
+    "name": "Elegance Assorted 35 cm",
+    "category": "Other",
+    "color": "assorted",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2639,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-assorted-35cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-assorted.jpg"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 368388850,
+    "sku_id": "d2d6c35f-f833-46bc-b2c4-365bc1cd4f32",
+    "name": "Elegance Hot Pink 35 cm",
+    "category": "Other",
+    "color": "hot pink",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2639,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-35cm",
+    "images": [
+      "/images/shop/ranunculus/hot-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 651237842,
+    "sku_id": "eac7c905-bede-41a7-b01e-34faead8451a",
+    "name": "Elegance Yellow 35 cm",
+    "category": "Other",
+    "color": "yellow",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2639,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-yellow-35cm",
+    "images": [
+      "/images/shop/ranunculus/yellow.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 507244860,
+    "sku_id": "94b39a0f-47a5-4d6b-b2ee-957a5c9c4183",
+    "name": "Elegance Burgundy 35 cm",
+    "category": "Other",
+    "color": "burgundy",
+    "variety": "elegance",
+    "length": "35 cm",
     "price": 1.3535,
     "unit": "Stem",
     "stems_per_bunch": 1,
@@ -20322,15 +20290,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-peach-40cm",
+    "slug": "elegance-burgundy-35cm",
     "images": [
-      "/images/shop/ranunculus/amandine-salmon.png"
+      "/images/shop/ranunculus/burgundy.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 269862400,
@@ -20362,199 +20330,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 125312868,
-    "sku_id": "c71e448e-bb43-43fc-8c26-fb5be4992217",
-    "name": "Elegance Lavender 40 cm",
-    "category": "Other",
-    "color": "lavender",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3535,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-lavender-40cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-lavender.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 218788227,
-    "sku_id": "3944093b-12e9-42bd-a5d1-45a02d5117c3",
-    "name": "Elegance Pink 40 cm",
-    "category": "Other",
-    "color": "pink",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-pink-40cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 8687211,
-    "sku_id": "5a5d809d-225a-4a8b-8978-312171a56680",
-    "name": "Elegance Assorted 40 cm",
-    "category": "Other",
-    "color": "assorted",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-assorted-40cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-assorted.jpg"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 429924106,
-    "sku_id": "efd875b4-b917-45ca-8c94-8f7306e80ded",
-    "name": "Elegance Yellow 40 cm",
-    "category": "Other",
-    "color": "yellow",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-yellow-40cm",
-    "images": [
-      "/images/shop/ranunculus/yellow.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 615992219,
-    "sku_id": "33ec89a8-fb8b-4f91-bb07-7a0c8ba306e1",
-    "name": "Elegance White 40 cm",
-    "category": "Other",
-    "color": "white",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-40cm",
-    "images": [
-      "/images/shop/ranunculus/white.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 623793364,
-    "sku_id": "8f7a612c-9f88-4443-9393-88db5732149b",
-    "name": "Elegance Cream 40 cm",
-    "category": "Other",
-    "color": "cream",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3833,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-cream-40cm",
-    "images": [
-      "/images/shop/ranunculus/cream.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 810236392,
@@ -20586,7 +20362,135 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 615992219,
+    "sku_id": "33ec89a8-fb8b-4f91-bb07-7a0c8ba306e1",
+    "name": "Elegance White 40 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3385,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-40cm",
+    "images": [
+      "/images/shop/ranunculus/white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 429924106,
+    "sku_id": "efd875b4-b917-45ca-8c94-8f7306e80ded",
+    "name": "Elegance Yellow 40 cm",
+    "category": "Other",
+    "color": "yellow",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3385,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-yellow-40cm",
+    "images": [
+      "/images/shop/ranunculus/yellow.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 8687211,
+    "sku_id": "5a5d809d-225a-4a8b-8978-312171a56680",
+    "name": "Elegance Assorted 40 cm",
+    "category": "Other",
+    "color": "assorted",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3087,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-assorted-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-assorted.jpg"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 623793364,
+    "sku_id": "8f7a612c-9f88-4443-9393-88db5732149b",
+    "name": "Elegance Cream 40 cm",
+    "category": "Other",
+    "color": "cream",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3833,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-cream-40cm",
+    "images": [
+      "/images/shop/ranunculus/cream.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
   },
   {
     "id": 1262977950,
@@ -20618,39 +20522,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 291878775,
-    "sku_id": "91639714-7ca3-414f-9c41-cb2e5c3ca849",
-    "name": "Elegance Orange 40 cm",
-    "category": "Other",
-    "color": "orange",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3833,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-orange-40cm",
-    "images": [
-      "/images/shop/ranunculus/orange.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1605465893,
@@ -20682,17 +20554,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 636608968,
-    "sku_id": "8abdca44-794d-401c-9dfa-fde678237ae0",
-    "name": "Elegance Orange 45 cm",
+    "id": 218788227,
+    "sku_id": "3944093b-12e9-42bd-a5d1-45a02d5117c3",
+    "name": "Elegance Pink 40 cm",
     "category": "Other",
-    "color": "orange",
+    "color": "pink",
     "variety": "elegance",
-    "length": "45 cm",
-    "price": 1.4579,
+    "length": "40 cm",
+    "price": 1.3385,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20706,7 +20578,71 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-orange-45cm",
+    "slug": "elegance-pink-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 380421049,
+    "sku_id": "1d86697d-6499-4b36-ae32-6e51bb971ae5",
+    "name": "Elegance Peach 40 cm",
+    "category": "Other",
+    "color": "peach",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3535,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-peach-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-salmon.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 291878775,
+    "sku_id": "91639714-7ca3-414f-9c41-cb2e5c3ca849",
+    "name": "Elegance Orange 40 cm",
+    "category": "Other",
+    "color": "orange",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3833,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-orange-40cm",
     "images": [
       "/images/shop/ranunculus/orange.png"
     ],
@@ -20714,17 +20650,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 486863387,
-    "sku_id": "046f8bdb-ea87-4d08-a65f-a571d0c076f3",
-    "name": "Elegance White 45 cm",
+    "id": 125312868,
+    "sku_id": "c71e448e-bb43-43fc-8c26-fb5be4992217",
+    "name": "Elegance Lavender 40 cm",
     "category": "Other",
-    "color": "white",
+    "color": "lavender",
     "variety": "elegance",
-    "length": "45 cm",
-    "price": 1.4132,
+    "length": "40 cm",
+    "price": 1.3535,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20738,15 +20674,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-white-45cm",
+    "slug": "elegance-lavender-40cm",
     "images": [
-      "/images/shop/ranunculus/white.png"
+      "/images/shop/ranunculus/amandine-lavender.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1387900990,
@@ -20778,17 +20714,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 167831405,
-    "sku_id": "08a2efc8-a5d3-4df6-ae6e-b4ba6eb4b64a",
-    "name": "Elegance Peach 45 cm",
+    "id": 636608968,
+    "sku_id": "8abdca44-794d-401c-9dfa-fde678237ae0",
+    "name": "Elegance Orange 45 cm",
     "category": "Other",
-    "color": "peach",
+    "color": "orange",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4132,
+    "price": 1.4579,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20802,47 +20738,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-peach-45cm",
+    "slug": "elegance-orange-45cm",
     "images": [
-      "/images/shop/ranunculus/amandine-salmon.png"
+      "/images/shop/ranunculus/orange.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 1609052504,
-    "sku_id": "47eab2f8-e9ea-4fbf-892f-f28e6e19556e",
-    "name": "Elegance Red 45 cm",
-    "category": "Other",
-    "color": "red",
-    "variety": "elegance",
-    "length": "45 cm",
-    "price": 1.4132,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-red-45cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-red.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 284076251,
@@ -20874,7 +20778,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 212090564,
@@ -20906,49 +20810,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 1532286608,
-    "sku_id": "27951bec-e2ea-416d-b2fa-f2913560fc50",
-    "name": "Elegance Assorted 50 cm",
-    "category": "Ranunculus",
-    "color": "assorted",
-    "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-assorted-50cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-assorted.jpg"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-18"
-  },
-  {
-    "id": 1880113067,
-    "sku_id": "48ada875-830b-4521-90e0-b9e272feebd4",
-    "name": "Elegance White 50 cm",
+    "id": 486863387,
+    "sku_id": "046f8bdb-ea87-4d08-a65f-a571d0c076f3",
+    "name": "Elegance White 45 cm",
     "category": "Other",
     "color": "white",
     "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
+    "length": "45 cm",
+    "price": 1.4132,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20962,7 +20834,7 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-white-50cm",
+    "slug": "elegance-white-45cm",
     "images": [
       "/images/shop/ranunculus/white.png"
     ],
@@ -20970,17 +20842,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 1900250982,
-    "sku_id": "edf90040-f0ae-4d51-a4cc-ef984f2bdb6d",
-    "name": "Elegance Red 50 cm",
+    "id": 1609052504,
+    "sku_id": "47eab2f8-e9ea-4fbf-892f-f28e6e19556e",
+    "name": "Elegance Red 45 cm",
     "category": "Other",
     "color": "red",
     "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
+    "length": "45 cm",
+    "price": 1.4132,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20994,7 +20866,7 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-red-50cm",
+    "slug": "elegance-red-45cm",
     "images": [
       "/images/shop/ranunculus/amandine-red.png"
     ],
@@ -21002,17 +20874,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 1343900873,
-    "sku_id": "295074f0-b5ee-44a5-8079-4029c3e23dcb",
-    "name": "Elegance Pink 50 cm",
+    "id": 167831405,
+    "sku_id": "08a2efc8-a5d3-4df6-ae6e-b4ba6eb4b64a",
+    "name": "Elegance Peach 45 cm",
     "category": "Other",
-    "color": "pink",
+    "color": "peach",
     "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
+    "length": "45 cm",
+    "price": 1.4132,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21026,15 +20898,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-pink-50cm",
+    "slug": "elegance-peach-45cm",
     "images": [
-      "/images/shop/ranunculus/amandine-pink.png"
+      "/images/shop/ranunculus/amandine-salmon.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 436397500,
@@ -21066,17 +20938,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 927001096,
-    "sku_id": "cb24c195-e586-47d7-ae0e-7c5a803f93c7",
-    "name": "Focal Scoop White 60 cm",
+    "id": 1880113067,
+    "sku_id": "48ada875-830b-4521-90e0-b9e272feebd4",
+    "name": "Elegance White 50 cm",
     "category": "Other",
-    "color": "white improved - white",
-    "variety": "focal scoop",
-    "length": "60 cm",
-    "price": 1.0251,
+    "color": "white",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4579,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21090,25 +20962,25 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "focal-scoop-white-60cm",
+    "slug": "elegance-white-50cm",
     "images": [
-      "/images/shop/other/scabiosa-white-improved.png"
+      "/images/shop/ranunculus/white.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
-    "id": 550473979,
-    "sku_id": "b3bc62a4-e48f-49e2-809a-c2c4e2a6a180",
-    "name": "Focal Scoop Burgundy 60 cm",
+    "id": 1900250982,
+    "sku_id": "edf90040-f0ae-4d51-a4cc-ef984f2bdb6d",
+    "name": "Elegance Red 50 cm",
     "category": "Other",
-    "color": "black berry - burgundy",
-    "variety": "focal scoop",
-    "length": "60 cm",
-    "price": 1.0251,
+    "color": "red",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4579,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21122,15 +20994,79 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "focal-scoop-burgundy-60cm",
+    "slug": "elegance-red-50cm",
     "images": [
-      "/images/shop/other/scabiosa-popsicle-focal.png"
+      "/images/shop/ranunculus/amandine-red.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 1343900873,
+    "sku_id": "295074f0-b5ee-44a5-8079-4029c3e23dcb",
+    "name": "Elegance Pink 50 cm",
+    "category": "Other",
+    "color": "pink",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4579,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-pink-50cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 1532286608,
+    "sku_id": "27951bec-e2ea-416d-b2fa-f2913560fc50",
+    "name": "Elegance Assorted 50 cm",
+    "category": "Ranunculus",
+    "color": "assorted",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4579,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 120,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-assorted-50cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-assorted.jpg"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 120,
+    "contents_note": null,
+    "available_from": "2026-06-19"
   },
   {
     "id": 1037305423,
@@ -21162,7 +21098,71 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 550473979,
+    "sku_id": "b3bc62a4-e48f-49e2-809a-c2c4e2a6a180",
+    "name": "Focal Scoop Burgundy 60 cm",
+    "category": "Other",
+    "color": "black berry - burgundy",
+    "variety": "focal scoop",
+    "length": "60 cm",
+    "price": 1.0251,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "focal-scoop-burgundy-60cm",
+    "images": [
+      "/images/shop/other/scabiosa-popsicle-focal.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
+  },
+  {
+    "id": 927001096,
+    "sku_id": "cb24c195-e586-47d7-ae0e-7c5a803f93c7",
+    "name": "Focal Scoop White 60 cm",
+    "category": "Other",
+    "color": "white improved - white",
+    "variety": "focal scoop",
+    "length": "60 cm",
+    "price": 1.0251,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "focal-scoop-white-60cm",
+    "images": [
+      "/images/shop/other/scabiosa-white-improved.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-19"
   },
   {
     "id": 596054082,
@@ -21194,7 +21194,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1044427341,
@@ -21226,7 +21226,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1058083174,
@@ -21258,7 +21258,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 570684050,
@@ -21290,7 +21290,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 883878178,
@@ -21322,7 +21322,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 14613648,
@@ -21355,7 +21355,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1141383438,
@@ -21387,7 +21387,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 29481338,
@@ -21419,7 +21419,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1656973551,
@@ -21451,7 +21451,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 899048168,
@@ -21483,7 +21483,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 663755268,
@@ -21515,7 +21515,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 952232194,
@@ -21547,7 +21547,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 45805359,
@@ -21579,7 +21579,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 118728633,
@@ -21611,7 +21611,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 423238972,
@@ -21643,7 +21643,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 34777611,
@@ -21675,7 +21675,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 89576992,
@@ -21707,7 +21707,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1928459771,
@@ -21739,7 +21739,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1655390970,
@@ -21752,7 +21752,7 @@ export const products: Product[] = [
     "price": 1.2341,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
+    "units_per_box": 120,
     "box_type": "EB",
     "stock": 0,
     "vendor": "Megaflor",
@@ -21769,9 +21769,9 @@ export const products: Product[] = [
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
+    "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 255230994,
@@ -21803,7 +21803,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1814118177,
@@ -21835,7 +21835,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1210889323,
@@ -21867,7 +21867,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   },
   {
     "id": 1040625467,
@@ -21899,7 +21899,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-18"
+    "available_from": "2026-06-19"
   }
 ];
 
