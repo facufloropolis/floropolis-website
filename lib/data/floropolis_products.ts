@@ -1,6 +1,6 @@
 /**
  * Auto-generated product catalog from the BACKUP publish authority (catalog_published).
- * Generated: 2026-06-05T13:00:04.251Z
+ * Generated: 2026-06-05T15:37:57.838Z
  * Total products: 683
  * Tiers: {"T2":301,"T3":382}
  *

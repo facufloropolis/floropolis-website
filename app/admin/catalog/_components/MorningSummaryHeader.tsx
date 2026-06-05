@@ -275,11 +275,10 @@ export default async function MorningSummaryHeader({
     }));
 
   // ── UC-D-101: Live going down DoD ──────────────────────────────────────
-  // Live count is a parallel-signal decoration sourced from the mirror's live
-  // flag — it never gates the universe. (S6 will replace this with a real
-  // connected live-signal pipeline.)
+  // Until S6 ships a real live-signal pipeline, use the classified universe as
+  // the DoD baseline. K2K `live` is a badge, not a membership predicate.
   const yesterdayLive = await probeYesterdayLive(backup, addDaysISO(today, -1));
-  const todayLive = mirror.filter((m) => m.live === true && m.active !== false).length;
+  const todayLive = totalAll;
   let dodBadge: 'pending' | 'down' | 'flat' = 'pending';
   let dodDelta = 0;
   let dodPct = 0;

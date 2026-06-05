@@ -1389,7 +1389,7 @@ function QualityPanel({
                 const placeholderCount = weights.filter(w => !w.evaluated).length;
                 return (
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    {placeholderCount} gate{placeholderCount === 1 ? ' is a placeholder' : 's are placeholders'} (greyed out) — auto-credited until mirror schema supports them.
+                    {placeholderCount} gate{placeholderCount === 1 ? ' is a placeholder' : 's are placeholders'} (greyed out) — excluded from score until a real signal exists.
                     Sum of active gates: <span className="font-semibold">{weights.filter(w => w.evaluated).reduce((a, w) => a + Number(w.weight), 0)}</span> / 100.
                   </p>
                 );
@@ -1513,11 +1513,11 @@ function QualityPanel({
                               <>
                                 <span
                                   className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-slate-50 text-slate-400 border-slate-200"
-                                  title="Not yet evaluated — auto-credited until schema ready."
+                                  title="Not yet evaluated — excluded from score until a real signal exists."
                                 >
                                   placeholder
                                 </span>
-                                <div className="text-[10px] text-slate-400 mt-0.5">auto-credited until schema ready</div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">excluded from score</div>
                               </>
                             )}
                           </td>
