@@ -1,0 +1,16 @@
+-- STAGE 3: orders spine — APPLIED to BACKUP via MCP 2026-06-06 (migrations: orders_spine_stage3 + confirm_address_quarantine)
+-- SPEC: Job_PM/kb/specs/orders_spine_spec.md (gate 1 passed: Facu "B+A both, DB main")
+-- This file is the repo record of the applied DDL. Summary:
+--  orders: source CHECK += {sample,k2k_invoice,deal}; status CHECK += {no_charge,external_k2k};
+--          + fulfillment_state machine (requested..delivered|exception|nurture, orthogonal to payment status);
+--          + identity born-with (lead_master_id + linkage_mode + client snapshot; CHECK is_test OR lead_master_id NOT NULL;
+--            2 pre-existing checkout test rows marked is_test=true); user_id nullable w/ CHECK web requires user;
+--          + sample fields (box_choice, cohort_id, flora_score/_reasoning, address_confirmed_at, account_flags jsonb),
+--            deal_id, k2k_invoice_ref.
+--  order_lines: + sku_uuid uuid (canonical; bigint sku_id = mirror-era legacy), + cost_snapshot.
+--  order_status_log: every fulfillment transition (from,to,actor,evidence) via trigger trg_orders_fulfillment_log.
+--  deals: client deal record (override price/terms, approved_by, rationale, expires_at, status).
+--  cohort_decisions: (cohort,order,actor) unique; system_suggestion vs decision; divergence GENERATED.
+--  order_conversions: sample->paid|k2k_invoice_ref chain; outcome CHECK.
+--  confirm_address_quarantine: unmatched n8n confirms land here, never dropped.
+-- Full DDL: see MCP migration history (supabase migrations list) — names above.
