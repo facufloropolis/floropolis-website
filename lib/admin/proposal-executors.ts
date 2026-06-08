@@ -862,12 +862,19 @@ async function execCatalogQualityWeightUpdate(
   if (readErr) return fail(`read_failed: ${readErr.message}`);
   if (!before) return fail('target_not_found');
 
-  // Verify the post-update sum stays at 100.
+  // Sanity, not a fixed total. The score NORMALIZES by the active non-blocking
+  // total (score = earned/total × 100), and blocking gates never score — so the
+  // weight set does NOT need to sum to 100 (live total is ~137 incl. blocking and
+  // works fine). The old `=== 100` guard was a stale assumption that blocked
+  // legitimate single-gate updates (Facu hit it 2026-06-08). We only guard against
+  // a degenerate set: the projected non-blocking total must stay > 0 so the score
+  // denominator is never zero.
   const { data: allWeights, error: allErr } = await service
     .from('catalog_quality_weights')
-    .select('gate_id, weight');
+    .select('gate_id, weight, tier');
   if (allErr) return fail(`sum_check_read_failed: ${allErr.message}`);
-  const projected = (allWeights ?? []).reduce<number>((acc, row) => {
+  const projectedNonBlocking = (allWeights ?? []).reduce<number>((acc, row) => {
+    if (row.tier === 'blocking') return acc; // blocking gates never score
     const w =
       row.gate_id === proposal.target_id
         ? weightInt
@@ -876,9 +883,9 @@ async function execCatalogQualityWeightUpdate(
           : Number(row.weight) || 0;
     return acc + w;
   }, 0);
-  if (projected !== 100) {
+  if (projectedNonBlocking <= 0) {
     return fail(
-      `weights_sum_drift: post-update sum=${projected}, expected 100. Adjust other weights first.`,
+      `weights_degenerate: projected non-blocking total=${projectedNonBlocking} (must be > 0 for the score denominator).`,
     );
   }
 

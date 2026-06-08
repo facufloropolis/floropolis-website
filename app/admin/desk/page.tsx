@@ -188,6 +188,18 @@ function ageLabel(iso: string): string {
   return 'just now';
 }
 
+// Config-plumbing proposal types that do NOT belong on the CEO's Desk — they are
+// data-ops tuning, routed to /admin/catalog/approval-queue instead. The Desk shows
+// business decisions (deals, exceptions, held items). (Facu 2026-06-08.)
+const DESK_EXCLUDED_TYPES = [
+  'catalog_quality_weight.update',
+  'catalog_quality_threshold.update',
+  'catalog_quality_rebalance',
+  'pricing_constants.update',
+  'box_master.update',
+  'shipping_config.create',
+];
+
 // ---------------------------------------------------------------------------
 // Zone 3 — Your knowledge: static-config v1. Live counts/tables injected below.
 // ---------------------------------------------------------------------------
@@ -268,6 +280,12 @@ export default async function FacusDeskPage() {
     // are not yet vetted (and may be design-notes with no executor) — approving one
     // errors with unknown_proposal_type. Facu's decision queue must be approve-safe.
     .eq('filter_status', 'passed')
+    // The Desk is the CEO's BUSINESS-decision surface, not a data-ops console
+    // (locked principle: "business priorities, not data-ops"). Config-plumbing
+    // proposal types (weight/threshold/constants tweaks) belong in the full
+    // approval-queue, not here — Facu framing-rejected a batch of these 2026-06-08
+    // as unclear. Exclude them so the Desk shows deals/exceptions/held items.
+    .not('type', 'in', `(${DESK_EXCLUDED_TYPES.map((t) => `"${t}"`).join(',')})`)
     .limit(200);
   if (propErr) console.error('[admin/desk] proposals:', propErr);
   const proposals = (propRaw ?? []) as unknown as ProposalRow[];
