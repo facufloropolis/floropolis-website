@@ -23,13 +23,16 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { id: 'home',      label: 'Today',     icon: '*', url: '/admin',                          sub: 'Your inbox',                matchPrefix: '/admin' },
+  { id: 'desk',      label: 'Desk',      icon: '>', url: '/admin/desk',                     sub: 'Pulse / decisions / knowledge', matchPrefix: '/admin/desk' },
   { id: 'catalog',   label: 'Catalog',   icon: 'C', url: '/admin/catalog',                  sub: 'SKUs / inventory / pricing', matchPrefix: '/admin/catalog' },
+  { id: 'blocked',   label: 'Blocked',   icon: 'B', url: '/admin/catalog/blocked',          sub: 'SKUs by gate / repair',      matchPrefix: '/admin/catalog/blocked' },
   { id: 'orders',    label: 'Orders',    icon: 'O', url: '/admin/orders',                   sub: 'Queue / fulfillment',        matchPrefix: '/admin/orders' },
   { id: 'dispatch',      label: 'Dispatch',      icon: 'D',  url: '/admin/dispatch',                 sub: 'FedEx / labels / vendor',    matchPrefix: '/admin/dispatch' },
   { id: 'sales-cleanup', label: 'Sales Cleanup', icon: '$',  url: '/admin/sales-cleanup',            sub: 'Orphan transactions',        matchPrefix: '/admin/sales-cleanup' },
   { id: 'approvals',     label: 'Approvals',     icon: 'A',  url: '/admin/catalog/approval-queue',   sub: 'Awaiting your sign-off',     matchPrefix: '/admin/catalog/approval-queue' },
   { id: 'proposals', label: 'Proposals', icon: 'P', url: '/admin/catalog/proposals',        sub: 'Full history',               matchPrefix: '/admin/catalog/proposals' },
   { id: 'settings',  label: 'Config',    icon: 'S', url: '/admin/catalog/config',           sub: 'Box / shipping / GPM',       matchPrefix: '/admin/catalog/config' },
+  { id: 'loop',      label: 'Improvement Loop', icon: 'L', url: '/admin/loop',              sub: 'Repair audit trail',         matchPrefix: '/admin/loop' },
 ];
 
 function isActive(pathname: string | null, item: NavItem): boolean {

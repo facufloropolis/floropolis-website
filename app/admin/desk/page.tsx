@@ -32,6 +32,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import ProposalDecision from './ProposalDecision';
+import KnowledgeAnswerForm from './KnowledgeAnswerForm';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -333,9 +335,10 @@ export default async function FacusDeskPage() {
           <h1 className="text-2xl font-bold text-slate-900">Facu&apos;s Desk</h1>
           <p className="text-slate-500 text-sm mt-1 max-w-2xl">
             Your next 30 minutes, ranked by value. The decisions that need YOU,
-            then the knowledge only you can give. Read-only v1: decisions
-            deep-link to the existing decide UI; one-click decide here lands in
-            v2. Sources: admin_proposals, v_catalog_admin, box_master_mirror,
+            then the knowledge only you can give. Decide inline: proposals post to
+            the governed per-proposal routes; knowledge answers route to the
+            admin_proposals queue (type facu_knowledge_answer) for review. Sources:
+            admin_proposals, v_catalog_admin, box_master_mirror,
             improvement_loop_state_log (supabase-backup).
           </p>
         </div>
@@ -486,18 +489,8 @@ export default async function FacusDeskPage() {
                     )}
                   </div>
 
-                  {/* Card footer — deep link to the existing decide UI */}
-                  <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                    <Link
-                      href="/admin/catalog/approval-queue"
-                      className="text-sm font-semibold text-emerald-700 hover:underline"
-                    >
-                      Review &amp; decide in queue →
-                    </Link>
-                    <span className="text-[10px] text-slate-400">
-                      one-click decide here lands in Desk v2
-                    </span>
-                  </div>
+                  {/* Card footer — inline decide (governed per-proposal routes) */}
+                  <ProposalDecision proposalId={p.id} />
                 </article>
               );
             })}
@@ -514,8 +507,8 @@ export default async function FacusDeskPage() {
           </span>
         </div>
         <p className="text-xs text-slate-400 mb-3 max-w-2xl">
-          Each answer becomes data the machine can&apos;t derive. No input forms
-          in v1 — answer via the named channel and it lands with provenance.
+          Each answer becomes data the machine can&apos;t derive. Type it inline
+          and it lands in the governed proposals queue with provenance.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -587,8 +580,9 @@ export default async function FacusDeskPage() {
               )}
 
               <p className="text-xs text-slate-600">{q.stakes}</p>
+              <KnowledgeAnswerForm questionKey={q.id} question={q.question} />
               <div className="mt-auto pt-1 text-[11px] text-slate-500 border-t border-slate-50">
-                <span className="font-semibold text-slate-600">Answer:</span>{' '}
+                <span className="font-semibold text-slate-600">Or answer via:</span>{' '}
                 {q.answerWhere}
               </div>
             </article>
@@ -642,11 +636,11 @@ export default async function FacusDeskPage() {
       </section>
 
       <p className="text-xs text-slate-400">
-        Read-only v1. Sources: supabase-backup admin_proposals
-        (status=awaiting_facu), v_catalog_admin (margin_status=unpriced),
-        box_master_mirror (active), improvement_loop_state_log. Decisions are
-        decided in /admin/catalog/approval-queue until Desk v2 ships inline
-        actions.
+        Sources: supabase-backup admin_proposals (status=awaiting_facu),
+        v_catalog_admin (margin_status=unpriced), box_master_mirror (active),
+        improvement_loop_state_log. Zone 2 decisions post to the governed
+        per-proposal routes (approve / reject / frame-correction); Zone 3 answers
+        route to admin_proposals (type facu_knowledge_answer) for review.
       </p>
     </main>
   );
