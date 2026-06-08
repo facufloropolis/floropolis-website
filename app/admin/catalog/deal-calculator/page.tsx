@@ -118,6 +118,7 @@ export default async function AdminDealCalculatorPage() {
       .select(
         'sku_id, name, vendor, tier, variety, length, unit, category, farm_cost, price, box_type, units_per_box, total_stems',
       )
+      .eq('publish_status', 'published')
       .eq('active', true)
       .not('farm_cost', 'is', null)
       .not('cost_source', 'is', null) // v2.1: "1 source verified" — cost_source IS the signal

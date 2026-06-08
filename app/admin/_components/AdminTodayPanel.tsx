@@ -187,6 +187,7 @@ export default async function AdminTodayPanel(): Promise<ReactNode> {
     svc
       .from('v_catalog_admin')
       .select('vendor, price, farm_cost, box_type, units_per_box, cost_source, tier')
+      .eq('publish_status', 'published')
       .limit(2000),
     svc
       .from('box_master_mirror')

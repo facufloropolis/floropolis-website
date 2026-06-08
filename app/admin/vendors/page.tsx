@@ -77,7 +77,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
     { data: profilesRaw },
   ] = await Promise.all([
     svc.from('catalog_classifications').select('sku_id, vendor, tier, status, failing_gates'),
-    svc.from('v_catalog_admin').select('sku_id, vendor, tier, live').limit(2000),
+    svc.from('v_catalog_admin').select('sku_id, vendor, tier, live').eq('publish_status', 'published').limit(2000),
     svc.from('catalog_quality_weights').select('gate_id, weight, evaluated'),
     svc.from('vendor_profiles').select('vendor_name, admin_notes, updated_at, updated_by'),
   ]);

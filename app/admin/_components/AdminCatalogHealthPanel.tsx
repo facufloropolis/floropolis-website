@@ -114,6 +114,7 @@ export default async function AdminCatalogHealthPanel(): Promise<ReactNode> {
   ] = await Promise.all([
     svc.from('v_catalog_admin')
       .select('name, tier, vendor, price, farm_cost, box_type, units_per_box, cost_source, live')
+      .eq('publish_status', 'published')
       .limit(2000),
     svc
       .from('box_master_mirror')

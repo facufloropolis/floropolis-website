@@ -289,6 +289,7 @@ export default async function AdminCatalogDiscountsPage() {
   const { data: facetRaw } = await backup
     .from('v_catalog_admin')
     .select('sku_id,name,variety,length,vendor,category,price')
+    .eq('publish_status', 'published')
     .order('name', { ascending: true })
     .limit(2000);
 

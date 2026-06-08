@@ -103,6 +103,7 @@ async function fetchPriceIntegrity(
     const { data, error } = await backup
       .from('v_catalog_admin')
       .select('margin_status, price')
+      .eq('publish_status', 'published')
       .limit(5000);
     if (error || !data) return null;
     let unpriced = 0;

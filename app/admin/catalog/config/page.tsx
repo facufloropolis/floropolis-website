@@ -268,10 +268,12 @@ export default async function AdminCatalogConfigPage({
     backup
       .from('v_catalog_admin')
       .select('vendor, box_type')
+      .eq('publish_status', 'published')
       .not('box_type', 'is', null),
     backup
       .from('v_catalog_admin')
-      .select('*', { count: 'exact', head: true }),
+      .select('*', { count: 'exact', head: true })
+      .eq('publish_status', 'published'),
     backup
       .from('catalog_quality_weights')
       .select('gate_id, display_label, category, weight, tier, description, evaluated, updated_at, updated_by')
