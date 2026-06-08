@@ -41,6 +41,7 @@ const CURRENT_NAV: NavRow[] = [
 ];
 
 const PROPOSED_NAV: NavRow[] = [
+  { icon: '*', label: 'Today', sub: 'Your inbox' },
   { icon: '>', label: 'Desk', sub: 'Business decisions that need YOU', role: 'decide (business)' },
   { icon: 'C', label: 'Catalog', sub: 'SKUs / inventory / pricing' },
   { icon: 'B', label: 'Blocked', sub: 'SKUs by gate / repair' },
@@ -48,6 +49,7 @@ const PROPOSED_NAV: NavRow[] = [
   { icon: 'D', label: 'Dispatch', sub: 'FedEx / labels / vendor' },
   { icon: '$', label: 'Sales Cleanup', sub: 'Orphan transaction repair', role: 'data repair' },
   { icon: 'A', label: 'Approvals', sub: 'The full queue + history', role: 'full queue + history' },
+  { icon: 'S', label: 'Config', sub: 'Box / shipping / GPM / weights' },
   { icon: 'L', label: 'Improvement Loop', sub: 'Read-only repair audit', role: 'audit (read-only)' },
 ];
 
@@ -169,9 +171,13 @@ export default function AdminNavConsolidatedMockup() {
 
       {/* ================= PART A — nav comparison ================= */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-slate-900 mb-3">
+        <h2 className="text-lg font-bold text-slate-900 mb-2">
           Part A &mdash; the navigation, before and after
         </h2>
+        <p className="text-[13px] text-slate-600 mb-4 max-w-3xl">
+          Only &ldquo;Proposals&rdquo; is removed (it becomes the Approvals &rarr; All history
+          tab). Everything else &mdash; including <strong className="text-slate-800">Config</strong> &mdash; stays.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* LEFT — current */}
           <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
