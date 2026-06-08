@@ -264,6 +264,10 @@ export default async function FacusDeskPage() {
       'id, type, target_table, target_id, payload, notes, source_agent, source_rationale, before_value, after_value, proposed_at',
     )
     .eq('status', 'awaiting_facu')
+    // Only surface proposals that passed Pita's filter gate. pending_filter items
+    // are not yet vetted (and may be design-notes with no executor) — approving one
+    // errors with unknown_proposal_type. Facu's decision queue must be approve-safe.
+    .eq('filter_status', 'passed')
     .limit(200);
   if (propErr) console.error('[admin/desk] proposals:', propErr);
   const proposals = (propRaw ?? []) as unknown as ProposalRow[];
