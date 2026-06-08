@@ -3,7 +3,7 @@
 //
 // All editors POST to /api/admin/catalog/sku/[id]/update with a single
 // {field, value} payload, then router.refresh() to repaint the server-rendered
-// page with the new mirror values + new gate state.
+// page with the refreshed canonical admin row + gate state.
 //
 // Admin-action buttons (force_publish / force_hide / forward_to_rose / reset)
 // POST to /api/admin/catalog/sku/[id]/admin-action.
@@ -452,7 +452,7 @@ export function LiveToggleButton({
   current: boolean | null;
 }) {
   // 2026-05-19 — per Rose contract v1.0 PB-1: this button NO LONGER writes to
-  // floropolis_inventory.live (Komet-driven, JOB_LOCKED). It now proposes a
+  // the Komet live badge (JOB_LOCKED). It now proposes a
   // visibility_override (sibling table with mandatory reason + 30d expiry).
   // The live=Komet badge stays as read-only state. The override is a separate badge.
   const target = current ? 'hide' : 'show';
@@ -509,7 +509,7 @@ export function LiveToggleButton({
         disabled={busy}
         onClick={propose}
         className="text-xs font-semibold text-amber-900 bg-amber-100 border border-amber-300 hover:bg-amber-200 px-3 py-1.5 rounded-md disabled:opacity-50"
-        title="Creates a proposal that, once approved, inserts a visibility_override row. Does NOT write to floropolis_inventory.live (Komet-driven per Rose contract)."
+        title="Creates a proposal that, once approved, inserts a visibility_override row. It does not change the Komet live badge."
       >
         {busy ? 'Proposing…' : `Propose admin ${target === 'show' ? 'force-publish' : 'hide'}`}
       </button>

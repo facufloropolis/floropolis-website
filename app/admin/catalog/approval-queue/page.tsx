@@ -443,7 +443,10 @@ export default async function AdminCatalogApprovalQueuePage({
   if (legacyNeedsTotal) {
     const { count } = await backup
       .from('v_catalog_admin')
-      .select('sku_id', { count: 'exact', head: true });
+      .select('sku_id', { count: 'exact', head: true })
+      // v_catalog_admin is now the full universe; this legacy total means the
+      // published/sellable set, so filter to publish_status='published'.
+      .eq('publish_status', 'published');
     legacyTotalSkuCount = count ?? 0;
   }
 

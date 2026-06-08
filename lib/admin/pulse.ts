@@ -125,10 +125,14 @@ export async function fetchPulse(backup: SupabaseClient): Promise<Pulse> {
   let blocked: Metric = null;
   let classTotal: number | null = null;
   try {
-    // Published = what a florist can actually buy (the publish authority),
-    // not the spine's 'publishable' status (which ignores windows/overrides).
+    // Published = what a florist can actually buy = the publish authority
+    // (catalog_published, Facu D01), NOT v_catalog_admin. v_catalog_admin is being
+    // rebuilt to the FULL universe (937 incl. blocked) with a publish_status column;
+    // counting it would inflate "published" to 937 and break the 683 baseline.
+    // catalog_published is always the published set, so this stays correct before
+    // AND after that migration — no dependency on the new publish_status column.
     const pub = await backup
-      .from('v_catalog_admin')
+      .from('catalog_published')
       .select('sku_id', { count: 'exact', head: true });
     const blk = await backup
       .from('catalog_classifications')

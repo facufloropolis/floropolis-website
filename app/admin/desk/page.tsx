@@ -308,7 +308,10 @@ export default async function FacusDeskPage() {
     const { count, error } = await backup
       .from('v_catalog_admin')
       .select('sku_id', { count: 'exact', head: true })
-      .eq('margin_status', 'unpriced');
+      .eq('margin_status', 'unpriced')
+      // v_catalog_admin is now the FULL universe (937 w/ publish_status); unpriced
+      // among the SELLABLE set is the meaningful number, else it balloons w/ blocked.
+      .eq('publish_status', 'published');
     if (error) console.error('[admin/desk] unpriced count:', error);
     else unpricedCount = count ?? 0;
   }

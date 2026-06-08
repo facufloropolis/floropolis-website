@@ -1,12 +1,12 @@
-// /admin/vendors — vendor profiles: stats from mirror + editable admin notes.
+// /admin/vendors — vendor profiles: stats from canonical catalog + editable admin notes.
 // v1 | 2026-05-21 | Job_PM [V8 SHADOW]
 //
-// Shows every vendor (from vendor_profiles + mirror) with:
+// Shows every vendor (from vendor_profiles + catalog classifications) with:
 //   - SKU counts by tier, live count
 //   - Publication breakdown (perfect / blocked) + avg quality 0-100
 //   - Editable admin notes (saved to vendor_profiles via PATCH API)
 // Olimpo and any other vendor added to vendor_profiles appear even
-// before they have mirror rows (onboarding pipeline not yet active).
+// before they have catalog rows (onboarding pipeline not yet active).
 
 export const dynamic = 'force-dynamic';
 
@@ -37,7 +37,7 @@ interface VendorStat {
   notes: string;
   updatedAt: string | null;
   updatedBy: string | null;
-  inMirror: boolean;
+  inCatalog: boolean;
 }
 
 // ── quality helpers ───────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
 
   const [
     { data: clsRaw },
-    { data: mirrorRaw },
+    { data: catalogRaw },
     { data: weightsRaw },
     { data: profilesRaw },
   ] = await Promise.all([
@@ -87,12 +87,12 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
   const unevalBonus = weights.filter((w) => !w.evaluated).reduce((s, w) => s + w.weight, 0);
 
   const classifications = (clsRaw ?? []) as ClsRow[];
-  const mirror = (mirrorRaw ?? []) as { sku_id: string; vendor: string | null; tier: string | null; live: boolean }[];
+  const catalogRows = (catalogRaw ?? []) as { sku_id: string; vendor: string | null; tier: string | null; live: boolean }[];
   const profiles = (profilesRaw ?? []) as ProfileRow[];
 
-  // Build live count per vendor from mirror
+  // Build live badge count per vendor from v_catalog_admin.
   const liveByVendor = new Map<string, number>();
-  for (const r of mirror) {
+  for (const r of catalogRows) {
     if (r.live && r.vendor) {
       liveByVendor.set(r.vendor, (liveByVendor.get(r.vendor) ?? 0) + 1);
     }
@@ -140,7 +140,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
         notes: profile?.admin_notes ?? '',
         updatedAt: profile?.updated_at ?? null,
         updatedBy: profile?.updated_by ?? null,
-        inMirror: (agg?.total ?? 0) > 0,
+        inCatalog: (agg?.total ?? 0) > 0,
       };
     })
     .sort((a, b) => b.total - a.total);
@@ -152,7 +152,7 @@ export default async function AdminVendorsPage(): Promise<ReactNode> {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Vendors</h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              {vendorStats.filter((v) => v.inMirror).length} active · {vendorStats.filter((v) => !v.inMirror).length} pending onboarding
+              {vendorStats.filter((v) => v.inCatalog).length} active · {vendorStats.filter((v) => !v.inCatalog).length} pending onboarding
             </p>
           </div>
           <Link href="/admin/catalog" className="text-[12px] text-emerald-700 hover:underline font-medium">
@@ -197,14 +197,14 @@ function VendorCard({ stat }: { stat: VendorStat }) {
     : null;
 
   return (
-    <div className={`bg-white rounded-2xl border p-5 ${stat.inMirror ? 'border-slate-200' : 'border-dashed border-slate-300'}`}>
+    <div className={`bg-white rounded-2xl border p-5 ${stat.inCatalog ? 'border-slate-200' : 'border-dashed border-slate-300'}`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-bold text-slate-900">{stat.vendor}</h2>
-          {!stat.inMirror && (
+          {!stat.inCatalog && (
             <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
-              not in mirror
+              not in catalog
             </span>
           )}
           {tierLabel && (
@@ -213,7 +213,7 @@ function VendorCard({ stat }: { stat: VendorStat }) {
             </span>
           )}
         </div>
-        {stat.inMirror && (
+        {stat.inCatalog && (
           <Link
             href={`/admin/catalog?vendor=${encodeURIComponent(stat.vendor)}`}
             className="text-[11px] text-emerald-700 hover:underline font-medium shrink-0"
@@ -223,7 +223,7 @@ function VendorCard({ stat }: { stat: VendorStat }) {
         )}
       </div>
 
-      {stat.inMirror ? (
+      {stat.inCatalog ? (
         <div className="grid grid-cols-2 gap-6">
           {/* Left: SKU counts */}
           <div className="space-y-3">
@@ -281,7 +281,7 @@ function VendorCard({ stat }: { stat: VendorStat }) {
         </div>
       ) : (
         <p className="text-[12px] text-slate-400 mb-2">
-          No inventory in mirror yet — add notes to track onboarding progress.
+          No catalog inventory yet -- add notes to track onboarding progress.
         </p>
       )}
 

@@ -38,7 +38,7 @@ POST(req: NextRequest): Promise<NextResponse>
   body:     { items: [{sku_id, quantity}], requested_delivery_date,
               billing_address_id|inline, shipping_address_id|inline, customer_note? }
   auth:     supabase.auth.getUser() — 401 if anonymous
-  reads DB: client_profiles, floropolis_inventory_mirror, orders (rate limit),
+  reads DB: client_profiles, catalog_published, orders (rate limit),
             payments (day cap), addresses
   writes DB: addresses (if inline new), orders (INSERT status='pending_payment'),
              order_lines (one per item, snapshot cols), payments (seed kind='preauth' status='pending')
@@ -99,14 +99,14 @@ keyForRefund(refundApprovalId): `refund:${refundApprovalId}`
 
 ```
 interface CartItem { sku_id, quantity }
-interface SkuMirrorSnapshot { id, name, variety, length, unit, vendor, price, is_on_deal, deal_price }
+interface SkuCatalogSnapshot { sku_id, name, variety, size_cm, selling_unit, vendor, computed_price, deal_price }
 interface CartTotals {
   lines: [{sku_id, sku_*_snapshot, quantity, unit_price_locked, line_total_locked,
            catalog_price_at_lock, is_on_deal_at_lock}],
   subtotal, shipping_total: 0, tax_total: 0, discount_total: 0, grand_total, currency: 'USD'
 }
 
-computeTotals(items: CartItem[], mirror: Map<id, snapshot>): CartTotals
+computeTotals(items: CartItem[], catalog: Map<sku_id, snapshot>): CartTotals
   reads: none (pure)
   writes: none (pure)
   throws: 'sku_missing' | 'quantity_invalid' | 'amount_negative'

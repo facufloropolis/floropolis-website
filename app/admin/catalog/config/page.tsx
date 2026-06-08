@@ -404,7 +404,7 @@ export default async function AdminCatalogConfigPage({
           <p className="text-slate-500 text-sm mt-1">
             Multi-country pricing inputs. Every edit lands in admin_proposals, then
             Facu approves and the executor writes to the source table. Cascade
-            impact is computed against {totalSkus} SKUs in the inventory mirror.
+            impact is computed against {totalSkus} SKUs in the canonical catalog view.
           </p>
         </div>
 

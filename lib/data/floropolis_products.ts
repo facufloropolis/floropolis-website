@@ -1,8 +1,8 @@
 /**
  * Auto-generated product catalog from the BACKUP publish authority (catalog_published).
- * Generated: 2026-06-05T15:37:57.838Z
- * Total products: 683
- * Tiers: {"T2":301,"T3":382}
+ * Generated: 2026-06-08T22:00:49.671Z
+ * Total products: 759
+ * Tiers: {"T2":325,"T3":434}
  *
  * Source of truth: catalog_published (Facu decision D01) — already gate/image/
  * window filtered. Sell price computed from the canonical pricing formula
@@ -51,7 +51,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "absolut in pink",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -73,7 +73,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1533747392,
@@ -83,7 +83,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "aloha",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -105,7 +105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1451212610,
@@ -115,7 +115,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "atomic",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -137,7 +137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1679049717,
@@ -147,7 +147,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "atomic",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -169,7 +169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1591959141,
@@ -179,7 +179,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "atomic",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -201,7 +201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1260246635,
@@ -211,7 +211,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "barista",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -233,7 +233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1022048606,
@@ -243,7 +243,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "blueberry",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -265,7 +265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1980343877,
@@ -275,7 +275,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "cancun",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -297,7 +297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 259912200,
@@ -307,7 +307,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "candlelight",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -329,7 +329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1412114850,
@@ -339,7 +339,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "carpe diem",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -361,7 +361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1471780674,
@@ -371,7 +371,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "carpe diem",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -393,7 +393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1624763395,
@@ -403,7 +403,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "champagne",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -425,7 +425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 10 bunches × 10 stems = 100 stems",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 510344253,
@@ -435,7 +435,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "cherry mist",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -457,7 +457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1110653811,
@@ -467,7 +467,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "country blues",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -489,7 +489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 170882348,
@@ -499,7 +499,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "country blues",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -521,7 +521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 670223611,
@@ -531,7 +531,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "country blues",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -553,7 +553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 252617437,
@@ -563,7 +563,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "country blues",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -585,7 +585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1205086294,
@@ -595,7 +595,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "country blues",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -617,7 +617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 928555420,
@@ -627,7 +627,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "country candy",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -649,7 +649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1887693062,
@@ -659,7 +659,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "country home",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -681,7 +681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 778032734,
@@ -691,7 +691,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "country home",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -713,7 +713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1598335393,
@@ -723,7 +723,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "country home",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -745,7 +745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1013062347,
@@ -755,7 +755,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "country home",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -777,7 +777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1109748901,
@@ -787,7 +787,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "country home",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -809,7 +809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 448937963,
@@ -819,7 +819,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "cream shimmer",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -841,7 +841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 402069621,
@@ -851,7 +851,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "cream shimmer",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -873,7 +873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 620896085,
@@ -883,7 +883,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "cream shimmer",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -905,7 +905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 217548219,
@@ -915,7 +915,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "creme de la creme",
     "length": "40 cm",
-    "price": 0.858,
+    "price": 0.8641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -937,7 +937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1150721268,
@@ -947,7 +947,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "creme de la creme",
     "length": "50 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -969,7 +969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 445193982,
@@ -979,7 +979,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "creme de la creme",
     "length": "60 cm",
-    "price": 1.1508,
+    "price": 1.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1001,7 +1001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 660274630,
@@ -1011,7 +1011,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "creme de la creme",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1033,7 +1033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1218647055,
@@ -1043,7 +1043,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "creme de la creme",
     "length": "80 cm",
-    "price": 1.2404,
+    "price": 1.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1065,7 +1065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 694993589,
@@ -1075,7 +1075,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "dark crown",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1097,7 +1097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1095129933,
@@ -1107,7 +1107,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "dark crown",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1129,7 +1129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1316644732,
@@ -1139,7 +1139,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "dark crown",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1161,7 +1161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 562130278,
@@ -1171,7 +1171,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "deep purple",
     "length": "40 cm",
-    "price": 0.858,
+    "price": 0.8641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1193,7 +1193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 452380301,
@@ -1203,7 +1203,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "encanto",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1225,7 +1225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1986354331,
@@ -1235,7 +1235,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "encanto",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1257,7 +1257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1383968291,
@@ -1267,7 +1267,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "encanto",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1289,7 +1289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 621297826,
@@ -1299,7 +1299,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "encanto",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1321,7 +1321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 991432208,
@@ -1331,7 +1331,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "encanto",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1353,7 +1353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1117133344,
@@ -1363,7 +1363,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "enchantment",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1385,7 +1385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1950104029,
@@ -1395,7 +1395,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "enchantment",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1417,7 +1417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1346677060,
@@ -1427,7 +1427,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "enchantment",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1449,7 +1449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1327702819,
@@ -1459,7 +1459,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "enchantment",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1481,7 +1481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 182572148,
@@ -1491,7 +1491,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "enchantment",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1513,7 +1513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1188079294,
@@ -1523,7 +1523,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "escimo",
     "length": "50 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1545,7 +1545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1277990059,
@@ -1555,7 +1555,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "esperance",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1577,7 +1577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1551204555,
@@ -1587,7 +1587,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "esperance",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1609,7 +1609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 541567025,
@@ -1619,7 +1619,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "esperance",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1641,7 +1641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 781448070,
@@ -1651,7 +1651,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "esperance",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1673,7 +1673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1585049879,
@@ -1683,7 +1683,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "faith",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1705,7 +1705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1422799259,
@@ -1715,7 +1715,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "felicity",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1737,7 +1737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1497118003,
@@ -1747,7 +1747,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "felicity",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1769,7 +1769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 196099634,
@@ -1779,7 +1779,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "felicity",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1801,7 +1801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 32906702,
@@ -1811,7 +1811,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "felicity",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1833,7 +1833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 413013748,
@@ -1843,7 +1843,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "felicity",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1865,7 +1865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 74420040,
@@ -1875,7 +1875,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "fortune",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1897,7 +1897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 490074113,
@@ -1907,7 +1907,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "fortune",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -1929,7 +1929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 722648630,
@@ -1939,7 +1939,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "fortune",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1961,7 +1961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1157413395,
@@ -1971,7 +1971,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "fortune",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -1993,7 +1993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1852659931,
@@ -2003,7 +2003,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "fortune",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2025,7 +2025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 206746986,
@@ -2035,7 +2035,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "free spirit",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2057,7 +2057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 501983080,
@@ -2067,7 +2067,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "free spirit",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2089,7 +2089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 468696829,
@@ -2099,7 +2099,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "full monty",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2121,7 +2121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 69402343,
@@ -2131,7 +2131,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "full monty",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2153,7 +2153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1229139133,
@@ -2163,7 +2163,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "goldfinch",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2185,7 +2185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1223791565,
@@ -2195,7 +2195,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "goldfinch",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2217,7 +2217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1301148438,
@@ -2227,7 +2227,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "goldfinch",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2249,7 +2249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1276517086,
@@ -2259,7 +2259,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "goldfinch",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2281,7 +2281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1958885342,
@@ -2291,7 +2291,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "goldfinch",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2313,7 +2313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1274524489,
@@ -2323,7 +2323,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "gotcha",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2345,7 +2345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 729148413,
@@ -2355,7 +2355,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "gotcha",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2377,7 +2377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 474192460,
@@ -2387,7 +2387,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "gotcha",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2409,7 +2409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 276944238,
@@ -2419,7 +2419,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "gotcha",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2441,7 +2441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 441611874,
@@ -2451,7 +2451,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "gotcha",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2473,7 +2473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1854512518,
@@ -2483,7 +2483,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "highlight",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2505,7 +2505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1541172477,
@@ -2515,7 +2515,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "highlight",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2537,7 +2537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 8810780,
@@ -2547,7 +2547,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "highlight",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2569,7 +2569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1126269879,
@@ -2579,7 +2579,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "highlight",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2601,7 +2601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1114927323,
@@ -2611,7 +2611,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "highlight",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2633,7 +2633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 911004341,
@@ -2643,7 +2643,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "hot explorer",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2665,7 +2665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1180544524,
@@ -2675,7 +2675,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "hot explorer",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2697,7 +2697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1789536678,
@@ -2707,7 +2707,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "kahala",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2729,7 +2729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1113986981,
@@ -2739,7 +2739,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "magic times",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2761,7 +2761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 154413138,
@@ -2771,7 +2771,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "mamma mia",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2793,7 +2793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 68867522,
@@ -2803,7 +2803,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "mamma mia",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2825,7 +2825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 204356369,
@@ -2835,7 +2835,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "mamma mia",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2857,7 +2857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1181200946,
@@ -2867,7 +2867,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "mamma mia",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2889,7 +2889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 563760713,
@@ -2899,7 +2899,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "mamma mia",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -2921,7 +2921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 106156496,
@@ -2931,7 +2931,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "mandala",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2953,7 +2953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 903997389,
@@ -2963,7 +2963,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "miss piggy",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -2985,7 +2985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1724418639,
@@ -2995,7 +2995,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "miss piggy",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3017,7 +3017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 967118158,
@@ -3027,7 +3027,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "miss piggy",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3049,7 +3049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 982900190,
@@ -3059,7 +3059,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "miss piggy",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3081,7 +3081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1755743112,
@@ -3091,7 +3091,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "miss piggy",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3113,7 +3113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 383281528,
@@ -3123,7 +3123,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "momentum",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3145,7 +3145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 662756953,
@@ -3155,7 +3155,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "momentum",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3177,7 +3177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 233885638,
@@ -3187,7 +3187,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "momentum",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3209,7 +3209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 805525074,
@@ -3219,7 +3219,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "momentum",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3241,7 +3241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1366397941,
@@ -3251,7 +3251,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "momentum",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3273,7 +3273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1951287318,
@@ -3283,7 +3283,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "mondial",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3305,7 +3305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1721424391,
@@ -3315,7 +3315,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "moody blues",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3337,7 +3337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1218765411,
@@ -3347,7 +3347,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "moody blues",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3369,7 +3369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 382307213,
@@ -3379,7 +3379,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "moody blues",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3401,7 +3401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1720261765,
@@ -3411,7 +3411,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "moonstone",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3433,7 +3433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1636642909,
@@ -3443,7 +3443,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nexus",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3465,7 +3465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1662692137,
@@ -3475,7 +3475,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nexus",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3497,7 +3497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1868100260,
@@ -3507,7 +3507,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nexus",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3529,7 +3529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1821305941,
@@ -3539,7 +3539,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nexus",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3561,7 +3561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 431103462,
@@ -3571,7 +3571,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nexus",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3593,7 +3593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 72948137,
@@ -3603,7 +3603,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nina",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3625,7 +3625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 503959285,
@@ -3635,7 +3635,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "novia",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3657,7 +3657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1394823518,
@@ -3667,7 +3667,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "novia",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3689,7 +3689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1004110808,
@@ -3699,7 +3699,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "novia",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3721,7 +3721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 707080838,
@@ -3731,7 +3731,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "novia",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3753,7 +3753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 854131391,
@@ -3763,7 +3763,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "novia",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3785,7 +3785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1528147546,
@@ -3795,7 +3795,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "paloma",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3817,7 +3817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 866656808,
@@ -3827,7 +3827,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "phoenix",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3849,7 +3849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1192523377,
@@ -3859,7 +3859,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "phoenix",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -3881,7 +3881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 732272845,
@@ -3891,7 +3891,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "phoenix",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3913,7 +3913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1488591546,
@@ -3923,7 +3923,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "phoenix",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3945,7 +3945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1467913242,
@@ -3955,7 +3955,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "phoenix",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -3977,7 +3977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 127066880,
@@ -3987,7 +3987,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink floyd",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4009,7 +4009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 25504750,
@@ -4019,7 +4019,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink mondial",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4041,7 +4041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 984940674,
@@ -4051,7 +4051,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pomarosa",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4073,7 +4073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1629944755,
@@ -4083,7 +4083,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pomarosa",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4105,7 +4105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 988060814,
@@ -4115,7 +4115,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "princess crown",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4137,7 +4137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 186566149,
@@ -4147,7 +4147,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "queenberry",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4169,7 +4169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 787715248,
@@ -4179,7 +4179,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "queenberry",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4201,7 +4201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 664231325,
@@ -4211,7 +4211,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "queenberry",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4233,7 +4233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 414882792,
@@ -4243,7 +4243,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "queenberry",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4265,7 +4265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 108638086,
@@ -4275,7 +4275,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "queenberry",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4297,7 +4297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 382148325,
@@ -4307,7 +4307,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "queens crown",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4329,7 +4329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1304725016,
@@ -4339,7 +4339,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "queens crown",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4361,7 +4361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1041463086,
@@ -4371,7 +4371,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "queens crown",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4393,7 +4393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 238052248,
@@ -4403,7 +4403,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "queens crown",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4425,7 +4425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 543396891,
@@ -4435,7 +4435,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "queens crown",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4457,7 +4457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1062380670,
@@ -4467,7 +4467,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "razzmatazz",
     "length": "40 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4489,7 +4489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1135365382,
@@ -4499,7 +4499,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "razzmatazz",
     "length": "50 cm",
-    "price": 1.7237,
+    "price": 1.7429,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4521,7 +4521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1655001869,
@@ -4531,7 +4531,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "razzmatazz",
     "length": "60 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4553,7 +4553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 162787706,
@@ -4563,7 +4563,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "redvolution",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4585,7 +4585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1388819906,
@@ -4595,7 +4595,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "redvolution",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4617,7 +4617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 662055630,
@@ -4627,7 +4627,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "redvolution",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4649,7 +4649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 45133395,
@@ -4659,7 +4659,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "redvolution",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4681,7 +4681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1378837012,
@@ -4691,7 +4691,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "redvolution",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4713,7 +4713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1875876366,
@@ -4723,7 +4723,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "rhoslyn",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4745,7 +4745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1580241301,
@@ -4755,7 +4755,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "rhoslyn",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4777,7 +4777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 958961615,
@@ -4787,7 +4787,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "rhoslyn",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4809,7 +4809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 998700778,
@@ -4819,7 +4819,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "rhoslyn",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4841,7 +4841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1926885871,
@@ -4851,7 +4851,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "rhoslyn",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4873,7 +4873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 897965239,
@@ -4883,7 +4883,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "roseberry",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -4905,7 +4905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1444309171,
@@ -4915,7 +4915,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "roseberry",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4937,7 +4937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1290817822,
@@ -4947,7 +4947,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "roseberry",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -4969,7 +4969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 20121578,
@@ -4979,7 +4979,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "rosita vendela",
     "length": "60 cm",
-    "price": 1.1508,
+    "price": 1.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5001,7 +5001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 731253827,
@@ -5011,7 +5011,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "shocking blue",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5033,7 +5033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1972334044,
@@ -5043,7 +5043,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "shocking blue",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5065,7 +5065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1134250684,
@@ -5075,7 +5075,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "shocking blue",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5097,7 +5097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 256582055,
@@ -5107,7 +5107,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "shocking blue",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5129,7 +5129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1337707294,
@@ -5139,7 +5139,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "shocking blue",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5161,7 +5161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1615769930,
@@ -5171,7 +5171,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "silantoi",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5193,7 +5193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 117610818,
@@ -5203,7 +5203,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "silantoi",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5225,7 +5225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1439505088,
@@ -5235,7 +5235,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "summerlight",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5257,7 +5257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1113070281,
@@ -5267,7 +5267,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "summerlight",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5289,7 +5289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1687197613,
@@ -5299,7 +5299,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "summerlight",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5321,7 +5321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 931697633,
@@ -5331,7 +5331,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "summerlight",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5353,7 +5353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1164146459,
@@ -5363,7 +5363,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "summerlight",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5385,7 +5385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 255205632,
@@ -5395,7 +5395,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunmaster",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5417,7 +5417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 126775419,
@@ -5427,7 +5427,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunmaster",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5449,7 +5449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 214069697,
@@ -5459,7 +5459,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunmaster",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5481,7 +5481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 605180448,
@@ -5491,7 +5491,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunmaster",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5513,7 +5513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 867647540,
@@ -5523,7 +5523,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunmaster",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5545,7 +5545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1589055789,
@@ -5555,7 +5555,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunny days",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5577,7 +5577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 454221334,
@@ -5587,7 +5587,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunny days",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5609,7 +5609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1104856838,
@@ -5619,7 +5619,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunny days",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5641,7 +5641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 210685326,
@@ -5651,7 +5651,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunny days",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5673,7 +5673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 675603413,
@@ -5683,7 +5683,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "sunny days",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5705,7 +5705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1101982026,
@@ -5715,7 +5715,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet cake",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5737,7 +5737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1186824678,
@@ -5747,7 +5747,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet cake",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5769,7 +5769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1297809199,
@@ -5779,7 +5779,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet cake",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5801,7 +5801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1341509471,
@@ -5811,7 +5811,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet cake",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5833,7 +5833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1087769214,
@@ -5843,7 +5843,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet cake",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5865,7 +5865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1240365083,
@@ -5875,7 +5875,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet escimo",
     "length": "50 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5897,7 +5897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1012586812,
@@ -5907,7 +5907,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet memory",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5929,7 +5929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1842902670,
@@ -5939,7 +5939,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet memory",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -5961,7 +5961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 835250871,
@@ -5971,7 +5971,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet memory",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -5993,7 +5993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1900936526,
@@ -6003,7 +6003,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet memory",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6025,7 +6025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 620552692,
@@ -6035,7 +6035,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet memory",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6057,7 +6057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 615179172,
@@ -6067,7 +6067,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "tibet",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6089,7 +6089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1826268316,
@@ -6099,7 +6099,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "tibet",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6121,7 +6121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 19285899,
@@ -6131,7 +6131,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "tibet",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6153,7 +6153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1459882292,
@@ -6163,7 +6163,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "tibet",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6185,7 +6185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 609447648,
@@ -6195,7 +6195,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "toffee",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6217,7 +6217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 548480506,
@@ -6227,7 +6227,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "toffee",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6249,7 +6249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 955483900,
@@ -6259,7 +6259,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "toffee",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6281,7 +6281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 851929934,
@@ -6291,7 +6291,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "toffee",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6313,7 +6313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 158355342,
@@ -6323,7 +6323,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "toffee",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6345,7 +6345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 992558,
@@ -6355,7 +6355,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "veggie",
     "length": "50 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6377,7 +6377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1042371612,
@@ -6387,7 +6387,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "veggie",
     "length": "60 cm",
-    "price": 1.8374,
+    "price": 1.8566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6409,7 +6409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1759787027,
@@ -6419,7 +6419,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "veggie",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6441,7 +6441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 139606228,
@@ -6451,7 +6451,7 @@ export const products: Product[] = [
     "color": "rainbow",
     "variety": "vendela",
     "length": "40 cm",
-    "price": 0.858,
+    "price": 0.8641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6473,7 +6473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1308507107,
@@ -6483,7 +6483,7 @@ export const products: Product[] = [
     "color": "rainbow",
     "variety": "vendela",
     "length": "50 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6505,7 +6505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1523177434,
@@ -6515,7 +6515,7 @@ export const products: Product[] = [
     "color": "rainbow",
     "variety": "vendela",
     "length": "60 cm",
-    "price": 1.1508,
+    "price": 1.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6537,7 +6537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1039912988,
@@ -6547,7 +6547,7 @@ export const products: Product[] = [
     "color": "rainbow",
     "variety": "vendela",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6569,7 +6569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 408286968,
@@ -6579,7 +6579,7 @@ export const products: Product[] = [
     "color": "rainbow",
     "variety": "vendela",
     "length": "80 cm",
-    "price": 1.2404,
+    "price": 1.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6601,7 +6601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1709532955,
@@ -6611,7 +6611,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "vi pink",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6633,7 +6633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1650651794,
@@ -6643,7 +6643,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "vi pink",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6665,7 +6665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1421592930,
@@ -6675,7 +6675,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "vi pink",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6697,7 +6697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 874020227,
@@ -6707,7 +6707,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "vi pink",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6729,7 +6729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 483761581,
@@ -6739,7 +6739,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "vi pink",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6761,7 +6761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1166881017,
@@ -6771,7 +6771,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "violet hill",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6793,7 +6793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1446932430,
@@ -6803,7 +6803,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "violet hill",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6825,7 +6825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1720708569,
@@ -6835,7 +6835,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "violet hill",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6857,7 +6857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 13845116,
@@ -6867,7 +6867,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "violet hill",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6889,7 +6889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 69231298,
@@ -6899,7 +6899,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "violet hill",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -6921,7 +6921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1067774573,
@@ -6931,7 +6931,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "wasabi",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6953,7 +6953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1966564902,
@@ -6963,7 +6963,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "wasabi",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -6985,7 +6985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 841291833,
@@ -6995,7 +6995,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "wasabi",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -7017,7 +7017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 517377546,
@@ -7027,7 +7027,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "wasabi",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -7049,7 +7049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 803207698,
@@ -7059,7 +7059,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "wasabi",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -7081,7 +7081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1063179752,
@@ -7091,7 +7091,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "westminster abbey",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -7113,7 +7113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1374005017,
@@ -7123,7 +7123,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "westminster abbey",
     "length": "50 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -7145,7 +7145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1925027449,
@@ -7155,7 +7155,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "westminster abbey",
     "length": "60 cm",
-    "price": 1.8374,
+    "price": 1.8566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -7177,7 +7177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1128950859,
@@ -7187,7 +7187,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "westminster abbey",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -7209,7 +7209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 126874850,
@@ -7219,7 +7219,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "westminster abbey",
     "length": "80 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -7241,7 +7241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 324916313,
@@ -7251,7 +7251,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet flat hanna farm choice",
     "length": "55 cm",
-    "price": 14.9146,
+    "price": 15.0483,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -7273,39 +7273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 289535146,
-    "sku_id": "d6beba0b-6f07-4477-99a3-01583c209f61",
-    "name": "Bouquet Greens Round Afforest Green 60 cm",
-    "category": "Bouquet",
-    "color": "green",
-    "variety": "bouquet greens round afforest",
-    "length": "60 cm",
-    "price": 8.1407,
-    "unit": "Bunch",
-    "stems_per_bunch": 1,
-    "units_per_box": 25,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bouquet-greens-round-afforest-green-60-cm-2",
-    "images": [
-      "/images/shop/other/bouquet-green-aforest_v1.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 25,
-    "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1197126588,
@@ -7315,7 +7283,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round afforest",
     "length": "60 cm",
-    "price": 8.6337,
+    "price": 8.7235,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7337,7 +7305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1285423582,
@@ -7347,7 +7315,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round afforest",
     "length": "60 cm",
-    "price": 8.2882,
+    "price": 8.3769,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 40,
@@ -7369,7 +7337,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 289535146,
+    "sku_id": "d6beba0b-6f07-4477-99a3-01583c209f61",
+    "name": "Bouquet Greens Round Afforest Green 60 cm",
+    "category": "Bouquet",
+    "color": "green",
+    "variety": "bouquet greens round afforest",
+    "length": "60 cm",
+    "price": 8.2295,
+    "unit": "Bunch",
+    "stems_per_bunch": 1,
+    "units_per_box": 25,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bouquet-greens-round-afforest-green-60-cm-2",
+    "images": [
+      "/images/shop/other/bouquet-green-aforest_v1.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 25,
+    "contents_note": "11 stems per bouquet",
+    "available_from": "2026-06-13"
   },
   {
     "id": 1474953358,
@@ -7379,7 +7379,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round emerald",
     "length": "60 cm",
-    "price": 8.6337,
+    "price": 8.7235,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7401,39 +7401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 280679289,
-    "sku_id": "c2ead74e-fa13-48ba-aa44-855239a76575",
-    "name": "Bouquet Greens Round Emerald Green 60 cm",
-    "category": "Bouquet",
-    "color": "green",
-    "variety": "bouquet greens round emerald",
-    "length": "60 cm",
-    "price": 8.2882,
-    "unit": "Bunch",
-    "stems_per_bunch": 1,
-    "units_per_box": 40,
-    "box_type": "HB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bouquet-greens-round-emerald-green-60-cm-3",
-    "images": [
-      "/images/shop/bouquets/mf-bouquet-foliage-emerald.jpeg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 40,
-    "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1042847301,
@@ -7443,7 +7411,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round emerald",
     "length": "60 cm",
-    "price": 8.1407,
+    "price": 8.2295,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 25,
@@ -7465,7 +7433,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 280679289,
+    "sku_id": "c2ead74e-fa13-48ba-aa44-855239a76575",
+    "name": "Bouquet Greens Round Emerald Green 60 cm",
+    "category": "Bouquet",
+    "color": "green",
+    "variety": "bouquet greens round emerald",
+    "length": "60 cm",
+    "price": 8.3769,
+    "unit": "Bunch",
+    "stems_per_bunch": 1,
+    "units_per_box": 40,
+    "box_type": "HB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bouquet-greens-round-emerald-green-60-cm-3",
+    "images": [
+      "/images/shop/bouquets/mf-bouquet-foliage-emerald.jpeg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 40,
+    "contents_note": "11 stems per bouquet",
+    "available_from": "2026-06-13"
   },
   {
     "id": 810082502,
@@ -7475,7 +7475,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round forest",
     "length": "60 cm",
-    "price": 8.1407,
+    "price": 8.2295,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 25,
@@ -7497,7 +7497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1322729507,
@@ -7507,7 +7507,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round forest",
     "length": "60 cm",
-    "price": 8.2882,
+    "price": 8.3769,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 40,
@@ -7529,7 +7529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1782625392,
@@ -7539,7 +7539,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round forest",
     "length": "60 cm",
-    "price": 8.6337,
+    "price": 8.7235,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7561,39 +7561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 1495748382,
-    "sku_id": "f11643b0-0a3b-4fae-81fb-1bb32c47a09e",
-    "name": "Bouquet Greens Round Paradise Green 60 cm",
-    "category": "Bouquet",
-    "color": "green",
-    "variety": "bouquet greens round paradise",
-    "length": "60 cm",
-    "price": 8.6337,
-    "unit": "Bunch",
-    "stems_per_bunch": 1,
-    "units_per_box": 12,
-    "box_type": "1/8",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bouquet-greens-round-paradise-green-60-cm",
-    "images": [
-      "/images/shop/bouquets/mf-green-paradise.jpeg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 12,
-    "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1519794012,
@@ -7603,7 +7571,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round paradise",
     "length": "60 cm",
-    "price": 8.1407,
+    "price": 8.2295,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 25,
@@ -7625,7 +7593,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 25,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1495748382,
+    "sku_id": "f11643b0-0a3b-4fae-81fb-1bb32c47a09e",
+    "name": "Bouquet Greens Round Paradise Green 60 cm",
+    "category": "Bouquet",
+    "color": "green",
+    "variety": "bouquet greens round paradise",
+    "length": "60 cm",
+    "price": 8.7235,
+    "unit": "Bunch",
+    "stems_per_bunch": 1,
+    "units_per_box": 12,
+    "box_type": "1/8",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bouquet-greens-round-paradise-green-60-cm",
+    "images": [
+      "/images/shop/bouquets/mf-green-paradise.jpeg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 12,
+    "contents_note": "11 stems per bouquet",
+    "available_from": "2026-06-13"
   },
   {
     "id": 270142631,
@@ -7635,7 +7635,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet greens round paradise",
     "length": "60 cm",
-    "price": 8.2882,
+    "price": 8.3769,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 40,
@@ -7657,39 +7657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 40,
     "contents_note": "11 stems per bouquet",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 471797532,
-    "sku_id": "e5db9e72-8993-4d31-ae93-291eae9d0339",
-    "name": "Bouquet Round Medium Amazon Green 50 cm",
-    "category": "Bouquet",
-    "color": "green",
-    "variety": "bouquet round medium amazon",
-    "length": "50 cm",
-    "price": 19.8374,
-    "unit": "Bunch",
-    "stems_per_bunch": 1,
-    "units_per_box": 6,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bouquet-round-medium-amazon-green-50-cm",
-    "images": [
-      "/images/shop/bouquets/mf-bouquet-amazon-greens.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 6,
-    "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1782583328,
@@ -7699,7 +7667,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet round medium amazon",
     "length": "50 cm",
-    "price": 18.319,
+    "price": 18.4735,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7721,7 +7689,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 471797532,
+    "sku_id": "e5db9e72-8993-4d31-ae93-291eae9d0339",
+    "name": "Bouquet Round Medium Amazon Green 50 cm",
+    "category": "Bouquet",
+    "color": "green",
+    "variety": "bouquet round medium amazon",
+    "length": "50 cm",
+    "price": 19.9943,
+    "unit": "Bunch",
+    "stems_per_bunch": 1,
+    "units_per_box": 6,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bouquet-round-medium-amazon-green-50-cm",
+    "images": [
+      "/images/shop/bouquets/mf-bouquet-amazon-greens.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 6,
+    "contents_note": "21 stems per bouquet",
+    "available_from": "2026-06-13"
   },
   {
     "id": 1806522723,
@@ -7731,7 +7731,7 @@ export const products: Product[] = [
     "color": "brushed",
     "variety": "bouquet round medium brushed",
     "length": "50 cm",
-    "price": 19.8374,
+    "price": 19.9943,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 6,
@@ -7753,7 +7753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1822169178,
@@ -7763,7 +7763,7 @@ export const products: Product[] = [
     "color": "brushed",
     "variety": "bouquet round medium brushed",
     "length": "50 cm",
-    "price": 18.319,
+    "price": 18.4735,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7785,39 +7785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 581029787,
-    "sku_id": "efa8934e-d36a-4772-be25-e0b3a917bd8c",
-    "name": "Bouquet Round Medium Confeti Mixed 50 cm",
-    "category": "Bouquet",
-    "color": "mixed",
-    "variety": "bouquet round medium confeti",
-    "length": "50 cm",
-    "price": 18.319,
-    "unit": "Bunch",
-    "stems_per_bunch": 1,
-    "units_per_box": 12,
-    "box_type": "HB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bouquet-round-medium-confeti-mixed-50-cm-2",
-    "images": [
-      "/images/shop/bouquets/mf-bouquet-confeti.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 12,
-    "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 903193944,
@@ -7827,7 +7795,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round medium confeti",
     "length": "50 cm",
-    "price": 19.8374,
+    "price": 19.9943,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 6,
@@ -7849,21 +7817,21 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 998708231,
-    "sku_id": "d3aa8e1c-48c2-4671-bf05-9ec25f727989",
-    "name": "Bouquet Round Medium Fuego Red 50 cm",
+    "id": 581029787,
+    "sku_id": "efa8934e-d36a-4772-be25-e0b3a917bd8c",
+    "name": "Bouquet Round Medium Confeti Mixed 50 cm",
     "category": "Bouquet",
-    "color": "red",
-    "variety": "bouquet round medium fuego",
+    "color": "mixed",
+    "variety": "bouquet round medium confeti",
     "length": "50 cm",
-    "price": 19.8374,
+    "price": 18.4735,
     "unit": "Bunch",
     "stems_per_bunch": 1,
-    "units_per_box": 6,
-    "box_type": "QB",
+    "units_per_box": 12,
+    "box_type": "HB",
     "stock": 0,
     "vendor": "Magic Flowers",
     "is_on_deal": false,
@@ -7873,15 +7841,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "bouquet-round-medium-fuego-red-50-cm",
+    "slug": "bouquet-round-medium-confeti-mixed-50-cm-2",
     "images": [
-      "/images/shop/bouquets/mf-bouquet-fuego.jpg"
+      "/images/shop/bouquets/mf-bouquet-confeti.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 6,
+    "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 123386005,
@@ -7891,7 +7859,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "bouquet round medium fuego",
     "length": "50 cm",
-    "price": 18.319,
+    "price": 18.4735,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7913,7 +7881,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 998708231,
+    "sku_id": "d3aa8e1c-48c2-4671-bf05-9ec25f727989",
+    "name": "Bouquet Round Medium Fuego Red 50 cm",
+    "category": "Bouquet",
+    "color": "red",
+    "variety": "bouquet round medium fuego",
+    "length": "50 cm",
+    "price": 19.9943,
+    "unit": "Bunch",
+    "stems_per_bunch": 1,
+    "units_per_box": 6,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bouquet-round-medium-fuego-red-50-cm",
+    "images": [
+      "/images/shop/bouquets/mf-bouquet-fuego.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 6,
+    "contents_note": "21 stems per bouquet",
+    "available_from": "2026-06-13"
   },
   {
     "id": 355971934,
@@ -7923,7 +7923,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round medium parrot",
     "length": "50 cm",
-    "price": 18.319,
+    "price": 18.4735,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -7945,7 +7945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 164603117,
@@ -7955,7 +7955,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round medium parrot",
     "length": "50 cm",
-    "price": 19.8374,
+    "price": 19.9943,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 6,
@@ -7977,7 +7977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "21 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 118753422,
@@ -7987,7 +7987,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round medium rainbow",
     "length": "50 cm",
-    "price": 18.319,
+    "price": 18.4735,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -8009,7 +8009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1373604547,
@@ -8019,7 +8019,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round medium rainbow",
     "length": "50 cm",
-    "price": 19.8374,
+    "price": 19.9943,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 6,
@@ -8041,7 +8041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 6,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 433374510,
@@ -8051,7 +8051,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "bouquet round plus confeti orange",
     "length": "50 cm",
-    "price": 14.9146,
+    "price": 15.0483,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -8073,7 +8073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 247242900,
@@ -8083,7 +8083,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "bouquet round plus confeti orange",
     "length": "50 cm",
-    "price": 16.0646,
+    "price": 16.2003,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 8,
@@ -8105,39 +8105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 812692943,
-    "sku_id": "5d3697b4-d879-450d-9c1b-2fb7e3e8e568",
-    "name": "Bouquet Round Plus Jungle Green 50 cm",
-    "category": "Bouquet",
-    "color": "green",
-    "variety": "bouquet round plus jungle",
-    "length": "50 cm",
-    "price": 16.0646,
-    "unit": "Bunch",
-    "stems_per_bunch": 1,
-    "units_per_box": 8,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "bouquet-round-plus-jungle-green-50-cm",
-    "images": [
-      "/images/shop/combos/mf-green-jungle.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 8,
-    "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 731619760,
@@ -8147,7 +8115,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet round plus jungle",
     "length": "50 cm",
-    "price": 14.9146,
+    "price": 15.0483,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -8169,17 +8137,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 134789132,
-    "sku_id": "c18fb99c-aed4-4d2d-8a8a-06f7ce92e5f4",
-    "name": "Bouquet Round Plus Lua Fuego Red 50 cm",
+    "id": 812692943,
+    "sku_id": "5d3697b4-d879-450d-9c1b-2fb7e3e8e568",
+    "name": "Bouquet Round Plus Jungle Green 50 cm",
     "category": "Bouquet",
-    "color": "red",
-    "variety": "bouquet round plus lua fuego",
+    "color": "green",
+    "variety": "bouquet round plus jungle",
     "length": "50 cm",
-    "price": 16.0646,
+    "price": 16.2003,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 8,
@@ -8193,15 +8161,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "bouquet-round-plus-lua-fuego-red-50-cm",
+    "slug": "bouquet-round-plus-jungle-green-50-cm",
     "images": [
-      "/images/shop/bouquets/mf-lua-fuego-plus.png"
+      "/images/shop/combos/mf-green-jungle.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 830044067,
@@ -8211,7 +8179,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "bouquet round plus lua fuego",
     "length": "50 cm",
-    "price": 14.9146,
+    "price": 15.0483,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -8233,7 +8201,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 134789132,
+    "sku_id": "c18fb99c-aed4-4d2d-8a8a-06f7ce92e5f4",
+    "name": "Bouquet Round Plus Lua Fuego Red 50 cm",
+    "category": "Bouquet",
+    "color": "red",
+    "variety": "bouquet round plus lua fuego",
+    "length": "50 cm",
+    "price": 16.2003,
+    "unit": "Bunch",
+    "stems_per_bunch": 1,
+    "units_per_box": 8,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "bouquet-round-plus-lua-fuego-red-50-cm",
+    "images": [
+      "/images/shop/bouquets/mf-lua-fuego-plus.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 8,
+    "contents_note": "13 stems per bouquet",
+    "available_from": "2026-06-13"
   },
   {
     "id": 1359722180,
@@ -8243,7 +8243,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round plus rainbow",
     "length": "50 cm",
-    "price": 16.0646,
+    "price": 16.2003,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 8,
@@ -8265,7 +8265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1140568357,
@@ -8275,7 +8275,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "bouquet round plus rainbow",
     "length": "50 cm",
-    "price": 14.9146,
+    "price": 15.0483,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -8297,7 +8297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "10 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1297409610,
@@ -8307,7 +8307,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet round plus rainforest",
     "length": "50 cm",
-    "price": 14.9146,
+    "price": 15.0483,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -8329,7 +8329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1941171140,
@@ -8339,7 +8339,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "bouquet round plus rainforest",
     "length": "50 cm",
-    "price": 16.0646,
+    "price": 16.2003,
     "unit": "Bunch",
     "stems_per_bunch": 1,
     "units_per_box": 8,
@@ -8361,7 +8361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": "13 stems per bouquet",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1653656608,
@@ -8371,7 +8371,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "combo box capricho",
     "length": "50 cm",
-    "price": 2.4021,
+    "price": 2.4175,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 41,
@@ -8393,7 +8393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 41,
     "contents_note": "Hanging Heliconias,Banana Fingers,Tropical Greens",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 513491633,
@@ -8403,7 +8403,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "combo box fiesta",
     "length": "50 cm",
-    "price": 1.9743,
+    "price": 1.9877,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 52,
@@ -8425,7 +8425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 52,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 748732334,
@@ -8435,7 +8435,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "combo box fire",
     "length": "50 cm",
-    "price": 1.9361,
+    "price": 1.9485,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 51,
@@ -8457,7 +8457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 51,
     "contents_note": "Heliconias,Gingers,Tropical Foliage",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 214010144,
@@ -8467,7 +8467,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "combo box iniziativa",
     "length": "50 cm",
-    "price": 2.4021,
+    "price": 2.4175,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 41,
@@ -8489,7 +8489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 41,
     "contents_note": "Tropical Heliconias,Foliage",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 417617596,
@@ -8499,7 +8499,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "combo box mini fiesta",
     "length": "50 cm",
-    "price": 1.3963,
+    "price": 1.4076,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 50,
@@ -8521,7 +8521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 50,
     "contents_note": "Heliconias,Gingers,Musa,Tropical Foliage",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1117170392,
@@ -8531,7 +8531,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "combo box mini fire",
     "length": "50 cm",
-    "price": 1.5319,
+    "price": 1.5437,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 43,
@@ -8553,7 +8553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 43,
     "contents_note": "Heliconias,Gingers,Tropical Foliage",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 303387751,
@@ -8563,7 +8563,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "combo box mini tabasco",
     "length": "50 cm",
-    "price": 1.2835,
+    "price": 1.2955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 66,
@@ -8585,7 +8585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 66,
     "contents_note": "Heliconias,Gingers,Tropical Foliage",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 636343084,
@@ -8595,7 +8595,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "combo box tabasco",
     "length": "50 cm",
-    "price": 1.1003,
+    "price": 1.1094,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 113,
@@ -8617,7 +8617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 113,
     "contents_note": "Heliconias,Gingers,Musa,Tropical Foliage",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1426784970,
@@ -8627,7 +8627,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "combo escarlata",
     "length": "50 cm",
-    "price": 2.4021,
+    "price": 2.4175,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 41,
@@ -8649,7 +8649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 41,
     "contents_note": "Gingers,Heliconias,Tropical Greens",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1705810868,
@@ -8659,7 +8659,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "combo foliage amazon",
     "length": "50 cm",
-    "price": 0.7641,
+    "price": 0.7702,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 90,
@@ -8681,7 +8681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 90,
     "contents_note": "Monsteras, Phi Xantal, Dieffenbachia, Pandanus, Areca Palms, Cordelyne",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 962359908,
@@ -8691,7 +8691,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "combo foliage botanical",
     "length": "50 cm",
-    "price": 1.5916,
+    "price": 1.6043,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 43,
@@ -8713,7 +8713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 43,
     "contents_note": "Cordelyne, Dracaena Sanderiana, Pandanus, Croto, Curly Pandanus, Aspidistra, Marginata, Philodendro Esmeralda, Podocarpus, Sanseveria",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 138899492,
@@ -8723,7 +8723,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "combo foliage greenery",
     "length": "50 cm",
-    "price": 0.7641,
+    "price": 0.7702,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 90,
@@ -8745,7 +8745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 90,
     "contents_note": "Palma Raphis, Areca Palm, Pandanus Variegated, Accordeon, Davalia, Cordelyne green, Cordelyne Xerox, Eucalypto Silver Dollar, Schiflera",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1678341575,
@@ -8755,7 +8755,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "combo foliage jungle",
     "length": "50 cm",
-    "price": 0.596,
+    "price": 0.6008,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 115,
@@ -8777,7 +8777,103 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 115,
     "contents_note": "Masajeana, Phi. Lemon, Dieffenbachia, Pandanus, Lettuce Fern, Cordelyne",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1847389831,
+    "sku_id": "8debc360-af31-4d17-b8ea-1db81fa206ba",
+    "name": "",
+    "category": "Rose",
+    "color": "lavender",
+    "variety": "cool water",
+    "length": "50 cm",
+    "price": 1.0611,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636537.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1784938921,
+    "sku_id": "14e00e4e-c1e1-46a8-afe0-e995f542a69b",
+    "name": "",
+    "category": "Rose",
+    "color": "red",
+    "variety": "freedom",
+    "length": "50 cm",
+    "price": 1.0611,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636769.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1991475386,
+    "sku_id": "9787e3c9-aba3-4d20-bca1-706bb4c5efca",
+    "name": "",
+    "category": "Rose",
+    "color": "red",
+    "variety": "freedom",
+    "length": "60 cm",
+    "price": 1.2657,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636769.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
   },
   {
     "id": 277236121,
@@ -8787,7 +8883,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "ginger mix box",
     "length": "50 cm",
-    "price": 4.7131,
+    "price": 4.7486,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 24,
@@ -8809,39 +8905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 24,
     "contents_note": "Ginger King Plus Red,Ginger King Nicole,Torch Ginger Red,Torch Ginger Pink",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 1042110575,
-    "sku_id": "4c93db63-08fd-41ee-aedd-e504a0cbb993",
-    "name": "Ginger Plus Red 50 cm",
-    "category": "Ginger",
-    "color": "red",
-    "variety": "ginger plus red",
-    "length": "50 cm",
-    "price": 4.4295,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 24,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "ginger-plus-red-50-cm-2",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217377.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 24,
-    "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 897029737,
@@ -8851,7 +8915,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "ginger plus red",
     "length": "50 cm",
-    "price": 4.7531,
+    "price": 4.7841,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 36,
@@ -8873,21 +8937,21 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 36,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 1199847529,
-    "sku_id": "d9ab5a2e-7309-4672-96d6-14c5d12fc267",
-    "name": "Heliconia Golden Fire Opal Red 50 cm",
-    "category": "Heliconia",
+    "id": 1042110575,
+    "sku_id": "4c93db63-08fd-41ee-aedd-e504a0cbb993",
+    "name": "Ginger Plus Red 50 cm",
+    "category": "Ginger",
     "color": "red",
-    "variety": "heliconia golden fire opal",
+    "variety": "ginger plus red",
     "length": "50 cm",
-    "price": 1.4129,
+    "price": 4.4607,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 200,
-    "box_type": "HB",
+    "units_per_box": 24,
+    "box_type": "QB",
     "stock": 0,
     "vendor": "Magic Flowers",
     "is_on_deal": false,
@@ -8897,47 +8961,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "heliconia-golden-fire-opal-red-50-cm-3",
+    "slug": "ginger-plus-red-50-cm-2",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217362.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217377.png"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 200,
+    "total_stems": 24,
     "contents_note": null,
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 395281020,
-    "sku_id": "7098d7d9-b9c3-4647-8835-124d0798abda",
-    "name": "Heliconia Golden Fire Opal Red 50 cm",
-    "category": "Heliconia",
-    "color": "red",
-    "variety": "heliconia golden fire opal",
-    "length": "50 cm",
-    "price": 1.6052,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 50,
-    "box_type": "1/8",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "heliconia-golden-fire-opal-red-50-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217362.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 50,
-    "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1688321004,
@@ -8947,7 +8979,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia golden fire opal",
     "length": "50 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -8969,7 +9001,71 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 395281020,
+    "sku_id": "7098d7d9-b9c3-4647-8835-124d0798abda",
+    "name": "Heliconia Golden Fire Opal Red 50 cm",
+    "category": "Heliconia",
+    "color": "red",
+    "variety": "heliconia golden fire opal",
+    "length": "50 cm",
+    "price": 1.6197,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 50,
+    "box_type": "1/8",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "heliconia-golden-fire-opal-red-50-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217362.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 50,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1199847529,
+    "sku_id": "d9ab5a2e-7309-4672-96d6-14c5d12fc267",
+    "name": "Heliconia Golden Fire Opal Red 50 cm",
+    "category": "Heliconia",
+    "color": "red",
+    "variety": "heliconia golden fire opal",
+    "length": "50 cm",
+    "price": 1.4269,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 200,
+    "box_type": "HB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "heliconia-golden-fire-opal-red-50-cm-3",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217362.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 200,
+    "contents_note": null,
+    "available_from": "2026-06-13"
   },
   {
     "id": 1028739834,
@@ -8979,7 +9075,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia iris red large",
     "length": "50 cm",
-    "price": 7.7705,
+    "price": 7.8144,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 20,
@@ -9001,7 +9097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 20,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1113385979,
@@ -9011,7 +9107,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia iris red large",
     "length": "50 cm",
-    "price": 8.6875,
+    "price": 8.733,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 10,
@@ -9033,39 +9129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 10,
     "contents_note": null,
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 1330956133,
-    "sku_id": "0ee8839c-8b70-48f9-a781-72262ad66897",
-    "name": "Heliconia Rostrata Large Red 50 cm",
-    "category": "Heliconia",
-    "color": "red",
-    "variety": "heliconia rostrata large",
-    "length": "50 cm",
-    "price": 6.7917,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 15,
-    "box_type": "QB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "heliconia-rostrata-large-red-50-cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217375.png"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 15,
-    "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1573645000,
@@ -9075,7 +9139,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia rostrata large",
     "length": "50 cm",
-    "price": 6.1903,
+    "price": 6.2348,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 30,
@@ -9097,7 +9161,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 30,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1330956133,
+    "sku_id": "0ee8839c-8b70-48f9-a781-72262ad66897",
+    "name": "Heliconia Rostrata Large Red 50 cm",
+    "category": "Heliconia",
+    "color": "red",
+    "variety": "heliconia rostrata large",
+    "length": "50 cm",
+    "price": 6.8371,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 15,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "heliconia-rostrata-large-red-50-cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/21217375.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 15,
+    "contents_note": null,
+    "available_from": "2026-06-13"
   },
   {
     "id": 134588034,
@@ -9107,7 +9203,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia sassy",
     "length": "50 cm",
-    "price": 2.3216,
+    "price": 2.347,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 50,
@@ -9129,7 +9225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 50,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 24434793,
@@ -9139,7 +9235,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia sassy",
     "length": "50 cm",
-    "price": 2.2255,
+    "price": 2.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -9161,7 +9257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 990484977,
@@ -9171,7 +9267,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "heliconia sassy",
     "length": "50 cm",
-    "price": 2.1293,
+    "price": 2.1542,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -9193,23 +9289,23 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 1315678772,
-    "sku_id": "bdb5fc6a-3b20-46be-a73e-55a4de298ebf",
-    "name": "Musa Coccinea Red 50 cm",
-    "category": "Specialty",
-    "color": "red",
-    "variety": "musa coccinea",
-    "length": "50 cm",
-    "price": 4.6049,
+    "id": 1190879080,
+    "sku_id": "47892fbf-be42-44db-9cc1-60ca1442c5ad",
+    "name": "",
+    "category": "Rose",
+    "color": "bicolor",
+    "variety": "magic times",
+    "length": "40 cm",
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 20,
+    "units_per_box": 125,
     "box_type": "QB",
     "stock": 0,
-    "vendor": "Magic Flowers",
+    "vendor": "Ecoroses",
     "is_on_deal": false,
     "deal_label": null,
     "deal_price": null,
@@ -9217,31 +9313,31 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "musa-coccinea-red-50-cm",
+    "slug": "",
     "images": [
-      "/images/shop/tropicals/mf-musa-coccinea.jpg"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636877.png"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 20,
-    "contents_note": null,
-    "available_from": "2026-06-10"
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
   },
   {
-    "id": 1090887134,
-    "sku_id": "994c9d09-bfcc-4355-8bd7-d15aa1e736ac",
-    "name": "Musa Coccinea Red 50 cm",
-    "category": "Specialty",
-    "color": "red",
-    "variety": "musa coccinea",
-    "length": "50 cm",
-    "price": 5.9431,
+    "id": 55818559,
+    "sku_id": "af0760c9-b770-4f37-a99b-d3896e5e57bf",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "mondial",
+    "length": "70 cm",
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 8,
-    "box_type": "1/8",
+    "units_per_box": 100,
+    "box_type": "QB",
     "stock": 0,
-    "vendor": "Magic Flowers",
+    "vendor": "Ecoroses",
     "is_on_deal": false,
     "deal_label": null,
     "deal_price": null,
@@ -9249,15 +9345,79 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "musa-coccinea-red-50-cm-2",
+    "slug": "",
     "images": [
-      "/images/shop/tropicals/mf-musa-coccinea.jpg"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 8,
-    "contents_note": null,
-    "available_from": "2026-06-10"
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 398615955,
+    "sku_id": "0ebcc01a-9ca8-4968-bdcf-622606fc412d",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "mondial",
+    "length": "70 cm",
+    "price": 2.3869,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1629390289,
+    "sku_id": "b3b399d0-d29f-4ff4-86b1-207e8806574d",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "moonstone",
+    "length": "60 cm",
+    "price": 1.4324,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636922.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
   },
   {
     "id": 835687361,
@@ -9267,7 +9427,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "musa coccinea",
     "length": "50 cm",
-    "price": 7.9445,
+    "price": 7.9725,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -9289,20 +9449,20 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 1553155042,
-    "sku_id": "421cf549-5971-4ee5-b51e-a5d40f687d6b",
-    "name": "Musa Mix Mixed 50 cm",
+    "id": 1315678772,
+    "sku_id": "bdb5fc6a-3b20-46be-a73e-55a4de298ebf",
+    "name": "Musa Coccinea Red 50 cm",
     "category": "Specialty",
-    "color": "mixed",
-    "variety": "musa mix",
+    "color": "red",
+    "variety": "musa coccinea",
     "length": "50 cm",
-    "price": 13.1956,
+    "price": 4.6316,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 6,
+    "units_per_box": 20,
     "box_type": "QB",
     "stock": 0,
     "vendor": "Magic Flowers",
@@ -9313,28 +9473,28 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "musa-mix-mixed-50-cm",
+    "slug": "musa-coccinea-red-50-cm",
     "images": [
-      "/images/shop/tropicals/mf-musa-mix.png"
+      "/images/shop/tropicals/mf-musa-coccinea.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 6,
+    "total_stems": 20,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 1587205947,
-    "sku_id": "2e1b99f8-0f6f-4b7c-a8b1-ed09395a94d5",
-    "name": "Musa Mix Mixed 50 cm",
+    "id": 1090887134,
+    "sku_id": "994c9d09-bfcc-4355-8bd7-d15aa1e736ac",
+    "name": "Musa Coccinea Red 50 cm",
     "category": "Specialty",
-    "color": "mixed",
-    "variety": "musa mix",
+    "color": "red",
+    "variety": "musa coccinea",
     "length": "50 cm",
-    "price": 11.8713,
+    "price": 5.9716,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 4,
+    "units_per_box": 8,
     "box_type": "1/8",
     "stock": 0,
     "vendor": "Magic Flowers",
@@ -9345,15 +9505,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "musa-mix-mixed-50-cm-3",
+    "slug": "musa-coccinea-red-50-cm-2",
     "images": [
-      "/images/shop/tropicals/mf-musa-mix.png"
+      "/images/shop/tropicals/mf-musa-coccinea.jpg"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 4,
+    "total_stems": 8,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 234599714,
@@ -9363,7 +9523,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "musa mix",
     "length": "50 cm",
-    "price": 11.6772,
+    "price": 11.7311,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 12,
@@ -9385,7 +9545,71 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 12,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1587205947,
+    "sku_id": "2e1b99f8-0f6f-4b7c-a8b1-ed09395a94d5",
+    "name": "Musa Mix Mixed 50 cm",
+    "category": "Specialty",
+    "color": "mixed",
+    "variety": "musa mix",
+    "length": "50 cm",
+    "price": 11.928,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 4,
+    "box_type": "1/8",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "musa-mix-mixed-50-cm-3",
+    "images": [
+      "/images/shop/tropicals/mf-musa-mix.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 4,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1553155042,
+    "sku_id": "421cf549-5971-4ee5-b51e-a5d40f687d6b",
+    "name": "Musa Mix Mixed 50 cm",
+    "category": "Specialty",
+    "color": "mixed",
+    "variety": "musa mix",
+    "length": "50 cm",
+    "price": 13.2519,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 6,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "musa-mix-mixed-50-cm",
+    "images": [
+      "/images/shop/tropicals/mf-musa-mix.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 6,
+    "contents_note": null,
+    "available_from": "2026-06-13"
   },
   {
     "id": 6913651,
@@ -9395,7 +9619,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "night torch",
     "length": "50 cm",
-    "price": 7.7491,
+    "price": 7.8049,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 8,
@@ -9417,7 +9641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 8,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1570327271,
@@ -9427,7 +9651,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "night torch",
     "length": "50 cm",
-    "price": 7.1666,
+    "price": 7.2214,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -9449,7 +9673,135 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 181628578,
+    "sku_id": "e39d3398-3dd3-46e5-9662-2ea3cc6bdbbc",
+    "name": "",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "orange crush",
+    "length": "50 cm",
+    "price": 0.955,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636966.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1826555718,
+    "sku_id": "c06d0f0b-bc5a-4092-8064-51e798ec9828",
+    "name": "",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "orange crush",
+    "length": "60 cm",
+    "price": 1.1597,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636966.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1127261930,
+    "sku_id": "a3fc0831-b5c4-4044-bf2a-b87fcca4f81b",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "playa blanca",
+    "length": "50 cm",
+    "price": 1.5914,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637006.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1380971902,
+    "sku_id": "9ce394bd-c9bc-45b6-8e63-5d400221a199",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "quicksand",
+    "length": "60 cm",
+    "price": 1.4324,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637036.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
   },
   {
     "id": 1511737938,
@@ -9459,7 +9811,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "shampoo ginger peach",
     "length": "50 cm",
-    "price": 4.2093,
+    "price": 4.2443,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 30,
@@ -9481,7 +9833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 30,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 1080156627,
@@ -9491,7 +9843,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "shampoo ginger peach",
     "length": "50 cm",
-    "price": 4.3745,
+    "price": 4.41,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 16,
@@ -9513,55 +9865,23 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 16,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
-    "id": 765288114,
-    "sku_id": "d77613a2-d992-4752-a32f-c23e6d96439f",
-    "name": "Tiki Limbo Flower Kit Mixed 50 cm",
-    "category": "Combo",
-    "color": "mixed",
-    "variety": "tiki limbo flower kit",
-    "length": "50 cm",
-    "price": 1.5118,
+    "id": 318803188,
+    "sku_id": "466a3caf-b709-482a-b9b0-a20adbc4177c",
+    "name": "",
+    "category": "Rose",
+    "color": "peach",
+    "variety": "shimmer",
+    "length": "60 cm",
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 180,
-    "box_type": "HB",
-    "stock": 0,
-    "vendor": "Magic Flowers",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "tiki-limbo-flower-kit-mixed-50-cm-3",
-    "images": [
-      "/images/shop/combos/mf-combo-tiki-limbo.jpg"
-    ],
-    "tier": "T2",
-    "has_photo": true,
-    "total_stems": 180,
-    "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
-    "available_from": "2026-06-10"
-  },
-  {
-    "id": 767551117,
-    "sku_id": "47e427e0-7a43-40fa-b2d3-90553618f4ee",
-    "name": "Tiki Limbo Flower Kit Mixed 50 cm",
-    "category": "Combo",
-    "color": "mixed",
-    "variety": "tiki limbo flower kit",
-    "length": "50 cm",
-    "price": 1.4345,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 95,
+    "units_per_box": 100,
     "box_type": "QB",
     "stock": 0,
-    "vendor": "Magic Flowers",
+    "vendor": "Ecoroses",
     "is_on_deal": false,
     "deal_label": null,
     "deal_price": null,
@@ -9569,15 +9889,79 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "tiki-limbo-flower-kit-mixed-50-cm-2",
+    "slug": "",
     "images": [
-      "/images/shop/combos/mf-combo-tiki-limbo.jpg"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637063.png"
     ],
     "tier": "T2",
     "has_photo": true,
-    "total_stems": 95,
-    "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
-    "available_from": "2026-06-10"
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 688196117,
+    "sku_id": "26395367-792e-4916-aee1-b3928f86e0fe",
+    "name": "",
+    "category": "Rose",
+    "color": "peach",
+    "variety": "shimmer",
+    "length": "70 cm",
+    "price": 1.5233,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637063.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1458273365,
+    "sku_id": "1abbb4e6-5e7c-4512-8709-01831e1bcdf1",
+    "name": "",
+    "category": "Rose",
+    "color": "peach",
+    "variety": "shimmer",
+    "length": "80 cm",
+    "price": 1.5839,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637063.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-13"
   },
   {
     "id": 844203053,
@@ -9587,7 +9971,7 @@ export const products: Product[] = [
     "color": "mixed",
     "variety": "tiki limbo flower kit",
     "length": "50 cm",
-    "price": 1.5571,
+    "price": 1.5715,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 54,
@@ -9609,7 +9993,71 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 54,
     "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 765288114,
+    "sku_id": "d77613a2-d992-4752-a32f-c23e6d96439f",
+    "name": "Tiki Limbo Flower Kit Mixed 50 cm",
+    "category": "Combo",
+    "color": "mixed",
+    "variety": "tiki limbo flower kit",
+    "length": "50 cm",
+    "price": 1.5265,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 180,
+    "box_type": "HB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tiki-limbo-flower-kit-mixed-50-cm-3",
+    "images": [
+      "/images/shop/combos/mf-combo-tiki-limbo.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 180,
+    "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 767551117,
+    "sku_id": "47e427e0-7a43-40fa-b2d3-90553618f4ee",
+    "name": "Tiki Limbo Flower Kit Mixed 50 cm",
+    "category": "Combo",
+    "color": "mixed",
+    "variety": "tiki limbo flower kit",
+    "length": "50 cm",
+    "price": 1.4472,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 95,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Magic Flowers",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "tiki-limbo-flower-kit-mixed-50-cm-2",
+    "images": [
+      "/images/shop/combos/mf-combo-tiki-limbo.jpg"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 95,
+    "contents_note": "Heliconias,Gingers,Tropical Flowers,Greens",
+    "available_from": "2026-06-13"
   },
   {
     "id": 1136248023,
@@ -9619,7 +10067,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "torch ginger red",
     "length": "50 cm",
-    "price": 5.0975,
+    "price": 5.1316,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 20,
@@ -9641,7 +10089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 20,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
   },
   {
     "id": 864434671,
@@ -9651,7 +10099,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "torch ginger red",
     "length": "50 cm",
-    "price": 5.5634,
+    "price": 5.5985,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 10,
@@ -9673,7 +10121,327 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 10,
     "contents_note": null,
-    "available_from": "2026-06-10"
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 532967254,
+    "sku_id": "7845113e-0908-4fb5-b6b9-72171d7f0b89",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "40 cm",
+    "price": 1.5156,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637148.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 226961126,
+    "sku_id": "8f05dc3e-c701-4743-8ccb-d7323a0b394f",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "40 cm",
+    "price": 1.0611,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637148.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 162632227,
+    "sku_id": "aba31d1a-ec11-48f7-9290-bba4821a3d01",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "50 cm",
+    "price": 1.2126,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637149.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 155423584,
+    "sku_id": "3b5d94f4-a422-4238-a409-346d1bcd2322",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "50 cm",
+    "price": 1.6671,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637149.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 883471389,
+    "sku_id": "60afdfbf-dc9f-45a8-8fdf-b1bfdc203392",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "60 cm",
+    "price": 1.9324,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637150.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 296837736,
+    "sku_id": "7f1e6a18-31ad-4d4c-a5a1-8387fd715aec",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "60 cm",
+    "price": 1.4778,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637150.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1789835450,
+    "sku_id": "b61a3efe-5c7d-41d4-a14b-555f6504117e",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "70 cm",
+    "price": 1.6294,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637151.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1620474806,
+    "sku_id": "33d34041-82da-4c25-9ffc-0db77b68fe65",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "70 cm",
+    "price": 2.0839,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637151.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 1638367296,
+    "sku_id": "4d17ab3f-8997-45b5-9124-5983cf59a3bf",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "80 cm",
+    "price": 1.7809,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637152.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": null,
+    "available_from": "2026-06-13"
+  },
+  {
+    "id": 738590699,
+    "sku_id": "73d92463-a9b8-4f20-b56e-0fafae9de69f",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "vendela",
+    "length": "80 cm",
+    "price": 2.2354,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637152.png"
+    ],
+    "tier": "T2",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": null,
+    "available_from": "2026-06-13"
   },
   {
     "id": 333995595,
@@ -9683,7 +10451,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "fullstar",
     "length": "35 cm",
-    "price": 1.3087,
+    "price": 1.3234,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -9705,7 +10473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 907805744,
@@ -9715,7 +10483,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "mistral",
     "length": "35 cm",
-    "price": 1.1594,
+    "price": 1.1719,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -9737,7 +10505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 860930389,
@@ -9747,7 +10515,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "pacific",
     "length": "70 cm",
-    "price": 1.0616,
+    "price": 1.0718,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9769,7 +10537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1806869114,
@@ -9779,7 +10547,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "pacific",
     "length": "80 cm",
-    "price": 1.1363,
+    "price": 1.1476,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9801,7 +10569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1926510727,
@@ -9811,7 +10579,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "pacific blue bird",
     "length": "70 cm",
-    "price": 1.1661,
+    "price": 1.1779,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9833,7 +10601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 694784589,
@@ -9843,7 +10611,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "pacific blue bird",
     "length": "80 cm",
-    "price": 1.2407,
+    "price": 1.2536,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9865,7 +10633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 56515590,
@@ -9875,7 +10643,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "pacific galahad",
     "length": "70 cm",
-    "price": 1.2109,
+    "price": 1.2233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9897,7 +10665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1195303248,
@@ -9907,7 +10675,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "pacific galahad",
     "length": "80 cm",
-    "price": 1.2855,
+    "price": 1.2991,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9929,7 +10697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1864623590,
@@ -9939,7 +10707,7 @@ export const products: Product[] = [
     "color": "light blue",
     "variety": "pacific summer skies",
     "length": "70 cm",
-    "price": 1.2109,
+    "price": 1.2233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9961,7 +10729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1249949784,
@@ -9971,7 +10739,7 @@ export const products: Product[] = [
     "color": "light blue",
     "variety": "pacific summer skies",
     "length": "80 cm",
-    "price": 1.2855,
+    "price": 1.2991,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -9993,7 +10761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1213595507,
@@ -10003,7 +10771,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.3833,
+    "price": 1.3991,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -10025,7 +10793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1906362142,
@@ -10035,7 +10803,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "absolut in pink",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10057,7 +10825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 534562670,
@@ -10067,7 +10835,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "absolut in pink",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10089,7 +10857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 156077739,
@@ -10099,7 +10867,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "absolut in pink",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10121,7 +10889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 520870924,
@@ -10131,7 +10899,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "absolut in pink",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10153,7 +10921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1139341423,
@@ -10163,7 +10931,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "aloha",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10185,7 +10953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 925937544,
@@ -10195,7 +10963,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "aloha",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10217,7 +10985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 24636045,
@@ -10227,7 +10995,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "aloha",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10249,7 +11017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 541268827,
@@ -10259,7 +11027,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "aloha",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10281,7 +11049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 971922648,
@@ -10291,7 +11059,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "altamira",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10313,7 +11081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1814235232,
@@ -10323,7 +11091,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "altamira",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10345,7 +11113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1866356046,
@@ -10355,7 +11123,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "altamira",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10377,7 +11145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1923683047,
@@ -10387,7 +11155,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "altamira",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10409,7 +11177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 213669463,
@@ -10419,7 +11187,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "altamira",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10441,7 +11209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1199572378,
@@ -10451,7 +11219,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "amsterdam",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10473,7 +11241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1583892262,
@@ -10483,7 +11251,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "amsterdam",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10505,7 +11273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1078695469,
@@ -10515,7 +11283,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "amsterdam",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10537,7 +11305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1076697043,
@@ -10547,7 +11315,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "amsterdam",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10569,7 +11337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1896009326,
@@ -10579,7 +11347,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "amsterdam",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10601,7 +11369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 233770130,
@@ -10611,7 +11379,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "apple jack",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10633,7 +11401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1429373514,
@@ -10643,7 +11411,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "apple jack",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10665,7 +11433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 302715951,
@@ -10675,7 +11443,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "apple jack",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10697,7 +11465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1038922592,
@@ -10707,7 +11475,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "apple jack",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10729,7 +11497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 359899706,
@@ -10739,7 +11507,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "apple jack",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10761,7 +11529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1528359681,
@@ -10771,7 +11539,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "arya",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10793,7 +11561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 581127092,
@@ -10803,7 +11571,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "arya",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10825,7 +11593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1920711830,
@@ -10835,7 +11603,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "arya",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10857,7 +11625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1798493610,
@@ -10867,7 +11635,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "atomic",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10889,7 +11657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 819963470,
@@ -10899,7 +11667,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "atomic",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -10921,7 +11689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 787462029,
@@ -10931,7 +11699,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "barista",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10953,7 +11721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 870669511,
@@ -10963,7 +11731,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "barista",
     "length": "50 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -10985,7 +11753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1391275133,
@@ -10995,7 +11763,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "barista",
     "length": "60 cm",
-    "price": 1.8374,
+    "price": 1.8566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11017,7 +11785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1087103454,
@@ -11027,7 +11795,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "barista",
     "length": "80 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11049,7 +11817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 86639652,
@@ -11059,7 +11827,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "be sweet",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11081,7 +11849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 943639487,
@@ -11091,7 +11859,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "be sweet",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11113,7 +11881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 143310734,
@@ -11123,7 +11891,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "be sweet",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11145,7 +11913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1644989263,
@@ -11155,7 +11923,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "be sweet",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11177,7 +11945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1117846806,
@@ -11187,7 +11955,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "be sweet",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11209,7 +11977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 145353066,
@@ -11219,7 +11987,7 @@ export const products: Product[] = [
     "color": "dark red",
     "variety": "black baccara",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11241,7 +12009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1282605765,
@@ -11251,7 +12019,7 @@ export const products: Product[] = [
     "color": "dark red",
     "variety": "black baccara",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11273,7 +12041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 35322608,
@@ -11283,7 +12051,7 @@ export const products: Product[] = [
     "color": "dark red",
     "variety": "black baccara",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11305,7 +12073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 92104550,
@@ -11315,7 +12083,7 @@ export const products: Product[] = [
     "color": "dark red",
     "variety": "black baccara",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11337,7 +12105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 485899411,
@@ -11347,7 +12115,7 @@ export const products: Product[] = [
     "color": "dark red",
     "variety": "black baccara",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11369,7 +12137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1684417731,
@@ -11379,7 +12147,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "blueberry",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11401,7 +12169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 185408393,
@@ -11411,7 +12179,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "blueberry",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11433,7 +12201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1699365862,
@@ -11443,7 +12211,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "blueberry",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11465,7 +12233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 41607320,
@@ -11475,7 +12243,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "blueberry",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11497,7 +12265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 930331522,
@@ -11507,7 +12275,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "boulevard",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11529,7 +12297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1908028337,
@@ -11539,7 +12307,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "boulevard",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11561,7 +12329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 237988026,
@@ -11571,7 +12339,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "boulevard",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11593,7 +12361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 31147527,
@@ -11603,7 +12371,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "boulevard",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11625,7 +12393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1400755706,
@@ -11635,7 +12403,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "boulevard",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11657,7 +12425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1290395318,
@@ -11667,7 +12435,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "cancun",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11689,7 +12457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1654489605,
@@ -11699,7 +12467,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "cancun",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11721,7 +12489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1172479364,
@@ -11731,7 +12499,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "cancun",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11753,7 +12521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 818485833,
@@ -11763,7 +12531,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "cancun",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11785,7 +12553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1295442529,
@@ -11795,7 +12563,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "candlelight",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11817,7 +12585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1932240390,
@@ -11827,7 +12595,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "candlelight",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11849,7 +12617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1354965449,
@@ -11859,7 +12627,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "candlelight",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11881,7 +12649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 931027383,
@@ -11891,7 +12659,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "candlelight",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -11913,7 +12681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 508634404,
@@ -11923,7 +12691,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "candy x-pression",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11945,7 +12713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 760184499,
@@ -11955,7 +12723,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "candy x-pression",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -11977,7 +12745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1896672316,
@@ -11987,7 +12755,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "candy x-pression",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12009,7 +12777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1148503490,
@@ -12019,7 +12787,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "candy x-pression",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12041,7 +12809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1276869272,
@@ -12051,7 +12819,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "candy x-pression",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12073,7 +12841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1993156875,
@@ -12083,7 +12851,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "carpe diem",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12105,7 +12873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1386879965,
@@ -12115,7 +12883,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "carpe diem",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12137,7 +12905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1747588412,
@@ -12147,7 +12915,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "carpe diem",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12169,7 +12937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 485022348,
@@ -12179,7 +12947,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cavendish",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12201,7 +12969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1941652486,
@@ -12211,7 +12979,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cavendish",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12233,7 +13001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1936049013,
@@ -12243,7 +13011,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cavendish",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12265,7 +13033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1009187738,
@@ -12275,7 +13043,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cavendish",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12297,7 +13065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1333657039,
@@ -12307,7 +13075,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cavendish",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12329,7 +13097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1995605805,
@@ -12339,7 +13107,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cayenne",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12361,7 +13129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 196648205,
@@ -12371,7 +13139,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cayenne",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12393,7 +13161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 953146572,
@@ -12403,7 +13171,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cayenne",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12425,7 +13193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1735241655,
@@ -12435,7 +13203,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "cayenne",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12457,7 +13225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1773636498,
@@ -12467,7 +13235,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "cherry mist",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12489,7 +13257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 833393988,
@@ -12499,7 +13267,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "cherry mist",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12521,7 +13289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1970587698,
@@ -12531,7 +13299,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "cherry mist",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12553,7 +13321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1386821930,
@@ -12563,7 +13331,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "cherry mist",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12585,7 +13353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 671768548,
@@ -12595,7 +13363,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "cool water",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12617,7 +13385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1190213239,
@@ -12627,7 +13395,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "cool water",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12649,7 +13417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 824080005,
@@ -12659,7 +13427,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "cotton x-pression",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12681,7 +13449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 266047291,
@@ -12691,7 +13459,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "cotton x-pression",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12713,7 +13481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1516570586,
@@ -12723,7 +13491,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "cotton x-pression",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12745,7 +13513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1405974699,
@@ -12755,7 +13523,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "cotton x-pression",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12777,7 +13545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1258677727,
@@ -12787,7 +13555,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "cotton x-pression",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12809,7 +13577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 130630075,
@@ -12819,7 +13587,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "country candy",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12841,7 +13609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1546844686,
@@ -12851,7 +13619,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "country candy",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12873,7 +13641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 811386992,
@@ -12883,7 +13651,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "country candy",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12905,7 +13673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 788404951,
@@ -12915,7 +13683,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "country candy",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -12937,7 +13705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 201805443,
@@ -12947,7 +13715,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "cream shimmer",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -12969,7 +13737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 444189071,
@@ -12979,7 +13747,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "cream shimmer",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13001,7 +13769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 187260031,
@@ -13011,7 +13779,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "dark crown",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13033,7 +13801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 673691968,
@@ -13043,7 +13811,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "dark crown",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13065,7 +13833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 641502299,
@@ -13075,7 +13843,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "deep purple",
     "length": "50 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13097,7 +13865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1340680763,
@@ -13107,7 +13875,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "deep purple",
     "length": "60 cm",
-    "price": 1.1508,
+    "price": 1.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13129,7 +13897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 299964127,
@@ -13139,7 +13907,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "deep purple",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13161,7 +13929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1206386926,
@@ -13171,7 +13939,7 @@ export const products: Product[] = [
     "color": "purple",
     "variety": "deep purple",
     "length": "80 cm",
-    "price": 1.2404,
+    "price": 1.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13193,7 +13961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 826570506,
@@ -13203,7 +13971,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "escimo",
     "length": "40 cm",
-    "price": 0.858,
+    "price": 0.8641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13225,7 +13993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 576138063,
@@ -13235,7 +14003,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "escimo",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13257,7 +14025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 628875275,
@@ -13267,7 +14035,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "escimo",
     "length": "80 cm",
-    "price": 1.2404,
+    "price": 1.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13289,7 +14057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1674391324,
@@ -13299,7 +14067,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "esperance",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13321,7 +14089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1439328875,
@@ -13331,7 +14099,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "faith",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13353,7 +14121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1997608478,
@@ -13363,7 +14131,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "faith",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13385,7 +14153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 384683408,
@@ -13395,7 +14163,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "faith",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13417,7 +14185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 35335481,
@@ -13427,7 +14195,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "faith",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13449,7 +14217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1854869412,
@@ -13459,7 +14227,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "fancy dreams",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13481,7 +14249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1297257824,
@@ -13491,7 +14259,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "fancy dreams",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13513,7 +14281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1852342225,
@@ -13523,7 +14291,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "fancy dreams",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13545,7 +14313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1875807622,
@@ -13555,7 +14323,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "fancy dreams",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13577,7 +14345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 112093824,
@@ -13587,7 +14355,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "fancy dreams",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13609,7 +14377,103 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1537899425,
+    "sku_id": "4a4325ea-3773-4d80-923e-ece0f88505da",
+    "name": "Free Spirit Orange 40 cm",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "free spirit",
+    "length": "40 cm",
+    "price": 1.0611,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636762.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1473544868,
+    "sku_id": "87a675f7-2401-433c-a87f-869e757c5f76",
+    "name": "Free Spirit Orange 60 cm",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "free spirit",
+    "length": "60 cm",
+    "price": 1.4778,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636762.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 37535341,
+    "sku_id": "2d1e7f91-0e47-4271-9d1d-1e8a01ad8017",
+    "name": "Free Spirit Orange 80 cm",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "free spirit",
+    "length": "80 cm",
+    "price": 1.7809,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636762.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
+    "available_from": "2026-06-22"
   },
   {
     "id": 186941189,
@@ -13619,7 +14483,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "freedom",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13641,7 +14505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 286030805,
@@ -13651,7 +14515,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "freedom",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13673,7 +14537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1151063424,
@@ -13683,7 +14547,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "frutteto",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13705,7 +14569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1463846457,
@@ -13715,7 +14579,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "frutteto",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13737,7 +14601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1239230914,
@@ -13747,7 +14611,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "frutteto",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13769,7 +14633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 918372422,
@@ -13779,7 +14643,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "frutteto",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13801,7 +14665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1986833405,
@@ -13811,7 +14675,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "frutteto",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13833,7 +14697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 612558760,
@@ -13843,7 +14707,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "full monty",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13865,7 +14729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1677875930,
@@ -13875,7 +14739,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "full monty",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13897,7 +14761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 151110139,
@@ -13907,7 +14771,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "full monty",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -13929,7 +14793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1610301383,
@@ -13939,7 +14803,7 @@ export const products: Product[] = [
     "color": "multicolor",
     "variety": "funky soul",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13961,7 +14825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 675744847,
@@ -13971,7 +14835,7 @@ export const products: Product[] = [
     "color": "multicolor",
     "variety": "funky soul",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -13993,7 +14857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 181856160,
@@ -14003,7 +14867,7 @@ export const products: Product[] = [
     "color": "multicolor",
     "variety": "funky soul",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14025,7 +14889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 471577856,
@@ -14035,7 +14899,7 @@ export const products: Product[] = [
     "color": "multicolor",
     "variety": "funky soul",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14057,7 +14921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 832481653,
@@ -14067,7 +14931,7 @@ export const products: Product[] = [
     "color": "multicolor",
     "variety": "funky soul",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14089,7 +14953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 111897072,
@@ -14099,7 +14963,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "geraldine",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14121,7 +14985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 283785855,
@@ -14131,7 +14995,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "geraldine",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14153,7 +15017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1221960185,
@@ -14163,7 +15027,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "geraldine",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14185,7 +15049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 195820887,
@@ -14195,7 +15059,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "geraldine",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14217,7 +15081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 122774373,
@@ -14227,7 +15091,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "geraldine",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14249,7 +15113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1055695821,
@@ -14259,7 +15123,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "hard rock",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14281,7 +15145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 817140667,
@@ -14291,7 +15155,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "hard rock",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14313,7 +15177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 68336148,
@@ -14323,7 +15187,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "hard rock",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14345,7 +15209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1828104,
@@ -14355,7 +15219,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "hard rock",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14377,7 +15241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 741850077,
@@ -14387,7 +15251,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "hard rock",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14409,7 +15273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1120357146,
@@ -14419,7 +15283,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "hearts",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14441,7 +15305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1924692250,
@@ -14451,7 +15315,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "hearts",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14473,7 +15337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 932779151,
@@ -14483,7 +15347,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "hearts",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14505,7 +15369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1647426747,
@@ -14515,7 +15379,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "hearts",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14537,7 +15401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 105741033,
@@ -14547,7 +15411,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "hearts",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14569,7 +15433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1505778866,
@@ -14579,7 +15443,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & exotic",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14601,7 +15465,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 500136959,
@@ -14611,7 +15475,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & exotic",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14633,7 +15497,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1000449152,
@@ -14643,7 +15507,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & exotic",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14665,7 +15529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1552746111,
@@ -14675,7 +15539,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & exotic",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14697,7 +15561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1952680346,
@@ -14707,7 +15571,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & exotic",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14729,7 +15593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1289240992,
@@ -14739,7 +15603,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & flame magic",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14761,7 +15625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 50661675,
@@ -14771,7 +15635,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & flame magic",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14793,7 +15657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1085571211,
@@ -14803,7 +15667,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & flame magic",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14825,7 +15689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1964043521,
@@ -14835,7 +15699,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & flame magic",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14857,7 +15721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 906352082,
@@ -14867,7 +15731,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & flame magic",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14889,7 +15753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 352495636,
@@ -14899,7 +15763,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & magic",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14921,7 +15785,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1640042872,
@@ -14931,7 +15795,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & magic",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -14953,7 +15817,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 810273256,
@@ -14963,7 +15827,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & magic",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -14985,7 +15849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 236597431,
@@ -14995,7 +15859,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & magic",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15017,7 +15881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1071138459,
@@ -15027,7 +15891,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "high & magic",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15049,7 +15913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1230835984,
@@ -15059,7 +15923,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & yellow magic",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15081,7 +15945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1662983195,
@@ -15091,7 +15955,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & yellow magic",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15113,7 +15977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 244522810,
@@ -15123,7 +15987,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & yellow magic",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15145,7 +16009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 74478144,
@@ -15155,7 +16019,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & yellow magic",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15177,7 +16041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1944291331,
@@ -15187,7 +16051,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "high & yellow magic",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15209,7 +16073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 237996780,
@@ -15219,7 +16083,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "hot explorer",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15241,7 +16105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 49597875,
@@ -15251,7 +16115,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "hot explorer",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15273,7 +16137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1742728831,
@@ -15283,7 +16147,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "hot explorer",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15305,7 +16169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1568091882,
@@ -15315,7 +16179,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "joy",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15337,7 +16201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1848180822,
@@ -15347,7 +16211,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "joy",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15369,7 +16233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 223441414,
@@ -15379,7 +16243,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "joy",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15401,7 +16265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1118499957,
@@ -15411,7 +16275,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "joy",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15433,7 +16297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1654230303,
@@ -15443,7 +16307,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "joy",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15465,7 +16329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1347030476,
@@ -15475,7 +16339,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "kahala",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15497,7 +16361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 787264492,
@@ -15507,7 +16371,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "kahala",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15529,7 +16393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 225500641,
@@ -15539,7 +16403,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "kahala",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15561,7 +16425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1162857118,
@@ -15571,7 +16435,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "kahala",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15593,7 +16457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 887713308,
@@ -15603,7 +16467,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "light house",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15625,7 +16489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 628902141,
@@ -15635,7 +16499,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "light house",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15657,7 +16521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1219026048,
@@ -15667,7 +16531,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "light house",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15689,7 +16553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 788667798,
@@ -15699,7 +16563,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "light house",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15721,7 +16585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1636865054,
@@ -15731,7 +16595,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "light house",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15753,7 +16617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 702238527,
@@ -15763,7 +16627,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "limonada",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15785,7 +16649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1666760381,
@@ -15795,7 +16659,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "limonada",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15817,7 +16681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 334001614,
@@ -15827,7 +16691,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "limonada",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15849,7 +16713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 589734779,
@@ -15859,7 +16723,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "limonada",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15881,7 +16745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1392891117,
@@ -15891,7 +16755,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "limonada",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -15913,7 +16777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 753910563,
@@ -15923,7 +16787,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "lola",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15945,7 +16809,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 852120750,
@@ -15955,7 +16819,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "lola",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -15977,7 +16841,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1733393589,
@@ -15987,7 +16851,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "lola",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16009,7 +16873,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 811255193,
@@ -16019,7 +16883,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "lola",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16041,7 +16905,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 211622658,
@@ -16051,7 +16915,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "lola",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16073,7 +16937,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1243569421,
@@ -16083,7 +16947,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "mandala",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16105,7 +16969,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 765827406,
@@ -16115,7 +16979,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "mandala",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16137,7 +17001,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 54712756,
@@ -16147,7 +17011,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "mandala",
     "length": "70 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16169,7 +17033,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1325094157,
@@ -16179,7 +17043,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "mandala",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16201,7 +17065,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1295572755,
@@ -16211,7 +17075,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "mandarin x-pression",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16233,7 +17097,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 48423167,
@@ -16243,7 +17107,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "mandarin x-pression",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16265,7 +17129,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1166481672,
@@ -16275,7 +17139,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "mandarin x-pression",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16297,7 +17161,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1829685683,
@@ -16307,7 +17171,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "mandarin x-pression",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16329,7 +17193,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 982979544,
@@ -16339,7 +17203,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "mandarin x-pression",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16361,7 +17225,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1369876608,
@@ -16371,7 +17235,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "mondial",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16393,7 +17257,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1861453671,
@@ -16403,7 +17267,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "mondial",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16425,7 +17289,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1649743304,
@@ -16435,7 +17299,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "mondial",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16457,7 +17321,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 29151185,
@@ -16467,7 +17331,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "mondial",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16489,7 +17353,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1610957938,
@@ -16499,7 +17363,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "moody blues",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16521,7 +17385,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 343977320,
@@ -16531,7 +17395,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "moody blues",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16553,7 +17417,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1905731007,
@@ -16563,7 +17427,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "moonstone",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16585,7 +17449,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1238322499,
@@ -16595,7 +17459,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "moonstone",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16617,7 +17481,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1750462269,
@@ -16627,7 +17491,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "nectarine",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16649,7 +17513,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1759387292,
@@ -16659,7 +17523,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "nectarine",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16681,7 +17545,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 673036134,
@@ -16691,7 +17555,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "nectarine",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16713,7 +17577,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 926840204,
@@ -16723,7 +17587,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "nectarine",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16745,7 +17609,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 204233912,
@@ -16755,7 +17619,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "nectarine",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16777,7 +17641,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1886324140,
@@ -16787,7 +17651,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "nena",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16809,7 +17673,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1314644855,
@@ -16819,7 +17683,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "nena",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16841,7 +17705,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 369815224,
@@ -16851,7 +17715,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "nena",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16873,7 +17737,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 392390395,
@@ -16883,7 +17747,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "nena",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16905,7 +17769,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 140470906,
@@ -16915,7 +17779,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "nena",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -16937,7 +17801,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 197670295,
@@ -16947,7 +17811,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nina",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -16969,7 +17833,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 61032798,
@@ -16979,7 +17843,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nina",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17001,7 +17865,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 758320648,
@@ -17011,7 +17875,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nina",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17033,7 +17897,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1365433138,
@@ -17043,7 +17907,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "nina",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17065,7 +17929,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 917086176,
@@ -17075,7 +17939,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "ocean song",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17097,7 +17961,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 812114057,
@@ -17107,7 +17971,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "ocean song",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17129,7 +17993,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1211172682,
@@ -17139,7 +18003,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "ocean song",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17161,7 +18025,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 415502146,
@@ -17171,7 +18035,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "ocean song",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17193,7 +18057,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1241664641,
@@ -17203,7 +18067,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "ocean song",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17225,7 +18089,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1418238330,
@@ -17235,7 +18099,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "opala",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17257,7 +18121,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 560491661,
@@ -17267,7 +18131,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "opala",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17289,7 +18153,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1919685187,
@@ -17299,7 +18163,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "opala",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17321,7 +18185,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1817168265,
@@ -17331,7 +18195,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "opala",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17353,7 +18217,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 848860155,
@@ -17363,7 +18227,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "opala",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17385,7 +18249,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 221984966,
@@ -17395,7 +18259,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "orange crush",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17417,7 +18281,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1759037839,
@@ -17427,7 +18291,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "paloma",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17449,7 +18313,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 383866043,
@@ -17459,7 +18323,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "paloma",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17481,7 +18345,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 21941998,
@@ -17491,7 +18355,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "paloma",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17513,7 +18377,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 981836956,
@@ -17523,7 +18387,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "paloma",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17545,7 +18409,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1866462862,
@@ -17555,7 +18419,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "piacere",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17577,7 +18441,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1910327689,
@@ -17587,7 +18451,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "piacere",
     "length": "50 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17609,7 +18473,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1456997018,
@@ -17619,7 +18483,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "piacere",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17641,7 +18505,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 648814139,
@@ -17651,7 +18515,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "piacere",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17673,7 +18537,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 316469923,
@@ -17683,7 +18547,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "piacere",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17705,7 +18569,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1847264446,
@@ -17715,7 +18579,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink floyd",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17737,7 +18601,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1379758712,
@@ -17747,7 +18611,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink floyd",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17769,7 +18633,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 982169392,
@@ -17779,7 +18643,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink floyd",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17801,7 +18665,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 337937178,
@@ -17811,7 +18675,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink floyd",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17833,7 +18697,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 282310759,
@@ -17843,7 +18707,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink mondial",
     "length": "40 cm",
-    "price": 1.052,
+    "price": 1.0611,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17865,7 +18729,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 685327314,
@@ -17875,7 +18739,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink mondial",
     "length": "50 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17897,7 +18761,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 115139108,
@@ -17907,7 +18771,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink mondial",
     "length": "60 cm",
-    "price": 1.4643,
+    "price": 1.4778,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17929,7 +18793,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1140167829,
@@ -17939,7 +18803,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink mondial",
     "length": "80 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -17961,7 +18825,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 417523448,
@@ -17971,7 +18835,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink x-pression",
     "length": "40 cm",
-    "price": 1.2013,
+    "price": 1.2126,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -17993,7 +18857,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 162169144,
@@ -18003,7 +18867,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink x-pression",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18025,7 +18889,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 140031343,
@@ -18035,7 +18899,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink x-pression",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18057,7 +18921,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1962126055,
@@ -18067,7 +18931,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink x-pression",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18089,7 +18953,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 343089551,
@@ -18099,7 +18963,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pink x-pression",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18121,7 +18985,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 100438777,
@@ -18131,7 +18995,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "playa blanca",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18153,7 +19017,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1029076270,
@@ -18163,7 +19027,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "playa blanca",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18185,7 +19049,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1196789381,
@@ -18195,7 +19059,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pomarosa",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18217,7 +19081,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1840482593,
@@ -18227,7 +19091,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pomarosa",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18249,7 +19113,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 767964168,
@@ -18259,7 +19123,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "pomarosa",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18281,7 +19145,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 250829618,
@@ -18291,7 +19155,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "powder puff",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18313,7 +19177,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 99705257,
@@ -18323,7 +19187,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "powder puff",
     "length": "50 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18345,7 +19209,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 97033196,
@@ -18355,7 +19219,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "powder puff",
     "length": "60 cm",
-    "price": 1.8374,
+    "price": 1.8566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18377,7 +19241,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 272113151,
@@ -18387,7 +19251,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "powder puff",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18409,7 +19273,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 164129953,
@@ -18419,7 +19283,7 @@ export const products: Product[] = [
     "color": "light pink",
     "variety": "powder puff",
     "length": "80 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18441,7 +19305,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1577810992,
@@ -18451,7 +19315,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "princess crown",
     "length": "50 cm",
-    "price": 1.3505,
+    "price": 1.3641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18473,7 +19337,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 908745758,
@@ -18483,7 +19347,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "princess crown",
     "length": "60 cm",
-    "price": 1.6135,
+    "price": 1.6294,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18505,7 +19369,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1242998035,
@@ -18515,7 +19379,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "princess crown",
     "length": "70 cm",
-    "price": 1.7628,
+    "price": 1.7809,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18537,7 +19401,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 586951395,
@@ -18547,7 +19411,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "princess crown",
     "length": "80 cm",
-    "price": 1.912,
+    "price": 1.9324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18569,7 +19433,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 744867643,
@@ -18579,7 +19443,7 @@ export const products: Product[] = [
     "color": "cream",
     "variety": "quicksand",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18601,7 +19465,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 546460045,
+    "sku_id": "33f44c68-03cd-41c8-be3d-7f389e5f1784",
+    "name": "Quicksand Cream 80 cm",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "quicksand",
+    "length": "80 cm",
+    "price": 1.5839,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637036.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
+    "available_from": "2026-06-22"
   },
   {
     "id": 306046223,
@@ -18611,7 +19507,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "razzmatazz",
     "length": "70 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18633,7 +19529,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 556819245,
@@ -18643,7 +19539,7 @@ export const products: Product[] = [
     "color": "brown",
     "variety": "razzmatazz",
     "length": "80 cm",
-    "price": 2.2852,
+    "price": 2.3112,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18665,7 +19561,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 825385374,
@@ -18675,7 +19571,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "roseberry",
     "length": "40 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18697,7 +19593,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 949723698,
@@ -18707,7 +19603,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "roseberry",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18729,7 +19625,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1465390390,
@@ -18739,7 +19635,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "rosita vendela",
     "length": "40 cm",
-    "price": 0.858,
+    "price": 0.8641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18761,7 +19657,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 521316883,
@@ -18771,7 +19667,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "rosita vendela",
     "length": "50 cm",
-    "price": 0.9475,
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18793,7 +19689,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1698313818,
@@ -18803,7 +19699,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "rosita vendela",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18825,7 +19721,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 519570428,
@@ -18835,7 +19731,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "rosita vendela",
     "length": "80 cm",
-    "price": 1.2404,
+    "price": 1.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18857,7 +19753,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1334095251,
@@ -18867,7 +19763,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "shimmer",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18889,7 +19785,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 10 bunches × 10 stems = 100 stems",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 25219923,
+    "sku_id": "72b46f2a-5c85-421c-8fec-0dbad2be37a0",
+    "name": "Shimmer Peach 50 cm",
+    "category": "Rose",
+    "color": "peach",
+    "variety": "shimmer",
+    "length": "50 cm",
+    "price": 1.1671,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637063.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
+    "available_from": "2026-06-22"
   },
   {
     "id": 234531452,
@@ -18899,7 +19827,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "silantoi",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -18921,7 +19849,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 778388464,
@@ -18931,7 +19859,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "silantoi",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18953,7 +19881,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 64620486,
@@ -18963,7 +19891,7 @@ export const products: Product[] = [
     "color": "bicolor",
     "variety": "silantoi",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -18985,7 +19913,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1518422780,
@@ -18995,7 +19923,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet escimo",
     "length": "40 cm",
-    "price": 0.858,
+    "price": 0.8641,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19017,7 +19945,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1742010406,
@@ -19027,7 +19955,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet escimo",
     "length": "60 cm",
-    "price": 1.1508,
+    "price": 1.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19049,7 +19977,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1921811320,
@@ -19059,7 +19987,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet escimo",
     "length": "70 cm",
-    "price": 1.2105,
+    "price": 1.2203,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19081,7 +20009,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1649358428,
@@ -19091,7 +20019,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet escimo",
     "length": "80 cm",
-    "price": 1.2404,
+    "price": 1.2506,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19113,7 +20041,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1269910372,
@@ -19123,7 +20051,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet unique",
     "length": "40 cm",
-    "price": 0.9923,
+    "price": 1.0005,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19145,7 +20073,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1901004066,
@@ -19155,7 +20083,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet unique",
     "length": "50 cm",
-    "price": 1.1565,
+    "price": 1.1671,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19177,7 +20105,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 125 stems (1 stem/bunch × 125 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 625287262,
@@ -19187,7 +20115,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet unique",
     "length": "60 cm",
-    "price": 1.4195,
+    "price": 1.4324,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19209,7 +20137,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 218021670,
@@ -19219,7 +20147,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet unique",
     "length": "70 cm",
-    "price": 1.509,
+    "price": 1.5233,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19241,7 +20169,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 645199704,
@@ -19251,7 +20179,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "sweet unique",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19273,7 +20201,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1012821406,
@@ -19283,7 +20211,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "tibet",
     "length": "80 cm",
-    "price": 1.5688,
+    "price": 1.5839,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19305,7 +20233,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 478575795,
@@ -19315,7 +20243,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "tie dye",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19337,7 +20265,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1095895425,
@@ -19347,7 +20275,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "tie dye",
     "length": "50 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19369,7 +20297,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 177985019,
@@ -19379,7 +20307,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "tie dye",
     "length": "60 cm",
-    "price": 1.8374,
+    "price": 1.8566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19401,7 +20329,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1384032695,
@@ -19411,7 +20339,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "tie dye",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19433,7 +20361,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 434665639,
@@ -19443,7 +20371,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "tie dye",
     "length": "80 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19465,7 +20393,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1336202987,
@@ -19475,7 +20403,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "twilight",
     "length": "60 cm",
-    "price": 1.2553,
+    "price": 1.2657,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19497,7 +20425,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1123908469,
@@ -19507,7 +20435,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "twilight",
     "length": "70 cm",
-    "price": 1.3449,
+    "price": 1.3566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19529,7 +20457,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1558437525,
@@ -19539,7 +20467,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "twilight",
     "length": "80 cm",
-    "price": 1.4046,
+    "price": 1.4172,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19561,7 +20489,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1744571969,
@@ -19571,7 +20499,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "veggie",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19593,7 +20521,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 323333144,
@@ -19603,7 +20531,7 @@ export const products: Product[] = [
     "color": "green",
     "variety": "veggie",
     "length": "80 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19625,7 +20553,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 99704431,
@@ -19635,7 +20563,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "vicky gardens",
     "length": "40 cm",
-    "price": 1.4251,
+    "price": 1.4398,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19657,7 +20585,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 367167237,
@@ -19667,7 +20595,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "vicky gardens",
     "length": "50 cm",
-    "price": 1.5744,
+    "price": 1.5914,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19689,7 +20617,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1253843572,
@@ -19699,7 +20627,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "vicky gardens",
     "length": "60 cm",
-    "price": 1.8374,
+    "price": 1.8566,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19721,7 +20649,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1707660985,
@@ -19731,7 +20659,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "vicky gardens",
     "length": "70 cm",
-    "price": 1.9867,
+    "price": 2.0081,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19753,7 +20681,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1866051877,
@@ -19763,7 +20691,7 @@ export const products: Product[] = [
     "color": "white",
     "variety": "vicky gardens",
     "length": "80 cm",
-    "price": 2.1359,
+    "price": 2.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 100,
@@ -19785,7 +20713,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 100,
     "contents_note": "QB: 100 stems (1 stem/bunch × 100 bunches)",
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1333202248,
@@ -19795,7 +20723,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "magical lagoon",
     "length": "50 cm",
-    "price": 1.0169,
+    "price": 1.0264,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19817,7 +20745,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1166931479,
@@ -19827,7 +20755,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "magical lagoon",
     "length": "60 cm",
-    "price": 1.0102,
+    "price": 1.0204,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -19849,7 +20777,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 509762702,
@@ -19859,7 +20787,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "magical lagoon",
     "length": "60 cm",
-    "price": 1.0616,
+    "price": 1.0718,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 125,
@@ -19881,7 +20809,71 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 679211739,
+    "sku_id": "818b15f8-ba59-4ab6-9ba6-6675acba22fb",
+    "name": "",
+    "category": "Rose",
+    "color": "lavender",
+    "variety": "arya",
+    "length": "40 cm",
+    "price": 1.0005,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636434.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1503212225,
+    "sku_id": "03469e86-1949-4b01-8669-ed0c7e68b853",
+    "name": "",
+    "category": "Rose",
+    "color": "lavender",
+    "variety": "arya",
+    "length": "50 cm",
+    "price": 1.1671,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636434.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   },
   {
     "id": 179448508,
@@ -19891,7 +20883,7 @@ export const products: Product[] = [
     "color": "french vanilla - light pink",
     "variety": "bon bon",
     "length": "60 cm",
-    "price": 1.0251,
+    "price": 1.0355,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -19914,7 +20906,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 686612937,
@@ -19924,7 +20916,7 @@ export const products: Product[] = [
     "color": "maraschino burgundy",
     "variety": "bon bon",
     "length": "60 cm",
-    "price": 1.0251,
+    "price": 1.0355,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -19946,7 +20938,455 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 715301607,
+    "sku_id": "9bd34cdc-631e-4f07-bef9-4d1f002f62ab",
+    "name": "",
+    "category": "Other",
+    "color": "cream",
+    "variety": "Candlelight",
+    "length": "40 cm",
+    "price": 1.1368,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636485.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 3051738,
+    "sku_id": "de52e389-6d13-48a6-b371-e1efc9f2242c",
+    "name": "",
+    "category": "Other",
+    "color": "cream",
+    "variety": "Candlelight",
+    "length": "50 cm",
+    "price": 1.3641,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636486.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1282236927,
+    "sku_id": "0aa503a8-a474-4763-8081-9b0133d44e96",
+    "name": "",
+    "category": "Other",
+    "color": "cream",
+    "variety": "Candlelight",
+    "length": "60 cm",
+    "price": 1.8186,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636487.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1712800387,
+    "sku_id": "492555fc-0b2b-4825-bf3f-70e769525bfc",
+    "name": "",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "cayenne",
+    "length": "40 cm",
+    "price": 1.0005,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636512.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 425321709,
+    "sku_id": "6e1d8eb5-ff2d-4fbe-9e0b-9d7b6fceb340",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "champagne",
+    "length": "50 cm",
+    "price": 1.2126,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636513.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1643182965,
+    "sku_id": "68f121bd-9dc2-447a-89f7-499b90b594e0",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "champagne",
+    "length": "60 cm",
+    "price": 1.4778,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636513.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 376089583,
+    "sku_id": "36c22fed-cd2d-4086-a990-8fd5aa63608c",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "champagne",
+    "length": "70 cm",
+    "price": 1.6294,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636513.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1609714977,
+    "sku_id": "17372945-de8d-44a6-aeb8-bf06021fc9ba",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "champagne",
+    "length": "80 cm",
+    "price": 1.7809,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636513.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1320130395,
+    "sku_id": "5a834615-607c-4f13-bec5-983280c6e3c2",
+    "name": "",
+    "category": "Rose",
+    "color": "lavender",
+    "variety": "cool water",
+    "length": "40 cm",
+    "price": 0.955,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636537.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 634633657,
+    "sku_id": "d565a91f-ef47-4b5a-903e-a1e782e65a09",
+    "name": "",
+    "category": "Rose",
+    "color": "lavender",
+    "variety": "cool water",
+    "length": "60 cm",
+    "price": 1.2657,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636537.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 575395185,
+    "sku_id": "58fbfbf7-9a41-4080-b5d9-fdd61ee7a3e4",
+    "name": "",
+    "category": "Other",
+    "color": "cream",
+    "variety": "Cotton X-Pression",
+    "length": "40 cm",
+    "price": 1.0914,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636538.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1961784521,
+    "sku_id": "7db5fa80-29b7-4440-86e8-21b310314bd7",
+    "name": "",
+    "category": "Other",
+    "color": "cream",
+    "variety": "Cotton X-Pression",
+    "length": "50 cm",
+    "price": 1.2429,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636538.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1953996493,
+    "sku_id": "3d31e47d-a328-426e-90c6-f96dd26cc7ac",
+    "name": "",
+    "category": "Other",
+    "color": "lavender",
+    "variety": "Country Blues",
+    "length": "40 cm",
+    "price": 1.3641,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636543.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1311447611,
+    "sku_id": "b0a3c08d-38f6-4d1f-94cc-c907dd4cab4e",
+    "name": "",
+    "category": "Other",
+    "color": "lavender",
+    "variety": "Country Blues",
+    "length": "50 cm",
+    "price": 1.5914,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636543.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   },
   {
     "id": 680151583,
@@ -19956,7 +21396,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "elegance",
     "length": "35 cm",
-    "price": 1.2639,
+    "price": 1.2779,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -19978,199 +21418,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 588506541,
-    "sku_id": "dd29ad84-81f6-422c-be40-2ea065ce3047",
-    "name": "Elegance Brown 35 cm",
-    "category": "Other",
-    "color": "chocolate",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-brown-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-brown.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 1134181255,
-    "sku_id": "95223eb9-b125-4697-993e-1382bd2edd88",
-    "name": "Elegance Orange 35 cm",
-    "category": "Other",
-    "color": "orange",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-orange-35cm",
-    "images": [
-      "/images/shop/ranunculus/orange.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 828285018,
-    "sku_id": "d3e7f893-94ef-4b84-8518-ef8140b7a96c",
-    "name": "Elegance Cream 35 cm",
-    "category": "Other",
-    "color": "cream",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-cream-35cm",
-    "images": [
-      "/images/shop/ranunculus/cream.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 504518875,
-    "sku_id": "1fabae7f-60c9-4392-b6ae-0c7aba9ba605",
-    "name": "Elegance Lavender 35 cm",
-    "category": "Other",
-    "color": "lavender",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-lavender-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-lavender.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 254437038,
-    "sku_id": "588eaa09-4256-4e9b-a578-f7bb5403f032",
-    "name": "Elegance Red 35 cm",
-    "category": "Other",
-    "color": "red",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-red-35cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-red.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 715776396,
-    "sku_id": "d1937ac8-b4b5-4ce8-9826-328365ab5d2f",
-    "name": "Elegance White 35 cm",
-    "category": "Other",
-    "color": "white",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-35cm",
-    "images": [
-      "/images/shop/ranunculus/white.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 866798968,
@@ -20180,7 +21428,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "elegance",
     "length": "35 cm",
-    "price": 1.2639,
+    "price": 1.2779,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20202,71 +21450,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 368388850,
-    "sku_id": "d2d6c35f-f833-46bc-b2c4-365bc1cd4f32",
-    "name": "Elegance Hot Pink 35 cm",
-    "category": "Other",
-    "color": "hot pink",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-hot-pink-35cm",
-    "images": [
-      "/images/shop/ranunculus/hot-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 651237842,
-    "sku_id": "eac7c905-bede-41a7-b01e-34faead8451a",
-    "name": "Elegance Yellow 35 cm",
-    "category": "Other",
-    "color": "yellow",
-    "variety": "elegance",
-    "length": "35 cm",
-    "price": 1.2639,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-yellow-35cm",
-    "images": [
-      "/images/shop/ranunculus/yellow.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 507244860,
@@ -20276,7 +21460,7 @@ export const products: Product[] = [
     "color": "burgundy",
     "variety": "elegance",
     "length": "35 cm",
-    "price": 1.3535,
+    "price": 1.3688,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20298,209 +21482,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 269862400,
-    "sku_id": "915729e0-241c-4b8c-9483-17176f02c038",
-    "name": "Elegance Burgundy 40 cm",
-    "category": "Other",
-    "color": "burgundy",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.4132,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-burgundy-40cm",
-    "images": [
-      "/images/shop/ranunculus/burgundy.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 810236392,
-    "sku_id": "6316541a-3e2d-4efe-a991-8dc569676fb2",
-    "name": "Elegance Hot Pink 40 cm",
-    "category": "Other",
-    "color": "hot pink",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3535,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-hot-pink-40cm",
-    "images": [
-      "/images/shop/ranunculus/hot-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 615992219,
-    "sku_id": "33ec89a8-fb8b-4f91-bb07-7a0c8ba306e1",
-    "name": "Elegance White 40 cm",
-    "category": "Other",
-    "color": "white",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-40cm",
-    "images": [
-      "/images/shop/ranunculus/white.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 429924106,
-    "sku_id": "efd875b4-b917-45ca-8c94-8f7306e80ded",
-    "name": "Elegance Yellow 40 cm",
-    "category": "Other",
-    "color": "yellow",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-yellow-40cm",
-    "images": [
-      "/images/shop/ranunculus/yellow.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 8687211,
-    "sku_id": "5a5d809d-225a-4a8b-8978-312171a56680",
-    "name": "Elegance Assorted 40 cm",
-    "category": "Other",
-    "color": "assorted",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-assorted-40cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-assorted.jpg"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 623793364,
-    "sku_id": "8f7a612c-9f88-4443-9393-88db5732149b",
-    "name": "Elegance Cream 40 cm",
-    "category": "Other",
-    "color": "cream",
-    "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3833,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-cream-40cm",
-    "images": [
-      "/images/shop/ranunculus/cream.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 1262977950,
-    "sku_id": "a95ae2f5-e616-4882-94fc-e548d2b84834",
-    "name": "Elegance Brown 40 cm",
+    "id": 588506541,
+    "sku_id": "dd29ad84-81f6-422c-be40-2ea065ce3047",
+    "name": "Elegance Brown 35 cm",
     "category": "Other",
     "color": "chocolate",
     "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3833,
+    "length": "35 cm",
+    "price": 1.3234,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20514,7 +21506,7 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-brown-40cm",
+    "slug": "elegance-brown-35cm",
     "images": [
       "/images/shop/ranunculus/amandine-brown.png"
     ],
@@ -20522,17 +21514,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 1605465893,
-    "sku_id": "85b882ee-cec6-4cac-8475-2a7becdf5d44",
-    "name": "Elegance Red 40 cm",
+    "id": 828285018,
+    "sku_id": "d3e7f893-94ef-4b84-8518-ef8140b7a96c",
+    "name": "Elegance Cream 35 cm",
     "category": "Other",
-    "color": "red",
+    "color": "cream",
     "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
+    "length": "35 cm",
+    "price": 1.3234,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20546,7 +21538,135 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-red-40cm",
+    "slug": "elegance-cream-35cm",
+    "images": [
+      "/images/shop/ranunculus/cream.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 368388850,
+    "sku_id": "d2d6c35f-f833-46bc-b2c4-365bc1cd4f32",
+    "name": "Elegance Hot Pink 35 cm",
+    "category": "Other",
+    "color": "hot pink",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2779,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-35cm",
+    "images": [
+      "/images/shop/ranunculus/hot-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 504518875,
+    "sku_id": "1fabae7f-60c9-4392-b6ae-0c7aba9ba605",
+    "name": "Elegance Lavender 35 cm",
+    "category": "Other",
+    "color": "lavender",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2779,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-lavender-35cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-lavender.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1134181255,
+    "sku_id": "95223eb9-b125-4697-993e-1382bd2edd88",
+    "name": "Elegance Orange 35 cm",
+    "category": "Other",
+    "color": "orange",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.3234,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-orange-35cm",
+    "images": [
+      "/images/shop/ranunculus/orange.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 254437038,
+    "sku_id": "588eaa09-4256-4e9b-a578-f7bb5403f032",
+    "name": "Elegance Red 35 cm",
+    "category": "Other",
+    "color": "red",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2779,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-red-35cm",
     "images": [
       "/images/shop/ranunculus/amandine-red.png"
     ],
@@ -20554,17 +21674,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 218788227,
-    "sku_id": "3944093b-12e9-42bd-a5d1-45a02d5117c3",
-    "name": "Elegance Pink 40 cm",
+    "id": 651237842,
+    "sku_id": "eac7c905-bede-41a7-b01e-34faead8451a",
+    "name": "Elegance Yellow 35 cm",
     "category": "Other",
-    "color": "pink",
+    "color": "yellow",
     "variety": "elegance",
-    "length": "40 cm",
-    "price": 1.3385,
+    "length": "35 cm",
+    "price": 1.2779,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20578,15 +21698,47 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-pink-40cm",
+    "slug": "elegance-yellow-35cm",
     "images": [
-      "/images/shop/ranunculus/amandine-pink.png"
+      "/images/shop/ranunculus/yellow.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 715776396,
+    "sku_id": "d1937ac8-b4b5-4ce8-9826-328365ab5d2f",
+    "name": "Elegance White 35 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "elegance",
+    "length": "35 cm",
+    "price": 1.2779,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-35cm",
+    "images": [
+      "/images/shop/ranunculus/white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 380421049,
@@ -20596,7 +21748,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "elegance",
     "length": "40 cm",
-    "price": 1.3535,
+    "price": 1.3688,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20618,7 +21770,231 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 429924106,
+    "sku_id": "efd875b4-b917-45ca-8c94-8f7306e80ded",
+    "name": "Elegance Yellow 40 cm",
+    "category": "Other",
+    "color": "yellow",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3537,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-yellow-40cm",
+    "images": [
+      "/images/shop/ranunculus/yellow.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1262977950,
+    "sku_id": "a95ae2f5-e616-4882-94fc-e548d2b84834",
+    "name": "Elegance Brown 40 cm",
+    "category": "Other",
+    "color": "chocolate",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3991,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-brown-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-brown.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 269862400,
+    "sku_id": "915729e0-241c-4b8c-9483-17176f02c038",
+    "name": "Elegance Burgundy 40 cm",
+    "category": "Other",
+    "color": "burgundy",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.4295,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-burgundy-40cm",
+    "images": [
+      "/images/shop/ranunculus/burgundy.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 218788227,
+    "sku_id": "3944093b-12e9-42bd-a5d1-45a02d5117c3",
+    "name": "Elegance Pink 40 cm",
+    "category": "Other",
+    "color": "pink",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3537,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-pink-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 8687211,
+    "sku_id": "5a5d809d-225a-4a8b-8978-312171a56680",
+    "name": "Elegance Assorted 40 cm",
+    "category": "Other",
+    "color": "assorted",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3234,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-assorted-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-assorted.jpg"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 615992219,
+    "sku_id": "33ec89a8-fb8b-4f91-bb07-7a0c8ba306e1",
+    "name": "Elegance White 40 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3537,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-40cm",
+    "images": [
+      "/images/shop/ranunculus/white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1605465893,
+    "sku_id": "85b882ee-cec6-4cac-8475-2a7becdf5d44",
+    "name": "Elegance Red 40 cm",
+    "category": "Other",
+    "color": "red",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3537,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-red-40cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-red.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 291878775,
@@ -20628,7 +22004,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "elegance",
     "length": "40 cm",
-    "price": 1.3833,
+    "price": 1.3991,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20650,7 +22026,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 125312868,
@@ -20660,7 +22036,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "elegance",
     "length": "40 cm",
-    "price": 1.3535,
+    "price": 1.3688,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20682,7 +22058,71 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 810236392,
+    "sku_id": "6316541a-3e2d-4efe-a991-8dc569676fb2",
+    "name": "Elegance Hot Pink 40 cm",
+    "category": "Other",
+    "color": "hot pink",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3688,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-40cm",
+    "images": [
+      "/images/shop/ranunculus/hot-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 623793364,
+    "sku_id": "8f7a612c-9f88-4443-9393-88db5732149b",
+    "name": "Elegance Cream 40 cm",
+    "category": "Other",
+    "color": "cream",
+    "variety": "elegance",
+    "length": "40 cm",
+    "price": 1.3991,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-cream-40cm",
+    "images": [
+      "/images/shop/ranunculus/cream.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 1387900990,
@@ -20692,7 +22132,7 @@ export const products: Product[] = [
     "color": "lavender",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4132,
+    "price": 1.4295,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20714,7 +22154,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 636608968,
@@ -20724,7 +22164,7 @@ export const products: Product[] = [
     "color": "orange",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4579,
+    "price": 1.4749,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20746,39 +22186,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 284076251,
-    "sku_id": "2284236f-e6a2-4912-a68e-5e1dbb14078b",
-    "name": "Elegance Hot Pink 45 cm",
-    "category": "Other",
-    "color": "hot pink",
-    "variety": "elegance",
-    "length": "45 cm",
-    "price": 1.4132,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-hot-pink-45cm",
-    "images": [
-      "/images/shop/ranunculus/hot-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 212090564,
@@ -20788,7 +22196,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4132,
+    "price": 1.4295,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20810,17 +22218,17 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 486863387,
-    "sku_id": "046f8bdb-ea87-4d08-a65f-a571d0c076f3",
-    "name": "Elegance White 45 cm",
+    "id": 284076251,
+    "sku_id": "2284236f-e6a2-4912-a68e-5e1dbb14078b",
+    "name": "Elegance Hot Pink 45 cm",
     "category": "Other",
-    "color": "white",
+    "color": "hot pink",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4132,
+    "price": 1.4295,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20834,15 +22242,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "elegance-white-45cm",
+    "slug": "elegance-hot-pink-45cm",
     "images": [
-      "/images/shop/ranunculus/white.png"
+      "/images/shop/ranunculus/hot-pink.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1609052504,
@@ -20852,7 +22260,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4132,
+    "price": 1.4295,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20874,7 +22282,39 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 486863387,
+    "sku_id": "046f8bdb-ea87-4d08-a65f-a571d0c076f3",
+    "name": "Elegance White 45 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "elegance",
+    "length": "45 cm",
+    "price": 1.4295,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-45cm",
+    "images": [
+      "/images/shop/ranunculus/white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 167831405,
@@ -20884,7 +22324,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "elegance",
     "length": "45 cm",
-    "price": 1.4132,
+    "price": 1.4295,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -20906,103 +22346,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 436397500,
-    "sku_id": "46a90a89-386e-44c7-9dcd-f5455c0bd17a",
-    "name": "Elegance Hot Pink 50 cm",
-    "category": "Other",
-    "color": "hot pink",
-    "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-hot-pink-50cm",
-    "images": [
-      "/images/shop/ranunculus/hot-pink.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 1880113067,
-    "sku_id": "48ada875-830b-4521-90e0-b9e272feebd4",
-    "name": "Elegance White 50 cm",
-    "category": "Other",
-    "color": "white",
-    "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-white-50cm",
-    "images": [
-      "/images/shop/ranunculus/white.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 1900250982,
-    "sku_id": "edf90040-f0ae-4d51-a4cc-ef984f2bdb6d",
-    "name": "Elegance Red 50 cm",
-    "category": "Other",
-    "color": "red",
-    "variety": "elegance",
-    "length": "50 cm",
-    "price": 1.4579,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "elegance-red-50cm",
-    "images": [
-      "/images/shop/ranunculus/amandine-red.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1343900873,
@@ -21012,7 +22356,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "elegance",
     "length": "50 cm",
-    "price": 1.4579,
+    "price": 1.4749,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21034,7 +22378,103 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1880113067,
+    "sku_id": "48ada875-830b-4521-90e0-b9e272feebd4",
+    "name": "Elegance White 50 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4749,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-white-50cm",
+    "images": [
+      "/images/shop/ranunculus/white.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1900250982,
+    "sku_id": "edf90040-f0ae-4d51-a4cc-ef984f2bdb6d",
+    "name": "Elegance Red 50 cm",
+    "category": "Other",
+    "color": "red",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4749,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-red-50cm",
+    "images": [
+      "/images/shop/ranunculus/amandine-red.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 436397500,
+    "sku_id": "46a90a89-386e-44c7-9dcd-f5455c0bd17a",
+    "name": "Elegance Hot Pink 50 cm",
+    "category": "Other",
+    "color": "hot pink",
+    "variety": "elegance",
+    "length": "50 cm",
+    "price": 1.4749,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "elegance-hot-pink-50cm",
+    "images": [
+      "/images/shop/ranunculus/hot-pink.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 1532286608,
@@ -21044,7 +22484,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "elegance",
     "length": "50 cm",
-    "price": 1.4579,
+    "price": 1.4749,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -21066,23 +22506,23 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 1037305423,
-    "sku_id": "b0391293-f320-4e49-9e73-cd1512cb01ec",
-    "name": "Focal Scoop Purple 60 cm",
+    "id": 1345610747,
+    "sku_id": "dac01061-e2a3-42b1-bbca-a2ac7b810d5d",
+    "name": "",
     "category": "Other",
-    "color": "popsicle - purple",
-    "variety": "focal scoop",
-    "length": "60 cm",
-    "price": 1.0251,
+    "color": "bi-color",
+    "variety": "Enchantment",
+    "length": "40 cm",
+    "price": 1.0156,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
     "stock": 0,
-    "vendor": "Megaflor",
+    "vendor": "Olimpo",
     "is_on_deal": false,
     "deal_label": null,
     "deal_price": null,
@@ -21090,31 +22530,31 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "focal-scoop-purple-60cm",
+    "slug": "",
     "images": [
-      "/images/shop/other/scabiosa-purple-lace.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636717.png"
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
+    "total_stems": 125,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 550473979,
-    "sku_id": "b3bc62a4-e48f-49e2-809a-c2c4e2a6a180",
-    "name": "Focal Scoop Burgundy 60 cm",
-    "category": "Other",
-    "color": "black berry - burgundy",
-    "variety": "focal scoop",
+    "id": 1277343934,
+    "sku_id": "22f4d420-a51d-473a-bdf7-5ef339b42322",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "escimo",
     "length": "60 cm",
-    "price": 1.0251,
+    "price": 1.1597,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
+    "units_per_box": 100,
+    "box_type": "QB",
     "stock": 0,
-    "vendor": "Megaflor",
+    "vendor": "Ecoroses",
     "is_on_deal": false,
     "deal_label": null,
     "deal_price": null,
@@ -21122,15 +22562,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "focal-scoop-burgundy-60cm",
+    "slug": "",
     "images": [
-      "/images/shop/other/scabiosa-popsicle-focal.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636726.png"
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   },
   {
     "id": 927001096,
@@ -21140,7 +22580,7 @@ export const products: Product[] = [
     "color": "white improved - white",
     "variety": "focal scoop",
     "length": "60 cm",
-    "price": 1.0251,
+    "price": 1.0355,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21162,23 +22602,87 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 596054082,
-    "sku_id": "74777532-172b-46ef-8011-a7271581c61f",
-    "name": "Fullstar Red 35 cm",
+    "id": 550473979,
+    "sku_id": "b3bc62a4-e48f-49e2-809a-c2c4e2a6a180",
+    "name": "Focal Scoop Burgundy 60 cm",
     "category": "Other",
+    "color": "black berry - burgundy",
+    "variety": "focal scoop",
+    "length": "60 cm",
+    "price": 1.0355,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "focal-scoop-burgundy-60cm",
+    "images": [
+      "/images/shop/other/scabiosa-popsicle-focal.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1037305423,
+    "sku_id": "b0391293-f320-4e49-9e73-cd1512cb01ec",
+    "name": "Focal Scoop Purple 60 cm",
+    "category": "Other",
+    "color": "popsicle - purple",
+    "variety": "focal scoop",
+    "length": "60 cm",
+    "price": 1.0355,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "focal-scoop-purple-60cm",
+    "images": [
+      "/images/shop/other/scabiosa-purple-lace.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 811832814,
+    "sku_id": "e2ef1b5d-4273-4e39-aa96-b6a705f231fd",
+    "name": "",
+    "category": "Rose",
     "color": "red",
-    "variety": "fullstar",
-    "length": "35 cm",
-    "price": 1.3087,
+    "variety": "freedom",
+    "length": "40 cm",
+    "price": 0.955,
     "unit": "Stem",
     "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
+    "units_per_box": 125,
+    "box_type": "QB",
     "stock": 0,
-    "vendor": "Megaflor",
+    "vendor": "Ecoroses",
     "is_on_deal": false,
     "deal_label": null,
     "deal_price": null,
@@ -21186,79 +22690,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "fullstar-red-35cm",
+    "slug": "",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634573.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636769.png"
     ],
     "tier": "T3",
     "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 1044427341,
-    "sku_id": "09ce4866-a06d-4c46-8685-8666525bef1b",
-    "name": "Fullstar Red 35 cm",
-    "category": "Other",
-    "color": "strawberry",
-    "variety": "fullstar",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "fullstar-red-35cm-2",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634573.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
-  },
-  {
-    "id": 1058083174,
-    "sku_id": "38db4092-36ec-41ae-bbc9-c1afc6c6c140",
-    "name": "Fullstar Fuchsia 35 cm",
-    "category": "Other",
-    "color": "fucsia",
-    "variety": "fullstar",
-    "length": "35 cm",
-    "price": 1.3087,
-    "unit": "Stem",
-    "stems_per_bunch": 1,
-    "units_per_box": 0,
-    "box_type": "EB",
-    "stock": 0,
-    "vendor": "Megaflor",
-    "is_on_deal": false,
-    "deal_label": null,
-    "deal_price": null,
-    "deal_expiry": null,
-    "is_best_seller": false,
-    "is_featured": false,
-    "display_order": 999,
-    "slug": "fullstar-fuchsia-35cm",
-    "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634571.png"
-    ],
-    "tier": "T3",
-    "has_photo": true,
-    "total_stems": null,
-    "contents_note": null,
-    "available_from": "2026-06-19"
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   },
   {
     "id": 570684050,
@@ -21268,7 +22708,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "fullstar",
     "length": "35 cm",
-    "price": 1.3087,
+    "price": 1.3234,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21290,7 +22730,103 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1058083174,
+    "sku_id": "38db4092-36ec-41ae-bbc9-c1afc6c6c140",
+    "name": "Fullstar Fuchsia 35 cm",
+    "category": "Other",
+    "color": "fucsia",
+    "variety": "fullstar",
+    "length": "35 cm",
+    "price": 1.3234,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "fullstar-fuchsia-35cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634571.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 596054082,
+    "sku_id": "74777532-172b-46ef-8011-a7271581c61f",
+    "name": "Fullstar Red 35 cm",
+    "category": "Other",
+    "color": "red",
+    "variety": "fullstar",
+    "length": "35 cm",
+    "price": 1.3234,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "fullstar-red-35cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634573.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1044427341,
+    "sku_id": "09ce4866-a06d-4c46-8685-8666525bef1b",
+    "name": "Fullstar Red 35 cm",
+    "category": "Other",
+    "color": "strawberry",
+    "variety": "fullstar",
+    "length": "35 cm",
+    "price": 1.3234,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "fullstar-red-35cm-2",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634573.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 883878178,
@@ -21300,7 +22836,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "fullstar",
     "length": "35 cm",
-    "price": 1.2788,
+    "price": 1.2931,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21322,7 +22858,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 14613648,
@@ -21332,7 +22868,7 @@ export const products: Product[] = [
     "color": "blue",
     "variety": "gypsophila tinted blue",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21355,7 +22891,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1141383438,
@@ -21365,7 +22901,7 @@ export const products: Product[] = [
     "color": "hot pink",
     "variety": "gypsophila tinted hot pink",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21387,7 +22923,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 29481338,
@@ -21397,7 +22933,7 @@ export const products: Product[] = [
     "color": "light blue",
     "variety": "gypsophila tinted light blue",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21419,7 +22955,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1656973551,
@@ -21429,7 +22965,7 @@ export const products: Product[] = [
     "color": "peach",
     "variety": "gypsophila tinted peach",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21451,7 +22987,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 899048168,
@@ -21461,7 +22997,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "gypsophila tinted pink",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21483,7 +23019,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 663755268,
@@ -21493,7 +23029,7 @@ export const products: Product[] = [
     "color": "rainbow",
     "variety": "gypsophila tinted rainbow",
     "length": null,
-    "price": 0.956,
+    "price": 0.9662,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21515,7 +23051,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 952232194,
@@ -21525,7 +23061,7 @@ export const products: Product[] = [
     "color": "red",
     "variety": "gypsophila tinted red",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21547,7 +23083,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 45805359,
@@ -21557,7 +23093,7 @@ export const products: Product[] = [
     "color": "yellow",
     "variety": "gypsophila tinted yellow",
     "length": null,
-    "price": 0.8068,
+    "price": 0.8147,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 200,
@@ -21579,7 +23115,167 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 200,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 113272431,
+    "sku_id": "45f0d36f-c5d3-4393-b7a9-115cbdcd1216",
+    "name": "",
+    "category": "Other",
+    "color": "brown",
+    "variety": "Kahala",
+    "length": "40 cm",
+    "price": 1.3641,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636855.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 550782976,
+    "sku_id": "91f5c51f-acba-4bda-87e7-d124db76e711",
+    "name": "",
+    "category": "Other",
+    "color": "brown",
+    "variety": "Kahala",
+    "length": "50 cm",
+    "price": 1.5914,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636855.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 714982816,
+    "sku_id": "14c9f165-8c6f-48ff-b7e5-87067ebd6e53",
+    "name": "",
+    "category": "Rose",
+    "color": "bicolor",
+    "variety": "magic times",
+    "length": "60 cm",
+    "price": 1.4778,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636877.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 222669217,
+    "sku_id": "093a3ecd-bafc-4cce-bdf6-0f705840b0c4",
+    "name": "",
+    "category": "Rose",
+    "color": "bicolor",
+    "variety": "magic times",
+    "length": "70 cm",
+    "price": 1.6294,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636877.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 630503565,
+    "sku_id": "e3c095f5-d452-4bf0-9604-97d0c87e0fed",
+    "name": "",
+    "category": "Rose",
+    "color": "bicolor",
+    "variety": "magic times",
+    "length": "80 cm",
+    "price": 1.7809,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636877.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   },
   {
     "id": 118728633,
@@ -21589,7 +23285,7 @@ export const products: Product[] = [
     "color": "burgundy",
     "variety": "mistral",
     "length": "35 cm",
-    "price": 1.1594,
+    "price": 1.1719,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21611,17 +23307,49 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 423238972,
-    "sku_id": "f9bf4daa-d181-4fc8-bee3-356a1c0828c8",
-    "name": "Mistral Blue 40 cm",
+    "id": 762480540,
+    "sku_id": "9140e063-bbb0-49cc-b9c7-6be2e483ff57",
+    "name": "",
+    "category": "Other",
+    "color": "assorted",
+    "variety": "mistral",
+    "length": "35 cm",
+    "price": 1.2931,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 994041523,
+    "sku_id": "023f2505-0b18-4e20-a62b-0ab46fd53ab6",
+    "name": "",
     "category": "Other",
     "color": "blue",
     "variety": "mistral",
-    "length": "40 cm",
-    "price": 1.2341,
+    "length": "35 cm",
+    "price": 1.1719,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21635,25 +23363,25 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-blue-40cm",
+    "slug": "",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634601.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 34777611,
-    "sku_id": "96039285-bb51-4c50-92fb-5b54b912993f",
-    "name": "Mistral Hot Pink 40 cm",
+    "id": 1359390009,
+    "sku_id": "e78c9f58-29af-4cb9-b9e3-fda99449bf17",
+    "name": "",
     "category": "Other",
     "color": "hot pink",
     "variety": "mistral",
-    "length": "40 cm",
-    "price": 1.2341,
+    "length": "35 cm",
+    "price": 1.1719,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21667,25 +23395,25 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-hot-pink-40cm",
+    "slug": "",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634605.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 89576992,
-    "sku_id": "064d8dd7-aa2c-422b-942c-d154dd1a6ff5",
-    "name": "Mistral Red 40 cm",
+    "id": 1317070361,
+    "sku_id": "7ba20c54-5f6f-43c0-acef-e4781ca55edb",
+    "name": "",
     "category": "Other",
     "color": "red",
     "variety": "mistral",
-    "length": "40 cm",
-    "price": 1.2341,
+    "length": "35 cm",
+    "price": 1.1719,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21699,25 +23427,25 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-red-40cm",
+    "slug": "",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634609.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
-    "id": 1928459771,
-    "sku_id": "5351ef30-aa18-4c96-a13f-6a9f0b9ff2ba",
-    "name": "Mistral White 40 cm",
+    "id": 133578031,
+    "sku_id": "7f624252-13ec-4be8-9d84-59749fe1e51c",
+    "name": "",
     "category": "Other",
     "color": "white",
     "variety": "mistral",
-    "length": "40 cm",
-    "price": 1.2639,
+    "length": "35 cm",
+    "price": 1.2173,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21731,15 +23459,15 @@ export const products: Product[] = [
     "is_best_seller": false,
     "is_featured": false,
     "display_order": 999,
-    "slug": "mistral-white-40cm",
+    "slug": "",
     "images": [
-      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634611.png"
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634599.png"
     ],
     "tier": "T3",
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1655390970,
@@ -21749,7 +23477,7 @@ export const products: Product[] = [
     "color": "pink",
     "variety": "mistral",
     "length": "40 cm",
-    "price": 1.2341,
+    "price": 1.2476,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 120,
@@ -21771,7 +23499,103 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": 120,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1928459771,
+    "sku_id": "5351ef30-aa18-4c96-a13f-6a9f0b9ff2ba",
+    "name": "Mistral White 40 cm",
+    "category": "Other",
+    "color": "white",
+    "variety": "mistral",
+    "length": "40 cm",
+    "price": 1.2779,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-white-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634611.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 89576992,
+    "sku_id": "064d8dd7-aa2c-422b-942c-d154dd1a6ff5",
+    "name": "Mistral Red 40 cm",
+    "category": "Other",
+    "color": "red",
+    "variety": "mistral",
+    "length": "40 cm",
+    "price": 1.2476,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-red-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634609.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 34777611,
+    "sku_id": "96039285-bb51-4c50-92fb-5b54b912993f",
+    "name": "Mistral Hot Pink 40 cm",
+    "category": "Other",
+    "color": "hot pink",
+    "variety": "mistral",
+    "length": "40 cm",
+    "price": 1.2476,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-hot-pink-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634605.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
   },
   {
     "id": 255230994,
@@ -21781,7 +23605,7 @@ export const products: Product[] = [
     "color": "burgundy",
     "variety": "mistral",
     "length": "40 cm",
-    "price": 1.2341,
+    "price": 1.2476,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21803,7 +23627,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1814118177,
@@ -21813,7 +23637,7 @@ export const products: Product[] = [
     "color": "assorted",
     "variety": "mistral",
     "length": "40 cm",
-    "price": 1.2788,
+    "price": 1.2931,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21835,7 +23659,519 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 423238972,
+    "sku_id": "f9bf4daa-d181-4fc8-bee3-356a1c0828c8",
+    "name": "Mistral Blue 40 cm",
+    "category": "Other",
+    "color": "blue",
+    "variety": "mistral",
+    "length": "40 cm",
+    "price": 1.2476,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 0,
+    "box_type": "EB",
+    "stock": 0,
+    "vendor": "Megaflor",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "mistral-blue-40cm",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20634601.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": null,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1560942953,
+    "sku_id": "8956881c-2223-42cc-a975-dd8240bc6004",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "mondial",
+    "length": "40 cm",
+    "price": 1.8186,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 310079061,
+    "sku_id": "1ea5586c-f8df-4868-a6b7-08e5438bcd55",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "mondial",
+    "length": "40 cm",
+    "price": 1.3641,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": null,
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 49728293,
+    "sku_id": "30ee4d09-47d9-4025-910f-f61a17dc8bc9",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "mondial",
+    "length": "50 cm",
+    "price": 1.9702,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 21785393,
+    "sku_id": "febfb4b0-ccc8-4aa9-ad11-cba4d84d4a3f",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "mondial",
+    "length": "50 cm",
+    "price": 1.5156,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 522469369,
+    "sku_id": "8b5278fd-bd41-4b83-9ef7-bfb1bfa548f6",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "mondial",
+    "length": "60 cm",
+    "price": 2.2354,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1183540846,
+    "sku_id": "83770fc1-f200-414a-9ce0-cd15b0653ade",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "mondial",
+    "length": "60 cm",
+    "price": 1.7809,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1790766130,
+    "sku_id": "c3703a4d-6b2b-4e15-8338-e3c4cc3fd003",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "mondial",
+    "length": "80 cm",
+    "price": 2.0839,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 510944237,
+    "sku_id": "2cfbb68a-2935-4a5c-8090-0562b6f190f2",
+    "name": "",
+    "category": "Rose",
+    "color": "rainbow",
+    "variety": "mondial",
+    "length": "80 cm",
+    "price": 2.5384,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636912.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1890721926,
+    "sku_id": "520ce930-0f78-4034-b7f1-902342b85a20",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "moonstone",
+    "length": "50 cm",
+    "price": 1.1671,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636922.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 499120639,
+    "sku_id": "de3fa3b3-889d-40e9-bda2-9c2758484b25",
+    "name": "",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "orange crush",
+    "length": "40 cm",
+    "price": 0.8641,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636966.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1712295945,
+    "sku_id": "af92332a-c72d-4adb-9d70-bdde92bb9abb",
+    "name": "",
+    "category": "Rose",
+    "color": "orange",
+    "variety": "orange crush",
+    "length": "80 cm",
+    "price": 1.2506,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20636966.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 859333921,
+    "sku_id": "7a3d14a3-8e53-4126-a4e0-f8fa200ae2be",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "playa blanca",
+    "length": "60 cm",
+    "price": 1.8566,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637006.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1545502845,
+    "sku_id": "243aeaa8-0623-4309-b0e4-ef55ac33c12d",
+    "name": "",
+    "category": "Rose",
+    "color": "white",
+    "variety": "playa blanca",
+    "length": "80 cm",
+    "price": 2.1597,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 100,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637006.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 100,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1034068303,
+    "sku_id": "6c74764f-6131-48b5-bfe8-8cb91ab7b801",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "quicksand",
+    "length": "40 cm",
+    "price": 1.0005,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637036.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1259037705,
+    "sku_id": "b1e97831-503d-4640-ab88-212cadda30d2",
+    "name": "",
+    "category": "Rose",
+    "color": "cream",
+    "variety": "quicksand",
+    "length": "50 cm",
+    "price": 1.1671,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637036.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   },
   {
     "id": 1210889323,
@@ -21845,7 +24181,7 @@ export const products: Product[] = [
     "color": "teaberry - lavender",
     "variety": "scoop",
     "length": "60 cm",
-    "price": 1.0251,
+    "price": 1.0355,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21867,7 +24203,7 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
   },
   {
     "id": 1040625467,
@@ -21877,7 +24213,7 @@ export const products: Product[] = [
     "color": "red apple - red",
     "variety": "scoop red",
     "length": "60 cm",
-    "price": 1.0251,
+    "price": 1.0355,
     "unit": "Stem",
     "stems_per_bunch": 1,
     "units_per_box": 0,
@@ -21899,7 +24235,103 @@ export const products: Product[] = [
     "has_photo": true,
     "total_stems": null,
     "contents_note": null,
-    "available_from": "2026-06-19"
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1212773532,
+    "sku_id": "63e89cc5-dc98-4c39-bfe8-9df334e05804",
+    "name": "",
+    "category": "Other",
+    "color": "peach",
+    "variety": "Shimmer",
+    "length": "50 cm",
+    "price": 1.2429,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB-OLI",
+    "stock": 0,
+    "vendor": "Olimpo",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637063.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 1859096485,
+    "sku_id": "97198585-8867-4b3d-a20d-8e03f9df1584",
+    "name": "",
+    "category": "Rose",
+    "color": "peach",
+    "variety": "twilight",
+    "length": "40 cm",
+    "price": 0.955,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637139.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
+  },
+  {
+    "id": 443759674,
+    "sku_id": "2d8a0be0-4379-4f97-aded-03893afcf034",
+    "name": "",
+    "category": "Rose",
+    "color": "peach",
+    "variety": "twilight",
+    "length": "50 cm",
+    "price": 1.0611,
+    "unit": "Stem",
+    "stems_per_bunch": 1,
+    "units_per_box": 125,
+    "box_type": "QB",
+    "stock": 0,
+    "vendor": "Ecoroses",
+    "is_on_deal": false,
+    "deal_label": null,
+    "deal_price": null,
+    "deal_expiry": null,
+    "is_best_seller": false,
+    "is_featured": false,
+    "display_order": 999,
+    "slug": "",
+    "images": [
+      "https://d3bgzcd3kwm78d.cloudfront.net/762172/product/20637139.png"
+    ],
+    "tier": "T3",
+    "has_photo": true,
+    "total_stems": 125,
+    "contents_note": "QB: 125 stems (1 stem/bunch x 125 bunches) [directional_box_master]",
+    "available_from": "2026-06-22"
   }
 ];
 

@@ -64,15 +64,15 @@ export const ADMIN_WIRING: WiringPageEntry[] = [
     pageLabel: 'SKU detail',
     mockupHref: '/mockups/admin-catalog',
     sections: [
-      { id: 'header', level: 'LIVE', note: 'Quality family, vendor, price, status, blocking_gate_count from mirror + classifications (re-keyed to dim_sku.sku_id uuid).' },
+      { id: 'header', level: 'LIVE', note: 'Quality family, vendor, price, status, blocking_gate_count from v_catalog_admin + classifications (re-keyed to dim_sku.sku_id uuid).' },
       { id: 'sources-side-by-side', level: 'PLAN', note: 'Awaits quality_family_id backfill from Rose_BI (column retained on catalog_classifications post-re-key, still nullable).' },
       { id: 'cost-breakdown', level: 'LIVE', note: 'Computed from pricing_constants + box_master + farm_cost.' },
       { id: 'audit-timeline', level: 'LIVE', note: 'override_audit rows where target_id = sku_id.' },
       { id: 'gate-status', level: 'LIVE', note: 'Current 13-gate panel (6 blocking / 2 publishable_gap / 5 perfect_gap), driven by catalog_classifications.failing_gates + blocking_gate_count.' },
-      { id: 'raw-mirror', level: 'LIVE', note: 'Direct mirror fields, editable via POST /api/admin/catalog/sku/[id]/update.' },
+      { id: 'canonical-admin-row', level: 'LIVE', note: 'v_catalog_admin fields. Mutations are moving to proposal-only canonical paths in Phase B.' },
       { id: 'admin-actions', level: 'LIVE', note: 'catalog_classifications status writes.' },
       { id: 'propose-cluster', level: 'LIVE', note: 'All propose forms POST /api/admin/proposals. Rendered inside DetailActionPanel (sticky right column on desktop, bottom on mobile) as of DETAIL-2COL.' },
-      { id: 'right-action-panel', level: 'LIVE', note: 'Sticky right-side DetailActionPanel wrapping the propose-cluster forms (HideSku / DiscountSku / ProposeMirrorField x3 / UnsupportedPropose x2). All endpoints unchanged from inline version.' },
+      { id: 'right-action-panel', level: 'LIVE', note: 'Sticky right-side DetailActionPanel wrapping the propose-cluster forms (HideSku / DiscountSku / canonical field proposals / UnsupportedPropose). All endpoints unchanged from inline version.' },
     ],
   },
   {

@@ -102,7 +102,7 @@ export function HideSkuForm({ skuId }: { skuId: string }) {
       target_table: 'visibility_overrides',
       target_id: String(skuId),
       payload: { sku_id: skuId, decision: 'hide', reason: reason.trim() },
-      source_table: 'floropolis_inventory',
+      source_table: 'catalog_published',
       source_id: String(skuId),
       source_rationale: reason.trim(),
       notes: `Hide SKU ${skuId} from catalog. Reason: ${reason.trim()}`,
@@ -601,22 +601,14 @@ export function ProposeChangeCluster({ children }: { children: ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// ProposeMirrorFieldForm -- propose update to floropolis_inventory.{field}
-// for the 3 columns Job is allowed to touch (description, image_url, category)
-// per Rose contract v1.0 (floropolis_inventory section 6).
+// ProposeMirrorFieldForm -- legacy-named component for proposing canonical
+// catalog field changes (description, image_url, category).
 //
-// Note: no executor for floropolis_inventory.update exists yet in
-// proposal-executors.ts. The proposal is still recorded with type
-// 'visibility_override.create' fallback (FACU rejects manually) until a
-// proper floropolis_inventory.update executor lands. Until then, the row
-// lands in admin_proposals with full source_rationale + source_artifact so
-// the build of the executor can pick the queue up post-hoc.
+// Note: direct writes are intentionally not wired here. Until Phase B migrates
+// the executor family, this row lands in the escalation queue with full
+// source_rationale + source_artifact.
 //
-// Per the brief: do NOT touch lib/admin/proposal-executors.ts. Phase D / a
-// different agent owns the executor build-out. This form deliberately uses
-// an UNKNOWN proposal type ('floropolis_inventory.update') so the executor
-// returns 'unknown_proposal_type' on approval -- visible to CEO as a no-op,
-// not a silent write. CEO sees the proposal text but no auto-execute.
+// CEO sees the proposal text but no direct write executes from this form.
 // ---------------------------------------------------------------------------
 
 export function ProposeMirrorFieldForm({
@@ -660,12 +652,8 @@ export function ProposeMirrorFieldForm({
     }
     setBusy(true);
     setError(null);
-    // Executor for floropolis_inventory.update is owned by Phase D /
-    // proposal-executors.ts (different agent). Until that lands, we send the
-    // intent to rose_queue with the full rationale + artifact so CEO sees it
-    // even though no auto-execute is wired. This matches the Rose contract
-    // v1.0 P3 loop -- escalation queue (not proposal queue) for changes
-    // that have no executor yet.
+    // Phase B executor migration owns the eventual canonical write. Until that
+    // lands, send the intent to rose_queue with full rationale + artifact.
     try {
       const res = await fetch('/api/admin/rose-queue', {
         method: 'POST',
@@ -674,7 +662,7 @@ export function ProposeMirrorFieldForm({
           sku_id: String(skuId),
           reason_code: field === 'image_url' ? 'no_image' : 'other',
           reason_text:
-            `Propose floropolis_inventory.${field} update for SKU ${skuId}. ` +
+            `Propose canonical catalog ${field} update for SKU ${skuId}. ` +
             `Before: ${JSON.stringify(current)}. After: ${val.trim()}. ` +
             `source_rationale: ${reason.trim()}. ` +
             (artifact.trim().length > 0
@@ -780,10 +768,9 @@ export function ProposeMirrorFieldForm({
         {error && <ErrorBanner error={error} />}
       </div>
       <p className="text-[10px] text-slate-500 italic">
-        Note: executor for floropolis_inventory.update is not yet wired. The
-        request is routed to rose_queue with the full rationale and (if
-        provided) source_artifact. Once Phase D ships the executor, this
-        form will switch to admin_proposals end-to-end.
+        Note: the canonical executor is not yet wired. The request is routed
+        to rose_queue with the full rationale and source_artifact. Once Phase B
+        ships the executor, this form will switch to admin_proposals end-to-end.
       </p>
     </form>
   );

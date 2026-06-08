@@ -11,7 +11,7 @@
 //   3. Cost breakdown (pricing_constants + box_master + farm_cost -> selling price)
 //   4. Override audit timeline (override_audit where target_id = sku_id text)
 //   5. Gate status (16) -- PRESERVED from v1 (Editor.tsx fixers untouched)
-//   6. Raw mirror fields -- PRESERVED from v1
+//   6. Canonical admin row fields -- PRESERVED from v1 layout
 //   7. Admin actions -- PRESERVED from v1
 //   8. Propose change cluster -- new client island wired to /api/admin/proposals
 //
@@ -572,7 +572,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
         <WiringSection level={wm('sources-side-by-side').level} note={wm('sources-side-by-side').note} id="sources-side-by-side">
         <SectionCard
           title={`${mirror?.variety ?? 'Variety'} · ${mirror?.length ?? '?'} — all vendors`}
-          subtitle="Same variety + length across every vendor in the mirror. Sorted cheapest first. Outliers >25% above median are flagged."
+          subtitle="Same variety + length across every vendor in the canonical catalog view. Sorted cheapest first. Outliers >25% above median are flagged."
         >
           {(() => {
             // Build full list: this SKU + comps
@@ -703,7 +703,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
           </div>
           {!mirror ? (
             <p className="text-xs text-slate-500 italic">
-              No mirror row to compute against.
+              No v_catalog_admin row to compute against.
             </p>
           ) : breakdown && breakdown.farmCost == null ? (
             <p className="text-xs text-amber-700 italic">
@@ -1054,8 +1054,8 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
 
         </WiringSection>
 
-        {/* Section 2: Raw fields -- PRESERVED from v1 */}
-        <WiringSection level={wm('raw-mirror').level} note={wm('raw-mirror').note} id="raw-mirror">
+        {/* Section 2: Canonical admin row fields -- PRESERVED from v1 layout */}
+        <WiringSection level={wm('canonical-admin-row').level} note={wm('canonical-admin-row').note} id="canonical-admin-row">
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
             Raw fields (v_catalog_admin)
@@ -1102,7 +1102,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* All other mirror columns */}
+              {/* All other canonical admin row columns */}
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm border border-slate-200 rounded-xl p-4 bg-white">
                 {Object.entries(mirror as Record<string, unknown>).map(([k, v]) => (
                   <DefRow
@@ -1116,8 +1116,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
             </>
           ) : (
             <p className="text-sm text-slate-500 border border-dashed border-slate-200 rounded-lg p-4">
-              No row in v_catalog_admin for sku_id {skuId}. The view
-              truncates daily -- check the next reload cycle.
+              No row in v_catalog_admin for sku_id {skuId}.
             </p>
           )}
         </section>
@@ -1177,7 +1176,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                   field="description"
                   label="description"
                   current={null}
-                  helpText="Customer-facing PDP description. Only Job-controlled mirror column."
+                  helpText="Customer-facing PDP description. Routes through the canonical proposal path."
                 />
                 <ProposeMirrorFieldForm
                   skuId={skuId}
@@ -1196,7 +1195,7 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                 />
                 <UnsupportedProposeButton
                   label="change vendor cost"
-                  reason="JOB_LOCKED per Rose contract v1.0. floropolis_inventory.farm_cost is supply truth -- propose via canonical_cost.update which Rose owns, not via this UI."
+                  reason="JOB_LOCKED per Rose contract v1.0. canonical_cost is supply truth -- propose via canonical_cost.update which Rose owns, not via this UI."
                 />
                 <PriceCorrectionForm
                   skuId={skuId}
@@ -1307,7 +1306,7 @@ function CostSourcePanel({
   if (!mirror) {
     return (
       <p className="text-xs text-slate-500 italic">
-        No mirror row -- cannot resolve cost source.
+        No v_catalog_admin row -- cannot resolve cost source.
       </p>
     );
   }
@@ -1463,7 +1462,7 @@ function GateFixer({
   if (!mirror) {
     return (
       <p className="text-xs text-slate-500 italic">
-        Cannot edit -- mirror row missing. Wait for next reload cycle.
+        Cannot edit -- v_catalog_admin row missing.
       </p>
     );
   }
@@ -1660,7 +1659,7 @@ function GateFixer({
       return (
         <p className="text-xs text-slate-500 italic">
           No inline fixer yet for <span className="font-mono">{gateId}</span>.
-          Edit raw mirror fields below or use admin actions.
+          Use the canonical admin row section below or admin actions.
         </p>
       );
   }
