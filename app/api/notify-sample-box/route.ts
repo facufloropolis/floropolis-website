@@ -1,5 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appendSampleBoxToSheet } from "@/lib/google-sheets";
+import { getBackupServiceClient } from "@/lib/supabase/backup-server";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DB-FIRST ORDER BIRTH (the LAW): the sample-box form must birth a real order in
+// the spine so the cohort-review surface is never empty. This is ADDITIVE — the
+// sheet append + internal email below are kept EXACTLY as-is and must never break.
+//
+// IDENTITY TRADEOFF — read before changing:
+//   orders has CHECK orders_identity_born_with: (is_test OR lead_master_id IS NOT NULL).
+//   A real web request is NOT a test, so we cannot insert with is_test=true, and we
+//   cannot insert with lead_master_id=NULL either. Creating/resolving a lead_master
+//   row for a brand-new lead is Rose's lane (OUT OF SCOPE here — this file only owns
+//   the intake endpoint). Therefore the HONEST design is:
+//     • match an existing lead_master by email (case-insensitive, exact) →
+//       order is BORN (fulfillment_state='requested', linkage_mode='exact').
+//     • NO match → we do NOT fake an order and do NOT crash the form. We skip order
+//       creation, still run sheet+email, and return {order_created:false,
+//       reason:'lead_unresolved'} + a console.warn so the gap is visible.
+//   FOLLOW-UP (Rose lane): auto-create/resolve lead_master for new web leads, which
+//   will close this gap and let unresolved intakes birth orders too.
+//
+//   Insert is fail-OPEN: any throw is caught, logged, order_created:false, and the
+//   form still proceeds to sheet+email. The florist must never see a 500.
+// ─────────────────────────────────────────────────────────────────────────────
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
 const FACU_EMAIL = process.env.FACU_EMAIL || "facu@floropolis.com";
@@ -119,9 +143,145 @@ async function sendInternalEmail(payload: SampleBoxPayload, requestId: number | 
   }
 }
 
+interface OrderBirthResult {
+  order_created: boolean;
+  reason: string | null;
+  order_id: number | null;
+  order_number: string | null;
+}
+
+// Generates SB-yyyymmdd-XXXXXX (uppercase base36 random tail). order_number is a
+// NOT NULL UNIQUE text column; this satisfies both. We supply our own value rather
+// than relying on the table default next_order_number() so sample orders carry the
+// SB- prefix and are trivially identifiable in the spine.
+function makeSampleOrderNumber(): string {
+  const d = new Date();
+  const yyyymmdd = `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, "0")}${String(d.getUTCDate()).padStart(2, "0")}`;
+  const tail = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `SB-${yyyymmdd}-${tail}`;
+}
+
+async function birthSampleOrder(payload: SampleBoxPayload): Promise<OrderBirthResult> {
+  const skip = (reason: string): OrderBirthResult => ({
+    order_created: false,
+    reason,
+    order_id: null,
+    order_number: null,
+  });
+
+  try {
+    const email = (payload.email || "").trim();
+    if (!email) return skip("missing_email");
+
+    const supabase = getBackupServiceClient();
+
+    // Idempotency: skip if an active sample-stage order for this email was created
+    // in the last 24h (states still in the early intake/qualification window).
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: recent, error: dupErr } = await supabase
+      .from("orders")
+      .select("id")
+      .ilike("client_email", email)
+      .eq("source", "sample")
+      .in("fulfillment_state", ["requested", "address_confirmed", "qualified"])
+      .gte("created_at", since)
+      .limit(1);
+
+    if (dupErr) {
+      console.warn("[SampleBox][order] duplicate-check failed:", dupErr.message);
+      // Fail-open: a failed dup check must not block the form. Proceed to attempt insert.
+    } else if (recent && recent.length > 0) {
+      return skip("recent_duplicate");
+    }
+
+    // Resolve lead identity by email (case-insensitive exact). lead_master is Rose's
+    // canonical lead table; we only READ it here.
+    const { data: leadRows, error: leadErr } = await supabase
+      .from("lead_master")
+      .select("id")
+      .ilike("email", email)
+      .limit(1);
+
+    if (leadErr) {
+      console.warn("[SampleBox][order] lead_master lookup failed:", leadErr.message);
+      return skip("lead_lookup_failed");
+    }
+
+    const leadMasterId: number | null = leadRows && leadRows.length > 0 ? leadRows[0].id : null;
+    const matched = leadMasterId != null;
+
+    // Identity (constraint orders_identity_born_with, relaxed 2026-06-08):
+    //  - matched   → born 'requested', linkage 'exact'.
+    //  - unmatched → born 'exception', linkage 'unresolved' (NOT faked, NOT dropped) —
+    //    visible + routed to Rose to resolve/create the lead_master row. This is the
+    //    point of a sample form: capturing leads NOT yet in the CRM.
+    const linkageMode = matched ? "exact" : "unresolved";
+    const bornState = matched ? "requested" : "exception";
+    if (!matched) {
+      console.warn(
+        `[SampleBox][order] lead_unresolved for ${email} — order BORN in 'exception' for Rose identity resolution.`,
+      );
+    }
+
+    const leadTimeDays = 7;
+    const requestedDelivery = new Date(Date.now() + leadTimeDays * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10); // current_date + 7 (YYYY-MM-DD)
+
+    const { data: inserted, error: insErr } = await supabase
+      .from("orders")
+      .insert({
+        order_number: makeSampleOrderNumber(),
+        source: "sample",
+        status: "no_charge",
+        fulfillment_state: bornState,
+        payment_mode: "mode_c",
+        lead_time_days: leadTimeDays,
+        requested_delivery_date: requestedDelivery,
+        currency: "USD",
+        subtotal: 0,
+        shipping_total: 0,
+        tax_total: 0,
+        discount_total: 0,
+        grand_total: 0,
+        is_test: false,
+        lead_master_id: leadMasterId,
+        linkage_mode: linkageMode,
+        client_name: payload.name || null,
+        business_name: payload.company || null,
+        client_email: email,
+        client_phone: payload.phone || null,
+        box_choice: payload.boxChoice || null,
+      })
+      .select("id, order_number")
+      .single();
+
+    if (insErr || !inserted) {
+      console.error("[SampleBox][order] insert failed:", insErr?.message ?? "no row returned");
+      return skip("insert_failed");
+    }
+
+    console.log(`[SampleBox][order] BORN id=${inserted.id} number=${inserted.order_number} lead=${leadMasterId ?? "unresolved"} state=${bornState}`);
+    return {
+      order_created: true,
+      reason: matched ? null : "born_unresolved_exception",
+      order_id: inserted.id,
+      order_number: inserted.order_number,
+    };
+  } catch (err) {
+    // Fail-open: never let order birth crash the form.
+    console.error("[SampleBox][order] exception (fail-open):", err);
+    return skip("exception");
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const payload: SampleBoxPayload = await req.json();
+
+    // 0. FIRST: birth a real order in the spine (DB-first, the LAW). Additive +
+    //    fail-open — never blocks the sheet/email below.
+    const orderResult = await birthSampleOrder(payload);
 
     // 1. Save to Supabase
     const { id: requestId } = await saveToSupabase(payload);
@@ -134,9 +294,16 @@ export async function POST(req: NextRequest) {
       console.error("[Sheets] Sample box append failed:", err)
     );
 
-    console.log(`[SampleBox] Saved: ${requestId ?? "FAILED"} | Email: ${emailSent ? "SENT" : "FAILED"} | ${payload.name} — ${payload.city}, ${payload.state}`);
+    console.log(`[SampleBox] Saved: ${requestId ?? "FAILED"} | Email: ${emailSent ? "SENT" : "FAILED"} | Order: ${orderResult.order_created ? orderResult.order_number : `NONE(${orderResult.reason})`} | ${payload.name} — ${payload.city}, ${payload.state}`);
 
-    return NextResponse.json({ success: true, request_id: requestId });
+    return NextResponse.json({
+      success: true,
+      request_id: requestId,
+      order_created: orderResult.order_created,
+      order_id: orderResult.order_id,
+      order_number: orderResult.order_number,
+      reason: orderResult.reason,
+    });
   } catch (err) {
     console.error("[SampleBox] Error:", err);
     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });

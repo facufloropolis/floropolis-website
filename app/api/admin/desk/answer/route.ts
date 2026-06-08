@@ -95,7 +95,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       source_agent: 'facu_desk',
       source_rationale: answer,
       notes: question,
-      proposed_by: auth.userId,
+      // proposed_by has a FK to auth.users; setting it to a session id that isn't
+      // resolvable there silently 500s the insert (the bug that swallowed Facu's
+      // Zone-3 answers). Attribution lives in payload.answered_by + source_agent,
+      // so we leave proposed_by NULL (nullable column) — robust, no FK dependency.
       // status defaults to 'awaiting_facu' on the table.
     })
     .select('id, type, target_id, status, proposed_at')
