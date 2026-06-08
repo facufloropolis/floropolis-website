@@ -53,6 +53,8 @@ import DispatchTodayPanel, { TodayRow } from './DispatchTodayPanel';
 import YesterdayArrivalsCard from './YesterdayArrivalsCard';
 import QueuedView, { type DayBlock as QueuedDayBlock } from './QueuedView';
 import HistoricalView, { type DayBlock as HistoricalDayBlock } from './HistoricalView';
+import DispatchPriorityPanel from './DispatchPriorityPanel';
+import { getDispatchPriority } from './dispatchPriority';
 
 // TODO (Rose tabs deferred 2026-05-28): the Upcoming (Rose n8n_dispatch_queue),
 // Recent (Rose dispatch_batches), and Farm shipments tabs were dropped from the
@@ -76,7 +78,7 @@ type DispatchStatus =
   | 'delivered'
   | 'exception';
 
-type DispatchView = 'today' | 'queued' | 'historical';
+type DispatchView = 'today' | 'queued' | 'historical' | 'priority';
 
 interface AddressSnapshot {
   recipient_name?: string | null;
@@ -294,9 +296,15 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   const sp = await searchParams;
 
   const activeView: DispatchView =
-    sp.view === 'queued' || sp.view === 'historical'
+    sp.view === 'queued' || sp.view === 'historical' || sp.view === 'priority'
       ? (sp.view as DispatchView)
       : 'today';
+
+  // Directional cross-plane dispatch priority. Fetched only when the Priority
+  // view is active so the other views don't pay for the dual-plane reads.
+  // getDispatchPriority never throws — each plane degrades to [] independently.
+  const priorityData =
+    sp.view === 'priority' ? await getDispatchPriority() : null;
 
   const todayIso = todayUtcIso();
   const dateParam =
@@ -520,6 +528,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   const viewTabs: { key: DispatchView; label: string; count: number | null }[] = [
     { key: 'today', label: 'Today', count: todayRows.length },
     { key: 'queued', label: 'Queued (next 7 days)', count: queuedCount },
+    { key: 'priority', label: 'Priority (directional)', count: priorityData?.items.length ?? null },
     { key: 'historical', label: 'Historical', count: activeView === 'historical' ? histCount : null },
   ];
 
@@ -662,6 +671,10 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
               defaultDispatchId={defaultDispatchId}
               todayLabel={todayLabel}
             />
+          )}
+
+          {activeView === 'priority' && priorityData && (
+            <DispatchPriorityPanel data={priorityData} />
           )}
 
           {activeView === 'historical' && (
