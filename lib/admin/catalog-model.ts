@@ -143,6 +143,8 @@ export interface MirrorRow {
   has_open_price_alert: boolean | null;
   live: boolean;
   active: boolean;
+  publish_status: string | null;
+  capacity_unit_mismatch?: boolean | null;
   arrival_date: string | null;
   availability_min_days_ahead: number | null;
   availability_max_days_ahead: number | null;
@@ -165,6 +167,7 @@ export interface PricingConstantRow {
 }
 
 export type PublicationStatus = 'blocked' | 'publishable' | 'perfect';
+export type PublishStatus = 'published' | 'blocked' | 'quarantined';
 
 export type StatusBand =
   | 'perfect'
@@ -204,6 +207,7 @@ export interface CatalogV2Row {
   // Scores
   quality_score: number | null; // null = no classification row yet
   publication_status: PublicationStatus; // blocked | publishable | perfect — derived from gate tiers
+  publish_status: PublishStatus; // published | blocked | quarantined — direct v_catalog_admin state
   status_band: StatusBand; // quality gradient for display
   importance_score: number;
   priority_to_fix: number;
@@ -366,6 +370,11 @@ export function normalizeMarginStatus(v: string | null | undefined): MarginStatu
   return null;
 }
 
+export function normalizePublishStatus(v: string | null | undefined): PublishStatus {
+  if (v === 'published' || v === 'blocked' || v === 'quarantined') return v;
+  return 'blocked';
+}
+
 export function gpmBandFor(gpm: number | null): GpmBand | null {
   if (gpm == null) return null;
   if (gpm >= 0.33) return 'green';
@@ -440,8 +449,10 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       ? perfectMinRaw
       : 100;
 
-  // Restrict to the universe (T2 + T3 + K2K live). Anything else falls out.
-  const universeRows = mirror.filter((r) => deriveBuckets(r).length > 0);
+  // v_catalog_admin is the admin universe: one row per non-quarantined dim_sku.
+  // Do not re-filter to published/T2/T3 here; that recreates the bug where
+  // blocked-but-valid SKUs become invisible.
+  const universeRows = mirror;
 
   // Compute per-row ------------------------------------------------------
   const rows: CatalogV2Row[] = universeRows.map((r) => {
@@ -563,6 +574,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       buckets,
       quality_score,
       publication_status,
+      publish_status: normalizePublishStatus(r.publish_status),
       status_band: bandFor(quality_score),
       importance_score,
       priority_to_fix,

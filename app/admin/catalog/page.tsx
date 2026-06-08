@@ -108,7 +108,7 @@ interface TierWindowRow {
   latest_delivery_days: number;
 }
 
-type TabKey = 'improvement-queue' | 'perfect' | 'all';
+type TabKey = 'published' | 'blocked' | 'improvement-queue' | 'perfect' | 'all';
 type SortKey =
   | 'priority'
   | 'quality'
@@ -178,14 +178,16 @@ function qualityBadgeCls(score: number | null, perfectMin: number): string {
 // ---------------------------------------------------------------------------
 
 function parseTab(v: string | undefined): TabKey {
-  if (v === 'perfect' || v === 'all') return v;
-  return 'improvement-queue';
+  if (v === 'blocked' || v === 'improvement-queue' || v === 'perfect' || v === 'all') return v;
+  return 'published';
 }
 
 function parseSort(raw: string | undefined, tab: TabKey): { key: SortKey; dir: SortDir } {
   if (!raw) {
     if (tab === 'improvement-queue') return { key: 'priority', dir: 'desc' };
     if (tab === 'perfect') return { key: 'importance', dir: 'desc' };
+    if (tab === 'published') return { key: 'vendor', dir: 'asc' };
+    if (tab === 'blocked') return { key: 'priority', dir: 'desc' };
     return { key: 'vendor', dir: 'asc' };
   }
   const [keyRaw, dirRaw] = raw.split(':');
@@ -311,7 +313,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   const sp = await searchParams;
   const viewMode: 'today' | 'target' = (sp.view === 'target') ? 'target' : 'today';
   const tab = parseTab(sp.tab);
-  // In target mode, default tab is 'all' instead of 'improvement-queue'
+  // In target mode, default tab is 'all'; otherwise default to published, with
+  // blocked one click away. The view still contains the full non-quarantined
+  // dim_sku universe; this is a UI filter, not a data-source filter.
   const effectiveTab: TabKey = (!sp.tab && viewMode === 'target') ? 'all' : tab;
   const search = (sp.q ?? '').trim();
   const vendorFilter = (sp.vendor ?? 'all').trim();
@@ -328,7 +332,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   // Change 10: count active (non-default) filters
   const activeFilterCount = [
     search ? 1 : 0,
-    effectiveTab !== 'improvement-queue' ? 1 : 0,
+    effectiveTab !== 'published' ? 1 : 0,
     vendorFilter !== 'all' ? 1 : 0,
     sourceFilter !== 'all' ? 1 : 0,
     categoryFilter !== 'all' ? 1 : 0,
@@ -338,7 +342,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   ].reduce((a, b) => a + b, 0);
 
   const rawFilters: Record<string, string | undefined> = {
-    tab: effectiveTab !== 'improvement-queue' ? effectiveTab : undefined,
+    tab: effectiveTab !== 'published' ? effectiveTab : undefined,
     q: search || undefined,
     vendor: vendorFilter !== 'all' ? vendorFilter : undefined,
     source: sourceFilter !== 'all' ? sourceFilter : undefined,
@@ -358,7 +362,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
     const { data, error } = await backup
       .from('v_catalog_admin')
       .select(
-        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, arrival_date, availability_min_days_ahead, availability_max_days_ahead, valid_delivery_days_of_week',
+        'sku_id, name, vendor, tier, category, variety, color, length, unit, price, farm_cost, cost_source, cost_verified_at, stock, total_stems, units_per_box, box_type, margin_status, delivery_cost, gpm_actual, margin, price_floor, has_open_price_alert, live, active, publish_status, capacity_unit_mismatch, arrival_date, availability_min_days_ahead, availability_max_days_ahead, valid_delivery_days_of_week',
       )
       .limit(5000);
     if (error) console.error('[admin/catalog] mirror fetch error:', error);
@@ -561,12 +565,16 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
   // Tab filter -----------------------------------------------------------
   const inTab = (r: CatalogV2Row): boolean => {
+    if (effectiveTab === 'published') return r.publish_status === 'published';
+    if (effectiveTab === 'blocked') return r.publish_status === 'blocked';
     if (effectiveTab === 'perfect') return r.publication_status === 'perfect';
-    if (effectiveTab === 'improvement-queue') return r.publication_status !== 'perfect';
+    if (effectiveTab === 'improvement-queue') return r.publish_status !== 'published' || r.publication_status !== 'perfect';
     return true;
   };
   const tabCounts = {
-    'improvement-queue': universeRows.filter((r) => r.publication_status !== 'perfect').length,
+    published: universeRows.filter((r) => r.publish_status === 'published').length,
+    blocked: universeRows.filter((r) => r.publish_status === 'blocked').length,
+    'improvement-queue': universeRows.filter((r) => r.publish_status !== 'published' || r.publication_status !== 'perfect').length,
     perfect: universeRows.filter((r) => r.publication_status === 'perfect').length,
     all: universeRows.length,
   };
@@ -1251,6 +1259,20 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
         <WiringSection level={wm('tabs').level} note={wm('tabs').note} id="tabs">
           <div className="flex gap-1 mb-5 border-b border-slate-200 flex-wrap">
             <TabLink
+              tab="published"
+              current={effectiveTab}
+              rawFilters={rawFilters}
+              label="Published"
+              count={tabCounts.published}
+            />
+            <TabLink
+              tab="blocked"
+              current={effectiveTab}
+              rawFilters={rawFilters}
+              label="Blocked"
+              count={tabCounts.blocked}
+            />
+            <TabLink
               tab="improvement-queue"
               current={effectiveTab}
               rawFilters={rawFilters}
@@ -1283,7 +1305,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
             method="get"
             className="bg-white border border-slate-200 rounded-xl p-4 mb-4"
           >
-            {effectiveTab !== 'improvement-queue' && (
+            {effectiveTab !== 'published' && (
               <input type="hidden" name="tab" value={effectiveTab} />
             )}
             {sp.sort && <input type="hidden" name="sort" value={sp.sort} />}
@@ -1960,7 +1982,7 @@ function TabLink({
   return (
     <Link
       href={buildUrl(rawFilters, {
-        tab: tab !== 'improvement-queue' ? tab : undefined,
+        tab: tab !== 'published' ? tab : undefined,
         page: undefined,
         sort: undefined,
       })}

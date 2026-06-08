@@ -16,7 +16,7 @@
  *
  * For each admin surface it runs the DISPLAYED-PATH query and the
  * SOURCE-OF-TRUTH query and compares them:
- *   1. Catalog grid:      v_catalog_admin count       vs catalog_published count.
+ *   1. Catalog grid:      v_catalog_admin count       vs dim_sku non-quarantined count.
  *   2. Config failing:    catalog_classifications-derived per-gate counts
  *                         vs live recomputation (dim_sku + product_chrome).
  *   3. Deprecated gates:  gate_ids present in catalog_classifications.failing_gates
@@ -190,24 +190,85 @@ function fmtDelta(displayed, truth) {
 }
 
 // ---------------------------------------------------------------------------
-// CHECK 1 — Catalog grid: v_catalog_admin vs catalog_published.
+// CHECK 1 — Catalog grid: v_catalog_admin vs full non-quarantined dim_sku.
 // ---------------------------------------------------------------------------
 async function checkCatalogGrid() {
   const queries_used = [
     "SELECT count(*) FROM v_catalog_admin",
-    "SELECT count(*) FROM catalog_published",
+    "SELECT count(*) FROM dim_sku WHERE COALESCE(quarantined,false)=false",
   ];
   const displayed = await restCount("v_catalog_admin");
-  const truth = await restCount("catalog_published");
+  const truth = await restCount("dim_sku", { quarantined: "is.false" });
   const delta = fmtDelta(displayed, truth);
   return {
     surface: "catalog_grid",
     description:
-      "Admin catalog grid row count (v_catalog_admin) vs publish authority (catalog_published).",
+      "Admin catalog grid row count (v_catalog_admin) vs full non-quarantined dim_sku universe.",
     displayed_value: displayed,
     truth_value: truth,
     delta,
     verdict: delta === 0 ? "PASS" : "FAIL",
+    queries_used,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// CHECK 1b — v_catalog_admin must expose blocked rows instead of hiding them.
+// ---------------------------------------------------------------------------
+async function checkCatalogPublishStatus() {
+  const queries_used = [
+    "SELECT sku_id, publish_status FROM v_catalog_admin",
+  ];
+  const rows = await restSelectAll("v_catalog_admin", {
+    select: "sku_id,publish_status",
+  });
+  const byStatus = rows.reduce((acc, row) => {
+    const key = row.publish_status || "NULL";
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+  const blocked = byStatus.blocked || 0;
+  const published = byStatus.published || 0;
+  return {
+    surface: "catalog_publish_status",
+    description:
+      "v_catalog_admin exposes publish_status as a column and includes blocked rows; blocked must be one click away, not invisible.",
+    displayed_value: blocked,
+    truth_value: ">0 blocked rows visible",
+    delta: blocked > 0 ? 0 : -1,
+    status_counts: byStatus,
+    verdict: blocked > 0 && published > 0 ? "PASS" : "FAIL",
+    queries_used,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// CHECK 1c — Flodecol gypsophila stem-vs-grams mismatch must stay unpriced.
+// ---------------------------------------------------------------------------
+async function checkGypsoCapacityMismatch() {
+  const queries_used = [
+    "SELECT sku_id, margin_status, price FROM v_catalog_admin WHERE vendor='Flodecol' AND category='Gypsophila' AND size_grams IS NOT NULL AND lower(unit)='stem'",
+  ];
+  const rows = await restSelectAll("v_catalog_admin", {
+    select: "sku_id,margin_status,price,unit,size_grams,vendor,category",
+    filter: {
+      vendor: "eq.Flodecol",
+      category: "eq.Gypsophila",
+      size_grams: "not.is.null",
+      unit: "eq.stem",
+    },
+  });
+  const bad = rows.filter((row) => row.margin_status !== "unpriced" || row.price != null);
+  return {
+    surface: "capacity_unit_mismatch",
+    description:
+      "Flodecol gypsophila rows that are grams-keyed but still sell as stem are marked UNPRICED until capacity_matrix exists.",
+    displayed_value: bad.length,
+    truth_value: 0,
+    delta: bad.length,
+    checked_rows: rows.length,
+    bad_rows: bad.map((row) => row.sku_id),
+    verdict: bad.length === 0 ? "PASS" : "FAIL",
     queries_used,
   };
 }
@@ -393,6 +454,8 @@ async function checkStorefrontAuthority() {
 async function main() {
   const checks = [];
   checks.push(await checkCatalogGrid());
+  checks.push(await checkCatalogPublishStatus());
+  checks.push(await checkGypsoCapacityMismatch());
   checks.push(await checkConfigFailingCounts());
   checks.push(await checkDeprecatedGates());
   checks.push(await checkStorefrontAuthority());
