@@ -577,6 +577,21 @@ export default async function AdminCatalogApprovalQueuePage({
           </p>
         </div>
 
+        {/* Orientation callout — explains this page vs the Desk, and that
+            Proposals now lives here as the Approved/Rejected history tabs. */}
+        <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
+            Where am I?
+          </div>
+          <p className="text-sm text-emerald-900 mt-1 leading-relaxed">
+            The <span className="font-semibold">Desk</span> shows the business
+            decisions that need you. This is the complete queue (incl. technical
+            config) plus full history &mdash; Proposals lives here now as the{' '}
+            <span className="font-semibold">Approved</span> /{' '}
+            <span className="font-semibold">Rejected</span> tabs below.
+          </p>
+        </div>
+
         {/* Supply quality bar — always visible, shows current state + corrections in flight */}
         <SupplyQualityBar
           blockedCount={supplyBlockedCount}

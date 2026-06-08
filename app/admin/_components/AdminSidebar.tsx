@@ -3,7 +3,8 @@
 // AdminSidebar -- persistent left nav for /admin/*.
 // v1 | 2026-05-19 | Job_PM SHELL-V2 [V8 SHADOW]
 //
-// 8 nav items matching app/mockups/v2-admin/page.tsx (in the same order).
+// Nav items matching app/mockups/v2-admin/page.tsx (in the same order).
+// 'Proposals' folded into 'Approvals' (approval-queue history tabs) 2026-06-08.
 // Active state derived from usePathname() with prefix matching so deep routes
 // (e.g. /admin/catalog/[id]) keep the "Catalog" item highlighted.
 //
@@ -29,8 +30,7 @@ const NAV: NavItem[] = [
   { id: 'orders',    label: 'Orders',    icon: 'O', url: '/admin/orders',                   sub: 'Queue / fulfillment',        matchPrefix: '/admin/orders' },
   { id: 'dispatch',      label: 'Dispatch',      icon: 'D',  url: '/admin/dispatch',                 sub: 'FedEx / labels / vendor',    matchPrefix: '/admin/dispatch' },
   { id: 'sales-cleanup', label: 'Sales Cleanup', icon: '$',  url: '/admin/sales-cleanup',            sub: 'Orphan transactions',        matchPrefix: '/admin/sales-cleanup' },
-  { id: 'approvals',     label: 'Approvals',     icon: 'A',  url: '/admin/catalog/approval-queue',   sub: 'Awaiting your sign-off',     matchPrefix: '/admin/catalog/approval-queue' },
-  { id: 'proposals', label: 'Proposals', icon: 'P', url: '/admin/catalog/proposals',        sub: 'Full history',               matchPrefix: '/admin/catalog/proposals' },
+  { id: 'approvals',     label: 'Approvals',     icon: 'A',  url: '/admin/catalog/approval-queue',   sub: 'Sign-off + full history',    matchPrefix: '/admin/catalog/approval-queue' },
   { id: 'settings',  label: 'Config',    icon: 'S', url: '/admin/catalog/config',           sub: 'Box / shipping / GPM',       matchPrefix: '/admin/catalog/config' },
   { id: 'loop',      label: 'Improvement Loop', icon: 'L', url: '/admin/loop',              sub: 'Repair audit trail',         matchPrefix: '/admin/loop' },
 ];
