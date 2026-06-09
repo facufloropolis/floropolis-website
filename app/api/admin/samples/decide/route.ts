@@ -182,7 +182,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       loop_id: loopId,
       from_status: fromStatus,
       to_status: newStatus,
-      actor: 'facu',
+      // REAL actor: the authenticated admin who decided. JJ admins (jjpj@...) can approve,
+      // so hardcoding 'facu' would mis-log their actions in the event timeline.
+      actor: auth.email || 'facu',
       note,
     });
     if (evtErr) {

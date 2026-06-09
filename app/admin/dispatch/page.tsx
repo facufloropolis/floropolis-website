@@ -62,7 +62,7 @@ function todayUtcIso(): string {
 function fmtHeading(iso: string): string {
   const d = new Date(iso + 'T00:00:00Z');
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString('en-US', {
+  return d.toLocaleDateString('es-ES', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -123,9 +123,9 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   // dispatch date so the surface is never an empty wall.
   let activeDate = explicitDate ?? todayIso;
   if (!explicitDate) {
-    const todayManifestExists = await getMostRecentDispatchDate(todayIso);
-    if (todayManifestExists && todayManifestExists !== todayIso) {
-      activeDate = todayManifestExists;
+    const mostRecentDispatchDate = await getMostRecentDispatchDate(todayIso);
+    if (mostRecentDispatchDate && mostRecentDispatchDate !== todayIso) {
+      activeDate = mostRecentDispatchDate;
     }
   }
 
@@ -161,24 +161,29 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-5 flex-wrap gap-4">
+      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dispatch &mdash; {fmtHeading(activeDate)}</h1>
-          <div className="flex items-center gap-3 flex-wrap text-sm text-slate-500 mt-1">
-            <span>
-              {totalBoxes} box{totalBoxes === 1 ? '' : 'es'} · {recipientCount} recipient{recipientCount === 1 ? '' : 's'} · {farmCount} farm{farmCount === 1 ? '' : 's'}
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-1">Despacho del dia</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{fmtHeading(activeDate)}</h1>
+          <div className="flex items-center gap-2.5 flex-wrap text-sm text-slate-500 mt-2">
+            <span className="font-medium text-slate-600">
+              {totalBoxes} caja{totalBoxes === 1 ? '' : 's'}
             </span>
+            <span className="text-slate-300">&middot;</span>
+            <span>{recipientCount} destinatario{recipientCount === 1 ? '' : 's'}</span>
+            <span className="text-slate-300">&middot;</span>
+            <span>{farmCount} finca{farmCount === 1 ? '' : 's'}</span>
             {totalBoxes === 0 ? (
-              <span className="bg-slate-100 border border-slate-200 text-slate-600 px-2 py-0.5 rounded-lg text-xs font-semibold">No dispatch this date</span>
+              <span className="ml-1 bg-slate-100 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-full text-xs font-semibold">Sin despacho esta fecha</span>
             ) : belowMinimum ? (
-              <span className="bg-red-50 border border-red-200 text-red-700 px-2 py-0.5 rounded-lg text-xs font-semibold">Below 2-box minimum</span>
+              <span className="ml-1 bg-red-50 border border-red-200 text-red-700 px-2.5 py-1 rounded-full text-xs font-semibold">Debajo del minimo de 2 cajas</span>
             ) : (
-              <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded-lg text-xs font-semibold">2-box minimum met ({totalBoxes} boxes)</span>
+              <span className="ml-1 bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-semibold">Minimo de 2 cajas cumplido</span>
             )}
           </div>
           {usingFallbackDate && (
-            <p className="text-xs text-slate-400 mt-1">
-              Showing the most recent dispatch date (today has no dispatch). Use the date nav to change.
+            <p className="text-xs text-slate-400 mt-2">
+              Mostrando el ultimo despacho con datos (hoy no tiene despacho). Usa la navegacion de fecha para cambiar.
             </p>
           )}
         </div>
@@ -187,24 +192,24 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
 
       {/* FedEx clarification banner */}
       <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-        <span className="text-blue-500 text-lg shrink-0">[FedEx]</span>
-        <p className="text-sm text-blue-800">
-          <strong>FedEx receives at the Quito depot by 10pm ECT.</strong> The truck driver picks up at the farm in the afternoon;
-          pickup confirmation usually arrives via WhatsApp.{' '}
-          <span className="text-blue-600 font-medium">Contacts: edgar.freire@fedex.com · Dominique Romero (dromero@entregas.ec)</span>
+        <span className="mt-0.5 shrink-0 text-[10px] font-bold uppercase tracking-wide text-blue-700 bg-blue-100 border border-blue-200 rounded-md px-2 py-1">FedEx</span>
+        <p className="text-sm text-blue-800 leading-relaxed">
+          <strong className="font-semibold">FedEx recibe en el deposito de Quito antes de las 10pm ECT.</strong> El chofer retira en la
+          finca por la tarde; la confirmacion de retiro suele llegar por WhatsApp.{' '}
+          <span className="block mt-1 text-blue-600 font-medium">Contactos: edgar.freire@fedex.com &middot; Dominique Romero (dromero@entregas.ec)</span>
         </p>
       </div>
 
       {/* PROD-not-configured banner */}
       {!manifest.configured && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 text-sm text-amber-800">
-          Production read client not configured (PROD_SUPABASE_SERVICE_KEY missing). The dispatch tables live in
-          the production project; panels below render empty until the key is set.
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 text-sm text-amber-800 leading-relaxed">
+          Cliente de lectura de produccion no configurado (falta PROD_SUPABASE_SERVICE_KEY). Las tablas de despacho viven en
+          el proyecto de produccion; los paneles de abajo quedan vacios hasta que se configure la clave.
         </div>
       )}
       {manifest.configured && manifest.error && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 text-sm text-red-800">
-          Could not load dispatch data: {manifest.error}
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 text-sm text-red-800 leading-relaxed">
+          No se pudieron cargar los datos de despacho: {manifest.error}
         </div>
       )}
 
@@ -220,15 +225,16 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
           farmCount={farmCount}
           belowMinimum={belowMinimum}
           prospects={prospects}
+          dispatchDate={activeDate}
         />
       </div>
 
       {/* Rose pipeline stepper */}
       <DispatchPipelineStepper activeStep={pipelineStep} />
 
-      <p className="text-xs text-slate-400 mt-6">
-        Data source: PROD (read-only) dispatch_tracking + sample_box_status + farm_shipments + n8n_dispatch_queue.
-        Job_PM has no write path to these tables; manual confirmations are local-only.
+      <p className="text-xs text-slate-400 mt-6 leading-relaxed">
+        Fuente de datos: PROD (solo lectura) dispatch_tracking + sample_box_status + farm_shipments + n8n_dispatch_queue.
+        Job_PM no tiene escritura en estas tablas; las confirmaciones manuales son solo locales.
       </p>
     </main>
   );

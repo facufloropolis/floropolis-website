@@ -50,23 +50,26 @@ export default async function SamplesJJPage() {
   const openRows = cohort.filter((r) => r.status === 'question_open');
 
   return (
-    <div className="px-4 py-5 max-w-[900px] mx-auto">
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-800">Sample Review -- JJ</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Preguntas de Facu sobre tus samples. Responde aca; tu respuesta vuelve a Facu.
+    <main className="px-4 py-6 max-w-[900px] mx-auto">
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+            Sample Review
+            <span className="text-slate-400 font-medium"> &middot; JJ</span>
+          </h1>
+          <p className="text-[13px] text-slate-500 mt-1.5 leading-relaxed">
+            Preguntas de Facu sobre tus samples. Responde aca &mdash; tu respuesta vuelve a Facu.
           </p>
         </div>
         <Link
           href="/admin/samples"
-          className="shrink-0 text-sm rounded-lg border border-slate-300 px-3 py-1.5 text-slate-600 hover:bg-slate-50"
+          className="shrink-0 inline-flex items-center text-sm font-medium rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors"
         >
           Vista Facu
         </Link>
       </div>
 
       <JJAnswerPanel rows={openRows} />
-    </div>
+    </main>
   );
 }

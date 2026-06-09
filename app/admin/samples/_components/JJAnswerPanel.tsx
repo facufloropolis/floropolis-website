@@ -22,7 +22,7 @@ function OpenQuestion({ row }: { row: SampleReviewRow }) {
 
   async function submit() {
     if (answer.trim().length < 3) {
-      setError('Escribí una respuesta (min 3 caracteres).');
+      setError('Escribi una respuesta (min 3 caracteres).');
       return;
     }
     setBusy(true);
@@ -99,7 +99,7 @@ export default function JJAnswerPanel({ rows }: Props) {
         </div>
         <h2 className="text-base font-semibold text-slate-700">No hay preguntas abiertas</h2>
         <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-          Cuando Facu te haga una pregunta sobre un sample, aparece acá para que la
+          Cuando Facu te haga una pregunta sobre un sample, aparece aca para que la
           respondas.
         </p>
       </div>

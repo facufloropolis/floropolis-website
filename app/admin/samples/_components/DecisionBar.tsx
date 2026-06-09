@@ -12,6 +12,7 @@
 
 import { useState } from 'react';
 import type { SampleReviewRow } from './types';
+import { statusBadge } from './format';
 
 type Action = 'yes' | 'no' | 'question';
 
@@ -29,11 +30,11 @@ export default function DecisionBar({ row }: Props) {
 
   async function decide(decision: Action) {
     if (decision === 'no' && rejectedReason.trim().length < 3) {
-      setError('Agregá un motivo del rechazo (min 3 caracteres).');
+      setError('Agrega un motivo del rechazo (min 3 caracteres).');
       return;
     }
     if (decision === 'question' && questionText.trim().length < 3) {
-      setError('Escribí la pregunta para JJ (min 3 caracteres).');
+      setError('Escribi la pregunta para JJ (min 3 caracteres).');
       return;
     }
     setBusy(decision);
@@ -69,17 +70,19 @@ export default function DecisionBar({ row }: Props) {
     <div className="border-t border-slate-200 bg-white/95 backdrop-blur px-5 py-3 space-y-2 sticky bottom-0">
       {/* Current status + JJ's answer (when answered) */}
       <div className="flex items-center gap-2 flex-wrap text-[12px]">
-        <span className="text-slate-500">Estado:</span>
-        <span className="font-semibold text-slate-700">{row.status}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Estado</span>
+        <span className={'text-[11px] font-medium px-2 py-0.5 rounded-md border ' + statusBadge(row.status).cls}>
+          {statusBadge(row.status).label}
+        </span>
         {row.facuDecision ? (
-          <span className="text-slate-400">&middot; decisión: {row.facuDecision}</span>
+          <span className="text-slate-400">&middot; decision: {row.facuDecision}</span>
         ) : null}
       </div>
 
       {isAnswered && row.jjAnswer ? (
         <div className="rounded-md border border-violet-200 bg-violet-50 px-3 py-2 text-[13px] text-violet-900">
           <div className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 mb-0.5">
-            JJ respondió &mdash; ahora podés SÍ o re-Preguntar
+            JJ respondio &mdash; ahora podes SI o re-Preguntar
           </div>
           <p className="leading-relaxed">{row.jjAnswer}</p>
         </div>
@@ -94,7 +97,7 @@ export default function DecisionBar({ row }: Props) {
           <textarea
             value={rejectedReason}
             onChange={(e) => setRejectedReason(e.target.value)}
-            placeholder="por qué no (queda registrado con la decisión)"
+            placeholder="por que no (queda registrado con la decision)"
             rows={2}
             className="mt-1 w-full text-sm rounded-md border border-rose-200 px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
@@ -110,7 +113,7 @@ export default function DecisionBar({ row }: Props) {
           <textarea
             value={questionText}
             onChange={(e) => setQuestionText(e.target.value)}
-            placeholder="qué necesitás que JJ aclare antes de decidir"
+            placeholder="que necesitas que JJ aclare antes de decidir"
             rows={2}
             className="mt-1 w-full text-sm rounded-md border border-sky-200 px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
@@ -125,7 +128,7 @@ export default function DecisionBar({ row }: Props) {
           onClick={() => decide('yes')}
           className="text-sm font-semibold px-3.5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
         >
-          {busy === 'yes' ? 'Guardando...' : 'SÍ'}
+          {busy === 'yes' ? 'Guardando...' : 'SI'}
         </button>
         <button
           type="button"

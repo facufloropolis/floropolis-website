@@ -74,7 +74,8 @@ export default function RecDecision({ variety, recType }: Props) {
 
   if (logged) {
     return (
-      <div className="px-4 py-2.5 bg-emerald-50 border-t border-emerald-100 text-xs font-semibold text-emerald-700">
+      <div className="px-5 py-3 bg-emerald-50 border-t border-emerald-100 flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+        <span aria-hidden className="text-emerald-600">✓</span>
         {logged === 'approve'
           ? 'Approved'
           : logged === 'reject'
@@ -86,13 +87,13 @@ export default function RecDecision({ variety, recType }: Props) {
   }
 
   return (
-    <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 space-y-2">
+    <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
         <button
           type="button"
           disabled={busy}
           onClick={() => onClick('approve')}
-          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2 rounded-xl shadow-sm transition-colors disabled:opacity-50"
         >
           Approve
         </button>
@@ -100,7 +101,7 @@ export default function RecDecision({ variety, recType }: Props) {
           type="button"
           disabled={busy}
           onClick={() => onClick('reject')}
-          className="text-xs font-semibold text-red-700 border border-red-200 hover:border-red-400 hover:bg-red-50 px-3 py-1.5 rounded-md disabled:opacity-50"
+          className="text-xs font-semibold text-red-700 bg-white border border-red-200 hover:border-red-400 hover:bg-red-50 px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50"
         >
           Reject
         </button>
@@ -108,34 +109,35 @@ export default function RecDecision({ variety, recType }: Props) {
           type="button"
           disabled={busy}
           onClick={() => onClick('correct')}
-          className="text-xs font-semibold text-violet-700 border border-violet-200 hover:border-violet-400 hover:bg-violet-50 px-3 py-1.5 rounded-md disabled:opacity-50"
+          className="text-xs font-semibold text-violet-700 bg-white border border-violet-200 hover:border-violet-400 hover:bg-violet-50 px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50"
         >
           Correct (reason)
         </button>
         {openReasonFor === null && (
           <span className="text-[11px] text-slate-400">
-            Reason optional for approve/reject
+            Reason optional for approve / reject
           </span>
         )}
       </div>
 
       {openReasonFor === 'correct' && (
-        <div className="space-y-2">
-          <label className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <div className="space-y-2 rounded-xl border border-violet-200 bg-white p-3">
+          <label className="block text-[10px] font-semibold uppercase tracking-wide text-violet-700">
             What is wrong with this recommendation (recorded as the signal)
           </label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={2}
-            className="w-full text-sm rounded-md border border-slate-200 px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            placeholder="Por que la recomendacion esta mal..."
+            className="w-full text-sm rounded-lg border border-slate-200 px-2.5 py-2 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
           />
           <div className="flex items-center gap-2">
             <button
               type="button"
               disabled={busy || reason.trim().length < 3}
               onClick={() => void send('correct', reason)}
-              className="text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+              className="text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 px-3.5 py-2 rounded-xl shadow-sm transition-colors disabled:opacity-50"
             >
               {busy ? 'Submitting...' : 'Submit correction'}
             </button>
@@ -147,7 +149,7 @@ export default function RecDecision({ variety, recType }: Props) {
                 setReason('');
                 setError(null);
               }}
-              className="text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded-md disabled:opacity-50"
+              className="text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -155,7 +157,9 @@ export default function RecDecision({ variety, recType }: Props) {
         </div>
       )}
 
-      {error && <p className="text-[11px] text-red-600 font-mono">{error}</p>}
+      {error && (
+        <p className="text-[11px] text-red-600 font-mono break-words">{error}</p>
+      )}
     </div>
   );
 }

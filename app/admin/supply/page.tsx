@@ -27,6 +27,7 @@ import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import RecDecision from './RecDecision';
+import RecoverImage from './RecoverImage';
 import {
   getCompetitorContext,
   getProdPhotoStatus,
@@ -212,7 +213,7 @@ function ProvenanceBadge({ p, source }: { p: Provenance; source: string | null }
   return (
     <span
       title={source ? `${m.title} (${source})` : m.title}
-      className={`text-[10px] px-2 py-0.5 rounded font-semibold border ${m.cls}`}
+      className={`inline-flex items-center text-[10px] leading-none px-2 py-1 rounded-full font-semibold uppercase tracking-wide border ${m.cls}`}
     >
       {m.label}
     </span>
@@ -391,44 +392,58 @@ export default async function SupplyEnginePage() {
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       {/* Breadcrumb */}
-      <nav className="text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
-        <Link href="/admin/catalog" className="hover:text-emerald-700">
+      <nav className="text-xs text-slate-500 mb-3" aria-label="Breadcrumb">
+        <Link href="/admin/catalog" className="hover:text-emerald-700 transition-colors">
           Catalog
         </Link>
-        <span className="mx-1.5">/</span>
+        <span className="mx-1.5 text-slate-300">/</span>
         <span className="text-slate-700 font-medium">Supply Engine</span>
       </nav>
 
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Supply Engine — daily recommendations
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Supply Engine
           </h1>
-          <p className="text-slate-500 text-sm mt-1 max-w-2xl">
+          <p className="text-sm font-medium text-emerald-700 mt-0.5">
+            Recomendaciones diarias
+          </p>
+          <p className="text-slate-500 text-sm mt-2 max-w-2xl leading-relaxed">
             Ranked by importance × deficit; your decisions train the next ranking
-            (the loop). Each approve/reject/correct writes to
+            (the loop). Each approve / reject / correct writes to
             supply_recommendation_feedback and feeds learned_delta back into the
             engine — re-ranking the next load.
           </p>
         </div>
         <Link
           href="/admin/catalog"
-          className="shrink-0 text-xs px-3 py-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
+          className="shrink-0 inline-flex items-center gap-1 text-xs font-medium px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition-colors"
         >
-          ← Back to catalog
+          <span aria-hidden>←</span> Catalog
         </Link>
       </div>
 
-      <div className="text-xs text-slate-500 mb-6">
-        {totalVarieties} variet{totalVarieties === 1 ? 'y' : 'ies'} across{' '}
-        {levers.length} lever{levers.length === 1 ? '' : 's'} · {totalSkus} SKU
-        {totalSkus === 1 ? '' : 's'} in scope
+      {/* Scope summary */}
+      <div className="mb-8 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2 text-xs text-slate-600">
+        <span className="font-semibold text-slate-900 tabular-nums">{totalVarieties}</span>
+        <span>variet{totalVarieties === 1 ? 'y' : 'ies'}</span>
+        <span className="text-slate-300">·</span>
+        <span className="font-semibold text-slate-900 tabular-nums">{levers.length}</span>
+        <span>lever{levers.length === 1 ? '' : 's'}</span>
+        <span className="text-slate-300">·</span>
+        <span className="font-semibold text-slate-900 tabular-nums">{totalSkus}</span>
+        <span>SKU{totalSkus === 1 ? '' : 's'} in scope</span>
       </div>
 
       {levers.length === 0 ? (
-        <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-6 text-sm text-emerald-700 font-medium">
-          No recommendations right now. The engine has nothing to surface — supply
-          is clean, or v_supply_recommendations is empty.
+        <div className="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-8 text-center">
+          <div className="text-sm font-semibold text-emerald-800">
+            No recommendations right now
+          </div>
+          <p className="text-sm text-emerald-700 mt-1 max-w-md mx-auto leading-relaxed">
+            The engine has nothing to surface — supply is clean, or
+            v_supply_recommendations is empty.
+          </p>
         </div>
       ) : (
         <div className="space-y-10">
@@ -437,17 +452,17 @@ export default async function SupplyEnginePage() {
             const more = lever.rows.length - shown.length;
             return (
               <section key={lever.gapType}>
-                <div className="flex items-baseline justify-between mb-3">
-                  <h2 className="text-lg font-bold text-slate-900">
+                <div className="flex items-baseline justify-between gap-3 mb-4 pb-2 border-b border-slate-200">
+                  <h2 className="text-base font-bold tracking-tight text-slate-900">
                     {leverLabel(lever.gapType)}
                   </h2>
-                  <span className="text-xs text-slate-500">
+                  <span className="shrink-0 text-[11px] font-medium text-slate-500 tabular-nums">
                     {lever.rows.length} variet
                     {lever.rows.length === 1 ? 'y' : 'ies'}
                   </span>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {shown.map((row) => {
                     const vKey = row.variety.trim().toLowerCase();
                     const comp = competitorByVariety.get(vKey) ?? null;
@@ -460,12 +475,12 @@ export default async function SupplyEnginePage() {
                     return (
                     <article
                       key={`${row.gapType}-${row.variety}`}
-                      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
+                      className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-shadow hover:shadow-md"
                     >
-                      <div className="px-4 py-3 flex items-start justify-between gap-3">
+                      <div className="px-5 pt-4 pb-3 flex items-start justify-between gap-4">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-base font-semibold text-slate-900">
+                            <h3 className="text-base font-semibold tracking-tight text-slate-900">
                               {row.variety}
                             </h3>
                             <ProvenanceBadge
@@ -473,16 +488,16 @@ export default async function SupplyEnginePage() {
                               source={row.provenanceSource}
                             />
                           </div>
-                          <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                          <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
                             <span>{row.vendor}</span>
                             <span className="text-slate-300">·</span>
-                            <span className="font-mono">{row.gapType}</span>
+                            <span className="font-mono text-slate-400">{row.gapType}</span>
                             <span className="text-slate-300">·</span>
-                            <span>
+                            <span className="tabular-nums">
                               {row.skuCount} SKU{row.skuCount === 1 ? '' : 's'}
                             </span>
                           </div>
-                          <div className="text-sm text-slate-700 mt-2">
+                          <div className="text-sm text-slate-700 mt-3 leading-relaxed">
                             <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mr-1.5">
                               Action
                             </span>
@@ -493,69 +508,69 @@ export default async function SupplyEnginePage() {
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                             Priority
                           </div>
-                          <div className="text-lg font-bold text-emerald-700 tabular-nums">
+                          <div className="text-2xl font-bold text-emerald-700 tabular-nums leading-tight mt-0.5">
                             {row.priorityScore.toFixed(1)}
                           </div>
                         </div>
                       </div>
 
                       {/* ---- 3-DIM IMPACT: what fixing this moves, in specifics ---- */}
-                      <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                      <div className="px-5 pb-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div className="rounded-xl bg-slate-50 border border-slate-100 px-3.5 py-2.5">
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                             Breadth
                           </div>
-                          <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                          <div className="text-sm font-semibold text-slate-800 mt-1">
                             {row.unpublishedSkus > 0 ? (
                               <span className="text-emerald-700">
                                 +{row.unpublishedSkus} publicable
                                 {row.unpublishedSkus === 1 ? '' : 's'}
                               </span>
                             ) : (
-                              <span className="text-slate-400">—</span>
+                              <span className="text-slate-300">—</span>
                             )}
                           </div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">
+                          <div className="text-[10px] text-slate-400 mt-1 leading-snug">
                             SKU hoy no publicados que esto desbloquea
                           </div>
                         </div>
 
-                        <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                        <div className="rounded-xl bg-slate-50 border border-slate-100 px-3.5 py-2.5">
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                             Importance
                           </div>
-                          <div className="text-sm font-semibold text-slate-800 mt-0.5 tabular-nums">
+                          <div className="text-sm font-semibold text-slate-800 mt-1 tabular-nums">
                             {row.importanceBase > 0
                               ? row.importanceBase.toFixed(0)
-                              : '--'}
+                              : <span className="text-slate-300">--</span>}
                           </div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">
+                          <div className="text-[10px] text-slate-400 mt-1 leading-snug">
                             demanda x ventaja competitiva (peso)
                           </div>
                         </div>
 
-                        <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                        <div className="rounded-xl bg-slate-50 border border-slate-100 px-3.5 py-2.5">
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                             Quality
                           </div>
-                          <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                          <div className="text-sm font-semibold text-slate-800 mt-1 leading-snug">
                             {qualityGateText(row.gapType, row.minImageCount)}
                           </div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">
+                          <div className="text-[10px] text-slate-400 mt-1 leading-snug">
                             gate que cierra
                           </div>
                         </div>
                       </div>
 
                       {/* ---- CONTEXT: competitor price (REAL) — why it matters ---- */}
-                      <div className="px-4 pb-3">
-                        <div className="rounded-lg border border-slate-100 px-3 py-2">
+                      <div className="px-5 pb-3">
+                        <div className="rounded-xl border border-slate-100 bg-white px-3.5 py-2.5">
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                             Mercado
                           </div>
                           {comp && comp.found && comp.avgPerStem != null ? (
-                            <div className="text-sm text-slate-700 mt-0.5">
-                              <span className="font-semibold text-slate-900">
+                            <div className="text-sm text-slate-700 mt-1 leading-relaxed">
+                              <span className="font-semibold text-slate-900 tabular-nums">
                                 ~{usd(comp.avgPerStem)}/stem
                               </span>{' '}
                               <span className="text-slate-500">
@@ -570,47 +585,45 @@ export default async function SupplyEnginePage() {
                               </span>
                             </div>
                           ) : (
-                            <div className="text-sm text-slate-400 mt-0.5">
+                            <div className="text-sm text-slate-400 mt-1">
                               sin referencia de mercado
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {/* ---- VERIFIED SOLUTION (image levers only) ---- */}
+                      {/* ---- VERIFIED SOLUTION (image levers only) ----
+                           state 'yes' -> a REAL PROD photo exists: render the
+                           self-contained "Recuperar imagen" action that closes
+                           the loop (writes product_chrome.images, re-measures).
+                           state 'no'/'unknown' -> keep the honest ladder. */}
                       {isImageLever && (
-                        <div className="px-4 pb-3">
-                          <div
-                            className={`rounded-lg border px-3 py-2 ${
-                              photo?.state === 'yes'
-                                ? 'bg-emerald-50 border-emerald-200'
-                                : 'bg-slate-50 border-slate-100'
-                            }`}
-                          >
-                            <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                              Solucion verificada
+                        <div className="px-5 pb-3">
+                          {photo?.state === 'yes' ? (
+                            <RecoverImage variety={row.variety} prodUrl={photo.url} />
+                          ) : (
+                            <div className="rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2.5">
+                              <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                Solucion verificada
+                              </div>
+                              {photo?.state === 'no' ? (
+                                <div className="text-sm text-slate-700 mt-1 leading-relaxed">
+                                  Sin foto PROD real -&gt; ladder: vendor -&gt; free -&gt; sample -&gt; AI
+                                </div>
+                              ) : (
+                                <div className="text-sm text-slate-400 mt-1">
+                                  PROD no verificable ahora — solucion pendiente
+                                </div>
+                              )}
                             </div>
-                            {photo?.state === 'yes' ? (
-                              <div className="text-sm font-medium text-emerald-700 mt-0.5">
-                                Foto PROD disponible → recuperar (self-contained)
-                              </div>
-                            ) : photo?.state === 'no' ? (
-                              <div className="text-sm text-slate-700 mt-0.5">
-                                Sin foto PROD → ladder: vendor → free → sample → AI
-                              </div>
-                            ) : (
-                              <div className="text-sm text-slate-400 mt-0.5">
-                                PROD no verificable ahora — solucion pendiente
-                              </div>
-                            )}
-                          </div>
+                          )}
                         </div>
                       )}
 
                       {/* ---- LEARNING indicator (loop feedback per gap_type) ---- */}
-                      <div className="px-4 pb-3">
-                        <div className="text-[11px] text-slate-500">
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mr-1.5">
+                      <div className="px-5 pb-3">
+                        <div className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                             Loop
                           </span>
                           {learn && learn.decisions > 0
@@ -634,7 +647,7 @@ export default async function SupplyEnginePage() {
                 </div>
 
                 {more > 0 && (
-                  <p className="text-xs text-slate-400 mt-3">
+                  <p className="text-xs text-slate-400 mt-4 pl-1">
                     +{more} more variet{more === 1 ? 'y' : 'ies'} in this lever
                     (showing top {LEVER_CAP} by priority).
                   </p>
@@ -645,13 +658,18 @@ export default async function SupplyEnginePage() {
         </div>
       )}
 
-      <p className="text-xs text-slate-400 mt-10">
+      <p className="text-[11px] leading-relaxed text-slate-400 mt-12 pt-6 border-t border-slate-200">
         Sources: supabase-backup v_supply_recommendations (engine, aggregated to
         variety × lever), supply_importance_signal (provenance badge),
         supply_recommendation_feedback (loop indicator + write target).
         PROD (read-only): competitor_prices joined by variety (market price),
-        floropolis_inventory.images (verified PROD photo for image levers; null
-        when PROD unreachable → degrades to pending, never invented). Provenance:
+        floropolis_inventory.images (REAL http photo only for image levers —
+        local placeholder paths are NOT recoverable; null when PROD unreachable
+        → degrades to pending, never invented). Recover appends the recovered url
+        into BACKUP product_chrome.images (what the storefront catalog reads) AND
+        clears the missing_image failing gate in catalog_classifications (what the
+        engine's image lever actually reads), then re-reads the engine to confirm
+        the lever stopped firing before claiming the loop closed. Provenance:
         assumed = guess (red), directional = partial signal (amber),
         verified/sourced = real signal (green), none = base score only (grey).
       </p>

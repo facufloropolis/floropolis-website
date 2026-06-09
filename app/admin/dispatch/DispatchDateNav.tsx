@@ -106,9 +106,9 @@ export default function DispatchDateNav({ date, todayIso }: Props) {
         <button
           type="button"
           onClick={() => goto(todayIso)}
-          className="text-xs text-emerald-700 hover:underline ml-1"
+          className="text-xs font-medium text-emerald-700 hover:underline ml-1"
         >
-          Today
+          Hoy
         </button>
       )}
       <input
@@ -118,7 +118,7 @@ export default function DispatchDateNav({ date, todayIso }: Props) {
           const v = e.target.value;
           if (/^\d{4}-\d{2}-\d{2}$/.test(v)) goto(v);
         }}
-        className="text-xs border border-slate-200 rounded px-1 py-0.5 text-slate-600"
+        className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600 hover:border-slate-400 transition-colors"
       />
     </div>
   );

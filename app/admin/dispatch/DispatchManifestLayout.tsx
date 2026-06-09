@@ -30,6 +30,7 @@ export default function DispatchManifestLayout({
   farmCount,
   belowMinimum,
   prospects,
+  dispatchDate,
 }: {
   boxes: ManifestBox[];
   farms: ManifestFarm[];
@@ -40,6 +41,7 @@ export default function DispatchManifestLayout({
   farmCount: number;
   belowMinimum: boolean;
   prospects: SampleProspect[];
+  dispatchDate: string;
 }) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -59,7 +61,7 @@ export default function DispatchManifestLayout({
           totalBoxes={totalBoxes}
           farmCount={farmCount}
         />
-        <LabelsPanel boxes={boxes} totalBoxes={totalBoxes} />
+        <LabelsPanel boxes={boxes} totalBoxes={totalBoxes} dispatchDate={dispatchDate} />
       </div>
       <SampleBoxModal open={modalOpen} prospects={prospects} onClose={() => setModalOpen(false)} />
     </>

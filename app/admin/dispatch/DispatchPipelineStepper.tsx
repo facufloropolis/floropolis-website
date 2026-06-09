@@ -22,11 +22,11 @@ export default function DispatchPipelineStepper({ activeStep }: { activeStep: nu
   const facuRemaining = STEPS.filter((s, i) => i >= activeStep && s.owner === 'Facu').length;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 mt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-slate-900 text-sm">Rose Dispatch Pipeline</h2>
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 mt-6 shadow-sm">
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+        <h2 className="font-bold text-slate-900 text-sm">Pipeline de despacho de Rose</h2>
         <span className="text-xs text-slate-400">
-          9 steps · {facuRemaining === 0 ? 'All Facu steps done ✓' : `${facuRemaining} Facu step${facuRemaining === 1 ? '' : 's'} remaining`}
+          9 pasos &middot; {facuRemaining === 0 ? 'Todos los pasos de Facu listos' : `${facuRemaining} paso${facuRemaining === 1 ? '' : 's'} de Facu pendiente${facuRemaining === 1 ? '' : 's'}`}
         </span>
       </div>
       <div className="flex items-start overflow-x-auto pb-2">
@@ -71,7 +71,7 @@ export default function DispatchPipelineStepper({ activeStep }: { activeStep: nu
         </div>
       )}
       <p className="text-[10px] text-slate-400 mt-2">
-        <span className="text-violet-600 font-semibold">F</span> = Facu manual step · Click any step for description
+        <span className="text-violet-600 font-semibold">F</span> = paso manual de Facu &middot; Toca cualquier paso para ver la descripcion
       </p>
     </div>
   );

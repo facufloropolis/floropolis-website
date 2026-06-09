@@ -75,21 +75,29 @@ export default async function SamplesReviewPage() {
   const openQuestions = rows.filter((r) => r.status === 'question_open').length;
 
   return (
-    <div className="px-4 py-5 max-w-[1400px] mx-auto">
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-xl font-semibold text-slate-800">Sample Review</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Los samples que JJ propone para dispatch -- score + por que, engagement real,
-            analisis de comms, hipotesis de win, direccion, y composicion por fit.
-            Decidi SI / NO / Pregunta; las preguntas van a JJ en admin.
+    <main className="px-4 py-6 max-w-[1400px] mx-auto">
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+            Sample Review
+            <span className="text-slate-400 font-medium"> &middot; lo que JJ propone para dispatch</span>
+          </h1>
+          <p className="text-[13px] text-slate-500 mt-1.5 max-w-2xl leading-relaxed">
+            Score + por que, engagement real, analisis de comms, hipotesis de win,
+            direccion y composicion por fit. Decidi SI / NO / Pregunta &mdash; las
+            preguntas van a JJ en admin.
           </p>
         </div>
         <Link
           href="/admin/samples/jj"
-          className="shrink-0 text-sm rounded-lg border border-slate-300 px-3 py-1.5 text-slate-600 hover:bg-slate-50"
+          className="shrink-0 inline-flex items-center gap-1.5 text-sm font-medium rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors"
         >
-          Vista JJ{openQuestions > 0 ? ` (${openQuestions})` : ''}
+          Vista JJ
+          {openQuestions > 0 ? (
+            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-sky-100 text-sky-700 text-[11px] font-bold tabular-nums">
+              {openQuestions}
+            </span>
+          ) : null}
         </Link>
       </div>
 
@@ -97,6 +105,6 @@ export default async function SamplesReviewPage() {
       <FloraCohortPanel rows={floraCohort} />
 
       <SamplesReviewClient rows={rows} />
-    </div>
+    </main>
   );
 }

@@ -8,7 +8,7 @@
 'use client';
 
 import type { SampleReviewRow } from './types';
-import { fmtTalk, fmtDate, qualityBadge, dispatchBadge, commsIcon } from './format';
+import { fmtTalk, fmtDate, qualityBadge, dispatchBadge, statusBadge, commsIcon } from './format';
 import DecisionBar from './DecisionBar';
 import HypothesisFeedback from './HypothesisFeedback';
 
@@ -39,29 +39,31 @@ export default function SampleDeepDive({ row }: Props) {
   const d = dispatchBadge(row.dispatchState);
 
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-      <div className="p-5 space-y-5">
+    <article className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden flex flex-col">
+      <div className="p-5 space-y-4">
         {/* Identity */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg font-bold text-slate-900">{row.businessName}</h2>
-              <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-                {row.status}
-              </span>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-lg font-bold text-slate-900">{row.businessName}</h2>
+                <span className={'text-[10px] font-medium px-2 py-0.5 rounded-md border ' + statusBadge(row.status).cls}>
+                  {statusBadge(row.status).label}
+                </span>
+              </div>
+              <div className="text-[12px] text-slate-500 mt-1">
+                {row.businessType || '--'}
+                {row.cohortDate ? ` · cohorte ${fmtDate(row.cohortDate)}` : ''}
+              </div>
             </div>
-            <div className="text-[12px] text-slate-500 mt-0.5">
-              {row.businessType || '--'}
-              {row.cohortDate ? ` · cohorte ${fmtDate(row.cohortDate)}` : ''}
-            </div>
+            <span className="font-bold rounded-md border tabular-nums shrink-0 text-xs px-2.5 py-1 bg-slate-50 text-slate-700 border-slate-200">
+              JJ {row.jjScore ?? '--'}
+            </span>
           </div>
-          <span className="font-bold rounded-md border tabular-nums shrink-0 text-xs px-2.5 py-1 bg-slate-50 text-slate-700 border-slate-200">
-            JJ {row.jjScore ?? '--'}
-          </span>
-        </div>
+        </section>
 
         {/* JJ reasoning */}
-        <section>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <MicroLabel>Reasoning de JJ</MicroLabel>
           {row.jjReasoning ? (
             <p className="text-sm text-slate-700 leading-relaxed">{row.jjReasoning}</p>
@@ -71,25 +73,30 @@ export default function SampleDeepDive({ row }: Props) {
         </section>
 
         {/* Full qualification intel */}
-        <section>
-          <MicroLabel>Cualificación &mdash; lo que sabemos</MicroLabel>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
+          <MicroLabel>Cualificacion &mdash; lo que sabemos</MicroLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Proveedor actual" value={row.currentSupplier} />
             <Field label="Precios que paga" value={row.pricesTheyPay} />
-            <Field label="Productos de interés" value={row.productsInterest} />
-            <Field label="Objeción" value={row.objection} />
-            <Field label="Qué resonó del pitch" value={row.pitchResonated} />
+            <Field label="Productos de interes" value={row.productsInterest} />
+            <Field label="Objecion" value={row.objection} />
+            <Field label="Que resono del pitch" value={row.pitchResonated} />
             <Field label="Tipo de negocio" value={row.businessType} />
           </div>
           {row.keyQuote && row.keyQuote.trim() ? (
-            <blockquote className="mt-3 border-l-2 border-emerald-300 pl-3 text-[13px] italic text-slate-600">
-              &ldquo;{row.keyQuote}&rdquo;
+            <blockquote className="mt-3 border-l-4 border-emerald-400 bg-emerald-50/50 rounded-r-md pl-3 pr-2 py-2">
+              <p className="text-sm font-medium text-emerald-900 italic">
+                &ldquo;{row.keyQuote}&rdquo;
+              </p>
+              <span className="text-[10px] uppercase tracking-wide text-emerald-600 font-semibold">
+                key quote
+              </span>
             </blockquote>
           ) : null}
         </section>
 
         {/* Engagement detail */}
-        <section>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <MicroLabel>Engagement &mdash; touchpoints</MicroLabel>
           <div className="flex items-center gap-2 flex-wrap text-[13px] text-slate-700">
             <span className="font-medium">
@@ -104,7 +111,7 @@ export default function SampleDeepDive({ row }: Props) {
         </section>
 
         {/* Dispatch */}
-        <section>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <MicroLabel>Dispatch</MicroLabel>
           <div className="flex items-center gap-2 flex-wrap text-[13px] text-slate-700">
             <span
@@ -143,14 +150,14 @@ export default function SampleDeepDive({ row }: Props) {
         </section>
 
         {/* Comms timeline */}
-        <section>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <MicroLabel>Timeline de comunicaciones</MicroLabel>
           {row.timeline && row.timeline.length > 0 ? (
             <ol className="space-y-2.5">
               {row.timeline.map((c, i) => (
                 <li
                   key={i}
-                  className="rounded-xl border border-slate-200 bg-slate-50/60 px-3 py-2"
+                  className="rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2.5"
                 >
                   <div className="flex items-center gap-2 text-[12px] text-slate-600 flex-wrap">
                     <span aria-hidden>{commsIcon(c.type)}</span>
@@ -186,17 +193,19 @@ export default function SampleDeepDive({ row }: Props) {
           )}
         </section>
 
-        {/* Win hypothesis (full) */}
-        <section>
-          <MicroLabel>Win-hypothesis</MicroLabel>
-          <p className="text-sm text-slate-700 leading-relaxed">{row.winHypothesis}</p>
-          <p className="text-[10px] text-slate-400 mt-1">
-            Direccional, anclada a evidencia &mdash; no es una predicción cerrada.
+        {/* Win hypothesis (full) -- the meat, given the emerald left accent */}
+        <section className="rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 bg-white p-4">
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 mb-1">
+            Win-hypothesis
+          </div>
+          <p className="text-[15px] font-semibold text-slate-900 leading-snug">{row.winHypothesis}</p>
+          <p className="text-[10px] text-slate-400 mt-1.5">
+            Direccional, anclada a evidencia &mdash; no es una prediccion cerrada.
           </p>
         </section>
 
         {/* Quality read */}
-        <section>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <MicroLabel>Lectura de calidad</MicroLabel>
           <div className="flex items-start gap-2">
             <span
@@ -214,17 +223,17 @@ export default function SampleDeepDive({ row }: Props) {
         </section>
 
         {/* Proposed composition */}
-        <section>
-          <MicroLabel>Composición propuesta</MicroLabel>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
+          <MicroLabel>Composicion propuesta</MicroLabel>
           {row.proposedComposition && row.proposedComposition.trim() ? (
             <p className="text-[13px] text-slate-800">{row.proposedComposition}</p>
           ) : (
-            <p className="text-[13px] text-slate-400">sin señal de productos de interés</p>
+            <p className="text-[13px] text-slate-400">sin senal de productos de interes</p>
           )}
         </section>
 
         {/* External profile -> pending-research panel when null */}
-        <section>
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <MicroLabel>Perfil externo</MicroLabel>
           {row.externalProfile ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -232,7 +241,7 @@ export default function SampleDeepDive({ row }: Props) {
                 label="Web"
                 value={
                   row.externalProfile.hasWebsite
-                    ? row.externalProfile.websiteUrl ?? 'sí'
+                    ? row.externalProfile.websiteUrl ?? 'si'
                     : row.externalProfile.hasWebsite === false
                       ? 'no'
                       : null
@@ -257,20 +266,20 @@ export default function SampleDeepDive({ row }: Props) {
                   row.externalProfile.runsAds == null
                     ? null
                     : row.externalProfile.runsAds
-                      ? 'sí'
+                      ? 'si'
                       : 'no'
                 }
               />
               <Field label="Vende" value={row.externalProfile.sells} />
               <Field label="Rango de precios" value={row.externalProfile.priceRange} />
-              <div className="sm:col-span-2 text-[10px] text-slate-400">
+              <div className="sm:col-span-2 text-[10px] text-slate-400 pt-1 border-t border-slate-100 mt-1">
                 provenance: {row.externalProfile.provenance}
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/40 p-3">
+            <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50/60 p-3">
               <p className="text-[11px] text-slate-500 mb-2">
-                Investigación externa pendiente &mdash; aún sin datos.
+                Investigacion externa pendiente &mdash; aun sin datos.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {['Web', 'Reviews', 'Socials', 'Ads', 'Vende', 'Rango de precios'].map((lbl) => (
@@ -287,8 +296,11 @@ export default function SampleDeepDive({ row }: Props) {
         </section>
 
         {/* Data note banner */}
-        <div className="rounded-md border border-amber-200 bg-amber-50/60 px-3 py-2 text-[12px] text-amber-800">
-          {row.dataNote || 'Direccional — pendiente de las vistas certificadas de Rose.'}
+        <div className="flex items-start gap-1.5 rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2 text-[12px] text-amber-800">
+          <span aria-hidden className="leading-none mt-px">&#9888;</span>
+          <span className="leading-relaxed">
+            {row.dataNote || 'Direccional - pendiente de las vistas certificadas de Rose.'}
+          </span>
         </div>
 
         {/* Learning loop */}

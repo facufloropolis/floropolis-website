@@ -54,7 +54,7 @@ function SampleCard({
     <button
       type="button"
       onClick={() => onSelect(row.leadMasterId)}
-      className="block w-full text-left rounded-2xl border border-slate-200 bg-white p-4 hover:border-emerald-300 hover:shadow-sm transition space-y-2.5"
+      className="block w-full text-left rounded-2xl border border-slate-200 bg-white p-4 hover:border-emerald-300 hover:shadow-sm transition-all space-y-3"
     >
       {/* Top row: name + score + status */}
       <div className="flex items-start justify-between gap-3">
@@ -65,7 +65,7 @@ function SampleCard({
             </h3>
             <Chip cls={q.cls}>{q.label}</Chip>
           </div>
-          <p className="text-[12px] text-slate-500 mt-0.5 truncate">
+          <p className="text-[12px] text-slate-500 mt-1 truncate">
             {row.jjReasoning ? truncate(row.jjReasoning, 90) : 'sin reasoning de JJ'}
           </p>
         </div>
@@ -94,10 +94,15 @@ function SampleCard({
         </Chip>
       </div>
 
-      {/* Win hypothesis, 1 line */}
-      <p className="text-[13px] text-slate-700 truncate">
-        <span className="text-slate-400">Win:</span> {truncate(row.winHypothesis, 110)}
-      </p>
+      {/* Win hypothesis, 1 line -- the meat, given a left accent */}
+      <div className="rounded-lg border-l-2 border-l-emerald-400 bg-emerald-50/40 pl-2.5 pr-2 py-1.5">
+        <span className="text-[9px] font-semibold uppercase tracking-wide text-emerald-600">
+          Win
+        </span>
+        <p className="text-[13px] text-slate-700 truncate leading-snug">
+          {truncate(row.winHypothesis, 110)}
+        </p>
+      </div>
 
       {/* Engagement chips */}
       <div className="flex flex-wrap gap-1.5">
@@ -115,7 +120,7 @@ function SampleCard({
       {/* Label-readiness chips */}
       <div className="flex flex-wrap gap-1.5">
         <Chip cls={readyChip(row.addressComplete)}>
-          dirección {row.addressComplete ? 'OK' : 'falta'}
+          direccion {row.addressComplete ? 'OK' : 'falta'}
         </Chip>
         <Chip
           cls={readyChip(row.preShipOk)}
@@ -138,15 +143,15 @@ export default function SampleReviewList({ rows, onSelect }: Props) {
 
   if (sorted.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-slate-50/60 px-6 py-12 text-center">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50/60 px-6 py-12 text-center">
         <div className="text-slate-300 text-3xl mb-2" aria-hidden>
           &#9711;
         </div>
         <h2 className="text-base font-semibold text-slate-700">No hay samples para revisar</h2>
-        <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-          A medida que JJ proponga samples para despachar, sus tarjetas aparecen acá
-          con el análisis, el engagement y la lectura de calidad &mdash; a una
-          decisión de distancia.
+        <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto leading-relaxed">
+          A medida que JJ proponga samples para despachar, sus tarjetas aparecen aca
+          con el analisis, el engagement y la lectura de calidad &mdash; a una
+          decision de distancia.
         </p>
       </div>
     );
@@ -155,14 +160,17 @@ export default function SampleReviewList({ rows, onSelect }: Props) {
   return (
     <div className="space-y-6">
       <p className="text-[13px] text-slate-500">
-        {sorted.length} {sorted.length === 1 ? 'sample' : 'samples'} &middot;{' '}
-        {pending.length} pendientes de dispatch &middot; {shipped.length} ya enviados
+        <span className="font-semibold text-slate-700 tabular-nums">{sorted.length}</span>{' '}
+        {sorted.length === 1 ? 'sample' : 'samples'} &middot;{' '}
+        <span className="tabular-nums">{pending.length}</span> pendientes de dispatch &middot;{' '}
+        <span className="tabular-nums">{shipped.length}</span> ya enviados
       </p>
 
       {pending.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-            Pendientes de dispatch &middot; {pending.length}
+          <h2 className="flex items-baseline gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            Pendientes de dispatch
+            <span className="text-amber-600 tabular-nums">{pending.length}</span>
           </h2>
           {pending.map((row) => (
             <SampleCard
@@ -176,8 +184,9 @@ export default function SampleReviewList({ rows, onSelect }: Props) {
 
       {shipped.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-            Ya enviados (follow-up) &middot; {shipped.length}
+          <h2 className="flex items-baseline gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            Ya enviados (follow-up)
+            <span className="text-slate-500 tabular-nums">{shipped.length}</span>
           </h2>
           {shipped.map((row) => (
             <SampleCard
