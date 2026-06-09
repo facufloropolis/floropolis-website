@@ -79,6 +79,9 @@ export async function searchClients(q: string): Promise<ClientLite[]> {
       .select(
         'lead_master_id, business_name, city, state, lead_status, sb_qualification, fe_touchpoints_total, fe_call_count',
       )
+      // Exclude the internal test account (Rose flag: pollutes the picker as top touchpoints).
+      .neq('lead_status', 'internal_test')
+      .not('business_name', 'ilike', '%floropolis%test%')
       .limit(50);
 
     if (term) {

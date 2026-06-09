@@ -232,7 +232,9 @@ async function readCohort(leadMasterId?: number): Promise<CohortRaw[]> {
           'ship_country, address_source, ' +
           'tracking_number, tracking_status, sheet_dispatch_date, tracking_delivered_at',
       )
-      .in('sb_status', ['SB_READY', 'SB_RECEIVED']);
+      .in('sb_status', ['SB_READY', 'SB_RECEIVED'])
+      // Exclude the internal test account (pollutes the cohort).
+      .not('business_name', 'ilike', '%floropolis%test%');
     if (typeof leadMasterId === 'number') q = q.eq('lead_master_id', leadMasterId);
     const { data, error } = await q;
     if (error || !data) return [];
