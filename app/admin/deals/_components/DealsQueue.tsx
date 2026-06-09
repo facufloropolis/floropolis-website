@@ -13,6 +13,7 @@ export interface PendingDeal {
   totalPrice: number | null;
   blendedGpm: number | null;
   createdBy: string | null;
+  belowFloor?: boolean;
 }
 
 export default function DealsQueue({ initial }: { initial: PendingDeal[] }) {
@@ -71,7 +72,14 @@ export default function DealsQueue({ initial }: { initial: PendingDeal[] }) {
           <tbody className="divide-y divide-amber-100">
             {deals.map((d) => (
               <tr key={d.id}>
-                <td className="px-3 py-2 font-medium text-slate-800">{d.businessName ?? `Deal #${d.id}`}</td>
+                <td className="px-3 py-2 font-medium text-slate-800">
+                  {d.businessName ?? `Deal #${d.id}`}
+                  {d.belowFloor && (
+                    <span className="ml-2 rounded-full border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-[10px] font-medium text-rose-700">
+                      bajo floor
+                    </span>
+                  )}
+                </td>
                 <td className="px-3 py-2 text-slate-600">
                   {d.dealType === 'standing_order' ? `standing (${d.cadence ?? '--'})` : 'one-off'}
                 </td>

@@ -1,9 +1,9 @@
-// PriceRail -- sticky right rail: cost build-up, price slider that CANNOT go below
-// floor = totalCost / (1 - GPM_FLOOR), live GPM. Mirrors the server floor in save.ts.
-// v1 | 2026-06-09 | Job_PM (CPO)
+// PriceRail -- sticky right rail: cost build-up, price slider + live GPM. The min-GPM
+// floor is a CONFIG value (minGpm prop) and a SOFT guideline: you CAN price below it
+// (strategic deals), it just flags the deal for sign-off. Not enforced.
+// v2 | 2026-06-09 | Job_PM (CPO) — config-driven + soft per Facu.
 'use client';
 
-import { GPM_FLOOR } from '@/lib/deal/types';
 import type { DealLineVM } from './types';
 
 function money(n: number) {
@@ -13,20 +13,23 @@ function money(n: number) {
 export default function PriceRail({
   lines,
   price,
+  minGpm,
   onPriceChange,
 }: {
   lines: DealLineVM[];
   price: number;
+  minGpm: number;
   onPriceChange: (p: number) => void;
 }) {
   const totalStems = lines.reduce((s, l) => s + l.stems, 0);
   const totalCost = lines.reduce((s, l) => s + l.stems * l.costPerStem, 0);
-  const floor = totalCost / (1 - GPM_FLOOR);
+  const floor = totalCost / (1 - minGpm);
   const gpm = price > 0 ? (1 - totalCost / price) * 100 : 0;
   const belowFloor = price < floor - 1e-9;
+  const minGpmPct = (minGpm * 100).toFixed(0);
 
-  // Slider bounds: floor at the bottom, generous headroom at the top.
-  const sliderMin = Math.ceil(floor * 100) / 100;
+  // Slider bounds: allow BELOW the floor (down to cost) — floor is a guideline marker.
+  const sliderMin = Math.max(0, Math.floor(totalCost * 100) / 100);
   const sliderMax = Math.max(floor * 2.5, floor + 50, price + 1);
 
   return (
@@ -79,36 +82,36 @@ export default function PriceRail({
             min={sliderMin}
             max={Math.ceil(sliderMax)}
             step={0.5}
-            value={Math.max(price, sliderMin)}
-            onChange={(e) => onPriceChange(Math.max(floor, +e.target.value))}
+            value={Math.min(Math.max(price, sliderMin), Math.ceil(sliderMax))}
+            onChange={(e) => onPriceChange(+e.target.value)}
             className="mt-3 w-full accent-emerald-600"
             disabled={totalCost <= 0}
           />
           <div className="mt-1 flex justify-between text-[11px] text-slate-500">
-            <span>Floor {money(floor)}</span>
+            <span>Floor {money(floor)} (GPM {minGpmPct}%)</span>
             <span>{money(Math.ceil(sliderMax))}</span>
           </div>
 
-          {/* Manual numeric entry, also clamped to floor */}
+          {/* Manual numeric entry — free (can go below floor). */}
           <div className="mt-3 flex items-center gap-2">
             <span className="text-[11px] text-slate-500">Precio exacto</span>
             <input
               type="number"
               step={0.01}
-              min={floor}
+              min={0}
               value={price}
-              onChange={(e) => onPriceChange(Math.max(floor, +e.target.value))}
+              onChange={(e) => onPriceChange(+e.target.value)}
               className="w-28 rounded-md border border-slate-300 px-2 py-1 text-right text-sm tabular-nums outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
             />
           </div>
 
           <p className="mt-2 text-[11px] leading-snug text-slate-400">
-            El floor = costo / (1 - {(GPM_FLOOR * 100).toFixed(0)}%). El GPM {(GPM_FLOOR * 100).toFixed(0)}% cubre la comision
-            de ventas. El control no baja del floor; el server tambien lo valida.
+            El floor = costo / (1 - {minGpmPct}%), GPM minimo de <span className="font-medium">config</span> (editable).
+            Es una guia, no un bloqueo: si bajas del floor, el deal queda flagueado para tu aprobacion.
           </p>
           {belowFloor && (
             <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
-              Bajo el floor -- bloqueado.
+              Bajo el floor (GPM {minGpmPct}% config) -- se puede enviar; queda flagueado para aprobacion.
             </div>
           )}
         </div>

@@ -21,7 +21,9 @@ export default function ApprovalBar({
   saveState: SaveState;
   onSubmit: () => void;
 }) {
-  const disabled = belowFloor || !hasLines || saveState.kind === 'saving' || saveState.kind === 'ok';
+  // Below-floor is NOT a blocker — it flags the deal for sign-off (Facu can run a
+  // strategic deal below the min-GPM guideline). Only block when there's nothing to send.
+  const disabled = !hasLines || saveState.kind === 'saving' || saveState.kind === 'ok';
 
   return (
     <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-sm">
@@ -33,6 +35,11 @@ export default function ApprovalBar({
         <span className="font-medium">JJ o Facu pueden aprobar</span> este deal. Se envia a la queue con estado{' '}
         <span className="font-mono">pending_approval</span>.
       </p>
+      {belowFloor && (
+        <p className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[12px] text-rose-700">
+          Bajo el floor de GPM (config). Se puede enviar igual -- queda <span className="font-medium">flagueado</span> para tu aprobacion.
+        </p>
+      )}
 
       <button
         type="button"

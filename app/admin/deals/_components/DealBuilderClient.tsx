@@ -26,9 +26,11 @@ function newId() {
 export default function DealBuilderClient({
   initialClients,
   boxTypes: initialBoxTypes,
+  minGpm = GPM_FLOOR,
 }: {
   initialClients: ClientLite[];
   boxTypes: BoxType[];
+  minGpm?: number;
 }) {
   // --- Client state -----------------------------------------------------------
   const [selectedClient, setSelectedClient] = useState<ClientLite | null>(null);
@@ -52,7 +54,7 @@ export default function DealBuilderClient({
 
   // --- Derived economics ------------------------------------------------------
   const totalCost = useMemo(() => lines.reduce((s, l) => s + l.stems * l.costPerStem, 0), [lines]);
-  const floor = totalCost / (1 - GPM_FLOOR);
+  const floor = totalCost / (1 - minGpm);
   const effectivePrice = priceTouched ? price : Math.max(floor, totalCost > 0 ? +(floor * 1.18).toFixed(2) : 0);
   const belowFloor = effectivePrice < floor - 1e-9;
   const hasLines = lines.some((l) => l.stems > 0);
@@ -321,6 +323,7 @@ export default function DealBuilderClient({
               <PriceRail
                 lines={lines}
                 price={effectivePrice}
+                minGpm={minGpm}
                 onPriceChange={(p) => {
                   setPriceTouched(true);
                   setPrice(p);

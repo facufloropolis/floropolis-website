@@ -10,6 +10,28 @@ import type { ClientLite, ClientIntel, CatalogVariety, BoxType } from './types';
 
 const DASH = '--';
 
+import { GPM_FLOOR } from './types';
+
+/**
+ * getMinGpm — the deal min-GPM floor from CONFIG (pricing_constants.min_gpm_deal),
+ * a fraction (0.05 = 5%). Falls back to GPM_FLOOR if the row/read is missing.
+ * This is a SOFT guideline (below-floor deals are flagged, not blocked).
+ */
+export async function getMinGpm(): Promise<number> {
+  try {
+    const backup = getBackupServiceClient();
+    const { data } = await backup
+      .from('pricing_constants')
+      .select('value_numeric')
+      .eq('id', 'min_gpm_deal')
+      .maybeSingle();
+    const v = num((data as { value_numeric?: unknown } | null)?.value_numeric);
+    return v != null && v > 0 && v < 1 ? v : GPM_FLOOR;
+  } catch {
+    return GPM_FLOOR;
+  }
+}
+
 function num(v: unknown): number | null {
   if (typeof v === 'number' && Number.isFinite(v)) return v;
   if (typeof v === 'string' && v.trim() !== '') {

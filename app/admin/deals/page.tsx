@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import { getBoxTypes, searchClients } from '@/lib/deal/data';
+import { getBoxTypes, searchClients, getMinGpm } from '@/lib/deal/data';
 import DealBuilderClient from './_components/DealBuilderClient';
 import DealsQueue, { type PendingDeal } from './_components/DealsQueue';
 
@@ -17,7 +17,7 @@ async function getPendingDeals(): Promise<PendingDeal[]> {
     const svc = getBackupServiceClient();
     const { data } = await svc
       .from('deals')
-      .select('id, client_snapshot, deal_type, cadence, total_price, blended_gpm, created_by')
+      .select('id, client_snapshot, deal_type, cadence, total_price, blended_gpm, created_by, below_floor')
       .eq('approval_status', 'pending_approval')
       .order('created_at', { ascending: false })
       .limit(50);
@@ -33,6 +33,7 @@ async function getPendingDeals(): Promise<PendingDeal[]> {
         totalPrice: d.total_price != null ? Number(d.total_price) : null,
         blendedGpm: d.blended_gpm != null ? Number(d.blended_gpm) : null,
         createdBy: (d.created_by ?? null) as string | null,
+        belowFloor: Boolean(d.below_floor),
       };
     });
   } catch {
@@ -72,10 +73,11 @@ export default async function DealBuilderPage() {
   }
 
   // --- Server-side initial data -----------------------------------------------
-  const [boxTypes, initialClients, pendingDeals] = await Promise.all([
+  const [boxTypes, initialClients, pendingDeals, minGpm] = await Promise.all([
     getBoxTypes(),
     searchClients(''),
     getPendingDeals(),
+    getMinGpm(),
   ]);
 
   return (
@@ -85,7 +87,7 @@ export default async function DealBuilderPage() {
           <DealsQueue initial={pendingDeals} />
         </div>
       )}
-      <DealBuilderClient initialClients={initialClients.slice(0, 15)} boxTypes={boxTypes} />
+      <DealBuilderClient initialClients={initialClients.slice(0, 15)} boxTypes={boxTypes} minGpm={minGpm} />
     </div>
   );
 }
