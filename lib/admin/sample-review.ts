@@ -702,6 +702,61 @@ function computeProposedComposition(productsInterest: string | null): string | n
 }
 
 // ---------------------------------------------------------------------------
+// External profile (Rose's florist_external_profile — PROD, join by lead_master_id)
+// ---------------------------------------------------------------------------
+
+async function readExternalProfiles(
+  leadMasterIds: number[],
+): Promise<Map<number, SampleExternalProfile>> {
+  const out = new Map<number, SampleExternalProfile>();
+  const prod = getProdReadClient();
+  if (!prod || leadMasterIds.length === 0) return out;
+  const toNum = (v: unknown): number | null => {
+    const n = typeof v === 'number' ? v : Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  try {
+    const { data, error } = await prod
+      .from('florist_external_profile')
+      .select(
+        'lead_master_id, has_website, website_url, google_rating, google_review_count, ' +
+          'yelp_rating, yelp_review_count, instagram_url, facebook_url, social_platforms, ' +
+          'runs_meta_ads, runs_google_ads, what_they_sell, primary_products, price_range, ' +
+          'yelp_price_range, source, not_found',
+      )
+      .in('lead_master_id', leadMasterIds);
+    if (error || !Array.isArray(data)) return out;
+    for (const r of data as unknown as Record<string, unknown>[]) {
+      const lid = toNum(r.lead_master_id);
+      if (lid === null || r.not_found === true) continue;
+      const socials: string[] = [];
+      if (s(r.instagram_url)) socials.push('IG');
+      if (s(r.facebook_url)) socials.push('FB');
+      const runsAds =
+        r.runs_meta_ads === true || r.runs_google_ads === true
+          ? true
+          : r.runs_meta_ads === false || r.runs_google_ads === false
+            ? false
+            : null;
+      out.set(lid, {
+        hasWebsite: typeof r.has_website === 'boolean' ? r.has_website : null,
+        websiteUrl: s(r.website_url),
+        reviewsRating: toNum(r.google_rating) ?? toNum(r.yelp_rating),
+        reviewsCount: toNum(r.google_review_count) ?? toNum(r.yelp_review_count),
+        socials: socials.length ? socials.join(', ') : s(r.social_platforms),
+        runsAds,
+        sells: s(r.what_they_sell) ?? s(r.primary_products),
+        priceRange: s(r.price_range) ?? s(r.yelp_price_range),
+        provenance: s(r.source) ?? 'external_research',
+      });
+    }
+  } catch {
+    /* degrade to empty — NULL-safe */
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // Row composer
 // ---------------------------------------------------------------------------
 
@@ -712,8 +767,9 @@ function composeRow(args: {
   leadQuality: string | null;
   loop: LoopRaw | undefined;
   timeline: SampleCommsItem[];
+  externalProfile?: SampleExternalProfile | null;
 }): SampleReviewRow {
-  const { cohort, engagement, qual, leadQuality, loop, timeline } = args;
+  const { cohort, engagement, qual, leadQuality, loop, timeline, externalProfile } = args;
 
   const eng: EngagementAgg = engagement ?? {
     callsCount: 0,
@@ -853,7 +909,7 @@ function composeRow(args: {
     winHypothesis,
     qualityRead,
     proposedComposition,
-    externalProfile: null, // v1: research ownership pending — UI renders a "pending" state.
+    externalProfile: externalProfile ?? null, // Rose's florist_external_profile; null → UI "pending".
     dataNote: DATA_NOTE,
   };
 }
@@ -879,10 +935,11 @@ export async function getSampleReviewCohort(): Promise<SampleReviewRow[]> {
     ),
   );
 
-  const [engagement, qualification, loopState] = await Promise.all([
+  const [engagement, qualification, loopState, externalProfiles] = await Promise.all([
     readEngagement(leadIds),
     readQualification(cohort),
     readLoopState(),
+    readExternalProfiles(leadIds),
   ]);
 
   return cohort.map((c) => {
@@ -901,6 +958,7 @@ export async function getSampleReviewCohort(): Promise<SampleReviewRow[]> {
           : null,
       loop,
       timeline: [],
+      externalProfile: c.lead_master_id != null ? externalProfiles.get(c.lead_master_id) ?? null : null,
     });
   });
 }
@@ -918,11 +976,12 @@ export async function getSampleReviewDetail(
   if (cohort.length === 0) return null;
   const c = cohort[0];
 
-  const [engagement, qualification, loopState, timeline] = await Promise.all([
+  const [engagement, qualification, loopState, timeline, externalProfiles] = await Promise.all([
     readEngagement([leadMasterId]),
     readQualification(cohort),
     readLoopState(),
     readTimeline(leadMasterId),
+    readExternalProfiles([leadMasterId]),
   ]);
 
   const zoho = s(c.zoho_id);
@@ -938,5 +997,6 @@ export async function getSampleReviewDetail(
     leadQuality: qualification.leadQualityByLead.get(leadMasterId) ?? null,
     loop,
     timeline,
+    externalProfile: externalProfiles.get(leadMasterId) ?? null,
   });
 }
