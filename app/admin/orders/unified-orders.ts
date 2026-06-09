@@ -1,195 +1,134 @@
-// Unified order list -- fetch + normalize across BOTH Supabase planes.
-// v1 | 2026-06-08 | Job_PM order-visibility #3
+// Unified order list -- wired to public.v_unified_orders (PROD, read-only).
+// v2 | 2026-06-09 | Job_PM order-visibility #3 (mockup-match rebuild)
 //
 // Capability #3 = ORDER VISIBILITY: one admin surface where every order across
-// every source is merged into one row shape. This module does the data work;
-// app/admin/orders/page.tsx renders it.
+// every source is merged into one row shape. THE combined source is the PROD
+// view public.v_unified_orders -- it already merges the orders we create
+// (channel A = web/quote funnel) and the ones we closed (channel B = K2K
+// prebooks/invoices). We do NOT re-merge tables here anymore; the view is the
+// single source of truth.
 //
-// THE TWO PLANES (no cross-DB SQL -- we query each client, then merge in JS):
-//
-//   SPINE (NEW)  -- supabase-backup (ibckhcjvyxzrhvdiazbx), getBackupServiceClient()
-//     public.orders : the canonical order spine. source in {web, sample,
-//     k2k_invoice, deal}. Sample orders are born here. Today mostly test rows.
-//
-//   LEGACY (read-channel) -- production (swhglnjyuorkycpgkmec), getProdReadClient()
-//     READ ONLY. Rose owns these; scraped/ingested from K2K + the old funnel:
-//       k2k_orders        -> source 'k2k_order'
-//       k2k_prebooks      -> source 'k2k_prebook'
-//       quote_requests    -> source 'quote'
-//       sample_box_status -> source 'sample_box'  (the old sample-box pipeline)
+// Client dimension comes from public.v_customer_360 (44k rows), joined in JS
+// by komet_customer_id == v_unified_orders.customer_code, with a
+// case-insensitive contact_name fallback (best available link: ~12/36 today).
 //
 // HONESTY RULES (encoded here, surfaced in the UI):
-//   - is_test rows are tagged and excluded from headline counts.
-//   - PROD sources are labeled plane='legacy' (read-channel), never 'spine'.
-//   - If a PROD table errors / client is unconfigured, that source degrades to a
-//     labeled note and contributes zero rows -- the page never crashes.
-//   - Row counts shown are the real counts we read (capped at PER_SOURCE_CAP).
+//   - All access is READ-ONLY via getProdReadClient(). No writes, ever.
+//   - If the PROD read client is unconfigured OR the view errors, the page
+//     degrades to a labeled empty state -- never crashes, never fabricates.
+//   - Money: prebook_amt is the reliable amount across both channels
+//     (ui_total_price / total_with_surcharges are null today). We fall back
+//     invoice_amt -> origin_quote_amt -> prebook_amt and label provenance.
+//   - Row counts shown are the real counts we read from the view.
 
-import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getProdReadClient, isProdReadConfigured } from '@/lib/supabase/prod-server';
 
-// Read at most this many rows per source. Visibility surface, not export.
-export const PER_SOURCE_CAP = 300;
+// Read at most this many rows. Visibility surface, not export.
+export const ROW_CAP = 500;
 
-export type UnifiedSource =
-  | 'web'
-  | 'sample'
-  | 'deal'
-  | 'k2k_order'
-  | 'k2k_prebook'
-  | 'quote'
-  | 'sample_box';
+// channel A = orders we create (web / quote funnel, Mode A)
+// channel B = orders we closed (K2K prebooks + invoices, Mode B)
+export type Channel = 'A' | 'B';
 
-export type Plane = 'spine' | 'legacy';
+export const CHANNEL_META: Record<Channel, { label: string; cls: string }> = {
+  A: { label: 'Web / quote', cls: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  B: { label: 'K2K closed', cls: 'bg-slate-100 text-slate-700 border-slate-200' },
+};
 
-// Normalized status buckets -- every native status maps into one of these so a
-// single filter works across heterogeneous sources.
-export type NormStatus =
-  | 'open'        // live / actionable
-  | 'awaiting'    // waiting on payment / confirmation
-  | 'fulfilled'   // delivered / received / confirmed
-  | 'cancelled'   // void / declined / cancelled
-  | 'other';      // unknown / unmapped
+// Normalized lifecycle buckets the mockup tabs filter on.
+//   upcoming  = live + not yet charged/confirmed (actionable)
+//   confirmed = invoice confirmed / charge scheduled
+//   dispatched= shipped (tracking present)
+//   issues    = payment failed / declined / cart abandoned (needs a human)
+//   cancelled = void / declined
+export type Bucket =
+  | 'upcoming'
+  | 'confirmed'
+  | 'dispatched'
+  | 'issues'
+  | 'cancelled'
+  | 'other';
 
-export interface UnifiedOrder {
-  /** Stable key for React: `${source}:${id}`. */
-  key: string;
-  source: UnifiedSource;
-  plane: Plane;
-  /** Native id within its source table (string for display). */
-  refId: string;
-  /** Human order/ref number when one exists, else null. */
-  refNumber: string | null;
-  /** Raw native status as stored. */
-  rawStatus: string | null;
-  /** Normalized bucket. */
-  status: NormStatus;
-  clientName: string | null;
+export const BUCKET_BADGE: Record<Bucket, { label: string; variant: BadgeVariant }> = {
+  upcoming: { label: 'Pending review', variant: 'pending_review' },
+  confirmed: { label: 'Confirmed', variant: 'confirmed' },
+  dispatched: { label: 'Dispatched', variant: 'dispatched' },
+  issues: { label: 'Payment issue', variant: 'payment_failed' },
+  cancelled: { label: 'Cancelled', variant: 'cancelled' },
+  other: { label: 'Open', variant: 'pending' },
+};
+
+// Mirrors the StatusBadge variant union (app/admin/orders/_StatusBadge).
+export type BadgeVariant =
+  | 'pending'
+  | 'pending_review'
+  | 'confirmed'
+  | 'dispatched'
+  | 'payment_failed'
+  | 'cancelled';
+
+export interface ClientDim {
   businessName: string | null;
+  contactName: string | null;
   email: string | null;
-  /** USD amount; null when the source has none. */
-  amount: number | null;
-  /** Primary date for sort/display (ISO). */
-  date: string | null;
-  isTest: boolean;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  totalSales: number | null;
+  totalRevenueUsd: number | null;
+  lastTxnAt: string | null;
+  churnStatus: string | null;
+  /** How this client row was matched to the order. */
+  matchedBy: 'komet' | 'name' | null;
 }
 
-export interface SourceStat {
-  source: UnifiedSource;
-  plane: Plane;
-  label: string;
-  /** Real rows read (excludes is_test). */
-  count: number;
-  /** Sum of amount over non-test rows (USD). */
-  amount: number;
-  /** Test rows read (shown separately, off the headline). */
-  testCount: number;
-  /** Non-null when this source could not be read. */
-  error: string | null;
+export interface UnifiedOrder {
+  /** Stable React key: `${orderType}:${ref}`. */
+  key: string;
+  channel: Channel;
+  /** prebook | quote (native order_type). */
+  orderType: string | null;
+  ref: string;
+  customerName: string | null;
+  customerCode: string | null;
+  /** Primary amount (USD) + where it came from. */
+  amount: number | null;
+  amountSource: 'invoice' | 'quote' | 'prebook' | null;
+  /** ISO timestamps / dates. */
+  createdAt: string | null;
+  deliveryDate: string | null;
+  /** Raw native statuses (shown verbatim in detail). */
+  paymentStatus: string | null;
+  invoiceStatus: string | null;
+  prebookStatus: string | null;
+  checkOutStatus: string | null;
+  /** Normalized bucket for tab filtering. */
+  bucket: Bucket;
+  trackingNumber: string | null;
+  carrierName: string | null;
+  shipCity: string | null;
+  shipState: string | null;
+  shipAddress: string | null;
+  k2kOrderId: string | null;
+  internalNotes: string | null;
+  isEcommerce: boolean;
+  /** Joined client dimension (null when no match). */
+  client: ClientDim | null;
 }
 
 export interface UnifiedResult {
   rows: UnifiedOrder[];
-  stats: SourceStat[];
-  /** Sources we attempted but could not read (honest degradation). */
-  unreadable: { source: UnifiedSource; reason: string }[];
-}
-
-export const SOURCE_META: Record<
-  UnifiedSource,
-  { label: string; plane: Plane; cls: string }
-> = {
-  web:         { label: 'Web',          plane: 'spine',  cls: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-  sample:      { label: 'Sample',       plane: 'spine',  cls: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-  deal:        { label: 'Deal',         plane: 'spine',  cls: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-  k2k_order:   { label: 'K2K order',    plane: 'legacy', cls: 'bg-slate-100 text-slate-700 border-slate-200' },
-  k2k_prebook: { label: 'K2K prebook',  plane: 'legacy', cls: 'bg-slate-100 text-slate-700 border-slate-200' },
-  quote:       { label: 'Quote',        plane: 'legacy', cls: 'bg-slate-100 text-slate-700 border-slate-200' },
-  sample_box:  { label: 'Sample box',   plane: 'legacy', cls: 'bg-slate-100 text-slate-700 border-slate-200' },
-};
-
-export const ALL_SOURCES: UnifiedSource[] = [
-  'web', 'sample', 'deal', 'k2k_order', 'k2k_prebook', 'quote', 'sample_box',
-];
-
-export const ALL_NORM_STATUSES: NormStatus[] = [
-  'open', 'awaiting', 'fulfilled', 'cancelled', 'other',
-];
-
-export const NORM_STATUS_META: Record<NormStatus, { label: string; cls: string }> = {
-  open:      { label: 'Open',      cls: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-  awaiting:  { label: 'Awaiting',  cls: 'bg-amber-50 text-amber-800 border-amber-200' },
-  fulfilled: { label: 'Fulfilled', cls: 'bg-emerald-50 text-emerald-900 border-emerald-300' },
-  cancelled: { label: 'Cancelled', cls: 'bg-slate-100 text-slate-500 border-slate-200' },
-  other:     { label: 'Other',     cls: 'bg-slate-100 text-slate-600 border-slate-200' },
-};
-
-// ---------------------------------------------------------------------------
-// Status normalization (per source)
-// ---------------------------------------------------------------------------
-
-function normSpineStatus(s: string | null): NormStatus {
-  switch ((s ?? '').toLowerCase()) {
-    case 'paid':
-    case 'preauth_held':
-      return 'open';
-    case 'pending_payment':
-    case 'card_saved':
-    case 'cart':
-      return 'awaiting';
-    case 'fulfilled':
-      return 'fulfilled';
-    case 'cancelled':
-    case 'refunded':
-    case 'failed':
-      return 'cancelled';
-    default:
-      return 'other';
-  }
-}
-
-function normK2kOrderStatus(s: string | null): NormStatus {
-  switch ((s ?? '').toLowerCase()) {
-    case 'confirmed':
-      return 'fulfilled';
-    case 'pending':
-      return 'awaiting';
-    case 'void':
-    case 'cancelled':
-      return 'cancelled';
-    default:
-      return 'other';
-  }
-}
-
-function normQuoteStatus(s: string | null): NormStatus {
-  switch ((s ?? '').toLowerCase()) {
-    case 'converted':
-      return 'fulfilled';
-    case 'new':
-      return 'awaiting';
-    case 'declined':
-      return 'cancelled';
-    default:
-      return 'other';
-  }
-}
-
-function normSampleBoxStatus(s: string | null): NormStatus {
-  switch ((s ?? '').toUpperCase()) {
-    case 'SB_RECEIVED':
-      return 'fulfilled';
-    case 'SB_READY':
-      return 'open';
-    case 'SB_INTERESTED':
-      return 'awaiting';
-    default:
-      return 'other';
-  }
+  /** Total real rows read from the view (pre-filter). */
+  total: number;
+  /** Counts per normalized bucket (for KPI tiles). */
+  bucketCounts: Record<Bucket, number>;
+  /** Non-null when the surface could not read its source. */
+  error: string | null;
 }
 
 // ---------------------------------------------------------------------------
-// Number helpers
+// Normalization
 // ---------------------------------------------------------------------------
 
 function toNum(v: number | string | null | undefined): number | null {
@@ -198,252 +137,215 @@ function toNum(v: number | string | null | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-// ---------------------------------------------------------------------------
-// Per-source fetchers. Each returns rows + any error string. None throw.
-// ---------------------------------------------------------------------------
-
-async function fetchSpineOrders(): Promise<{ rows: UnifiedOrder[]; error: string | null }> {
-  try {
-    const svc = getBackupServiceClient();
-    const { data, error } = await svc
-      .from('orders')
-      .select(
-        'id, order_number, status, source, grand_total, currency, client_name, business_name, client_email, created_at, is_test, shipping_address_snapshot',
-      )
-      .order('created_at', { ascending: false })
-      .limit(PER_SOURCE_CAP);
-    if (error) return { rows: [], error: error.message };
-
-    const rows: UnifiedOrder[] = (data ?? []).map((o: Record<string, unknown>) => {
-      // Map the spine's source column onto the unified enum. k2k_invoice rows
-      // are deal-adjacent imports; surface them as 'deal' for the headline.
-      const rawSource = (o.source as string | null) ?? 'web';
-      let source: UnifiedSource = 'web';
-      if (rawSource === 'sample') source = 'sample';
-      else if (rawSource === 'deal' || rawSource === 'k2k_invoice') source = 'deal';
-      else source = 'web';
-
-      const snap = (o.shipping_address_snapshot as { business_name?: string | null; recipient_name?: string | null } | null) ?? null;
-      return {
-        key: `spine_${source}:${String(o.id)}`,
-        source,
-        plane: 'spine',
-        refId: String(o.id),
-        refNumber: (o.order_number as string | null) ?? null,
-        rawStatus: (o.status as string | null) ?? null,
-        status: normSpineStatus(o.status as string | null),
-        clientName: (o.client_name as string | null) ?? snap?.recipient_name ?? null,
-        businessName: (o.business_name as string | null) ?? snap?.business_name ?? null,
-        email: (o.client_email as string | null) ?? null,
-        amount: toNum(o.grand_total as number | string | null),
-        date: (o.created_at as string | null) ?? null,
-        isTest: Boolean(o.is_test),
-      };
-    });
-    return { rows, error: null };
-  } catch (e) {
-    return { rows: [], error: e instanceof Error ? e.message : 'spine fetch failed' };
+// Bucket from the combination of native statuses. payment_status is the most
+// expressive column the view exposes; we lean on it, then refine with tracking.
+function normBucket(o: {
+  paymentStatus: string | null;
+  trackingNumber: string | null;
+  invoiceStatus: string | null;
+}): Bucket {
+  const p = (o.paymentStatus ?? '').toLowerCase();
+  if (o.trackingNumber) return 'dispatched';
+  switch (p) {
+    case 'declined':
+      return 'cancelled';
+    case 'cart_abandoned':
+      return 'issues';
+    case 'confirmed':
+    case 'converted':
+      return 'confirmed';
+    case 'pending_validation':
+    case 'quote_new':
+    case 'no_invoice':
+      return 'upcoming';
+    default:
+      return 'other';
   }
 }
 
-type ProdClient = NonNullable<ReturnType<typeof getProdReadClient>>;
-
-async function fetchK2kOrders(prod: ProdClient): Promise<{ rows: UnifiedOrder[]; error: string | null }> {
-  try {
-    const { data, error } = await prod
-      .from('k2k_orders')
-      .select('id, k2k_order_number, buyer_name, buyer_company, buyer_email, order_status, order_date, total_amount')
-      .order('order_date', { ascending: false, nullsFirst: false })
-      .limit(PER_SOURCE_CAP);
-    if (error) return { rows: [], error: error.message };
-    const rows: UnifiedOrder[] = (data ?? []).map((r: Record<string, unknown>) => ({
-      key: `k2k_order:${String(r.id)}`,
-      source: 'k2k_order',
-      plane: 'legacy',
-      refId: String(r.id),
-      refNumber: (r.k2k_order_number as string | null) ?? null,
-      rawStatus: (r.order_status as string | null) ?? null,
-      status: normK2kOrderStatus(r.order_status as string | null),
-      clientName: (r.buyer_name as string | null) ?? null,
-      businessName: (r.buyer_company as string | null) ?? null,
-      email: (r.buyer_email as string | null) ?? null,
-      amount: toNum(r.total_amount as number | string | null),
-      date: (r.order_date as string | null) ?? null,
-      isTest: false,
-    }));
-    return { rows, error: null };
-  } catch (e) {
-    return { rows: [], error: e instanceof Error ? e.message : 'k2k_orders fetch failed' };
-  }
-}
-
-async function fetchK2kPrebooks(prod: ProdClient): Promise<{ rows: UnifiedOrder[]; error: string | null }> {
-  try {
-    const { data, error } = await prod
-      .from('k2k_prebooks')
-      .select('id, prebook_number, customer_name, customer_code, prebook_status, truck_date, total_with_surcharges, total_price, is_test')
-      .order('truck_date', { ascending: false, nullsFirst: false })
-      .limit(PER_SOURCE_CAP);
-    if (error) return { rows: [], error: error.message };
-    const rows: UnifiedOrder[] = (data ?? []).map((r: Record<string, unknown>) => ({
-      key: `k2k_prebook:${String(r.id)}`,
-      source: 'k2k_prebook',
-      plane: 'legacy',
-      refId: String(r.id),
-      refNumber: r.prebook_number != null ? String(r.prebook_number) : null,
-      rawStatus: (r.prebook_status as string | null) ?? null,
-      // prebook_status is uniformly 'None' today -> 'other'. Keep honest.
-      status: 'other',
-      clientName: (r.customer_name as string | null) ?? null,
-      businessName: (r.customer_code as string | null) ?? null,
-      email: null,
-      amount: toNum((r.total_with_surcharges as number | string | null) ?? (r.total_price as number | string | null)),
-      date: (r.truck_date as string | null) ?? null,
-      isTest: Boolean(r.is_test),
-    }));
-    return { rows, error: null };
-  } catch (e) {
-    return { rows: [], error: e instanceof Error ? e.message : 'k2k_prebooks fetch failed' };
-  }
-}
-
-async function fetchQuotes(prod: ProdClient): Promise<{ rows: UnifiedOrder[]; error: string | null }> {
-  try {
-    const { data, error } = await prod
-      .from('quote_requests')
-      .select('id, business_name, customer_name, email, status, grand_total, delivery_date, created_at')
-      .order('created_at', { ascending: false, nullsFirst: false })
-      .limit(PER_SOURCE_CAP);
-    if (error) return { rows: [], error: error.message };
-    const rows: UnifiedOrder[] = (data ?? []).map((r: Record<string, unknown>) => ({
-      key: `quote:${String(r.id)}`,
-      source: 'quote',
-      plane: 'legacy',
-      refId: String(r.id),
-      refNumber: `Q-${String(r.id)}`,
-      rawStatus: (r.status as string | null) ?? null,
-      status: normQuoteStatus(r.status as string | null),
-      clientName: (r.customer_name as string | null) ?? null,
-      businessName: (r.business_name as string | null) ?? null,
-      email: (r.email as string | null) ?? null,
-      amount: toNum(r.grand_total as number | string | null),
-      date: (r.created_at as string | null) ?? (r.delivery_date as string | null) ?? null,
-      isTest: false,
-    }));
-    return { rows, error: null };
-  } catch (e) {
-    return { rows: [], error: e instanceof Error ? e.message : 'quote_requests fetch failed' };
-  }
-}
-
-async function fetchSampleBoxes(prod: ProdClient): Promise<{ rows: UnifiedOrder[]; error: string | null }> {
-  try {
-    const { data, error } = await prod
-      .from('sample_box_status')
-      .select('id, ship_name, business_name, sb_status, status_changed_at, updated_at, tracking_number')
-      .order('updated_at', { ascending: false, nullsFirst: false })
-      .limit(PER_SOURCE_CAP);
-    if (error) return { rows: [], error: error.message };
-    const rows: UnifiedOrder[] = (data ?? []).map((r: Record<string, unknown>) => ({
-      key: `sample_box:${String(r.id)}`,
-      source: 'sample_box',
-      plane: 'legacy',
-      refId: String(r.id),
-      refNumber: (r.tracking_number as string | null) ?? null,
-      rawStatus: (r.sb_status as string | null) ?? null,
-      status: normSampleBoxStatus(r.sb_status as string | null),
-      clientName: (r.ship_name as string | null) ?? null,
-      businessName: (r.business_name as string | null) ?? null,
-      email: null,
-      amount: null, // sample boxes carry no order amount
-      date: (r.status_changed_at as string | null) ?? (r.updated_at as string | null) ?? null,
-      isTest: false,
-    }));
-    return { rows, error: null };
-  } catch (e) {
-    return { rows: [], error: e instanceof Error ? e.message : 'sample_box_status fetch failed' };
-  }
+function pickAmount(r: Record<string, unknown>): { amount: number | null; src: 'invoice' | 'quote' | 'prebook' | null } {
+  const invoice = toNum(r.invoice_amt as number | string | null);
+  if (invoice != null) return { amount: invoice, src: 'invoice' };
+  const quote = toNum(r.origin_quote_amt as number | string | null);
+  if (quote != null) return { amount: quote, src: 'quote' };
+  const prebook = toNum(r.prebook_amt as number | string | null);
+  if (prebook != null) return { amount: prebook, src: 'prebook' };
+  return { amount: null, src: null };
 }
 
 // ---------------------------------------------------------------------------
-// Orchestrator: fetch everything, merge, compute per-source stats.
+// Fetch
 // ---------------------------------------------------------------------------
+
+const ORDER_COLS =
+  'channel, order_type, ref, customer_name, customer_code, created_at, delivery_date, ' +
+  'prebook_amt, ui_total_price, total_with_surcharges, invoice_amt, origin_quote_amt, ' +
+  'check_out_status, prebook_status, invoice_status, payment_status, is_ecommerce, ' +
+  'carrier_name, ship_city, ship_state, ship_address, k2k_order_id, tracking_number, internal_notes';
+
+const CUSTOMER_COLS =
+  'business_name, contact_name, email, phone, city, state, country, komet_customer_id, ' +
+  'total_sales, total_revenue_usd, last_txn_at, churn_status';
+
+interface CustomerRaw {
+  business_name: string | null;
+  contact_name: string | null;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  komet_customer_id: string | null;
+  total_sales: number | string | null;
+  total_revenue_usd: number | string | null;
+  last_txn_at: string | null;
+  churn_status: string | null;
+}
+
+function toClientDim(c: CustomerRaw, matchedBy: 'komet' | 'name'): ClientDim {
+  return {
+    businessName: c.business_name,
+    contactName: c.contact_name,
+    email: c.email,
+    phone: c.phone,
+    city: c.city,
+    state: c.state,
+    country: c.country,
+    totalSales: toNum(c.total_sales),
+    totalRevenueUsd: toNum(c.total_revenue_usd),
+    lastTxnAt: c.last_txn_at,
+    churnStatus: c.churn_status,
+    matchedBy,
+  };
+}
+
+const EMPTY_BUCKETS: Record<Bucket, number> = {
+  upcoming: 0,
+  confirmed: 0,
+  dispatched: 0,
+  issues: 0,
+  cancelled: 0,
+  other: 0,
+};
 
 export async function getUnifiedOrders(): Promise<UnifiedResult> {
-  const unreadable: { source: UnifiedSource; reason: string }[] = [];
-
-  // Spine (always attempt). PROD sources only if a read client exists.
   const prod = getProdReadClient();
-  const prodReady = prod !== null && isProdReadConfigured();
-
-  const spineP = fetchSpineOrders();
-  const prodP = prodReady
-    ? Promise.all([
-        fetchK2kOrders(prod as ProdClient),
-        fetchK2kPrebooks(prod as ProdClient),
-        fetchQuotes(prod as ProdClient),
-        fetchSampleBoxes(prod as ProdClient),
-      ])
-    : Promise.resolve(null);
-
-  const [spine, prodResults] = await Promise.all([spineP, prodP]);
-
-  const all: UnifiedOrder[] = [];
-  const errBySource = new Map<UnifiedSource, string | null>();
-
-  // Spine rows fan out into web / sample / deal -- record one shared error key
-  // per spine sub-source so the stat band can flag a spine read failure.
-  all.push(...spine.rows);
-  for (const s of ['web', 'sample', 'deal'] as UnifiedSource[]) {
-    errBySource.set(s, spine.error);
-    if (spine.error) unreadable.push({ source: s, reason: spine.error });
-  }
-
-  if (prodResults) {
-    const [ko, kp, qr, sb] = prodResults;
-    const map: [UnifiedSource, { rows: UnifiedOrder[]; error: string | null }][] = [
-      ['k2k_order', ko],
-      ['k2k_prebook', kp],
-      ['quote', qr],
-      ['sample_box', sb],
-    ];
-    for (const [src, res] of map) {
-      all.push(...res.rows);
-      errBySource.set(src, res.error);
-      if (res.error) unreadable.push({ source: src, reason: res.error });
-    }
-  } else {
-    const reason = 'production read client not configured (PROD_SUPABASE_* env missing)';
-    for (const s of ['k2k_order', 'k2k_prebook', 'quote', 'sample_box'] as UnifiedSource[]) {
-      errBySource.set(s, reason);
-      unreadable.push({ source: s, reason });
-    }
-  }
-
-  // Sort merged list newest-first; rows with no date sink to the bottom.
-  all.sort((a, b) => {
-    const ta = a.date ? new Date(a.date).getTime() : -Infinity;
-    const tb = b.date ? new Date(b.date).getTime() : -Infinity;
-    return tb - ta;
-  });
-
-  // Per-source stats: headline counts exclude is_test.
-  const stats: SourceStat[] = ALL_SOURCES.map((src) => {
-    const meta = SOURCE_META[src];
-    const srcRows = all.filter((r) => r.source === src);
-    const real = srcRows.filter((r) => !r.isTest);
-    const test = srcRows.filter((r) => r.isTest);
-    const amount = real.reduce((acc, r) => acc + (r.amount ?? 0), 0);
+  if (prod === null || !isProdReadConfigured()) {
     return {
-      source: src,
-      plane: meta.plane,
-      label: meta.label,
-      count: real.length,
+      rows: [],
+      total: 0,
+      bucketCounts: { ...EMPTY_BUCKETS },
+      error: 'production read client not configured (PROD_SUPABASE_* env missing)',
+    };
+  }
+
+  // 1) The combined orders view -- THE source of truth.
+  const { data: orderData, error: orderErr } = await prod
+    .from('v_unified_orders')
+    .select(ORDER_COLS)
+    .order('created_at', { ascending: false, nullsFirst: false })
+    .limit(ROW_CAP);
+
+  if (orderErr) {
+    return { rows: [], total: 0, bucketCounts: { ...EMPTY_BUCKETS }, error: orderErr.message };
+  }
+  const raw = (orderData ?? []) as unknown as Record<string, unknown>[];
+
+  // 2) Client dimension. Pull the small set of customers we actually need:
+  //    by komet_customer_id (== customer_code) and by contact_name.
+  const codes = Array.from(
+    new Set(raw.map((r) => (r.customer_code as string | null) ?? '').filter(Boolean)),
+  );
+  const origNames = Array.from(
+    new Set(
+      raw
+        .map((r) => (r.customer_name as string | null)?.trim() ?? '')
+        .filter(Boolean),
+    ),
+  );
+
+  const byKomet = new Map<string, CustomerRaw>();
+  const byName = new Map<string, CustomerRaw>();
+
+  // Failure to read customers must NOT sink the orders -- degrade gracefully.
+  try {
+    if (codes.length) {
+      const { data } = await prod
+        .from('v_customer_360')
+        .select(CUSTOMER_COLS)
+        .in('komet_customer_id', codes)
+        .limit(ROW_CAP);
+      for (const c of (data ?? []) as unknown as CustomerRaw[]) {
+        if (c.komet_customer_id) byKomet.set(c.komet_customer_id, c);
+      }
+    }
+    if (origNames.length) {
+      // v_customer_360 has no lowercased name column; fetch by original-cased
+      // contact_name then index lowercased in JS for the join.
+      const { data } = await prod
+        .from('v_customer_360')
+        .select(CUSTOMER_COLS)
+        .in('contact_name', origNames)
+        .limit(ROW_CAP);
+      for (const c of (data ?? []) as unknown as CustomerRaw[]) {
+        const k = (c.contact_name ?? '').trim().toLowerCase();
+        if (k && !byName.has(k)) byName.set(k, c);
+      }
+    }
+  } catch {
+    // leave maps empty; client dimension simply renders as "no match"
+  }
+
+  // 3) Normalize + join.
+  const rows: UnifiedOrder[] = raw.map((r) => {
+    const channel = ((r.channel as string | null) ?? 'A') === 'B' ? 'B' : 'A';
+    const orderType = (r.order_type as string | null) ?? null;
+    const ref = String(r.ref ?? '');
+    const code = (r.customer_code as string | null) ?? null;
+    const name = (r.customer_name as string | null) ?? null;
+    const paymentStatus = (r.payment_status as string | null) ?? null;
+    const trackingNumber = (r.tracking_number as string | null) ?? null;
+    const invoiceStatus = (r.invoice_status as string | null) ?? null;
+    const { amount, src } = pickAmount(r);
+
+    let client: ClientDim | null = null;
+    if (code && byKomet.has(code)) {
+      client = toClientDim(byKomet.get(code)!, 'komet');
+    } else if (name) {
+      const c = byName.get(name.trim().toLowerCase());
+      if (c) client = toClientDim(c, 'name');
+    }
+
+    return {
+      key: `${orderType ?? 'order'}:${ref}`,
+      channel,
+      orderType,
+      ref,
+      customerName: name,
+      customerCode: code,
       amount,
-      testCount: test.length,
-      error: errBySource.get(src) ?? null,
+      amountSource: src,
+      createdAt: (r.created_at as string | null) ?? null,
+      deliveryDate: (r.delivery_date as string | null) ?? null,
+      paymentStatus,
+      invoiceStatus,
+      prebookStatus: (r.prebook_status as string | null) ?? null,
+      checkOutStatus: (r.check_out_status as string | null) ?? null,
+      bucket: normBucket({ paymentStatus, trackingNumber, invoiceStatus }),
+      trackingNumber,
+      carrierName: (r.carrier_name as string | null) ?? null,
+      shipCity: (r.ship_city as string | null) ?? null,
+      shipState: (r.ship_state as string | null) ?? null,
+      shipAddress: (r.ship_address as string | null) ?? null,
+      k2kOrderId: (r.k2k_order_id as string | null) ?? null,
+      internalNotes: (r.internal_notes as string | null) ?? null,
+      isEcommerce: Boolean(r.is_ecommerce),
+      client,
     };
   });
 
-  return { rows: all, stats, unreadable };
+  const bucketCounts = { ...EMPTY_BUCKETS };
+  for (const r of rows) bucketCounts[r.bucket] += 1;
+
+  return { rows, total: rows.length, bucketCounts, error: null };
 }
