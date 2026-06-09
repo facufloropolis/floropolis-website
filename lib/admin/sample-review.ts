@@ -91,6 +91,11 @@ export interface SampleReviewRow {
   productsSent: string | null;
   likedBox: boolean | null;
   likedAt: string | null;
+  trackingNumber: string | null;
+  trackingStatus: string | null;
+  dispatchDate: string | null;
+  deliveredAt: string | null;
+  dispatchState: 'pending' | 'shipped' | 'delivered';
   timeline: SampleCommsItem[];
   winHypothesis: string;
   qualityRead: { verdict: 'good' | 'bad' | 'unclear'; why: string };
@@ -130,6 +135,10 @@ interface CohortRaw {
   ship_phone: string | null;
   ship_country: string | null;
   address_source: string | null;
+  tracking_number: string | null;
+  tracking_status: string | null;
+  sheet_dispatch_date: string | null;
+  tracking_delivered_at: string | null;
 }
 
 interface EngagementAgg {
@@ -204,7 +213,9 @@ function jsonbToString(v: unknown): string | null {
 // ---------------------------------------------------------------------------
 
 /**
- * readCohort — the SB_READY sample cohort from sample_box_status.
+ * readCohort — the sample cohort from sample_box_status. Includes BOTH ship-ready
+ * (SB_READY) and already-shipped (SB_RECEIVED) samples so the surface can separate
+ * "pendientes de dispatch" from "ya enviados (follow-up)".
  * Swap target: SELECT * FROM v_sample_review (cohort slice).
  * Optionally narrowed to a single lead for the detail view.
  */
@@ -218,9 +229,10 @@ async function readCohort(leadMasterId?: number): Promise<CohortRaw[]> {
         'business_name, lead_master_id, zoho_id, sb_status, products_sent, box_type, ' +
           'pre_ship_validated, pre_ship_block_reason, sb_receipt_confirmed, liked_at, ' +
           'ship_name, ship_address, ship_city, ship_state, ship_zip, ship_phone, ' +
-          'ship_country, address_source',
+          'ship_country, address_source, ' +
+          'tracking_number, tracking_status, sheet_dispatch_date, tracking_delivered_at',
       )
-      .eq('sb_status', 'SB_READY');
+      .in('sb_status', ['SB_READY', 'SB_RECEIVED']);
     if (typeof leadMasterId === 'number') q = q.eq('lead_master_id', leadMasterId);
     const { data, error } = await q;
     if (error || !data) return [];
@@ -760,6 +772,20 @@ function composeRow(args: {
   const likedAt = s(cohort.liked_at);
   const likedBox = cohort.liked_at != null ? asBoolish(cohort.liked_at) : null;
 
+  // Dispatch state (NULL-safe). delivered > shipped > pending.
+  //   delivered → tracking_delivered_at present
+  //   shipped   → sb_status === 'SB_RECEIVED' OR a tracking number exists
+  //   pending   → otherwise (still ship-ready, not yet dispatched)
+  const trackingNumber = s(cohort.tracking_number);
+  const trackingStatus = s(cohort.tracking_status);
+  const dispatchDate = s(cohort.sheet_dispatch_date);
+  const deliveredAt = s(cohort.tracking_delivered_at);
+  const dispatchState: SampleReviewRow['dispatchState'] = deliveredAt
+    ? 'delivered'
+    : s(cohort.sb_status) === 'SB_RECEIVED' || trackingNumber
+      ? 'shipped'
+      : 'pending';
+
   const winHypothesis = computeWinHypothesis({
     currentSupplier,
     pricesTheyPay,
@@ -816,6 +842,11 @@ function composeRow(args: {
     productsSent: s(cohort.products_sent),
     likedBox,
     likedAt,
+    trackingNumber,
+    trackingStatus,
+    dispatchDate,
+    deliveredAt,
+    dispatchState,
     timeline,
     winHypothesis,
     qualityRead,
@@ -830,7 +861,8 @@ function composeRow(args: {
 // ---------------------------------------------------------------------------
 
 /**
- * getSampleReviewCohort — all SB_READY samples, loop-state merged. Timeline is omitted
+ * getSampleReviewCohort — all ship-ready (SB_READY) + already-shipped (SB_RECEIVED)
+ * samples, loop-state merged, each carrying its dispatchState. Timeline is omitted
  * (empty) for list speed; use getSampleReviewDetail for the full timeline.
  */
 export async function getSampleReviewCohort(): Promise<SampleReviewRow[]> {
@@ -872,8 +904,8 @@ export async function getSampleReviewCohort(): Promise<SampleReviewRow[]> {
 }
 
 /**
- * getSampleReviewDetail — one SB_READY sample WITH the full comms timeline.
- * Returns null if the lead is not in the SB_READY cohort.
+ * getSampleReviewDetail — one sample (SB_READY or SB_RECEIVED) WITH the full comms
+ * timeline. Returns null if the lead is not in the cohort.
  */
 export async function getSampleReviewDetail(
   leadMasterId: number,

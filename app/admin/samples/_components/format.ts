@@ -63,6 +63,22 @@ export function statusBadge(status: SampleReviewRow['status']): { cls: string; l
   }
 }
 
+// Dispatch state -> badge classes + Spanish label.
+//   pending = amber, shipped = sky, delivered = emerald.
+export function dispatchBadge(state: SampleReviewRow['dispatchState']): {
+  cls: string;
+  label: string;
+} {
+  switch (state) {
+    case 'delivered':
+      return { cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Entregado' };
+    case 'shipped':
+      return { cls: 'bg-sky-50 text-sky-700 border-sky-200', label: 'Enviado' };
+    default:
+      return { cls: 'bg-amber-50 text-amber-700 border-amber-200', label: 'Pendiente' };
+  }
+}
+
 // Green/red readiness chip classes (label-readiness row).
 export function readyChip(ok: boolean): string {
   return ok

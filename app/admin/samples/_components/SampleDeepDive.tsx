@@ -8,7 +8,7 @@
 'use client';
 
 import type { SampleReviewRow } from './types';
-import { fmtTalk, fmtDate, qualityBadge, commsIcon } from './format';
+import { fmtTalk, fmtDate, qualityBadge, dispatchBadge, commsIcon } from './format';
 import DecisionBar from './DecisionBar';
 import HypothesisFeedback from './HypothesisFeedback';
 
@@ -36,6 +36,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
 
 export default function SampleDeepDive({ row }: Props) {
   const q = qualityBadge(row.qualityRead.verdict);
+  const d = dispatchBadge(row.dispatchState);
 
   return (
     <article className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
@@ -99,6 +100,45 @@ export default function SampleDeepDive({ row }: Props) {
             <span>{row.emailsCount} emails</span>
             <span className="text-slate-300">&middot;</span>
             <span>{row.messagesCount} mensajes</span>
+          </div>
+        </section>
+
+        {/* Dispatch */}
+        <section>
+          <MicroLabel>Dispatch</MicroLabel>
+          <div className="flex items-center gap-2 flex-wrap text-[13px] text-slate-700">
+            <span
+              className={
+                'inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md border shrink-0 ' +
+                d.cls
+              }
+            >
+              {d.label}
+            </span>
+            {row.trackingNumber ? (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span>tracking {row.trackingNumber}</span>
+              </>
+            ) : null}
+            {row.trackingStatus ? (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span>{row.trackingStatus}</span>
+              </>
+            ) : null}
+            {row.dispatchDate ? (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span>enviado {fmtDate(row.dispatchDate)}</span>
+              </>
+            ) : null}
+            {row.deliveredAt ? (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span>entregado {fmtDate(row.deliveredAt)}</span>
+              </>
+            ) : null}
           </div>
         </section>
 
