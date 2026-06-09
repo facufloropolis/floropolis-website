@@ -27,6 +27,14 @@ import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import RecDecision from './RecDecision';
+import {
+  getCompetitorContext,
+  getProdPhotoStatus,
+  getLearningByRecType,
+  type CompetitorContext,
+  type PhotoStatus,
+  type LearningStat,
+} from './_recData';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -83,6 +91,10 @@ interface VarietyRow {
   recommendedAction: string;
   provenance: Provenance;
   provenanceSource: string | null;
+  // --- 3-DIM impact inputs (real, from the engine row) ---
+  importanceBase: number; // importance_base weight = demand x comp-advantage
+  unpublishedSkus: number; // # SKUs in this lever with published=false (breadth)
+  minImageCount: number; // lowest image_count across the variety's SKUs (gate state)
 }
 
 interface Lever {
@@ -122,6 +134,35 @@ const LEVER_LABELS: Record<string, string> = {
 
 function leverLabel(gapType: string): string {
   return LEVER_LABELS[gapType] ?? gapType.replace(/[._]/g, ' ');
+}
+
+// Format USD/stem with 2 decimals (real numbers only; caller guards nulls).
+function usd(n: number): string {
+  return `$${n.toFixed(2)}`;
+}
+
+// QUALITY dim: which gate this lever closes, concretely, given the gate state.
+function qualityGateText(gapType: string, minImageCount: number): string {
+  switch (gapType) {
+    case 'image':
+      return minImageCount <= 0
+        ? 'cierra gate de imagen (0->1)'
+        : 'cierra gate de imagen (suma foto)';
+    case 'image_improve':
+      return `suma foto (${minImageCount}->${minImageCount + 1}, A/B)`;
+    case 'content':
+      return 'cierra gate de contenido (copy / atributos)';
+    case 'fulfillment':
+      return 'cierra gate de fulfillment (box / yield / shipping)';
+    case 'price':
+      return 'cierra gate de precio (SKU sin precio)';
+    case 'price_improve':
+      return 'mejora gate de precio (revision / desvio)';
+    case 'quality_improve':
+      return 'cierra gate de calidad (gate fallando)';
+    default:
+      return '--';
+  }
 }
 
 // Stable lever display order (known levers first, then any unknowns).
@@ -238,6 +279,9 @@ export default async function SupplyEnginePage() {
     priorityScore: number;
     recommendedAction: string;
     topPriorityForRep: number; // priority of the sku that owns the rep fields
+    importanceBase: number; // max importance_base across the variety's SKUs
+    unpublishedSkus: number; // count of published=false SKUs (breadth signal)
+    minImageCount: number; // lowest image_count (gate state for image levers)
   }
   const acc = new Map<string, Acc>();
   for (const r of recs) {
@@ -246,6 +290,9 @@ export default async function SupplyEnginePage() {
     if (!variety || !gapType) continue; // honesty: skip rows with no lever/variety
     const key = `${gapType} ${variety.toLowerCase()}`;
     const ps = toNum(r.priority_score);
+    const ib = toNum(r.importance_base);
+    const isUnpublished = r.published === false;
+    const imgc = r.image_count == null ? Number.POSITIVE_INFINITY : toNum(r.image_count);
     const existing = acc.get(key);
     if (!existing) {
       acc.set(key, {
@@ -256,10 +303,16 @@ export default async function SupplyEnginePage() {
         priorityScore: ps,
         recommendedAction: r.recommended_action ?? '--',
         topPriorityForRep: ps,
+        importanceBase: ib,
+        unpublishedSkus: isUnpublished ? 1 : 0,
+        minImageCount: imgc,
       });
     } else {
       existing.skuCount += 1;
       if (ps > existing.priorityScore) existing.priorityScore = ps;
+      if (ib > existing.importanceBase) existing.importanceBase = ib;
+      if (isUnpublished) existing.unpublishedSkus += 1;
+      if (imgc < existing.minImageCount) existing.minImageCount = imgc;
       // Representative vendor/action come from the highest-priority sku.
       if (ps >= existing.topPriorityForRep) {
         existing.topPriorityForRep = ps;
@@ -282,6 +335,9 @@ export default async function SupplyEnginePage() {
       recommendedAction: a.recommendedAction,
       provenance: normProvenance(sig?.provenance),
       provenanceSource: sig?.source ?? null,
+      importanceBase: a.importanceBase,
+      unpublishedSkus: a.unpublishedSkus,
+      minImageCount: Number.isFinite(a.minImageCount) ? a.minImageCount : 0,
     };
     const arr = leverMap.get(a.gapType);
     if (arr) arr.push(row);
@@ -301,6 +357,33 @@ export default async function SupplyEnginePage() {
     );
     return { gapType, rows };
   });
+
+  // Enrichment: only for the varieties actually DISPLAYED (top LEVER_CAP per
+  // lever) so the PROD fan-out stays bounded. Competitor price + PROD photo come
+  // from PROD (may be null -> degrade); learning comes from BACKUP feedback.
+  const displayedVarieties = Array.from(
+    new Set(
+      levers.flatMap((l) =>
+        l.rows.slice(0, LEVER_CAP).map((r) => r.variety.trim().toLowerCase()),
+      ),
+    ),
+  );
+  // Only the image levers need a verified PROD photo check.
+  const imageLeverVarieties = Array.from(
+    new Set(
+      levers
+        .filter((l) => l.gapType === 'image' || l.gapType === 'image_improve')
+        .flatMap((l) =>
+          l.rows.slice(0, LEVER_CAP).map((r) => r.variety.trim().toLowerCase()),
+        ),
+    ),
+  );
+
+  const [competitorByVariety, photoByVariety, learningByRecType] = await Promise.all([
+    getCompetitorContext(displayedVarieties),
+    getProdPhotoStatus(imageLeverVarieties),
+    getLearningByRecType(),
+  ]);
 
   const totalVarieties = acc.size;
   const totalSkus = recs.filter((r) => r.variety && r.gap_type).length;
@@ -365,7 +448,16 @@ export default async function SupplyEnginePage() {
                 </div>
 
                 <div className="space-y-3">
-                  {shown.map((row) => (
+                  {shown.map((row) => {
+                    const vKey = row.variety.trim().toLowerCase();
+                    const comp = competitorByVariety.get(vKey) ?? null;
+                    const isImageLever =
+                      row.gapType === 'image' || row.gapType === 'image_improve';
+                    const photo = isImageLever
+                      ? photoByVariety.get(vKey) ?? null
+                      : null;
+                    const learn = learningByRecType.get(row.gapType) ?? null;
+                    return (
                     <article
                       key={`${row.gapType}-${row.variety}`}
                       className="rounded-xl border border-slate-200 bg-white overflow-hidden"
@@ -407,13 +499,138 @@ export default async function SupplyEnginePage() {
                         </div>
                       </div>
 
+                      {/* ---- 3-DIM IMPACT: what fixing this moves, in specifics ---- */}
+                      <div className="px-4 pb-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                            Breadth
+                          </div>
+                          <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                            {row.unpublishedSkus > 0 ? (
+                              <span className="text-emerald-700">
+                                +{row.unpublishedSkus} publicable
+                                {row.unpublishedSkus === 1 ? '' : 's'}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">
+                            SKU hoy no publicados que esto desbloquea
+                          </div>
+                        </div>
+
+                        <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                            Importance
+                          </div>
+                          <div className="text-sm font-semibold text-slate-800 mt-0.5 tabular-nums">
+                            {row.importanceBase > 0
+                              ? row.importanceBase.toFixed(0)
+                              : '--'}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">
+                            demanda x ventaja competitiva (peso)
+                          </div>
+                        </div>
+
+                        <div className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                            Quality
+                          </div>
+                          <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                            {qualityGateText(row.gapType, row.minImageCount)}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">
+                            gate que cierra
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ---- CONTEXT: competitor price (REAL) — why it matters ---- */}
+                      <div className="px-4 pb-3">
+                        <div className="rounded-lg border border-slate-100 px-3 py-2">
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                            Mercado
+                          </div>
+                          {comp && comp.found && comp.avgPerStem != null ? (
+                            <div className="text-sm text-slate-700 mt-0.5">
+                              <span className="font-semibold text-slate-900">
+                                ~{usd(comp.avgPerStem)}/stem
+                              </span>{' '}
+                              <span className="text-slate-500">
+                                ({comp.rowCount} precio
+                                {comp.rowCount === 1 ? '' : 's'},{' '}
+                                {comp.minPerStem != null && comp.maxPerStem != null
+                                  ? `${usd(comp.minPerStem)}–${usd(comp.maxPerStem)}, `
+                                  : ''}
+                                {comp.sources.length} fuente
+                                {comp.sources.length === 1 ? '' : 's'}:{' '}
+                                {comp.sources.join(', ')})
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-sm text-slate-400 mt-0.5">
+                              sin referencia de mercado
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* ---- VERIFIED SOLUTION (image levers only) ---- */}
+                      {isImageLever && (
+                        <div className="px-4 pb-3">
+                          <div
+                            className={`rounded-lg border px-3 py-2 ${
+                              photo?.state === 'yes'
+                                ? 'bg-emerald-50 border-emerald-200'
+                                : 'bg-slate-50 border-slate-100'
+                            }`}
+                          >
+                            <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                              Solucion verificada
+                            </div>
+                            {photo?.state === 'yes' ? (
+                              <div className="text-sm font-medium text-emerald-700 mt-0.5">
+                                Foto PROD disponible → recuperar (self-contained)
+                              </div>
+                            ) : photo?.state === 'no' ? (
+                              <div className="text-sm text-slate-700 mt-0.5">
+                                Sin foto PROD → ladder: vendor → free → sample → AI
+                              </div>
+                            ) : (
+                              <div className="text-sm text-slate-400 mt-0.5">
+                                PROD no verificable ahora — solucion pendiente
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ---- LEARNING indicator (loop feedback per gap_type) ---- */}
+                      <div className="px-4 pb-3">
+                        <div className="text-[11px] text-slate-500">
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mr-1.5">
+                            Loop
+                          </span>
+                          {learn && learn.decisions > 0
+                            ? `${learn.decisions} decidida${
+                                learn.decisions === 1 ? '' : 's'
+                              }, ${learn.approvals} aprobada${
+                                learn.approvals === 1 ? '' : 's'
+                              } (rec type: ${row.gapType})`
+                            : 'sin decisiones aun'}
+                        </div>
+                      </div>
+
                       {/* Inline decide -> /api/admin/supply/decide */}
                       <RecDecision
                         variety={row.variety}
                         recType={row.gapType}
                       />
                     </article>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {more > 0 && (
@@ -431,9 +648,12 @@ export default async function SupplyEnginePage() {
       <p className="text-xs text-slate-400 mt-10">
         Sources: supabase-backup v_supply_recommendations (engine, aggregated to
         variety × lever), supply_importance_signal (provenance badge),
-        supply_recommendation_feedback (write target). Provenance: assumed = guess
-        (red), directional = partial signal (amber), verified/sourced = real
-        signal (green), none = base score only (grey).
+        supply_recommendation_feedback (loop indicator + write target).
+        PROD (read-only): competitor_prices joined by variety (market price),
+        floropolis_inventory.images (verified PROD photo for image levers; null
+        when PROD unreachable → degrades to pending, never invented). Provenance:
+        assumed = guess (red), directional = partial signal (amber),
+        verified/sourced = real signal (green), none = base score only (grey).
       </p>
     </main>
   );
