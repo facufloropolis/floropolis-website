@@ -20,9 +20,11 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import {
   getSampleReviewCohort,
   getSampleReviewDetail,
+  getFloraQualifiedCohort,
   type SampleReviewRow,
 } from '@/lib/admin/sample-review';
 import SamplesReviewClient from './_components/SamplesReviewClient';
+import FloraCohortPanel from './_components/FloraCohortPanel';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -57,6 +59,9 @@ async function requireAdmin() {
 export default async function SamplesReviewPage() {
   await requireAdmin();
 
+  // Front of the loop: accounts JJ qualified with a real FLORA score, ready to review.
+  const floraCohort = await getFloraQualifiedCohort();
+
   // Quick list, then hydrate each row with its full comms timeline (cohort is small).
   const cohort = await getSampleReviewCohort();
   const rows: SampleReviewRow[] = await Promise.all(
@@ -87,6 +92,9 @@ export default async function SamplesReviewPage() {
           Vista JJ{openQuestions > 0 ? ` (${openQuestions})` : ''}
         </Link>
       </div>
+
+      {/* Front of the loop: review the FLORA-qualified before the boxed/dispatched below. */}
+      <FloraCohortPanel rows={floraCohort} />
 
       <SamplesReviewClient rows={rows} />
     </div>

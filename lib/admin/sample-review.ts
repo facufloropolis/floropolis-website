@@ -963,6 +963,174 @@ export async function getSampleReviewCohort(): Promise<SampleReviewRow[]> {
   });
 }
 
+// ---------------------------------------------------------------------------
+// FLORA-QUALIFIED COHORT (front of the samples loop)
+// ---------------------------------------------------------------------------
+//
+// The accounts JJ qualified with a REAL FLORA score, ready to REVIEW + approve
+// for a sample box. These are NOT in sample_box_status yet (qualified-to-send,
+// not boxed) — approving one is the loop's next step (create the box, downstream).
+//
+// Source: PROD zoho_accounts WHERE sb_qualification_flora IS NOT NULL AND
+// sb_qualif_by_jj = true, ORDER BY sb_qualification_flora DESC. Verified 2026-06-09
+// (project swhglnjyuorkycpgkmec, read-only).
+//
+// INTEL DISCOVERY (probed information_schema 2026-06-09): zoho_accounts does NOT
+// carry the sb_current_supplier / sb_prices_they_pay / sb_objection / etc. columns
+// that the sample_box_status path uses. The qualification intel for these accounts
+// lives as FREE TEXT in `description` (JJ's notes: confirmed address, box pref,
+// prices they pay, products of interest, order volume). We surface that raw, plus a
+// best-effort directional parse (box preference + a price line). Structured columns
+// that DO exist: account_name, zoho_id, phone, website, industry, account_type,
+// billing_city/state, priority, annual_revenue, reason_won_lost (ENVIAR/NURTURING),
+// qualification_sub_score, sb_content. All read NULL-safe.
+
+export interface FloraCohortRow {
+  // synthetic, stable, positive 31-bit id derived from account_name — used ONLY as the
+  // decide-route key (the route requires a numeric leadMasterId; these accounts have no
+  // lead_master_id because they are not boxed yet). NOT a real lead_master_id.
+  decideKey: number;
+  zohoId: string | null;
+  accountName: string;
+  floraScore: number | null;
+  byJJ: boolean;
+  decision: string | null; // reason_won_lost: ENVIAR / NURTURING (null today)
+  reasoning: string | null; // description — JJ's free-text qualification notes
+  subScore: string | null; // qualification_sub_score
+  currentSupplier: string | null; // not a column on zoho_accounts → null (kept for parity)
+  pricesTheyPay: string | null; // directional parse from description, else null
+  boxPreference: string | null; // directional parse from description ("Box: roses")
+  productsInterest: string | null; // directional parse from description, else null
+  businessType: string | null; // account_type ?? industry
+  phone: string | null;
+  website: string | null;
+  city: string | null;
+  state: string | null;
+}
+
+/**
+ * floraDecideKey — deterministic positive 31-bit hash of the (lowercased) account name.
+ * The decide route (/api/admin/samples/decide) hard-requires a finite numeric
+ * leadMasterId and keys the sample_review_loop row by it. FLORA-qualified accounts have
+ * no real lead_master_id (not boxed yet), so we hand the route a stable synthetic key per
+ * account: same account → same key (idempotent decisions), different accounts → different
+ * keys (6 short distinct names, zero collision risk). Well within JS-safe-int + bigint.
+ */
+function floraDecideKey(accountName: string): number {
+  let h = 5381;
+  const str = accountName.trim().toLowerCase();
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h + str.charCodeAt(i)) | 0; // djb2, 32-bit
+  }
+  return (h & 0x7fffffff) || 1; // positive, non-zero
+}
+
+/**
+ * parseDescriptionIntel — best-effort directional extraction from JJ's free-text
+ * description. NEVER throws; every field degrades to null. Pure string heuristics, no
+ * invented values: a "price line" is only emitted when the text literally mentions a
+ * price ($ or "stem"); a box preference only when "Box:" is present.
+ */
+function parseDescriptionIntel(description: string | null): {
+  pricesTheyPay: string | null;
+  boxPreference: string | null;
+  productsInterest: string | null;
+} {
+  const desc = s(description);
+  if (!desc) return { pricesTheyPay: null, boxPreference: null, productsInterest: null };
+
+  const lines = desc
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  // Box preference — "Box: roses" / "Box: summer".
+  let boxPreference: string | null = null;
+  for (const l of lines) {
+    const m = /^box\s*:\s*(.+)$/i.exec(l);
+    if (m && s(m[1])) {
+      boxPreference = s(m[1]);
+      break;
+    }
+  }
+
+  // Price line — the first non-label line that mentions a price ($ or "stem").
+  let pricesTheyPay: string | null = null;
+  let productsInterest: string | null = null;
+  for (const l of lines) {
+    if (/^(confirmed address|box|preferences|ship date|notes)\s*:/i.test(l)) continue;
+    if (pricesTheyPay === null && /(\$|\/\s*stem|per stem|stem\b|cm\b)/i.test(l)) {
+      pricesTheyPay = l.length > 240 ? l.slice(0, 237) + '...' : l;
+    }
+    if (productsInterest === null && /(rose|carna|garden|freedom|lili|daisy|daisies|stock|snapdragon|larkspur|astramaria)/i.test(l)) {
+      productsInterest = l.length > 240 ? l.slice(0, 237) + '...' : l;
+    }
+    if (pricesTheyPay && productsInterest) break;
+  }
+
+  return { pricesTheyPay, boxPreference, productsInterest };
+}
+
+/**
+ * getFloraQualifiedCohort — the FLORA-qualified accounts ready to review for a sample box,
+ * ranked by FLORA score desc. Reads PROD zoho_accounts directly (read-only). NULL-safe:
+ * if the PROD client is unconfigured or the query fails, returns []. The front of the
+ * samples loop — approving a row here means "create the box" (downstream, not here).
+ */
+export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
+  const prod = getProdReadClient();
+  if (!prod) return [];
+  try {
+    const { data, error } = await prod
+      .from('zoho_accounts')
+      .select(
+        'zoho_id, account_name, sb_qualification_flora, sb_qualif_by_jj, reason_won_lost, ' +
+          'qualification_sub_score, description, account_type, industry, phone, website, ' +
+          'billing_city, billing_state',
+      )
+      .not('sb_qualification_flora', 'is', null)
+      .eq('sb_qualif_by_jj', true)
+      .order('sb_qualification_flora', { ascending: false });
+    if (error || !Array.isArray(data)) return [];
+
+    const rows: FloraCohortRow[] = [];
+    for (const r of data as unknown as Array<Record<string, unknown>>) {
+      const accountName = s(r.account_name) || '(unknown account)';
+      const reasoning = s(r.description);
+      const intel = parseDescriptionIntel(reasoning);
+      const floraRaw = r.sb_qualification_flora;
+      const floraScore =
+        typeof floraRaw === 'number'
+          ? floraRaw
+          : floraRaw != null && Number.isFinite(Number(floraRaw))
+            ? Number(floraRaw)
+            : null;
+      rows.push({
+        decideKey: floraDecideKey(accountName),
+        zohoId: s(r.zoho_id),
+        accountName,
+        floraScore,
+        byJJ: r.sb_qualif_by_jj === true,
+        decision: s(r.reason_won_lost),
+        reasoning,
+        subScore: s(r.qualification_sub_score),
+        currentSupplier: null,
+        pricesTheyPay: intel.pricesTheyPay,
+        boxPreference: intel.boxPreference,
+        productsInterest: intel.productsInterest,
+        businessType: s(r.account_type) ?? s(r.industry),
+        phone: s(r.phone),
+        website: s(r.website),
+        city: s(r.billing_city),
+        state: s(r.billing_state),
+      });
+    }
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
 /**
  * getSampleReviewDetail — one sample (SB_READY or SB_RECEIVED) WITH the full comms
  * timeline. Returns null if the lead is not in the cohort.
