@@ -29,6 +29,7 @@ const NAV: NavItem[] = [
   { id: 'blocked',   label: 'Blocked',   icon: 'B', url: '/admin/catalog/blocked',          sub: 'SKUs by gate / repair',      matchPrefix: '/admin/catalog/blocked' },
   { id: 'supply',    label: 'Supply',    icon: 'R', url: '/admin/supply',                   sub: 'Engine recommendations',     matchPrefix: '/admin/supply' },
   { id: 'orders',    label: 'Orders',    icon: 'O', url: '/admin/orders',                   sub: 'Queue / fulfillment',        matchPrefix: '/admin/orders' },
+  { id: 'samples',   label: 'Samples',   icon: 'M', url: '/admin/samples',                  sub: 'Review / dispatch jueves',   matchPrefix: '/admin/samples' },
   { id: 'dispatch',      label: 'Dispatch',      icon: 'D',  url: '/admin/dispatch',                 sub: 'FedEx / labels / vendor',    matchPrefix: '/admin/dispatch' },
   { id: 'sales-cleanup', label: 'Sales Cleanup', icon: '$',  url: '/admin/sales-cleanup',            sub: 'Orphan transactions',        matchPrefix: '/admin/sales-cleanup' },
   { id: 'approvals',     label: 'Approvals',     icon: 'A',  url: '/admin/catalog/approval-queue',   sub: 'Sign-off + full history',    matchPrefix: '/admin/catalog/approval-queue' },
