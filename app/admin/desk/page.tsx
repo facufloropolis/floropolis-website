@@ -34,6 +34,7 @@ import { createBackupServerClient as createUserClient } from '@/lib/supabase/bac
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import ProposalDecision from './ProposalDecision';
 import KnowledgeAnswerForm from './KnowledgeAnswerForm';
+import CoordinationPanel from './CoordinationPanel';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -374,6 +375,9 @@ export default async function FacusDeskPage() {
           ← Back to catalog
         </Link>
       </div>
+
+      {/* ================= Coordinacion (cross-agent + access requests) ========= */}
+      <CoordinationPanel />
 
       {/* ================= ZONE 2 — Your decisions ================= */}
       <section className="mb-10">
