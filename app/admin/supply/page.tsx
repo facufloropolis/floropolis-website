@@ -41,17 +41,27 @@ import ImageSolution from './ImageSolution';
 import ContentSolution from './ContentSolution';
 import FulfillmentSolution from './FulfillmentSolution';
 import SupplyConsole, { type LeverTab, type SupplyLever } from './SupplyConsole';
+import LoopLearningPanel from './LoopLearningPanel';
 import {
   getCompetitorContext,
   getProdPhotoStatus,
   getLearningByRecType,
   getLeverBuckets,
+  getLearnedRerank,
+  getLoopClosure,
+  getDecisionsByAxis,
+  getLoopReflection,
+  groupByScaleAxis,
+  learnedAdjustment,
+  closureBoost,
   SUPPLY_LEVERS,
   leverBucket,
   type CompetitorContext,
   type PhotoStatus,
   type LearningStat,
   type LeverBucketStat,
+  type GroupableRow,
+  type GroupedRec,
 } from './_recData';
 import {
   getFulfillmentBatchRecs,
@@ -112,6 +122,11 @@ interface VarietyRow {
   importanceBase: number;
   unpublishedSkus: number;
   minImageCount: number;
+  // LOOP 1 + LOOP 2: learned re-rank adjustment + closure boost applied to this
+  // row before sorting, so an approved/closing rec-type ranks higher next load.
+  learnedAdj: number;
+  closureAdj: number;
+  rankScore: number; // priorityScore + learnedAdj + closureAdj (what we sort on)
 }
 
 function toNum(v: number | string | null | undefined): number {
@@ -335,17 +350,88 @@ export default async function SupplyEnginePage() {
       importanceBase: a.importanceBase,
       unpublishedSkus: a.unpublishedSkus,
       minImageCount: Number.isFinite(a.minImageCount) ? a.minImageCount : 0,
+      // placeholders; the LOOP 1/2 adjustments are applied after the loop
+      // readers resolve (just below), then rows are sorted by rankScore.
+      learnedAdj: 0,
+      closureAdj: 0,
+      rankScore: a.priorityScore,
     });
   }
-  for (const rows of bucketRows.values()) rows.sort((x, y) => y.priorityScore - x.priorityScore);
+
+  // vendor-by-variety map (for LOOP 3 axis resolution: the decision log has no
+  // vendor column, so we resolve a feedback variety to its vendor via the engine
+  // rows we already loaded). First (top-priority) vendor per variety wins.
+  const vendorByVariety = new Map<string, string>();
+  for (const r of recs) {
+    const v = (r.variety ?? '').trim().toLowerCase();
+    const vendor = (r.vendor ?? '').trim();
+    if (v && vendor && !vendorByVariety.has(v)) vendorByVariety.set(v, vendor);
+  }
 
   // SCALE batch readers (content x cat-box, fulfillment x vendor-box) ---------
   // + the lever bucket stats (all 5, with masked backlog) for the filter tabs.
-  const [buckets, fulfillmentRecs, contentRecs] = await Promise.all([
-    getLeverBuckets(),
-    getFulfillmentBatchRecs(),
-    getContentBatchRecs(),
-  ]);
+  // + the four IMPROVEMENT LOOP readers (learning re-rank, loop-closure,
+  //   per-axis decision counts) so the engine ranks BETTER proposal-by-proposal.
+  const [buckets, fulfillmentRecs, contentRecs, rerank, closure, decisionsByAxis] =
+    await Promise.all([
+      getLeverBuckets(),
+      getFulfillmentBatchRecs(),
+      getContentBatchRecs(),
+      getLearnedRerank(), // LOOP 1
+      getLoopClosure(), // LOOP 2
+      getDecisionsByAxis(vendorByVariety), // LOOP 3 (same-decision-repeated trigger)
+    ]);
+
+  // LOOP 1 + LOOP 2: apply the learned re-rank + closure boost to every per-
+  // variety row, then re-sort by rankScore. This is the learning that was dead
+  // (view.learned_delta = 0): an approved rec-type/variety now ranks higher next
+  // load, a rejected one lower, and a lever with a PROVEN closing solution lifts
+  // its still-pending recs. Base priority dominates; the adjustment re-orders
+  // neighbours (clamped in _recData).
+  for (const rows of bucketRows.values()) {
+    for (const row of rows) {
+      row.learnedAdj = learnedAdjustment(rerank, row.gapType, row.variety);
+      row.closureAdj = closureBoost(closure, row.gapType);
+      row.rankScore = row.priorityScore + row.learnedAdj + row.closureAdj;
+    }
+    rows.sort((x, y) => y.rankScore - x.rankScore);
+  }
+
+  // LOOP 3: collapse per-variety rows that share a (vendor x rec_type) scale axis
+  // into ONE batch rec ("N variedades, una accion"). We feed image + price +
+  // quality rows (content + fulfillment already batch via _scaleReaders). The
+  // grouper returns the batch recs (>= GROUP_MIN varieties on an axis, or a
+  // decision repeated >= GROUP_MIN times) plus the leftover singletons, which we
+  // map back per lever so each section shows its batches first, then singletons.
+  const groupableRows: GroupableRow[] = [];
+  for (const lever of ['image', 'price', 'quality'] as SupplyLever[]) {
+    for (const r of bucketRows.get(lever) ?? []) {
+      groupableRows.push({
+        variety: r.variety,
+        vendor: r.vendor,
+        gapType: r.gapType,
+        lever,
+        skuCount: r.skuCount,
+        priorityScore: r.priorityScore,
+      });
+    }
+  }
+  const { groups: scaleGroups, ungrouped: ungroupedRows } = groupByScaleAxis(
+    groupableRows,
+    rerank,
+    closure,
+    decisionsByAxis,
+  );
+  // Index batches + leftover singletons per lever for the sections below.
+  const groupsByLever = new Map<SupplyLever, GroupedRec[]>();
+  const ungroupedKeys = new Set<string>(); // `${lever}|${gapType}|${variety}` kept as a card
+  for (const lever of ['image', 'price', 'quality'] as SupplyLever[]) groupsByLever.set(lever, []);
+  for (const g of scaleGroups) {
+    if (groupsByLever.has(g.lever)) groupsByLever.get(g.lever)!.push(g);
+  }
+  for (const u of ungroupedRows) {
+    ungroupedKeys.add(`${u.lever}|${u.gapType.toLowerCase()}|${u.variety.toLowerCase()}`);
+  }
 
   // Enrichment: competitor price for displayed image/price varieties; PROD photo
   // status for displayed image varieties; learning per rec_type; content
@@ -372,6 +458,22 @@ export default async function SupplyEnginePage() {
   for (const inf of contentInferences) {
     inferenceByVariety.set((inf.variety ?? '').trim().toLowerCase(), inf);
   }
+
+  // LOOP 4: the reflection (visible improvement curve). batchedRecs counts the
+  // per-variety scale groups PLUS the content + fulfillment batch recs (both are
+  // "N variedades, una accion"); batchedVarieties sums the varieties they cover.
+  const batchedRecs = scaleGroups.length + contentRecs.length + fulfillmentRecs.length;
+  const batchedVarieties =
+    scaleGroups.reduce((s, g) => s + g.varieties, 0) +
+    contentRecs.reduce((s, c) => s + c.varieties, 0) +
+    fulfillmentRecs.reduce((s, f) => s + f.varieties, 0);
+  // learned_delta is still all-zero in Rose's view (verified 2026-06-10) -> the
+  // reader-side re-rank is the live learning until Rose adopts the delta.
+  const reflection = await getLoopReflection({
+    batchedRecs,
+    batchedVarieties,
+    learnedDeltaDead: true,
+  });
 
   // Lever tabs (all five, always) with live counts + masked backlog -----------
   const tabs: LeverTab[] = SUPPLY_LEVERS.map((lever) => {
@@ -432,8 +534,25 @@ export default async function SupplyEnginePage() {
               Priority
             </div>
             <div className="text-2xl font-bold text-emerald-700 tabular-nums leading-tight mt-0.5">
-              {row.priorityScore.toFixed(1)}
+              {row.rankScore.toFixed(1)}
             </div>
+            {(row.learnedAdj !== 0 || row.closureAdj !== 0) && (
+              <div
+                title={`base ${row.priorityScore.toFixed(1)} + aprendido ${row.learnedAdj >= 0 ? '+' : ''}${row.learnedAdj.toFixed(1)} + closure +${row.closureAdj.toFixed(1)}`}
+                className="text-[10px] tabular-nums mt-0.5 leading-none"
+              >
+                <span className="text-slate-400">base {row.priorityScore.toFixed(1)}</span>{' '}
+                {row.learnedAdj !== 0 && (
+                  <span className={row.learnedAdj > 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>
+                    {row.learnedAdj > 0 ? '+' : ''}
+                    {row.learnedAdj.toFixed(1)} aprend.
+                  </span>
+                )}{' '}
+                {row.closureAdj > 0 && (
+                  <span className="text-emerald-600 font-semibold">+{row.closureAdj.toFixed(1)} loop</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -528,12 +647,98 @@ export default async function SupplyEnginePage() {
     );
   }
 
+  // ---- LOOP 3 batch card: N varieties on one scale axis, ONE action --------
+  function GroupCard({ g }: { g: GroupedRec }) {
+    return (
+      <article className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 shadow-sm overflow-hidden">
+        <div className="px-5 pt-4 pb-3 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-base font-semibold tracking-tight text-slate-900">
+                {g.vendor}
+              </h3>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800 bg-emerald-100 border border-emerald-200 rounded-full px-2 py-0.5">
+                batch · {g.varieties} variedades
+              </span>
+            </div>
+            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+              <span className="font-mono text-slate-400">{g.recType}</span>
+              <span className="text-slate-300">·</span>
+              <span className="tabular-nums">{g.skuCount} SKU</span>
+              {g.repeatedDecisions > 0 && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="tabular-nums text-violet-700">
+                    {g.repeatedDecisions} decision{g.repeatedDecisions === 1 ? '' : 'es'} repetida{g.repeatedDecisions === 1 ? '' : 's'}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="shrink-0 text-right">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              Priority
+            </div>
+            <div className="text-2xl font-bold text-emerald-700 tabular-nums leading-tight mt-0.5">
+              {g.rankScore.toFixed(1)}
+            </div>
+            {(g.learnedAdj !== 0 || g.closureAdj !== 0) && (
+              <div className="text-[10px] tabular-nums mt-0.5 leading-none text-slate-400">
+                base {g.maxPriority.toFixed(1)}
+                {g.learnedAdj !== 0 && (
+                  <span className={g.learnedAdj > 0 ? ' text-emerald-600 font-semibold' : ' text-red-600 font-semibold'}>
+                    {' '}{g.learnedAdj > 0 ? '+' : ''}{g.learnedAdj.toFixed(1)} aprend.
+                  </span>
+                )}
+                {g.closureAdj > 0 && (
+                  <span className="text-emerald-600 font-semibold"> +{g.closureAdj.toFixed(1)} loop</span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="px-5 pb-3">
+          <div className="rounded-xl border border-emerald-100 bg-white px-3.5 py-2.5">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              Una accion a escala -&gt; {g.varieties} variedad{g.varieties === 1 ? '' : 'es'}
+            </div>
+            <div className="text-sm text-slate-700 mt-1 leading-snug">{g.action}</div>
+            {g.sampleVarieties.length > 0 && (
+              <div className="text-[11px] text-slate-500 mt-1.5 leading-snug">
+                Ej: {g.sampleVarieties.join(', ')}
+                {g.varieties > g.sampleVarieties.length
+                  ? `, +${g.varieties - g.sampleVarieties.length} mas`
+                  : ''}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="px-5 pb-3">
+          <div className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              Loop
+            </span>
+            {learnLabel(g.recType)}
+          </div>
+        </div>
+        <RecDecision variety={g.sampleVarieties[0] ?? g.vendor} recType={g.recType} />
+      </article>
+    );
+  }
+
   // ---- Sections per lever --------------------------------------------------
+  // LOOP 3 first: render the batch recs (axes with many varieties / a repeated
+  // decision), THEN only the leftover singletons (axes too small to batch), so
+  // Facu acts once on the broad axes and the list does not repeat the same fix.
   function PerVarietySection({ lever }: { lever: SupplyLever }) {
     const rows = bucketRows.get(lever) ?? [];
-    const shown = rows.slice(0, LEVER_CAP);
-    const more = rows.length - shown.length;
-    if (rows.length === 0) {
+    const groups = groupsByLever.get(lever) ?? [];
+    const singles = rows.filter((r) =>
+      ungroupedKeys.has(`${lever}|${r.gapType.toLowerCase()}|${r.variety.toLowerCase()}`),
+    );
+    const shown = singles.slice(0, LEVER_CAP);
+    const more = singles.length - shown.length;
+    if (rows.length === 0 && groups.length === 0) {
       return (
         <div className="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-8 text-center">
           <div className="text-sm font-semibold text-emerald-800">
@@ -547,12 +752,31 @@ export default async function SupplyEnginePage() {
     }
     return (
       <div className="space-y-4">
-        {shown.map((row) => (
-          <VarietyCard key={`${lever}-${row.gapType}-${row.variety}`} row={row} lever={lever} />
-        ))}
+        {groups.length > 0 && (
+          <div className="space-y-4">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+              Batches a escala ({groups.length}) — una accion cubre varias variedades
+            </div>
+            {groups.map((g) => (
+              <GroupCard key={`grp-${g.axisKey}`} g={g} />
+            ))}
+          </div>
+        )}
+        {shown.length > 0 && (
+          <div className="space-y-4">
+            {groups.length > 0 && (
+              <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 pt-2">
+                Individuales (eje chico, no colapsable)
+              </div>
+            )}
+            {shown.map((row) => (
+              <VarietyCard key={`${lever}-${row.gapType}-${row.variety}`} row={row} lever={lever} />
+            ))}
+          </div>
+        )}
         {more > 0 && (
           <p className="text-xs text-slate-400 mt-2 pl-1">
-            +{more} variedad{more === 1 ? '' : 'es'} mas en este lever (top {LEVER_CAP} por prioridad).
+            +{more} variedad{more === 1 ? '' : 'es'} individual{more === 1 ? '' : 'es'} mas en este lever (top {LEVER_CAP} por prioridad).
           </p>
         )}
       </div>
@@ -794,6 +1018,11 @@ export default async function SupplyEnginePage() {
       </div>
 
       <SupplyConsole tabs={tabs} sections={sections} initial={initial} />
+
+      {/* LOOP & LEARNING: the visible improvement curve across the four loops. */}
+      <div className="mt-10">
+        <LoopLearningPanel reflection={reflection} />
+      </div>
 
       <p className="text-[11px] leading-relaxed text-slate-400 mt-12 pt-6 border-t border-slate-200">
         Fuentes: supabase-backup v_supply_recommendations (motor) bucketed a 5
