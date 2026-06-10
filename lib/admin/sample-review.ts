@@ -1081,15 +1081,17 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
   const prod = getProdReadClient();
   if (!prod) return [];
   try {
+    // Reads Rose's anon-readable view public.v_flora_cohort (NOT zoho_accounts directly):
+    // zoho_accounts has RLS with 0 policies so only service role reads it; the app runs as
+    // anon. Rose's view exposes ONLY the FLORA cohort (these 13 cols, the qualified rows) to
+    // anon (verified: 6 rows visible as role anon, 2026-06-10). Least-privilege, camino A.
     const { data, error } = await prod
-      .from('zoho_accounts')
+      .from('v_flora_cohort')
       .select(
         'zoho_id, account_name, sb_qualification_flora, sb_qualif_by_jj, reason_won_lost, ' +
           'qualification_sub_score, description, account_type, industry, phone, website, ' +
           'billing_city, billing_state',
       )
-      .not('sb_qualification_flora', 'is', null)
-      .eq('sb_qualif_by_jj', true)
       .order('sb_qualification_flora', { ascending: false });
     if (error || !Array.isArray(data)) return [];
 
@@ -1146,8 +1148,10 @@ export async function probeZohoReadable(): Promise<boolean> {
   const prod = getProdReadClient();
   if (!prod) return false;
   try {
+    // Probe the SAME source the cohort reads (Rose's anon view), so an empty cohort is
+    // discriminated correctly: 0 here means the view is unreachable/missing, not "no accounts".
     const { count, error } = await prod
-      .from('zoho_accounts')
+      .from('v_flora_cohort')
       .select('zoho_id', { count: 'exact', head: true });
     if (error) return false;
     return (count ?? 0) > 0;
