@@ -346,6 +346,30 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       // box_master_mirror fetch is best-effort; rows will have DIMS MISSING notes
     }
 
+    // 4b) Representative farm cost per stem (BACKUP v_catalog_admin) for UNIT VALUE.
+    // The approved sample doesn't pin an exact composition, so we DERIVE a representative
+    // declared value = stems_per_box × avg farm cost per stem. Honest: representative, not
+    // exact; an exact value needs the box composition captured at approval.
+    // Sample boxes are rose QBs, and roses farm cost (~$0.45/stem) is half the all-catalog
+    // average (~$0.84) — using the overall avg would overstate the declared value ~2x. So we
+    // prefer the ROSES average and fall back to overall only if no rose rows.
+    let avgFarmCost: number | null = null;
+    try {
+      const { data: catRaw } = await svc.from('v_catalog_admin').select('variety, farm_cost').limit(3000);
+      const all: number[] = [];
+      const roses: number[] = [];
+      for (const r of (catRaw ?? []) as Array<Record<string, unknown>>) {
+        const c = Number(r.farm_cost);
+        if (!Number.isFinite(c) || c <= 0) continue;
+        all.push(c);
+        if (typeof r.variety === 'string' && /rose/i.test(r.variety)) roses.push(c);
+      }
+      const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+      avgFarmCost = mean(roses) ?? mean(all);
+    } catch {
+      // best-effort; UNIT VALUE stays blank if the catalog is unavailable
+    }
+
     // Helper to find the best box_master_mirror row for a given box_type string.
     // Priority: exact legacy_box_type match → family match.
     function findBoxMaster(boxType: string): Record<string, unknown> | null {
@@ -439,11 +463,17 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
         notesParts.push('DIMS MISSING');
       }
 
-      // UNIT VALUE = stems_per_box × farm_cost_per_stem.
-      // Farm cost per stem is NOT available in this flow today → emit "" + note.
-      // NOTE: Rose can also compute this; we approximate from farm_cost × stems.
-      const unitValue = ''; // blank until farm_cost is available in this flow
-      notesParts.push('VALOR PENDIENTE'); // always note for UNIT VALUE
+      // UNIT VALUE = stems_per_box × representative farm cost per stem (DERIVED, customs value).
+      // stems_per_box from the matched box_master row; farm cost = catalog average. Representative
+      // (the sample's exact composition isn't pinned at approval). Rounded to whole USD.
+      const stemsPerBox =
+        bm && Number.isFinite(Number(bm.stems_per_box)) ? Number(bm.stems_per_box) : null;
+      let unitValue = '';
+      if (stemsPerBox != null && stemsPerBox > 0 && avgFarmCost != null) {
+        unitValue = String(Math.max(1, Math.round(stemsPerBox * avgFarmCost)));
+      } else {
+        notesParts.push('VALOR PENDIENTE');
+      }
 
       const cust_val = unitValue !== '' ? unitValue : '';
       const dec_val = unitValue !== '' ? unitValue : '';
