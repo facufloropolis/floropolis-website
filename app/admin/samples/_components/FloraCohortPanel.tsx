@@ -1,30 +1,51 @@
-// FLORA-qualified cohort — the FRONT of the samples loop.
-// v1 | 2026-06-09 | Job_PM (CPO)
+// FLORA-qualified cohort — decision-first card redesign.
+// v2 | 2026-06-10 | Job_PM (CPO)
 //
-// The accounts JJ qualified with a REAL FLORA score (PROD zoho_accounts), ranked by
-// score desc, ready to REVIEW + approve for a sample box. Approving here = "create the
-// box" (downstream — these accounts are NOT in sample_box_status yet). Renders above the
-// existing dispatch-state list (review the qualified first, then the boxed/dispatched).
+// Facu's objective: decide who to send a sample box to, understanding WHY each is a good
+// bet (score logic + box contents + win hypothesis), with client evidence, then approve.
 //
-// Decide contract: POSTs to /api/admin/samples/decide with
-//   { leadMasterId: <numeric decideKey>, businessName: <accountName>, decision: 'yes'|'no' }
-// The decide route HARD-REQUIRES a finite numeric leadMasterId and keys sample_review_loop
-// by it. FLORA accounts have no real lead_master_id (not boxed yet), so the reader hands a
-// stable synthetic key per account (decideKey) and the account name rides along as
-// business_name. Same account → same key (idempotent). On success → reload.
+// What changed from v1:
+//   - Removed the 6-cell Intel grid (noisy uppercase labels).
+//   - Added Job recommendation chip (send/hold/skip) next to JJ badge.
+//   - Added STATUS STRIP (status/heat/last interaction/requested) as honest pendiente
+//     placeholders, ready for Rose enrichment via optional `enrichment` prop.
+//   - "Por que es buena apuesta" — deriveWhyGood (real signal, one line).
+//   - "Que mandarle + Hipotesis a probar" — deriveBoxProposal + deriveHypothesis.
+//   - "Donde" — parseConfirmedAddress + honest JJ-entered note (NOT system-verified).
+//   - Expandable "Ver actividad del cliente" section (collapsed, honest placeholder).
+//   - Approve helper text updated: "crear la caja para el dispatch de manana (genera el label)."
+//   - Precio que paga + proveedor actual folded into the "por que" line (not a grid).
 //
-// emerald-600 / slate house style. ASCII-clean Spanish copy. NULL-safe ("--" when null).
+// Decide contract: unchanged — POSTs to /api/admin/samples/decide.
 
 'use client';
 
 import { useState } from 'react';
 import type { FloraCohortRow } from '@/lib/admin/sample-review';
+import {
+  parseConfirmedAddress,
+  deriveWhyGood,
+  deriveBoxProposal,
+  deriveHypothesis,
+  deriveJobRecommendation,
+} from '@/lib/admin/sampleDerive';
+
+// Optional enrichment prop — ready for Rose data when wiring is complete.
+// Each field defaults to "pendiente" when undefined.
+interface FloraEnrichment {
+  status?: string | null;
+  heat?: string | null;
+  lastInteraction?: string | null;
+  requestedAt?: string | null;
+}
 
 interface Props {
   rows: FloraCohortRow[];
   // True when the cohort is empty BECAUSE the PROD read client can't see
   // zoho_accounts (RLS / service-role), NOT because JJ qualified nobody.
   prodBlocked?: boolean;
+  // Per-account enrichment keyed by zohoId. Passed down when Rose supplies it.
+  enrichmentMap?: Record<string, FloraEnrichment>;
 }
 
 type Action = 'yes' | 'no';
@@ -36,20 +57,67 @@ function scoreTone(score: number | null): string {
   return 'text-amber-600';
 }
 
-function Intel({ label, value }: { label: string; value: string | null }) {
+// STATUS STRIP — a single row of small pills. Values are "pendiente" when enrichment
+// is not yet wired (Rose enrichment is a future step). Renders a visible placeholder
+// so the structure is in place without pretending we have the data.
+function StatusStrip({ enrichment }: { enrichment?: FloraEnrichment }) {
+  const pending = (
+    <span className="text-slate-400 italic">
+      pendiente <span className="text-slate-300 not-italic text-[10px]">(Rose)</span>
+    </span>
+  );
+
+  const items: { label: string; value: React.ReactNode }[] = [
+    { label: 'Estado', value: enrichment?.status ? enrichment.status : pending },
+    { label: 'Calor', value: enrichment?.heat ? enrichment.heat : pending },
+    { label: 'Ult. contacto', value: enrichment?.lastInteraction ? enrichment.lastInteraction : pending },
+    { label: 'Pidio caja', value: enrichment?.requestedAt ? enrichment.requestedAt : pending },
+  ];
+
   return (
-    <div className="min-w-0">
-      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-0.5">
-        {label}
-      </div>
-      <div className="text-[13px] text-slate-700 break-words">
-        {value && value.trim() ? value : <span className="text-slate-300">--</span>}
-      </div>
+    <div className="flex flex-wrap gap-x-4 gap-y-1 rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2">
+      {items.map(({ label, value }) => (
+        <span key={label} className="text-[11px] text-slate-500 inline-flex items-center gap-1">
+          <span className="font-semibold text-slate-400">{label}:</span>
+          <span>{value}</span>
+        </span>
+      ))}
     </div>
   );
 }
 
-function FloraCard({ row }: { row: FloraCohortRow }) {
+// JOB RECOMMENDATION CHIP — Job's own verdict, separate from JJ's score.
+function JobChip({ verdict, reason }: { verdict: 'send' | 'hold' | 'skip'; reason: string }) {
+  const styles = {
+    send: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    hold: 'bg-amber-50 text-amber-700 border-amber-200',
+    skip: 'bg-slate-100 text-slate-500 border-slate-200',
+  };
+  const labels = {
+    send: 'Job: mandar',
+    hold: 'Job: esperar',
+    skip: 'Job: no',
+  };
+  return (
+    <span
+      title={reason}
+      className={
+        'text-[10px] font-semibold uppercase tracking-wide rounded-full border px-2 py-0.5 cursor-help ' +
+        styles[verdict]
+      }
+    >
+      {labels[verdict]}
+    </span>
+  );
+}
+
+function FloraCard({
+  row,
+  enrichment,
+}: {
+  row: FloraCohortRow;
+  enrichment?: FloraEnrichment;
+}) {
   const [busy, setBusy] = useState<Action | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<Action | null>(null);
@@ -59,6 +127,7 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
   // when the real cause was a route failure (RLS/permission/transient).
   const [boxRouted, setBoxRouted] = useState<boolean | null>(null);
   const [boxReason, setBoxReason] = useState<string | null>(null);
+  const [activityOpen, setActivityOpen] = useState(false);
 
   async function decide(decision: Action) {
     setBusy(decision);
@@ -128,6 +197,13 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
     }
   }
 
+  // Derived signals — all null-safe, real data only
+  const jobRec = deriveJobRecommendation(row);
+  const whyGood = deriveWhyGood(row);
+  const boxProposal = deriveBoxProposal(row);
+  const hypothesis = deriveHypothesis(row);
+  const address = parseConfirmedAddress(row.reasoning);
+
   const decisionChip = row.decision
     ? row.decision.toUpperCase().includes('NURTUR')
       ? { label: row.decision, cls: 'bg-amber-50 text-amber-700 border-amber-200' }
@@ -136,6 +212,8 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 flex flex-col gap-4 shadow-sm hover:border-slate-300 transition-colors">
+
+      {/* ── HEADER: score + name + chips ── */}
       <div className="flex items-start gap-4">
         {/* Big FLORA score */}
         <div className="shrink-0 text-center w-16 rounded-xl border border-slate-100 bg-slate-50/70 py-2">
@@ -153,6 +231,8 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
             <h3 className="text-base font-bold text-slate-900 truncate">
               {row.accountName}
             </h3>
+            {/* Job recommendation chip — independent of JJ */}
+            <JobChip verdict={jobRec.verdict} reason={jobRec.reason} />
             {row.byJJ ? (
               <span className="text-[10px] font-semibold uppercase tracking-wide rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 px-2 py-0.5">
                 Calificado por JJ
@@ -169,6 +249,7 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
               </span>
             ) : null}
           </div>
+          {/* Business type + location */}
           <div className="text-[12px] text-slate-500 mt-1">
             {[row.businessType, [row.city, row.state].filter(Boolean).join(', ')]
               .filter((x) => x && x.trim())
@@ -177,27 +258,81 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
         </div>
       </div>
 
-      {/* Reasoning (JJ free-text qualification notes) */}
+      {/* ── STATUS STRIP (placeholders until Rose enrichment wired) ── */}
+      <StatusStrip enrichment={enrichment} />
+
+      {/* ── WHY IT'S A GOOD BET ── */}
       <div>
         <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-1">
-          Por que &mdash; notas de JJ
+          Por que es buena apuesta
         </div>
-        <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-line break-words">
-          {row.reasoning && row.reasoning.trim() ? row.reasoning : '--'}
+        <p className="text-[13px] text-slate-700 leading-relaxed">
+          {whyGood}
+        </p>
+        {/* Fold precio + proveedor as a compact muted line — not a separate grid */}
+        {(row.pricesTheyPay || row.currentSupplier) && (
+          <p className="text-[11px] text-slate-400 mt-1">
+            {[
+              row.currentSupplier ? `Proveedor: ${row.currentSupplier}` : null,
+              row.pricesTheyPay ? `Precio: ${row.pricesTheyPay}` : null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        )}
+      </div>
+
+      {/* ── QUE MANDARLE + HIPOTESIS ── */}
+      <div>
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-1">
+          Que mandarle
+        </div>
+        <p className="text-[13px] text-slate-700 leading-relaxed">{boxProposal}</p>
+        <p className="text-[12px] text-slate-500 mt-1.5 italic leading-relaxed">
+          <span className="font-semibold not-italic text-slate-400">Hipotesis a probar: </span>
+          {hypothesis}
         </p>
       </div>
 
-      {/* Intel grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3">
-        <Intel label="Proveedor actual" value={row.currentSupplier} />
-        <Intel label="Precios que paga" value={row.pricesTheyPay} />
-        <Intel label="Caja preferida" value={row.boxPreference} />
-        <Intel label="Productos de interes" value={row.productsInterest} />
-        <Intel label="Sub-score" value={row.subScore} />
-        <Intel label="Telefono" value={row.phone} />
+      {/* ── DONDE (confirmed address) ── */}
+      <div>
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-1">
+          Donde
+        </div>
+        {address ? (
+          <div>
+            <p className="text-[13px] text-slate-700">{address.line}</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Direccion confirmada por JJ en la calificacion (no verificacion de sistema).
+            </p>
+          </div>
+        ) : (
+          <p className="text-[12px] text-slate-400 italic">
+            Sin direccion &mdash; pendiente confirmar con JJ.
+          </p>
+        )}
       </div>
 
-      {/* Actions */}
+      {/* ── ACTIVIDAD DEL CLIENTE (expandable, honest placeholder) ── */}
+      <div className="rounded-lg border border-slate-100 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setActivityOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-3 py-2 text-[12px] font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+        >
+          <span>Ver actividad del cliente</span>
+          <span className="text-slate-300 text-[10px]">{activityOpen ? '▲' : '▼'}</span>
+        </button>
+        {activityOpen && (
+          <div className="px-3 py-3 border-t border-slate-100 bg-slate-50/60">
+            <p className="text-[12px] text-slate-400 italic leading-relaxed">
+              Actividad / llamadas / mensajes &mdash; pendiente (enriquecimiento de Rose).
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* ── ACTIONS ── */}
       <div className="flex items-center gap-2 flex-wrap border-t border-slate-100 pt-4">
         <button
           type="button"
@@ -216,7 +351,7 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
           {busy === 'no' ? 'Rechazando...' : done === 'no' ? 'Rechazado' : 'Rechazar'}
         </button>
         <span className="text-[11px] text-slate-400">
-          Aprobar = crear la caja (ruteada a Atlas).
+          Aprobar = crear la caja para el dispatch de manana (genera el label).
         </span>
       </div>
 
@@ -240,7 +375,7 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
   );
 }
 
-export default function FloraCohortPanel({ rows, prodBlocked }: Props) {
+export default function FloraCohortPanel({ rows, prodBlocked, enrichmentMap }: Props) {
   if (!rows || rows.length === 0) {
     // Honest discrimination: empty because we CAN'T read PROD (service-role) vs
     // empty because JJ genuinely hasn't qualified anyone.
@@ -301,12 +436,17 @@ export default function FloraCohortPanel({ rows, prodBlocked }: Props) {
         </span>
       </div>
       <p className="text-[13px] text-slate-500 mb-3 max-w-2xl leading-relaxed">
-        Cuentas que JJ califico con score FLORA real, ordenadas por score, listas para
-        revisar. Aprobar = crear la caja (downstream); todavia no estan en dispatch.
+        Cuentas calificadas por JJ con score FLORA real, ordenadas por score. Cada tarjeta
+        muestra por que es buena apuesta, que mandarle y la hipotesis a probar. Aprobar =
+        crear la caja para el dispatch de manana.
       </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {rows.map((row) => (
-          <FloraCard key={row.zohoId ?? row.decideKey} row={row} />
+          <FloraCard
+            key={row.zohoId ?? row.decideKey}
+            row={row}
+            enrichment={enrichmentMap?.[row.zohoId ?? '']}
+          />
         ))}
       </div>
     </section>

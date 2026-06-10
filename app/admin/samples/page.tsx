@@ -27,6 +27,8 @@ import {
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import SamplesReviewClient from './_components/SamplesReviewClient';
 import FloraCohortPanel from './_components/FloraCohortPanel';
+import LabelsForTomorrow from './_components/LabelsForTomorrow';
+import RefreshCohort from './_components/RefreshCohort';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -90,11 +92,13 @@ export default async function SamplesReviewPage() {
             <span className="text-slate-400 font-medium"> &middot; lo que JJ propone para dispatch</span>
           </h1>
           <p className="text-[13px] text-slate-500 mt-1.5 max-w-2xl leading-relaxed">
-            Score + por que, engagement real, analisis de comms, hipotesis de win,
-            direccion y composicion por fit. Decidi SI / NO / Pregunta &mdash; las
-            preguntas van a JJ en admin.
+            Por cada calificado: por que es buena apuesta, que caja mandarle + la
+            hipotesis a probar, y la recomendacion de Job. Aproba &rarr; se crea la
+            caja para el dispatch de manana y baja el Excel de labels.
           </p>
         </div>
+        <div className="shrink-0 flex items-center gap-2">
+        <RefreshCohort />
         <Link
           href="/admin/samples/jj"
           className="shrink-0 inline-flex items-center gap-1.5 text-sm font-medium rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors"
@@ -106,12 +110,33 @@ export default async function SamplesReviewPage() {
             </span>
           ) : null}
         </Link>
+        </div>
       </div>
 
       {/* Front of the loop: review the FLORA-qualified before the boxed/dispatched below. */}
       <FloraCohortPanel rows={floraCohort} prodBlocked={prodBlocked} />
 
-      <SamplesReviewClient rows={rows} />
+      {/* Approve -> labels for tomorrow's send (built from our BACKUP-approved boxes). */}
+      <div className="mt-8">
+        <LabelsForTomorrow />
+      </div>
+
+      {/* SEGUIMIENTO de enviadas: use case DIFERIDO. Mockup, NO validado, fuera de
+          alpha hasta tener las labels de manana andando. Marcado honesto. */}
+      <section className="mt-10">
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-dashed border-violet-300 bg-violet-50 px-3 py-2">
+          <span className="text-[10px] font-bold uppercase tracking-wide rounded bg-violet-200 text-violet-800 px-1.5 py-0.5">
+            Mockup &mdash; no validado
+          </span>
+          <span className="text-[12px] text-violet-800">
+            Seguimiento de muestras enviadas: en diseno, fuera de alpha hasta cerrar approvals + labels.
+            La data de outcome (entrega, ganamos/perdimos, fotos) todavia no esta cargada.
+          </span>
+        </div>
+        <div className="opacity-70">
+          <SamplesReviewClient rows={rows} />
+        </div>
+      </section>
     </main>
   );
 }
