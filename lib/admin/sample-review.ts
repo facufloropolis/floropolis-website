@@ -1132,6 +1132,31 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
 }
 
 /**
+ * probeZohoReadable — discriminates an EMPTY FLORA cohort between "genuinely no
+ * qualified accounts" and "the PROD read client cannot see zoho_accounts" (RLS:
+ * the table has RLS ON with 0 policies, so only the service role reads it; if the
+ * runtime fell back to the anon key, every read returns 0 rows SILENTLY, no error).
+ *
+ * zoho_accounts is never actually empty, so a HEAD count of 0 (or a thrown/error)
+ * means the client lacks service-role access — NOT that JJ qualified nobody. The
+ * UI uses this to show an honest "no puedo leer PROD (service-role)" state instead
+ * of the misleading "sin cuentas calificadas". Returns true when readable.
+ */
+export async function probeZohoReadable(): Promise<boolean> {
+  const prod = getProdReadClient();
+  if (!prod) return false;
+  try {
+    const { count, error } = await prod
+      .from('zoho_accounts')
+      .select('zoho_id', { count: 'exact', head: true });
+    if (error) return false;
+    return (count ?? 0) > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * getSampleReviewDetail — one sample (SB_READY or SB_RECEIVED) WITH the full comms
  * timeline. Returns null if the lead is not in the cohort.
  */

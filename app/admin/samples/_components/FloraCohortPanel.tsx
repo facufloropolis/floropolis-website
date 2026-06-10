@@ -22,6 +22,9 @@ import type { FloraCohortRow } from '@/lib/admin/sample-review';
 
 interface Props {
   rows: FloraCohortRow[];
+  // True when the cohort is empty BECAUSE the PROD read client can't see
+  // zoho_accounts (RLS / service-role), NOT because JJ qualified nobody.
+  prodBlocked?: boolean;
 }
 
 type Action = 'yes' | 'no';
@@ -237,8 +240,35 @@ function FloraCard({ row }: { row: FloraCohortRow }) {
   );
 }
 
-export default function FloraCohortPanel({ rows }: Props) {
+export default function FloraCohortPanel({ rows, prodBlocked }: Props) {
   if (!rows || rows.length === 0) {
+    // Honest discrimination: empty because we CAN'T read PROD (service-role) vs
+    // empty because JJ genuinely hasn't qualified anyone.
+    if (prodBlocked) {
+      return (
+        <section className="mb-8">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              Calificados por JJ (FLORA)
+            </h2>
+          </div>
+          <div className="mt-2 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-8 text-center">
+            <div className="text-amber-400 text-3xl mb-2" aria-hidden>
+              &#9888;
+            </div>
+            <h3 className="text-base font-semibold text-amber-800">
+              No puedo leer las cuentas calificadas (acceso a PROD)
+            </h3>
+            <p className="text-sm text-amber-700 mt-1 max-w-lg mx-auto leading-relaxed">
+              Las cuentas FLORA EXISTEN en PROD, pero este entorno esta leyendo con
+              la anon key y <code className="font-mono">zoho_accounts</code> requiere
+              service-role (RLS). Falta <code className="font-mono">PROD_SUPABASE_SERVICE_KEY</code>{' '}
+              real en el deploy. Escalado &mdash; no es que JJ no califico a nadie.
+            </p>
+          </div>
+        </section>
+      );
+    }
     return (
       <section className="mb-8">
         <div className="flex items-baseline gap-2">

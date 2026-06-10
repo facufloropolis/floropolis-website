@@ -21,6 +21,7 @@ import {
   getSampleReviewCohort,
   getSampleReviewDetail,
   getFloraQualifiedCohort,
+  probeZohoReadable,
   type SampleReviewRow,
 } from '@/lib/admin/sample-review';
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
@@ -62,6 +63,10 @@ export default async function SamplesReviewPage() {
 
   // Front of the loop: accounts JJ qualified with a real FLORA score, ready to review.
   const floraCohort = await getFloraQualifiedCohort();
+  // An empty cohort is ambiguous: genuinely no qualified accounts vs the PROD read
+  // client can't see zoho_accounts (RLS: 0 policies -> only service role reads it).
+  // Probe so the panel tells the truth instead of "sin cuentas calificadas".
+  const prodBlocked = floraCohort.length === 0 ? !(await probeZohoReadable()) : false;
 
   // Quick list, then hydrate each row with its full comms timeline (cohort is small).
   const cohort = await getSampleReviewCohort();
@@ -104,7 +109,7 @@ export default async function SamplesReviewPage() {
       </div>
 
       {/* Front of the loop: review the FLORA-qualified before the boxed/dispatched below. */}
-      <FloraCohortPanel rows={floraCohort} />
+      <FloraCohortPanel rows={floraCohort} prodBlocked={prodBlocked} />
 
       <SamplesReviewClient rows={rows} />
     </main>
