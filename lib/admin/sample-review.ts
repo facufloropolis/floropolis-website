@@ -1009,6 +1009,9 @@ export interface FloraCohortRow {
   // Real lead_master_id resolved from v_sample_review by business_name (case-insensitive).
   // Null when no match found or on any read error. Used to fetch ClientIntel on the UI.
   leadMasterId: number | null;
+  // True when this account already has an approved box in BACKUP sample_review_loop
+  // (status='aligned' OR facu_decision='yes') — so the card shows "ya aprobada".
+  approved: boolean;
 }
 
 /**
@@ -1143,6 +1146,21 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
       .map((r) => s(r.account_name) || '(unknown account)');
     const leadIdMap = await resolveLeadMasterIds(accountNames);
 
+    // Which accounts are ALREADY approved (BACKUP sample_review_loop) — so the card
+    // shows "ya aprobada" instead of looking un-acted-on after a reload. Best-effort.
+    const approvedNames = new Set<string>();
+    try {
+      const { data: appr } = await getBackupServiceClient()
+        .from('sample_review_loop')
+        .select('business_name, status, facu_decision')
+        .or('status.eq.aligned,facu_decision.eq.yes');
+      for (const a of (appr ?? []) as Array<Record<string, unknown>>) {
+        if (typeof a.business_name === 'string') approvedNames.add(a.business_name.trim().toLowerCase());
+      }
+    } catch {
+      /* degrade: no approved markers */
+    }
+
     const rows: FloraCohortRow[] = [];
     for (const r of rawRows) {
       const accountName = s(r.account_name) || '(unknown account)';
@@ -1174,6 +1192,7 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
         city: s(r.billing_city),
         state: s(r.billing_state),
         leadMasterId: leadIdMap.get(accountName.trim().toLowerCase()) ?? null,
+        approved: approvedNames.has(accountName.trim().toLowerCase()),
       });
     }
     return rows;

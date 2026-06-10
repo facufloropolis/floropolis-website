@@ -211,6 +211,11 @@ function FloraCard({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-base font-bold text-slate-900">{row.accountName}</h3>
+              {(row.approved || done === 'yes') && (
+                <span className="text-[10px] font-bold uppercase tracking-wide rounded-full border border-emerald-300 bg-emerald-600 text-white px-2 py-0.5">
+                  &#10003; Ya aprobada
+                </span>
+              )}
               <JobChip verdict={jobRec.verdict} reason={jobRec.reason} />
               {row.byJJ && (
                 <span className="text-[10px] font-semibold uppercase tracking-wide rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 px-2 py-0.5">
@@ -277,11 +282,11 @@ function FloraCard({
         <div className="flex items-center gap-2 flex-wrap border-t border-slate-100 pt-3 mt-1">
           <button
             type="button"
-            disabled={busy !== null}
+            disabled={busy !== null || row.approved}
             onClick={() => decide('yes')}
             className="text-sm font-semibold px-3.5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
           >
-            {busy === 'yes' ? 'Aprobando...' : done === 'yes' ? 'Aprobado' : 'Aprobar'}
+            {busy === 'yes' ? 'Aprobando...' : row.approved || done === 'yes' ? 'Aprobada ✓' : 'Aprobar'}
           </button>
           <button
             type="button"
@@ -292,7 +297,9 @@ function FloraCard({
             {busy === 'no' ? 'Rechazando...' : done === 'no' ? 'Rechazado' : 'Rechazar'}
           </button>
           <span className="text-[11px] text-slate-400">
-            Aprobar = crea la caja para el dispatch de manana + el label.
+            {row.approved
+              ? 'Ya aprobada — edita contenido/direccion en "Cajas aprobadas" abajo.'
+              : 'Aprobar = crea la caja para el dispatch de manana + el label.'}
           </span>
         </div>
 
