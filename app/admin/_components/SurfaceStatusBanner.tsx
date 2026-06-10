@@ -16,6 +16,7 @@
 
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import StageApprove from './StageApprove';
+import SurfaceIdeas, { type SurfaceIdea } from './SurfaceIdeas';
 
 type Stage = 'structure' | 'mockup' | 'alpha' | 'mvp' | 'ga';
 
@@ -28,6 +29,8 @@ interface SurfaceRow {
   approved_by: string | null;
   approved_at: string | null;
   notes: string | null;
+  honest_status: string | null;
+  improve_notes: string | null;
 }
 
 const STAGE_ORDER: Stage[] = ['structure', 'mockup', 'alpha', 'mvp', 'ga'];
@@ -67,16 +70,25 @@ export default async function SurfaceStatusBanner({
   surfaceKey: string;
 }) {
   let row: SurfaceRow | null = null;
+  let ideas: SurfaceIdea[] = [];
   try {
     const svc = getBackupServiceClient();
     const { data } = await svc
       .from('admin_surface_status')
       .select(
-        'surface_key, label, objective, stage, stage_approved, approved_by, approved_at, notes',
+        'surface_key, label, objective, stage, stage_approved, approved_by, approved_at, notes, honest_status, improve_notes',
       )
       .eq('surface_key', surfaceKey)
       .maybeSingle();
     row = (data as SurfaceRow | null) ?? null;
+
+    const { data: ideaRows } = await svc
+      .from('admin_surface_ideas')
+      .select('id, author, idea, resolved, created_at')
+      .eq('surface_key', surfaceKey)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    ideas = Array.isArray(ideaRows) ? (ideaRows as SurfaceIdea[]) : [];
   } catch {
     // Never throw from a banner — a status strip must not take a tab down.
     row = null;
@@ -94,6 +106,8 @@ export default async function SurfaceStatusBanner({
   const stage = normStage(row.stage);
   const approved = row.stage_approved === true;
   const objective = (row.objective ?? '').trim();
+  const honestStatus = (row.honest_status ?? '').trim();
+  const improve = (row.improve_notes ?? '').trim();
 
   const pillCls = approved && stage
     ? STAGE_SOLID_CLS[stage]
@@ -131,12 +145,37 @@ export default async function SurfaceStatusBanner({
         </div>
       </div>
 
+      {/* Honest status + what we can improve */}
+      {(honestStatus || improve) && (
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {honestStatus && (
+            <div className="rounded-lg border border-slate-100 bg-slate-50 px-2.5 py-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                Status honesto
+              </span>
+              <p className="mt-0.5 text-[12px] leading-snug text-slate-600">{honestStatus}</p>
+            </div>
+          )}
+          {improve && (
+            <div className="rounded-lg border border-emerald-100 bg-emerald-50/50 px-2.5 py-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
+                Que podemos mejorar
+              </span>
+              <p className="mt-0.5 text-[12px] leading-snug text-slate-600">{improve}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Facu approves the canonical stage from here */}
       <StageApprove
         surfaceKey={row.surface_key}
         currentStage={stage}
         approved={approved}
       />
+
+      {/* Editable ideas — Facu AND JJ */}
+      <SurfaceIdeas surfaceKey={row.surface_key} initialIdeas={ideas} />
     </div>
   );
 }
