@@ -44,11 +44,16 @@ export function getProdReadClient(): SupabaseClient | null {
     process.env.PROD_SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     '';
-  // Service key preferred (bypasses RLS for Rose tables). Falls back to anon key
-  // — sufficient for anon-policy tables + anon-granted views (e.g. v_flora_cohort).
+  // ANON key preferred. The deployed PROD_SUPABASE_SERVICE_KEY is INVALID at runtime
+  // (diag 2026-06-10: present, len 219, every read -> "Invalid API key"), which silently
+  // broke EVERY PROD read. Everything the app reads from PROD is an anon-policy table or
+  // an anon-granted view (e.g. v_flora_cohort, competitor_prices, dispatch_tracking), and
+  // the anon key is verified working. Prefer it; keep service key only as a last resort
+  // for if/when a VALID one is set. Use || so an empty/invalid-but-present value still
+  // falls through to the next candidate.
   const key =
-    process.env.PROD_SUPABASE_SERVICE_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.PROD_SUPABASE_SERVICE_KEY ||
     '';
   if (!url || !key) return null;
 
