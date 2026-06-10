@@ -10,7 +10,7 @@ import type { BoxType, CatalogVariety, ClientIntel, ClientLite, DealDraft, DealL
 import { GPM_FLOOR } from '@/lib/deal/types';
 import { RATE_PER_KG } from '@/lib/deal/fedex-estimate';
 import ClientPicker, { type NewClientSnapshot } from './ClientPicker';
-import ClientIntelPanel from './ClientIntelPanel';
+import ClientIntelPanel from '@/app/admin/_components/shared/ClientIntelPanel';
 import VarietyLines from './VarietyLines';
 import Packing from './Packing';
 import PriceRail from './PriceRail';

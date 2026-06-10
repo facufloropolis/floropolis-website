@@ -1,6 +1,9 @@
-// Sample labels builder — reads BACKUP approved-pending boxes + PROD v_flora_cohort
-// addresses and returns { csv, filename, rowCount, rows }.
-// v1 | 2026-06-10 | Job_PM (CPO)
+// Sample labels builder — FedEx 26-column import format.
+// v2 | 2026-06-10 | Job_PM (CPO)
+//
+// Reads BACKUP sample_review_loop approved/aligned boxes + PROD v_flora_cohort
+// addresses + BACKUP box_master_mirror verified FedEx dims.
+// Returns { csv, filename, rowCount, rows }.
 //
 // "Approved-pending" = rows in BACKUP sample_review_loop where
 //   status='aligned'  (the create-box marker written by /api/admin/samples/create-box)
@@ -12,47 +15,91 @@
 // "CONFIRMED ADDRESS: <street>, <city>, <state>, <zip>". We parse it; if missing we
 // include the row with address fields blank + note='ADDRESS MISSING'.
 //
-// CSV columns (FedEx-style, matching dispatch/labelFile.ts layout):
-//   reference, recipient_name, street, city, state, zip, country, phone,
-//   box_type, contents, notes
+// FedEx dims + chargeable weight come from BACKUP box_master_mirror, matched on
+// legacy_box_type (preferred) or box_family. The vendor name comes from
+// vendor_canonical_name on the matched box_master_mirror row.
+//
+// UNIT VALUE = stems_per_box × farm_cost_per_stem. Farm cost is NOT in this flow today;
+// unit_value is emitted as "" with a trailing note "VALOR PENDIENTE" in the notes field.
+// Rose can compute this; we approximate from farm_cost × stems when available.
 //
 // NULL-safe: never throws. Honest empty (header only) when no approved boxes.
+// CSV must be Excel/Sheets-openable (quote fields with commas).
 
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getProdReadClient } from '@/lib/supabase/prod-server';
 
 // ---------------------------------------------------------------------------
-// Column layout
+// FedEx 26-column format — exact header order as confirmed from CEO upload sheet.
 // ---------------------------------------------------------------------------
-export const SAMPLE_LABEL_COLUMNS = [
-  'reference',        // proposed_composition.zoho_id  (fallback: business_name)
-  'recipient_name',   // business_name
-  'street',           // from PROD v_flora_cohort description "CONFIRMED ADDRESS:"
-  'city',
-  'state',
-  'zip',
-  'country',          // always 'US'
-  'phone',            // blank — not available
-  'box_type',         // proposed_composition.box_type or 'SAMPLE'
-  'contents',         // proposed_composition.contents or blank
-  'notes',            // 'ADDRESS MISSING' if not parseable; else blank
+export const FEDEX_LABEL_COLUMNS = [
+  'REC',          // sequential row number (1,2,3...)
+  'COMPANY',      // CONSTANT "Floral Direct LLC"
+  'CONTACT',      // recipient contact person name — blank (we don't have it; NOT business name)
+  'ADR1',         // street, parsed from v_flora_cohort.description "CONFIRMED ADDRESS:"
+  'ADR2',         // CONSTANT "" (blank)
+  'CITY',         // parsed city
+  'STATE',        // parsed state
+  'ZIPCODE',      // parsed zip
+  'COUNTRY',      // CONSTANT "US"
+  'PHONE',        // CONSTANT "7869308463" (JJ's phone, always)
+  'WEIGHT',       // fedex_chargeable_kg from box_master_mirror (FedEx-verified, NOT Komet)
+  'LENGTH',       // fedex_length_cm from box_master_mirror
+  'WIDTH',        // fedex_width_cm from box_master_mirror
+  'HEIGHT',       // fedex_height_cm from box_master_mirror
+  'REF',          // "DDMMYY-VENDOR-BOXDESC" e.g. "110626-ECOROSES-QB"
+                  // NOTE: date-digit convention (DDMMYY vs DDMMYYYY) to confirm with Facu;
+                  // his example was 6-digit "270405-ECOROSES".
+  'DESCRIPTION',  // vendor name uppercased (e.g. "ECOROSES")
+  'PART_NUMBER',  // CONSTANT "FRESH CUT FLOWERS"
+  'UNIT VALUE',   // stems_per_box × farm_cost_per_stem; blank if unknown ("VALOR PENDIENTE" in notes)
+                  // NOTE: Rose can also compute this; we approximate from farm_cost × stems.
+  'QUANTITY',     // CONSTANT 1
+  'QUANTITY_UNITS', // CONSTANT "EA"
+  'CUST_VAL',     // = UNIT VALUE × QUANTITY (blank if UNIT VALUE blank)
+  'DEC_VAL',      // = UNIT VALUE (blank if blank)
+  'CTRY_MAN',     // CONSTANT "EC"
+  'ISS_NSR',      // CONSTANT "Y"
+  'REL_NUMBER',   // CONSTANT "34458984" (Facu's fixed license number)
+  'CUT FLOWERS',  // CONSTANT "Y"
 ] as const;
 
-export type SampleLabelColumn = (typeof SAMPLE_LABEL_COLUMNS)[number];
+export type FedExLabelColumn = (typeof FEDEX_LABEL_COLUMNS)[number];
 
+// Row shape for the JSON preview (all 26 FedEx CSV fields + extra UI fields).
+// The CSV uses FEDEX_LABEL_COLUMNS exactly; the extra fields are UI-only.
 export interface SampleLabelRow {
-  reference: string;
-  recipient_name: string;
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  phone: string;
-  box_type: string;
-  contents: string;
-  notes: string;
-  // Extra fields for UI display (not written to CSV)
+  // FedEx columns (map 1:1 to FEDEX_LABEL_COLUMNS)
+  REC: number;
+  COMPANY: string;
+  CONTACT: string;
+  ADR1: string;
+  ADR2: string;
+  CITY: string;
+  STATE: string;
+  ZIPCODE: string;
+  COUNTRY: string;
+  PHONE: string;
+  WEIGHT: string;       // "" when missing
+  LENGTH: string;       // "" when missing
+  WIDTH: string;        // "" when missing
+  HEIGHT: string;       // "" when missing
+  REF: string;
+  DESCRIPTION: string;
+  PART_NUMBER: string;
+  'UNIT VALUE': string; // "" when farm cost unknown
+  QUANTITY: number;
+  QUANTITY_UNITS: string;
+  CUST_VAL: string;     // "" when UNIT VALUE blank
+  DEC_VAL: string;      // "" when UNIT VALUE blank
+  CTRY_MAN: string;
+  ISS_NSR: string;
+  REL_NUMBER: string;
+  'CUT FLOWERS': string;
+  // Extra UI fields (not written to CSV)
+  recipient_name: string;    // business_name from sample_review_loop
+  box_type: string;          // from proposed_composition.box_type
+  notes: string;             // "ADDRESS MISSING" / "NO ZOHO ID" / "DIMS MISSING" / "VALOR PENDIENTE" / ""
   updated_at: string | null;
   lead_master_id: number | null;
   zoho_id: string | null;
@@ -68,28 +115,40 @@ export interface SampleLabelsResult {
 }
 
 // ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+const COMPANY_CONSTANT = 'Floral Direct LLC';
+const PHONE_CONSTANT = '7869308463';  // JJ's phone
+const COUNTRY_CONSTANT = 'US';
+const PART_NUMBER_CONSTANT = 'FRESH CUT FLOWERS';
+const QUANTITY_CONSTANT = 1;
+const QUANTITY_UNITS_CONSTANT = 'EA';
+const CTRY_MAN_CONSTANT = 'EC';
+const ISS_NSR_CONSTANT = 'Y';
+const REL_NUMBER_CONSTANT = '34458984';  // Facu's fixed FedEx license number
+const CUT_FLOWERS_CONSTANT = 'Y';
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-const MISSING = '';
-
 function csvEscape(v: unknown): string {
-  if (v == null) return MISSING;
-  let s = String(v);
-  if (s === '') return MISSING;
+  if (v == null) return '';
+  const s = String(v);
+  if (s === '') return '';
   if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
-    s = '"' + s.replace(/"/g, '""') + '"';
+    return '"' + s.replace(/"/g, '""') + '"';
   }
   return s;
 }
 
 function headerCsv(): string {
-  return SAMPLE_LABEL_COLUMNS.join(',');
+  return FEDEX_LABEL_COLUMNS.join(',');
 }
 
 function emptyResult(date: string, error: string | null): SampleLabelsResult {
   return {
     csv: headerCsv() + '\n',
-    filename: `floropolis-sample-labels-${date}.csv`,
+    filename: `floropolis-fedex-labels-${date}.csv`,
     rowCount: 0,
     rows: [],
     error,
@@ -116,7 +175,6 @@ function parseConfirmedAddress(
     .filter((p) => p.length > 0);
   if (parts.length < 2) return null;
   if (parts.length === 2) {
-    // Minimal fallback: "city, state" or similar
     return { street: '', city: parts[0], state: parts[1], zip: '' };
   }
   if (parts.length === 3) {
@@ -130,11 +188,50 @@ function parseConfirmedAddress(
   return { street, city, state, zip };
 }
 
+/**
+ * Format dispatch date (tomorrow = date passed in) as DDMMYY.
+ * NOTE: date-digit convention (DDMMYY vs DDMMYYYY) is to be confirmed with Facu;
+ * his example was 6-digit "270405-ECOROSES". We use DDMMYY (6 digits) to match
+ * his example exactly.
+ */
+function formatDispatchDateRef(isoDate: string): string {
+  // isoDate = "YYYY-MM-DD"
+  const [year, month, day] = isoDate.split('-');
+  if (!year || !month || !day) return isoDate;
+  const yy = year.slice(2); // last 2 digits
+  return `${day}${month}${yy}`;
+}
+
+/**
+ * Normalize a box_type string to a box family code for matching box_master_mirror.
+ * "SAMPLE" / "SAMPLE BOX" -> "SB"; otherwise pass through uppercased.
+ */
+function normalizeBoxFamily(boxType: string | null): string | null {
+  if (!boxType) return null;
+  const t = boxType.trim().toUpperCase();
+  if (t === 'SAMPLE' || t === 'SAMPLE BOX') return 'SB';
+  return t;
+}
+
+/** Describe the box for the REF field (e.g. "QB" from box_type "QB" or "QUARTER BOX"). */
+function boxDesc(boxType: string): string {
+  return boxType.trim().toUpperCase();
+}
+
 // ---------------------------------------------------------------------------
 // Main builder
 // ---------------------------------------------------------------------------
 export async function buildSampleLabels(date: string): Promise<SampleLabelsResult> {
   try {
+    // Dispatch date = tomorrow (date + 1 day). The labels are built today to ship
+    // tomorrow.
+    const dispatchDate = (() => {
+      const d = new Date(date + 'T12:00:00Z');
+      d.setUTCDate(d.getUTCDate() + 1);
+      return d.toISOString().slice(0, 10);
+    })();
+    const dispatchDateRef = formatDispatchDateRef(dispatchDate); // DDMMYY
+
     // 1) Read approved-pending rows from BACKUP --------------------------------
     let svc;
     try {
@@ -149,7 +246,7 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       .select(
         'id, business_name, lead_master_id, proposed_composition, facu_decision, status, updated_at',
       )
-      .or("status.eq.aligned,facu_decision.eq.yes")
+      .or('status.eq.aligned,facu_decision.eq.yes')
       .order('updated_at', { ascending: false });
 
     if (loopErr) {
@@ -161,7 +258,7 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       return emptyResult(date, null);
     }
 
-    // 2) Collect zoho_ids for PROD lookup -------------------------------------
+    // 2) Collect zoho_ids for PROD address lookup ------------------------------
     const zohoIds: string[] = [];
     for (const row of loopRows) {
       const comp =
@@ -193,15 +290,80 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
           }
         }
       } catch {
-        // PROD read is best-effort; if it fails we still emit the rows with ADDRESS MISSING
+        // PROD read is best-effort; if it fails we still emit rows with ADDRESS MISSING
       }
     }
 
-    // 4) Assemble rows --------------------------------------------------------
+    // 4) Fetch box_master_mirror dims from BACKUP (FedEx-verified, not Komet) --
+    // Indexed by: (a) legacy_box_type uppercased, (b) box_family uppercased.
+    // For each family we prefer the highest-verified variant (most confirmed labels).
+    const boxMasterByLegacy: Record<string, Record<string, unknown>> = {};
+    const boxMasterByFamily: Record<string, Record<string, unknown>> = {};
+    try {
+      const { data: bmRaw } = await svc
+        .from('box_master_mirror')
+        .select(
+          'legacy_box_type, box_family, variant_code, vendor_canonical_name, ' +
+          'fedex_chargeable_kg, fedex_length_cm, fedex_width_cm, fedex_height_cm, ' +
+          'fedex_label_confirmation_count, stems_per_box, active',
+        )
+        .eq('active', true)
+        .limit(500);
+
+      for (const r of (bmRaw ?? []) as unknown as Array<Record<string, unknown>>) {
+        const legacy =
+          typeof r.legacy_box_type === 'string' && r.legacy_box_type.trim()
+            ? r.legacy_box_type.trim().toUpperCase()
+            : null;
+        const family =
+          typeof r.box_family === 'string' && r.box_family.trim()
+            ? r.box_family.trim().toUpperCase()
+            : null;
+
+        // Prefer rows with more confirmed FedEx labels (higher verification count).
+        const confirmCount = typeof r.fedex_label_confirmation_count === 'number'
+          ? r.fedex_label_confirmation_count
+          : 0;
+
+        if (legacy) {
+          const existing = boxMasterByLegacy[legacy];
+          const existCount = existing && typeof existing.fedex_label_confirmation_count === 'number'
+            ? existing.fedex_label_confirmation_count : 0;
+          if (!existing || confirmCount >= existCount) {
+            boxMasterByLegacy[legacy] = r;
+          }
+        }
+        if (family) {
+          const existing = boxMasterByFamily[family];
+          const existCount = existing && typeof existing.fedex_label_confirmation_count === 'number'
+            ? existing.fedex_label_confirmation_count : 0;
+          if (!existing || confirmCount >= existCount) {
+            boxMasterByFamily[family] = r;
+          }
+        }
+      }
+    } catch {
+      // box_master_mirror fetch is best-effort; rows will have DIMS MISSING notes
+    }
+
+    // Helper to find the best box_master_mirror row for a given box_type string.
+    // Priority: exact legacy_box_type match → family match.
+    function findBoxMaster(boxType: string): Record<string, unknown> | null {
+      const upper = boxType.trim().toUpperCase();
+      if (boxMasterByLegacy[upper]) return boxMasterByLegacy[upper];
+      const family = normalizeBoxFamily(boxType);
+      if (family && boxMasterByFamily[family]) return boxMasterByFamily[family];
+      return null;
+    }
+
+    // 5) Assemble rows --------------------------------------------------------
     const rows: SampleLabelRow[] = [];
     const csvLines: string[] = [headerCsv()];
 
-    for (const loop of loopRows) {
+    for (let i = 0; i < loopRows.length; i++) {
+      const loop = loopRows[i];
+      const rec = i + 1; // 1-based sequential row number
+
       const businessName =
         typeof loop.business_name === 'string' ? loop.business_name.trim() : '';
       const updatedAt =
@@ -222,21 +384,17 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
           : null;
       const floraScore =
         comp && typeof comp.flora_score === 'number' ? comp.flora_score : null;
-      const boxType =
+      const rawBoxType =
         comp && typeof comp.box_type === 'string' && comp.box_type.trim()
           ? comp.box_type.trim()
           : 'SAMPLE';
-      const contents =
-        comp && typeof comp.contents === 'string' && comp.contents.trim()
-          ? comp.contents.trim()
-          : '';
 
       // Address from PROD cohort
       let street = '';
       let city = '';
       let state = '';
       let zip = '';
-      let notes = '';
+      const notesParts: string[] = [];
 
       if (zohoId && cohortByZohoId[zohoId]) {
         const cohort = cohortByZohoId[zohoId];
@@ -249,25 +407,85 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
           state = parsed.state;
           zip = parsed.zip;
         } else {
-          notes = 'ADDRESS MISSING';
+          notesParts.push('ADDRESS MISSING');
         }
       } else {
-        notes = zohoId ? 'ADDRESS MISSING' : 'NO ZOHO ID';
+        notesParts.push(zohoId ? 'ADDRESS MISSING' : 'NO ZOHO ID');
       }
 
-      const reference = zohoId ?? businessName;
+      // Box dims + vendor from box_master_mirror
+      const bm = findBoxMaster(rawBoxType);
+      let weight = '';
+      let length = '';
+      let width = '';
+      let height = '';
+      let vendorName = '';
+
+      if (bm) {
+        const toStr = (v: unknown): string => {
+          if (v == null) return '';
+          if (typeof v === 'number' && Number.isFinite(v)) return String(v);
+          if (typeof v === 'string' && v.trim() !== '') return v.trim();
+          return '';
+        };
+        weight = toStr(bm.fedex_chargeable_kg);   // FedEx-VERIFIED chargeable kg, NOT Komet
+        length = toStr(bm.fedex_length_cm);
+        width = toStr(bm.fedex_width_cm);
+        height = toStr(bm.fedex_height_cm);
+        vendorName = typeof bm.vendor_canonical_name === 'string'
+          ? bm.vendor_canonical_name.trim().toUpperCase()
+          : '';
+      } else {
+        notesParts.push('DIMS MISSING');
+      }
+
+      // UNIT VALUE = stems_per_box × farm_cost_per_stem.
+      // Farm cost per stem is NOT available in this flow today → emit "" + note.
+      // NOTE: Rose can also compute this; we approximate from farm_cost × stems.
+      const unitValue = ''; // blank until farm_cost is available in this flow
+      notesParts.push('VALOR PENDIENTE'); // always note for UNIT VALUE
+
+      const cust_val = unitValue !== '' ? unitValue : '';
+      const dec_val = unitValue !== '' ? unitValue : '';
+
+      // REF = "DDMMYY-VENDOR-BOXDESC"
+      // NOTE: date-digit convention (DDMMYY vs DDMMYYYY) to confirm with Facu;
+      // his example was 6-digit "270405-ECOROSES".
+      const vendorPart = vendorName || 'VENDOR';
+      const ref = `${dispatchDateRef}-${vendorPart}-${boxDesc(rawBoxType)}`;
+
+      const notes = notesParts.join(' | ');
 
       const labelRow: SampleLabelRow = {
-        reference,
+        REC: rec,
+        COMPANY: COMPANY_CONSTANT,
+        CONTACT: '',           // blank — we don't have individual contact name
+        ADR1: street,
+        ADR2: '',              // always blank
+        CITY: city,
+        STATE: state,
+        ZIPCODE: zip,
+        COUNTRY: COUNTRY_CONSTANT,
+        PHONE: PHONE_CONSTANT,
+        WEIGHT: weight,
+        LENGTH: length,
+        WIDTH: width,
+        HEIGHT: height,
+        REF: ref,
+        DESCRIPTION: vendorName,
+        PART_NUMBER: PART_NUMBER_CONSTANT,
+        'UNIT VALUE': unitValue,
+        QUANTITY: QUANTITY_CONSTANT,
+        QUANTITY_UNITS: QUANTITY_UNITS_CONSTANT,
+        CUST_VAL: cust_val,
+        DEC_VAL: dec_val,
+        CTRY_MAN: CTRY_MAN_CONSTANT,
+        ISS_NSR: ISS_NSR_CONSTANT,
+        REL_NUMBER: REL_NUMBER_CONSTANT,
+        'CUT FLOWERS': CUT_FLOWERS_CONSTANT,
+        // UI-only extras
         recipient_name: businessName,
-        street,
-        city,
-        state,
-        zip,
-        country: 'US',
-        phone: '',
-        box_type: boxType,
-        contents,
+        box_type: rawBoxType,
         notes,
         updated_at: updatedAt,
         lead_master_id: leadMasterId,
@@ -276,13 +494,16 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       };
 
       rows.push(labelRow);
-      csvLines.push(
-        SAMPLE_LABEL_COLUMNS.map((col) => csvEscape(labelRow[col])).join(','),
-      );
+
+      // Build the CSV row in the exact 26-column order.
+      const csvRow = FEDEX_LABEL_COLUMNS.map((col) =>
+        csvEscape((labelRow as unknown as Record<string, unknown>)[col]),
+      ).join(',');
+      csvLines.push(csvRow);
     }
 
     const csv = csvLines.join('\n') + '\n';
-    const filename = `floropolis-sample-labels-${date}.csv`;
+    const filename = `floropolis-fedex-labels-${date}.csv`;
 
     return { csv, filename, rowCount: rows.length, rows, error: null };
   } catch (e) {

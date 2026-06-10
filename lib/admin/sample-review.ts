@@ -1006,6 +1006,9 @@ export interface FloraCohortRow {
   website: string | null;
   city: string | null;
   state: string | null;
+  // Real lead_master_id resolved from v_sample_review by business_name (case-insensitive).
+  // Null when no match found or on any read error. Used to fetch ClientIntel on the UI.
+  leadMasterId: number | null;
 }
 
 /**
@@ -1072,6 +1075,44 @@ function parseDescriptionIntel(description: string | null): {
 }
 
 /**
+ * resolveLeadMasterIds — resolves real lead_master_ids from v_sample_review by matching
+ * account names case-insensitively. Uses the SAME PROD read client as getClientIntel.
+ * Returns a Map<lowerCaseName, leadMasterId>. Degrades to empty Map on any error.
+ */
+async function resolveLeadMasterIds(
+  accountNames: string[],
+): Promise<Map<string, number>> {
+  const out = new Map<string, number>();
+  if (accountNames.length === 0) return out;
+  const prod = getProdReadClient();
+  if (!prod) return out;
+  try {
+    // v_sample_review exposes business_name + lead_master_id (same view getClientIntel uses).
+    const { data, error } = await prod
+      .from('v_sample_review')
+      .select('lead_master_id, business_name')
+      .not('business_name', 'is', null);
+    if (error || !Array.isArray(data)) return out;
+    // Build name→id map from the full view, then match our account names.
+    const byName = new Map<string, number>();
+    for (const r of data as Array<{ lead_master_id: number | null; business_name: string | null }>) {
+      const n = s(r.business_name);
+      const id = typeof r.lead_master_id === 'number' ? r.lead_master_id : null;
+      if (n && id !== null && !byName.has(n.toLowerCase())) {
+        byName.set(n.toLowerCase(), id);
+      }
+    }
+    for (const name of accountNames) {
+      const id = byName.get(name.trim().toLowerCase());
+      if (id !== undefined) out.set(name.trim().toLowerCase(), id);
+    }
+  } catch {
+    /* degrade: empty map — caller handles null */
+  }
+  return out;
+}
+
+/**
  * getFloraQualifiedCohort — the FLORA-qualified accounts ready to review for a sample box,
  * ranked by FLORA score desc. Reads PROD zoho_accounts directly (read-only). NULL-safe:
  * if the PROD client is unconfigured or the query fails, returns []. The front of the
@@ -1095,8 +1136,15 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
       .order('sb_qualification_flora', { ascending: false });
     if (error || !Array.isArray(data)) return [];
 
+    const rawRows = data as unknown as Array<Record<string, unknown>>;
+
+    // Collect account names to resolve real lead_master_ids from v_sample_review.
+    const accountNames = rawRows
+      .map((r) => s(r.account_name) || '(unknown account)');
+    const leadIdMap = await resolveLeadMasterIds(accountNames);
+
     const rows: FloraCohortRow[] = [];
-    for (const r of data as unknown as Array<Record<string, unknown>>) {
+    for (const r of rawRows) {
       const accountName = s(r.account_name) || '(unknown account)';
       const reasoning = s(r.description);
       const intel = parseDescriptionIntel(reasoning);
@@ -1125,6 +1173,7 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
         website: s(r.website),
         city: s(r.billing_city),
         state: s(r.billing_state),
+        leadMasterId: leadIdMap.get(accountName.trim().toLowerCase()) ?? null,
       });
     }
     return rows;
