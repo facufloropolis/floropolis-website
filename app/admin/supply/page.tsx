@@ -988,6 +988,16 @@ export default async function SupplyEnginePage() {
 
       <SurfaceStatusBanner surfaceKey="supply" />
 
+      <div className="mb-4">
+        <Link
+          href="/admin/supply/roadmap"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
+        >
+          <span aria-hidden>&#128203;</span> Como lo mejoramos &mdash; el plan
+          <span aria-hidden>&rarr;</span>
+        </Link>
+      </div>
+
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Supply Engine</h1>
