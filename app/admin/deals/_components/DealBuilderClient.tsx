@@ -65,25 +65,36 @@ export default function DealBuilderClient({
   // and sum the freight. Boxes whose dims/kg aren't in box_master are flagged pendiente
   // (we never invent a freight). This is what was missing from the deal economics.
   const boxFreight = useMemo(() => {
+    // Match box labels CASE-INSENSITIVELY (+ trim): box_master stores "QB" but a deal
+    // line may carry "qb". Prefer a non-null chargeable_kg / capacity when several rows
+    // share a label (e.g. QB Ecoroses + QB Flodecol) so a null sibling never hides a real value.
+    const norm = (s: string | null | undefined) => (s ?? '').trim().toLowerCase();
     const capByBox = new Map<string, number | null>();
     const kgByBox = new Map<string, number | null>();
+    const labelByBox = new Map<string, string>();
     for (const b of boxTypes) {
-      capByBox.set(b.boxType, b.stemsPerBox);
-      kgByBox.set(b.boxType, b.chargeableKg);
+      const k = norm(b.boxType);
+      if (!k) continue;
+      if (b.stemsPerBox != null || !capByBox.has(k)) capByBox.set(k, b.stemsPerBox ?? capByBox.get(k) ?? null);
+      if (b.chargeableKg != null || !kgByBox.has(k)) kgByBox.set(k, b.chargeableKg ?? kgByBox.get(k) ?? null);
+      if (!labelByBox.has(k)) labelByBox.set(k, b.boxType);
     }
     const usedByBox = new Map<string, number>();
+    const origLabel = new Map<string, string>();
     for (const l of lines) {
       if (!l.boxType || l.stems <= 0) continue;
-      usedByBox.set(l.boxType, (usedByBox.get(l.boxType) ?? 0) + l.stems);
+      const k = norm(l.boxType);
+      usedByBox.set(k, (usedByBox.get(k) ?? 0) + l.stems);
+      if (!origLabel.has(k)) origLabel.set(k, l.boxType);
     }
     let total = 0;
     let boxes = 0;
-    let pendingBoxTypes: string[] = [];
-    for (const [bt, used] of usedByBox) {
-      const cap = capByBox.get(bt) ?? null;
-      const kg = kgByBox.get(bt) ?? null;
+    const pendingBoxTypes: string[] = [];
+    for (const [k, used] of usedByBox) {
+      const cap = capByBox.get(k) ?? null;
+      const kg = kgByBox.get(k) ?? null;
       if (!cap || cap <= 0 || kg == null || kg <= 0) {
-        pendingBoxTypes.push(bt);
+        pendingBoxTypes.push(labelByBox.get(k) ?? origLabel.get(k) ?? k);
         continue;
       }
       const n = Math.ceil(used / cap);
