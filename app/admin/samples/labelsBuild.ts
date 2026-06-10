@@ -408,11 +408,21 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
           : null;
       const floraScore =
         comp && typeof comp.flora_score === 'number' ? comp.flora_score : null;
-      // box_type: PREFER edited proposed_composition.box_type, else fall back to 'SAMPLE'.
+      // box_type: PREFER edited proposed_composition.box_type; else DERIVE a default that
+      // ACTUALLY matches box_master so dims/weight/value fill from the data we HAVE (a 'SAMPLE'
+      // default matched nothing -> empty columns). Parse the FLORA "Box: X" preference; QB
+      // (quarter box) is the standard sample box with verified dims.
       const rawBoxType =
         comp && typeof comp.box_type === 'string' && comp.box_type.trim()
           ? comp.box_type.trim()
-          : 'SAMPLE';
+          : (() => {
+              const cohortRow = zohoId ? cohortByZohoId[zohoId] : null;
+              const desc =
+                cohortRow && typeof cohortRow.description === 'string' ? cohortRow.description : null;
+              const m = desc ? desc.match(/Box:\s*([^\n]+)/i) : null;
+              const pref = m ? m[1].trim().toLowerCase() : '';
+              return pref.includes('hb') || pref.includes('half') ? 'HB' : 'QB';
+            })();
 
       // Address: PREFER edited proposed_composition.ship_address (written by ApprovedBoxesEditor),
       // else fall back to parsing PROD v_flora_cohort.description "CONFIRMED ADDRESS:".

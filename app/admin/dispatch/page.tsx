@@ -35,6 +35,9 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import DispatchSamplesPanel from './DispatchSamplesPanel';
+import ApprovedBoxesEditor from '../samples/_components/ApprovedBoxesEditor';
+import LabelsForTomorrow from '../samples/_components/LabelsForTomorrow';
+import { getBoxTypes } from '@/lib/deal/data';
 import DispatchDateNav from './DispatchDateNav';
 import DispatchPipelineStepper from './DispatchPipelineStepper';
 import DispatchManifestLayout from './DispatchManifestLayout';
@@ -160,10 +163,23 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   const belowMinimum = totalBoxes > 0 && totalBoxes < 2;
   const usingFallbackDate = !explicitDate && activeDate !== todayIso;
 
+  // Box types for the editable approved-boxes cards (from BACKUP box_master_mirror).
+  const boxTypes = await getBoxTypes();
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
       <SurfaceStatusBanner surfaceKey="dispatch" />
       <DispatchSamplesPanel />
+
+      {/* Samples preparadas para manana: EDITABLE (direccion/caja/contenido) + descarga
+          del CSV FedEx, en dispatch (no read-only). Reusa los componentes de samples. */}
+      <div className="mb-6">
+        <ApprovedBoxesEditor boxTypes={boxTypes} />
+      </div>
+      <div className="mb-8">
+        <LabelsForTomorrow />
+      </div>
+
       {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>

@@ -170,7 +170,17 @@ export async function GET(): Promise<NextResponse> {
 
       const zohoId = comp && typeof comp.zoho_id === 'string' && comp.zoho_id.trim() ? comp.zoho_id.trim() : null;
       const floraScore = comp && typeof comp.flora_score === 'number' ? comp.flora_score : null;
-      const boxType = comp && typeof comp.box_type === 'string' && comp.box_type.trim() ? comp.box_type.trim() : null;
+      // Box: prefer the edited box_type; else DERIVE a default so the dims (which we HAVE in
+      // box_master) show instead of "Caja faltante". Parse the FLORA "Box: X" preference;
+      // QB is the standard sample box (known verified dims). The user can still change it.
+      let boxType = comp && typeof comp.box_type === 'string' && comp.box_type.trim() ? comp.box_type.trim() : null;
+      if (!boxType) {
+        const desc = zohoId ? cohortByZohoId[zohoId] : null;
+        const m = typeof desc === 'string' ? desc.match(/Box:\s*([^\n]+)/i) : null;
+        const pref = m ? m[1].trim().toLowerCase() : '';
+        // Map the preference to a box family; default QB (quarter box) for samples.
+        boxType = pref.includes('hb') || pref.includes('half') ? 'HB' : 'QB';
+      }
 
       // Contents: array of { variety, stems }
       let contents: Array<{ variety: string; stems: number }> = [];
