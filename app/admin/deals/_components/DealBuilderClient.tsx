@@ -8,6 +8,7 @@
 import { useMemo, useState } from 'react';
 import type { BoxType, CatalogVariety, ClientIntel, ClientLite, DealDraft, DealLineInput } from '@/lib/deal/types';
 import { GPM_FLOOR } from '@/lib/deal/types';
+import { RATE_PER_KG } from '@/lib/deal/fedex-estimate';
 import ClientPicker, { type NewClientSnapshot } from './ClientPicker';
 import ClientIntelPanel from './ClientIntelPanel';
 import VarietyLines from './VarietyLines';
@@ -53,7 +54,47 @@ export default function DealBuilderClient({
   const [saveState, setSaveState] = useState<SaveState>({ kind: 'idle' });
 
   // --- Derived economics ------------------------------------------------------
-  const totalCost = useMemo(() => lines.reduce((s, l) => s + l.stems * l.costPerStem, 0), [lines]);
+  // Flower cost = stems x farm cost per stem (the variety side).
+  const flowerCost = useMemo(() => lines.reduce((s, l) => s + l.stems * l.costPerStem, 0), [lines]);
+
+  // BOX COST = FedEx freight per box, computed with the SAME formula the app uses
+  // (lib/deal/fedex-estimate): freight = chargeable_kg x $6.50/kg; chargeable_kg =
+  // max(real, dim=LxWxH/6000). Existing boxes carry chargeable_kg from box_master
+  // (BoxType.chargeableKg); a new box gets it from its dims via estimateBoxCost
+  // (same constants). We count physical boxes per box-type group = ceil(used/capacity)
+  // and sum the freight. Boxes whose dims/kg aren't in box_master are flagged pendiente
+  // (we never invent a freight). This is what was missing from the deal economics.
+  const boxFreight = useMemo(() => {
+    const capByBox = new Map<string, number | null>();
+    const kgByBox = new Map<string, number | null>();
+    for (const b of boxTypes) {
+      capByBox.set(b.boxType, b.stemsPerBox);
+      kgByBox.set(b.boxType, b.chargeableKg);
+    }
+    const usedByBox = new Map<string, number>();
+    for (const l of lines) {
+      if (!l.boxType || l.stems <= 0) continue;
+      usedByBox.set(l.boxType, (usedByBox.get(l.boxType) ?? 0) + l.stems);
+    }
+    let total = 0;
+    let boxes = 0;
+    let pendingBoxTypes: string[] = [];
+    for (const [bt, used] of usedByBox) {
+      const cap = capByBox.get(bt) ?? null;
+      const kg = kgByBox.get(bt) ?? null;
+      if (!cap || cap <= 0 || kg == null || kg <= 0) {
+        pendingBoxTypes.push(bt);
+        continue;
+      }
+      const n = Math.ceil(used / cap);
+      boxes += n;
+      total += n * kg * RATE_PER_KG;
+    }
+    return { total, boxes, pendingBoxTypes };
+  }, [lines, boxTypes]);
+
+  // Total deal cost now INCLUDES the box freight, so floor + GPM are accurate.
+  const totalCost = flowerCost + boxFreight.total;
   const floor = totalCost / (1 - minGpm);
   const effectivePrice = priceTouched ? price : Math.max(floor, totalCost > 0 ? +(floor * 1.18).toFixed(2) : 0);
   const belowFloor = effectivePrice < floor - 1e-9;
@@ -324,6 +365,9 @@ export default function DealBuilderClient({
                 lines={lines}
                 price={effectivePrice}
                 minGpm={minGpm}
+                boxFreightTotal={boxFreight.total}
+                boxCount={boxFreight.boxes}
+                boxPendingTypes={boxFreight.pendingBoxTypes}
                 onPriceChange={(p) => {
                   setPriceTouched(true);
                   setPrice(p);

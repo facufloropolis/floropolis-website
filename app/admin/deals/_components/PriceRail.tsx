@@ -14,15 +14,24 @@ export default function PriceRail({
   lines,
   price,
   minGpm,
+  boxFreightTotal = 0,
+  boxCount = 0,
+  boxPendingTypes = [],
   onPriceChange,
 }: {
   lines: DealLineVM[];
   price: number;
   minGpm: number;
+  // Box cost = FedEx freight (chargeable_kg x $6.50/kg), computed in DealBuilderClient.
+  boxFreightTotal?: number;
+  boxCount?: number;
+  boxPendingTypes?: string[];
   onPriceChange: (p: number) => void;
 }) {
   const totalStems = lines.reduce((s, l) => s + l.stems, 0);
-  const totalCost = lines.reduce((s, l) => s + l.stems * l.costPerStem, 0);
+  const flowerCost = lines.reduce((s, l) => s + l.stems * l.costPerStem, 0);
+  // Total cost INCLUDES the box freight so floor + GPM are real.
+  const totalCost = flowerCost + boxFreightTotal;
   const floor = totalCost / (1 - minGpm);
   const gpm = price > 0 ? (1 - totalCost / price) * 100 : 0;
   const belowFloor = price < floor - 1e-9;
@@ -51,6 +60,27 @@ export default function PriceRail({
             </div>
           ))}
           {lines.length === 0 && <div className="text-slate-400">Sin lineas todavia.</div>}
+
+          {/* Flowers subtotal */}
+          <div className="flex items-center justify-between border-t border-slate-100 pt-1.5 text-slate-500">
+            <dt>Flores ({totalStems} stems)</dt>
+            <dd className="tabular-nums">{money(flowerCost)}</dd>
+          </div>
+
+          {/* BOX COST = FedEx freight (chargeable kg x $6.50). Existing + new boxes. */}
+          <div className="flex items-center justify-between text-slate-500">
+            <dt>
+              Flete de cajas (FedEx)
+              {boxCount > 0 && <span className="text-slate-400"> &middot; {boxCount} caja{boxCount === 1 ? '' : 's'}</span>}
+            </dt>
+            <dd className="tabular-nums">{money(boxFreightTotal)}</dd>
+          </div>
+          {boxPendingTypes.length > 0 && (
+            <div className="text-[11px] text-amber-600">
+              Flete pendiente &mdash; falta dims/kg en box_master de: {boxPendingTypes.join(', ')}
+            </div>
+          )}
+
           <div className="flex items-center justify-between border-t border-slate-100 pt-1.5 font-medium text-slate-700">
             <dt>Costo armado total</dt>
             <dd className="tabular-nums">{money(totalCost)}</dd>
