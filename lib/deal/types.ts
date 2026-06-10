@@ -50,6 +50,14 @@ export interface BoxType {
   stemsPerBox: number | null;
   chargeableKg: number | null;
   vendor: string | null;
+  // FedEx-VERIFIED dims (exact, not just dim weight) + verification provenance. Komet (K2K)
+  // dims were wrong and inflate freight badly, so we surface the verified source + a tag.
+  lengthCm: number | null;
+  widthCm: number | null;
+  heightCm: number | null;
+  verifiedLabels: number | null; // fedex_label_confirmation_count (>0 = FedEx-verified)
+  fedexSource: string | null;    // fedex_source_artifact
+  kometDimWeightKg: number | null; // for the Komet-vs-FedEx mismatch warning
 }
 
 export interface DealLineInput {

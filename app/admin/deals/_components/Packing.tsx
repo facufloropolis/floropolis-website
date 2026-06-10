@@ -35,11 +35,15 @@ export default function Packing({
   // box_master defaults, keyed by normalized label (prefer non-null when labels collide).
   const capDefault = new Map<string, number | null>();
   const kgDefault = new Map<string, number | null>();
+  const boxByLabel = new Map<string, BoxType>();
   for (const b of boxTypes) {
     const k = norm(b.boxType);
     if (!k) continue;
     if (b.stemsPerBox != null || !capDefault.has(k)) capDefault.set(k, b.stemsPerBox ?? capDefault.get(k) ?? null);
     if (b.chargeableKg != null || !kgDefault.has(k)) kgDefault.set(k, b.chargeableKg ?? kgDefault.get(k) ?? null);
+    // Prefer the row that has FedEx-verified dims when a label collides across vendors.
+    const prev = boxByLabel.get(k);
+    if (!prev || ((b.verifiedLabels ?? 0) > (prev.verifiedLabels ?? 0))) boxByLabel.set(k, b);
   }
 
   const byBox = new Map<string, PackSummary>();
@@ -103,6 +107,49 @@ export default function Packing({
                     <p className="mt-2 text-[12px] text-amber-600">Estas variedades no tienen caja asignada.</p>
                   ) : (
                     <>
+                      {/* FedEx-VERIFIED dims + tag. Komet (K2K) dims were wrong and inflate
+                          freight badly, so we surface exact dims + verified provenance. */}
+                      {(() => {
+                        const box = boxByLabel.get(k);
+                        const dims =
+                          box && box.lengthCm != null && box.widthCm != null && box.heightCm != null
+                            ? `${box.lengthCm}×${box.widthCm}×${box.heightCm} cm`
+                            : null;
+                        const verified = (box?.verifiedLabels ?? 0) > 0 && dims != null;
+                        // Komet dim weight wildly above the FedEx chargeable => the K2K dims are wrong.
+                        const komet = box?.kometDimWeightKg ?? null;
+                        const mismatch =
+                          komet != null && effKg != null && effKg > 0 && komet > effKg * 1.4;
+                        return (
+                          <div className="mt-2 space-y-1">
+                            <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                              <span className="text-slate-500">
+                                Dims: <span className="font-medium text-slate-700">{dims ?? 'sin dims'}</span>
+                                {effKg != null && <span className="text-slate-400"> &middot; {effKg}kg</span>}
+                              </span>
+                              {verified ? (
+                                <span
+                                  className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700"
+                                  title={box?.fedexSource ?? 'FedEx labels'}
+                                >
+                                  &#10003; FedEx verificado{box?.verifiedLabels ? ` (${box.verifiedLabels})` : ''}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                                  &#9888; sin verificar &mdash; revisar dims
+                                </span>
+                              )}
+                            </div>
+                            {mismatch && (
+                              <div className="rounded-md border border-rose-200 bg-rose-50 px-2 py-1 text-[10px] text-rose-700">
+                                &#9888; Komet (K2K) marca {komet!.toFixed(1)}kg vs FedEx {effKg}kg &mdash; las dims de Komet
+                                estaban mal e inflan el flete. Se usa la verificada de FedEx.
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
                       {/* EDITABLE box info */}
                       {onOverride && (
                         <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-lg bg-slate-50 px-2.5 py-2">

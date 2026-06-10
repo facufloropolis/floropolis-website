@@ -332,7 +332,7 @@ export async function getBoxTypes(): Promise<BoxType[]> {
 
     const { data, error } = await backup
       .from('box_master_mirror')
-      .select('legacy_box_type, box_family, variant_code, stems_per_box, fedex_chargeable_kg, vendor_canonical_name, active')
+      .select('legacy_box_type, box_family, variant_code, stems_per_box, fedex_chargeable_kg, vendor_canonical_name, active, fedex_length_cm, fedex_width_cm, fedex_height_cm, fedex_label_confirmation_count, fedex_source_artifact, komet_dim_weight_kg')
       .eq('active', true)
       .limit(500);
 
@@ -350,6 +350,12 @@ export async function getBoxTypes(): Promise<BoxType[]> {
           stemsPerBox: num(r.stems_per_box),
           chargeableKg: num(r.fedex_chargeable_kg),
           vendor: str(r.vendor_canonical_name),
+          lengthCm: num(r.fedex_length_cm),
+          widthCm: num(r.fedex_width_cm),
+          heightCm: num(r.fedex_height_cm),
+          verifiedLabels: num(r.fedex_label_confirmation_count),
+          fedexSource: str(r.fedex_source_artifact),
+          kometDimWeightKg: num(r.komet_dim_weight_kg),
         } satisfies BoxType;
       })
       .filter((b) => b.boxType !== DASH);
