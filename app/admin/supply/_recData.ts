@@ -31,6 +31,9 @@ export interface CompetitorContext {
   maxPerStem: number | null;
   sources: string[]; // distinct source names (PetalJet, FiftyFlowers, ...)
   rowCount: number;
+  // True when the match was tightened by word-boundary on the variety token,
+  // so the "Mercado" line is trustworthy at scale (not a broad substring smear).
+  tightened: boolean;
 }
 
 const EMPTY_COMPETITOR: CompetitorContext = {
@@ -40,7 +43,20 @@ const EMPTY_COMPETITOR: CompetitorContext = {
   maxPerStem: null,
   sources: [],
   rowCount: 0,
+  tightened: false,
 };
+
+// A competitor row matches a rec variety when the competitor variety contains
+// the rec variety as a WHOLE-WORD token (word boundary), not just any substring.
+// This stops a short rec token ("rose") from matching unrelated products across
+// the 257k-row competitor table and skewing the average (the NOTE fix). We still
+// pull a bounded set with ilike, then filter to word-boundary matches in JS.
+function varietyWordMatch(competitorVariety: string, recVariety: string): boolean {
+  const hay = ` ${competitorVariety.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()} `;
+  const needle = recVariety.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  if (!needle) return false;
+  return hay.includes(` ${needle} `);
+}
 
 // Pretty-print a known source slug; unknown slugs pass through capitalized.
 const SOURCE_LABELS: Record<string, string> = {
@@ -94,10 +110,12 @@ export async function getCompetitorContext(
         return;
       }
       try {
-        // Competitor variety CONTAINS the rec variety (case-insensitive).
+        // Pull a bounded candidate set with the broad ilike (the index-friendly
+        // filter), then TIGHTEN in JS to whole-word matches so a short variety
+        // token cannot smear across unrelated products (the NOTE fix).
         const { data, error } = await prod
           .from('competitor_prices')
-          .select('source, price_per_stem')
+          .select('source, price_per_stem, variety')
           .ilike('variety', `%${safe}%`)
           .not('price_per_stem', 'is', null)
           .limit(2000);
@@ -110,7 +128,13 @@ export async function getCompetitorContext(
         let min = Number.POSITIVE_INFINITY;
         let max = Number.NEGATIVE_INFINITY;
         let n = 0;
-        for (const row of data as { source: string | null; price_per_stem: number | string | null }[]) {
+        for (const row of data as {
+          source: string | null;
+          price_per_stem: number | string | null;
+          variety: string | null;
+        }[]) {
+          // Whole-word match only: drop broad substring false positives.
+          if (!varietyWordMatch(row.variety ?? '', variety)) continue;
           const pps =
             typeof row.price_per_stem === 'number'
               ? row.price_per_stem
@@ -133,6 +157,7 @@ export async function getCompetitorContext(
           maxPerStem: Number.isFinite(max) ? max : null,
           sources: Array.from(sourceSet).map(sourceLabel).sort(),
           rowCount: n,
+          tightened: true,
         });
       } catch {
         out.set(variety, { ...EMPTY_COMPETITOR });
@@ -309,3 +334,145 @@ export function learningLabel(stat: LearningStat | null | undefined): string {
 // Re-export the alias name some call sites still use; both fields now carry the
 // corrected positive count so no consumer can read "0 aprobadas" for a 'correct'.
 export type { LearningStat as SupplyLearningStat };
+
+// ---------------------------------------------------------------------------
+// 5-LEVER buckets (so the UI can FILTER by lever)
+// ---------------------------------------------------------------------------
+//
+// The engine fires ONE gap_type per SKU on a priority cascade, so a SKU that
+// lacks BOTH a price and a photo only shows up under its highest-priority gap.
+// To make ALL FIVE levers queryable (image, content, fulfillment, price,
+// quality) we (1) bucket every engine row by its canonical lever, and (2) read
+// the underlying gate signals (failing_gates jsonb) so price + fulfillment are
+// surfaced even when masked behind a higher-priority lever. The five canonical
+// buckets are stable filter keys for the UI; raw gap_type sub-labels are kept.
+
+export type SupplyLever = 'image' | 'content' | 'fulfillment' | 'price' | 'quality';
+
+export const SUPPLY_LEVERS: SupplyLever[] = [
+  'image',
+  'content',
+  'fulfillment',
+  'price',
+  'quality',
+];
+
+// Map a raw engine gap_type to one of the five canonical filter buckets.
+// image_improve -> image, price_improve -> price, quality_improve -> quality.
+export function leverBucket(gapType: string | null | undefined): SupplyLever | null {
+  const g = (gapType ?? '').trim().toLowerCase();
+  if (!g) return null;
+  if (g === 'image' || g === 'image_improve') return 'image';
+  if (g === 'content') return 'content';
+  if (g === 'fulfillment') return 'fulfillment';
+  if (g === 'price' || g === 'price_improve') return 'price';
+  if (g === 'quality' || g === 'quality_improve') return 'quality';
+  return null; // unknown gap_type -> caller keeps it out of the 5-bucket filter
+}
+
+export interface LeverBucketStat {
+  lever: SupplyLever;
+  skuCount: number;
+  varieties: number;
+  // sub-levers folded into this bucket and how many SKUs each contributed,
+  // so the UI can show "price: 33 unpriced + 5 review" without re-querying.
+  subTypes: Record<string, number>;
+  maxPriority: number;
+  // # SKUs whose failing_gates ALSO carry this lever's gate but fire a DIFFERENT
+  // (higher-priority) gap_type -> the "masked" backlog the cascade hides.
+  maskedSkus: number;
+}
+
+// Which failing_gates token(s) indicate each lever is in deficit. Used to find
+// the MASKED backlog (a SKU firing 'image' that ALSO carries another lever's
+// gate). These MUST match the real tokens the v_supply_recommendations CASE
+// reads — verified against the live view 2026-06-10, the only tokens that exist
+// are missing_image (172), missing_contents_description (303),
+// missing_units_or_bunch (58). The view also names missing_box_dims /
+// missing_unit / missing_vendor_name (fulfillment) and missing_contents_named
+// (content) in its CASE, so we include them for forward-compatibility.
+//
+// price + quality are NOT failing_gates-driven in the view: price comes from
+// margin_status ('unpriced' / 'below_floor') and price_zero/missing_cost_source,
+// quality_improve from gap_count on a PUBLISHED SKU. None of those are tokens we
+// can detect on a SIBLING row's failing_gates array, so their masked-token sets
+// are empty (the masked count honestly reads 0 rather than a wrong number).
+const LEVER_GATE_TOKENS: Record<SupplyLever, string[]> = {
+  image: ['missing_image'],
+  content: ['missing_contents_description', 'missing_contents_named'],
+  fulfillment: ['missing_units_or_bunch', 'missing_box_dims', 'missing_unit', 'missing_vendor_name'],
+  price: [], // margin_status-driven, no failing_gates token to mask-detect
+  quality: [], // gap_count-on-published driven, no single token
+};
+
+function gatesHasAny(failingGates: unknown, tokens: string[]): boolean {
+  if (!Array.isArray(failingGates)) return false;
+  const set = new Set(tokens.map((t) => t.toLowerCase()));
+  return failingGates.some((g) => typeof g === 'string' && set.has(g.toLowerCase()));
+}
+
+/**
+ * Read the engine and return ONE stat per canonical lever (all five always
+ * present, even at zero, so the UI renders a stable filter bar). Each stat
+ * counts the SKUs/varieties firing that lever PLUS the masked backlog (SKUs
+ * whose failing_gates carry the lever's gate but fire a higher-priority gap).
+ * REAL data only; NULL-safe; never throws (returns all-zero buckets on failure).
+ */
+export async function getLeverBuckets(): Promise<Map<SupplyLever, LeverBucketStat>> {
+  const out = new Map<SupplyLever, LeverBucketStat>();
+  for (const lever of SUPPLY_LEVERS) {
+    out.set(lever, { lever, skuCount: 0, varieties: 0, subTypes: {}, maxPriority: 0, maskedSkus: 0 });
+  }
+  try {
+    const backup = getBackupServiceClient();
+    const { data, error } = await backup
+      .from('v_supply_recommendations')
+      .select('sku_id, variety, gap_type, failing_gates, priority_score')
+      .limit(5000);
+    if (error || !data) return out;
+
+    interface Row {
+      sku_id: string;
+      variety: string | null;
+      gap_type: string | null;
+      failing_gates: unknown;
+      priority_score: number | string | null;
+    }
+    const varietySets = new Map<SupplyLever, Set<string>>();
+    for (const lever of SUPPLY_LEVERS) varietySets.set(lever, new Set<string>());
+
+    for (const r of data as Row[]) {
+      const gap = (r.gap_type ?? '').trim().toLowerCase();
+      const bucket = leverBucket(gap);
+      const variety = (r.variety ?? '').trim().toLowerCase();
+      const prio =
+        typeof r.priority_score === 'number'
+          ? r.priority_score
+          : parseFloat(r.priority_score ?? '') || 0;
+
+      if (bucket) {
+        const stat = out.get(bucket)!;
+        stat.skuCount += 1;
+        stat.subTypes[gap] = (stat.subTypes[gap] ?? 0) + 1;
+        if (prio > stat.maxPriority) stat.maxPriority = prio;
+        if (variety) varietySets.get(bucket)!.add(variety);
+      }
+
+      // Masked backlog: a SKU firing one lever may ALSO carry another lever's
+      // gate in failing_gates. Count it under every OTHER lever it carries.
+      for (const lever of SUPPLY_LEVERS) {
+        if (lever === bucket) continue;
+        if (gatesHasAny(r.failing_gates, LEVER_GATE_TOKENS[lever])) {
+          out.get(lever)!.maskedSkus += 1;
+        }
+      }
+    }
+
+    for (const lever of SUPPLY_LEVERS) {
+      out.get(lever)!.varieties = varietySets.get(lever)!.size;
+    }
+    return out;
+  } catch {
+    return out;
+  }
+}
