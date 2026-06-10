@@ -408,19 +408,37 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
           : null;
       const floraScore =
         comp && typeof comp.flora_score === 'number' ? comp.flora_score : null;
+      // box_type: PREFER edited proposed_composition.box_type, else fall back to 'SAMPLE'.
       const rawBoxType =
         comp && typeof comp.box_type === 'string' && comp.box_type.trim()
           ? comp.box_type.trim()
           : 'SAMPLE';
 
-      // Address from PROD cohort
+      // Address: PREFER edited proposed_composition.ship_address (written by ApprovedBoxesEditor),
+      // else fall back to parsing PROD v_flora_cohort.description "CONFIRMED ADDRESS:".
       let street = '';
       let city = '';
       let state = '';
       let zip = '';
       const notesParts: string[] = [];
 
-      if (zohoId && cohortByZohoId[zohoId]) {
+      // Check for an edited ship_address first.
+      const editedShip =
+        comp &&
+        comp.ship_address &&
+        typeof comp.ship_address === 'object' &&
+        !Array.isArray(comp.ship_address)
+          ? (comp.ship_address as Record<string, unknown>)
+          : null;
+
+      if (editedShip) {
+        street = typeof editedShip.street === 'string' ? editedShip.street.trim() : '';
+        city   = typeof editedShip.city   === 'string' ? editedShip.city.trim()   : '';
+        state  = typeof editedShip.state  === 'string' ? editedShip.state.trim()  : '';
+        zip    = typeof editedShip.zip    === 'string' ? editedShip.zip.trim()    : '';
+        // If the edited address is still incomplete, note it.
+        if (!street || !city || !state || !zip) notesParts.push('ADDRESS MISSING');
+      } else if (zohoId && cohortByZohoId[zohoId]) {
         const cohort = cohortByZohoId[zohoId];
         const description =
           typeof cohort.description === 'string' ? cohort.description : null;
@@ -463,16 +481,92 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
         notesParts.push('DIMS MISSING');
       }
 
-      // UNIT VALUE = stems_per_box × representative farm cost per stem (DERIVED, customs value).
-      // stems_per_box from the matched box_master row; farm cost = catalog average. Representative
-      // (the sample's exact composition isn't pinned at approval). Rounded to whole USD.
-      const stemsPerBox =
-        bm && Number.isFinite(Number(bm.stems_per_box)) ? Number(bm.stems_per_box) : null;
+      // UNIT VALUE: PREFER computed-from-contents when proposed_composition.contents is a
+      // non-empty array of { variety, stems } (written by ApprovedBoxesEditor). This gives
+      // an exact declared customs value matching what's in the box.
+      // Fallback: stems_per_box (from box_master) × catalog average farm cost.
+      // Both paths round to whole USD and never fabricate: blank + VALOR PENDIENTE when missing.
       let unitValue = '';
-      if (stemsPerBox != null && stemsPerBox > 0 && avgFarmCost != null) {
-        unitValue = String(Math.max(1, Math.round(stemsPerBox * avgFarmCost)));
+
+      const editedContents: Array<{ variety: string; stems: number }> = [];
+      if (comp && Array.isArray(comp.contents)) {
+        for (const item of comp.contents as unknown[]) {
+          if (item && typeof item === 'object' && !Array.isArray(item)) {
+            const it = item as Record<string, unknown>;
+            const variety = typeof it.variety === 'string' ? it.variety.trim() : null;
+            const stems =
+              typeof it.stems === 'number' && Number.isFinite(it.stems) && it.stems > 0
+                ? it.stems
+                : typeof it.stems === 'string' &&
+                  Number.isFinite(Number(it.stems)) &&
+                  Number(it.stems) > 0
+                ? Number(it.stems)
+                : null;
+            if (variety && stems != null) editedContents.push({ variety, stems });
+          }
+        }
+      }
+
+      if (editedContents.length > 0) {
+        // Exact path: sum(stems × farm_cost_per_stem) matched from v_catalog_admin by variety (ilike).
+        // catRaw was already loaded above into avgFarmCost loop; re-use the raw array if available.
+        // We need the per-variety costs, so we do a targeted lookup when editedContents is present.
+        // Build a map variety (lowercase) -> farm_cost from the already-fetched catalog data.
+        // catRaw is not directly in scope; we load it again (small, cached at the Supabase layer).
+        let varietyCostMap: Record<string, number> = {};
+        try {
+          const { data: catVars } = await svc
+            .from('v_catalog_admin')
+            .select('variety, farm_cost')
+            .limit(3000);
+          for (const r of (catVars ?? []) as Array<Record<string, unknown>>) {
+            const v = typeof r.variety === 'string' ? r.variety.trim().toLowerCase() : null;
+            const c = Number(r.farm_cost);
+            if (v && Number.isFinite(c) && c > 0) varietyCostMap[v] = c;
+          }
+        } catch {
+          // best-effort; fall through to average fallback
+        }
+
+        let totalValue = 0;
+        let allResolved = true;
+        for (const line of editedContents) {
+          const key = line.variety.toLowerCase();
+          // ilike match: try exact, then prefix/suffix
+          const exactCost = varietyCostMap[key];
+          let cost: number | undefined = exactCost;
+          if (cost == null) {
+            // substring search on the already-fetched map keys
+            const matchKey = Object.keys(varietyCostMap).find(
+              (k) => k.includes(key) || key.includes(k),
+            );
+            cost = matchKey != null ? varietyCostMap[matchKey] : undefined;
+          }
+          if (cost != null && cost > 0) {
+            totalValue += line.stems * cost;
+          } else if (avgFarmCost != null) {
+            // Variety not in catalog; use catalog average as directional fallback
+            totalValue += line.stems * avgFarmCost;
+          } else {
+            allResolved = false;
+          }
+        }
+
+        if (totalValue > 0) {
+          unitValue = String(Math.max(1, Math.round(totalValue)));
+          if (!allResolved) notesParts.push('VALOR PARCIAL');
+        } else {
+          notesParts.push('VALOR PENDIENTE');
+        }
       } else {
-        notesParts.push('VALOR PENDIENTE');
+        // No contents pinned: fall back to stems_per_box × representative average.
+        const stemsPerBox =
+          bm && Number.isFinite(Number(bm.stems_per_box)) ? Number(bm.stems_per_box) : null;
+        if (stemsPerBox != null && stemsPerBox > 0 && avgFarmCost != null) {
+          unitValue = String(Math.max(1, Math.round(stemsPerBox * avgFarmCost)));
+        } else {
+          notesParts.push('VALOR PENDIENTE');
+        }
       }
 
       const cust_val = unitValue !== '' ? unitValue : '';

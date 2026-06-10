@@ -28,7 +28,9 @@ import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import SamplesReviewClient from './_components/SamplesReviewClient';
 import FloraCohortPanel from './_components/FloraCohortPanel';
 import LabelsForTomorrow from './_components/LabelsForTomorrow';
+import ApprovedBoxesEditor from './_components/ApprovedBoxesEditor';
 import RefreshCohort from './_components/RefreshCohort';
+import { getBoxTypes } from '@/lib/deal/data';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -62,6 +64,9 @@ async function requireAdmin() {
 
 export default async function SamplesReviewPage() {
   await requireAdmin();
+
+  // Box types for the ApprovedBoxesEditor <select> (from BACKUP box_master_mirror).
+  const boxTypes = await getBoxTypes();
 
   // Front of the loop: accounts JJ qualified with a real FLORA score, ready to review.
   const floraCohort = await getFloraQualifiedCohort();
@@ -116,8 +121,14 @@ export default async function SamplesReviewPage() {
       {/* Front of the loop: review the FLORA-qualified before the boxed/dispatched below. */}
       <FloraCohortPanel rows={floraCohort} prodBlocked={prodBlocked} />
 
-      {/* Approve -> labels for tomorrow's send (built from our BACKUP-approved boxes). */}
+      {/* Approved boxes: editable layer — JJ/Facu fill address, box type, contents before dispatch. */}
+      {/* MUST sit ABOVE LabelsForTomorrow so labelsBuild can read the edited values. */}
       <div className="mt-8">
+        <ApprovedBoxesEditor boxTypes={boxTypes} />
+      </div>
+
+      {/* Approve -> labels for tomorrow's send (built from our BACKUP-approved boxes). */}
+      <div className="mt-6">
         <LabelsForTomorrow />
       </div>
 
