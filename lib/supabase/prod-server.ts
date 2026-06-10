@@ -36,15 +36,19 @@ export function getProdReadClient(): SupabaseClient | null {
   // until a client is successfully created.
   if (_prod) return _prod;
 
+  // IMPORTANT: use || (not ??) so an EMPTY-STRING env var falls back. On Vercel
+  // PROD_SUPABASE_SERVICE_KEY is set to "" — with ?? that empty string is kept
+  // (?? only catches null/undefined), the key is falsy, and this returned null,
+  // silently breaking EVERY PROD read. || treats "" as missing and falls back.
   const url =
-    process.env.PROD_SUPABASE_URL ??
-    process.env.NEXT_PUBLIC_SUPABASE_URL ??
+    process.env.PROD_SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
     '';
-  // Service key preferred (bypasses RLS for Rose tables).
-  // Falls back to anon key — sufficient for SECURITY DEFINER RPCs granted to anon.
+  // Service key preferred (bypasses RLS for Rose tables). Falls back to anon key
+  // — sufficient for anon-policy tables + anon-granted views (e.g. v_flora_cohort).
   const key =
-    process.env.PROD_SUPABASE_SERVICE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.PROD_SUPABASE_SERVICE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     '';
   if (!url || !key) return null;
 
@@ -63,12 +67,12 @@ export function getProdReadClient(): SupabaseClient | null {
  */
 export function isProdReadConfigured(): boolean {
   const url =
-    process.env.PROD_SUPABASE_URL ??
-    process.env.NEXT_PUBLIC_SUPABASE_URL ??
+    process.env.PROD_SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
     '';
   const key =
-    process.env.PROD_SUPABASE_SERVICE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.PROD_SUPABASE_SERVICE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     '';
   return Boolean(url && key);
 }
