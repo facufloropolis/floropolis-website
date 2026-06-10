@@ -28,6 +28,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -346,6 +347,8 @@ export default async function AdminLoopPage({
         <span className="mx-1.5">/</span>
         <span className="text-slate-700 font-medium">Improvement Loop</span>
       </nav>
+
+      <SurfaceStatusBanner surfaceKey="loop" />
 
       {/* Header */}
       <div className="mb-6">

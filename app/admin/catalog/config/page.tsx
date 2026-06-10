@@ -25,6 +25,7 @@ import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
+import SurfaceStatusBanner from '../../_components/SurfaceStatusBanner';
 import CanonicalCostsPanel from './_components/CanonicalCostsPanel';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
@@ -391,6 +392,7 @@ export default async function AdminCatalogConfigPage({
     <>
       <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/admin-catalog-config" pageLabel="/admin/catalog/config" />
+        <SurfaceStatusBanner surfaceKey="config" />
         {/* Header */}
         <div className="mb-8">
           <nav className="text-xs text-slate-500 mb-2" aria-label="Breadcrumb">

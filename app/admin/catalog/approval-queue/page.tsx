@@ -36,6 +36,7 @@ import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 
+import SurfaceStatusBanner from '../../_components/SurfaceStatusBanner';
 import RowsList, { type ProposalRowVm } from './RowsList';
 import type { AuditRow } from './AuditDrillDown';
 import BatchPriceProposalPanel, { type BatchProposal } from './BatchPriceProposalPanel';
@@ -570,6 +571,7 @@ export default async function AdminCatalogApprovalQueuePage({
     <>
       <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/admin-catalog-approval-queue" pageLabel="/admin/catalog/approval-queue" />
+        <SurfaceStatusBanner surfaceKey="approvals" />
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Approval queue</h1>
           <p className="text-slate-500 text-sm mt-1 max-w-2xl">

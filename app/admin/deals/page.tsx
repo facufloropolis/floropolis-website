@@ -11,6 +11,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getBoxTypes, searchClients, getMinGpm } from '@/lib/deal/data';
 import DealBuilderClient from './_components/DealBuilderClient';
 import DealsQueue, { type PendingDeal } from './_components/DealsQueue';
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 
 async function getPendingDeals(): Promise<PendingDeal[]> {
   try {
@@ -84,6 +85,9 @@ export default async function DealBuilderPage() {
     <div className="min-h-screen bg-slate-50">
       <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-[12px] font-medium text-amber-800">
         MVP &mdash; JJ: probalo end-to-end y dejanos feedback (arma un deal, baja el precio, envialo). Aun no conectado a pago/order.
+      </div>
+      <div className="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6">
+        <SurfaceStatusBanner surfaceKey="deals" />
       </div>
       {pendingDeals.length > 0 && (
         <div className="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6">

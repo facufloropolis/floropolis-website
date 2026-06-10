@@ -72,6 +72,7 @@ import { createBackupServerClient as createUserClient } from '@/lib/supabase/bac
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import MorningSummaryHeader from './_components/MorningSummaryHeader';
 import CatalogPulseStrip from './_components/CatalogPulseStrip';
 import BlockingChips from './_components/BlockingChips';
@@ -686,6 +687,8 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
           <span className="mx-1.5">/</span>
           <span className="text-slate-700 font-medium">Catalog</span>
         </nav>
+
+        <SurfaceStatusBanner surfaceKey="catalog" />
 
         {/* Facu's Desk — Zone 1: the pulse (10s trust band, above everything) */}
         <CatalogPulseStrip backup={backup} />

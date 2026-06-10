@@ -27,6 +27,7 @@ import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import OrdersClient from './OrdersClient';
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import { getUnifiedOrders } from './unified-orders';
 
 export const metadata = {
@@ -61,5 +62,12 @@ export default async function AdminOrdersPage() {
 
   const { rows, total, bucketCounts, error } = await getUnifiedOrders();
 
-  return <OrdersClient rows={rows} total={total} bucketCounts={bucketCounts} error={error} />;
+  return (
+    <>
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <SurfaceStatusBanner surfaceKey="orders" />
+      </div>
+      <OrdersClient rows={rows} total={total} bucketCounts={bucketCounts} error={error} />
+    </>
+  );
 }

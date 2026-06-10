@@ -33,6 +33,7 @@ import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import DispatchDateNav from './DispatchDateNav';
 import DispatchPipelineStepper from './DispatchPipelineStepper';
 import DispatchManifestLayout from './DispatchManifestLayout';
@@ -160,6 +161,7 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
+      <SurfaceStatusBanner surfaceKey="dispatch" />
       {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>

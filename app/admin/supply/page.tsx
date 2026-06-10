@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import RecDecision from './RecDecision';
 import RecoverImage from './RecoverImage';
 import {
@@ -399,6 +400,8 @@ export default async function SupplyEnginePage() {
         <span className="mx-1.5 text-slate-300">/</span>
         <span className="text-slate-700 font-medium">Supply Engine</span>
       </nav>
+
+      <SurfaceStatusBanner surfaceKey="supply" />
 
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>

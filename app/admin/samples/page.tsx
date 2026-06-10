@@ -23,6 +23,7 @@ import {
   getFloraQualifiedCohort,
   type SampleReviewRow,
 } from '@/lib/admin/sample-review';
+import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import SamplesReviewClient from './_components/SamplesReviewClient';
 import FloraCohortPanel from './_components/FloraCohortPanel';
 
@@ -76,6 +77,7 @@ export default async function SamplesReviewPage() {
 
   return (
     <main className="px-4 py-6 max-w-[1400px] mx-auto">
+      <SurfaceStatusBanner surfaceKey="samples" />
       <div className="flex items-start justify-between gap-4 mb-5">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
