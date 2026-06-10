@@ -296,18 +296,16 @@ function FloraCard({
           </span>
         </div>
 
-        {done === 'yes' && boxRouted === true && (
+        {done === 'yes' && (
           <p className="text-[12px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-            Caja solicitada (ruteada a Atlas)
+            &#10003; Aprobado &mdash; caja lista para el dispatch de manana (aparece en &ldquo;Cajas
+            aprobadas&rdquo; abajo, donde JJ edita contenido + direccion).
           </p>
         )}
-        {done === 'yes' && boxRouted === false && (
-          <p className="text-[12px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-            {boxReason === 'route_failed'
-              ? 'Intent de caja capturado. Ruteo a Atlas fallo (reintentar).'
-              : 'Intent de caja capturado. Ruteo a Atlas pendiente (PROD no configurado).'}
-          </p>
-        )}
+        {/* boxRouted/boxReason are kept for the create-box call but no longer surfaced:
+            the BACKUP capture is what the labels flow needs; the PROD/Atlas sync is optional. */}
+        {void boxRouted}
+        {void boxReason}
         {error && (
           <p className="text-[11px] text-red-600 font-mono whitespace-normal">{error}</p>
         )}
