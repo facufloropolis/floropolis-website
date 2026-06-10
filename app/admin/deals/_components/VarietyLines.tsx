@@ -13,6 +13,8 @@ function money(n: number) {
   return '$' + n.toFixed(2);
 }
 
+const normBox = (s: string | null | undefined) => (s ?? '').trim().toLowerCase();
+
 const DISP_STYLE: Record<LineDisposition, string> = {
   catalogo: 'border-slate-200 bg-slate-50 text-slate-600',
   one_off: 'border-sky-200 bg-sky-50 text-sky-700',
@@ -29,12 +31,15 @@ const DISP_LABEL: Record<LineDisposition, string> = {
 export default function VarietyLines({
   lines,
   boxTypes,
+  deliveryByBox = {},
   onChangeLine,
   onRemoveLine,
   onAddExisting,
 }: {
   lines: DealLineVM[];
   boxTypes: BoxType[];
+  // Delivery (FedEx freight) cost per stem, keyed by normalized box label.
+  deliveryByBox?: Record<string, number | null>;
   onChangeLine: (id: string, patch: Partial<DealLineVM>) => void;
   onRemoveLine: (id: string) => void;
   onAddExisting: (v: CatalogVariety) => void;
@@ -66,6 +71,7 @@ export default function VarietyLines({
                 <th className="px-3 py-2.5 text-center font-medium">Stems</th>
                 <th className="px-3 py-2.5 text-center font-medium">Caja</th>
                 <th className="px-3 py-2.5 text-right font-medium">Costo/stem</th>
+                <th className="px-3 py-2.5 text-right font-medium">Delivery/stem</th>
                 <th className="px-3 py-2.5 text-right font-medium">Floor/stem</th>
                 <th className="px-3 py-2.5 text-right font-medium">Precio/stem</th>
                 <th className="px-3 py-2.5 text-center font-medium">Disposicion</th>
@@ -75,7 +81,7 @@ export default function VarietyLines({
             <tbody className="divide-y divide-slate-100">
               {lines.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-3 py-6 text-center text-[13px] text-slate-400">
+                  <td colSpan={11} className="px-3 py-6 text-center text-[13px] text-slate-400">
                     Sin variedades. Agrega una existente o crea una nueva abajo.
                   </td>
                 </tr>
@@ -129,6 +135,12 @@ export default function VarietyLines({
                       </select>
                     </td>
                     <td className="px-3 py-2.5 text-right tabular-nums text-slate-600">{money(l.costPerStem)}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-slate-600">
+                      {(() => {
+                        const d = l.boxType ? deliveryByBox[normBox(l.boxType)] : null;
+                        return d != null ? money(d) : <span className="text-slate-300">--</span>;
+                      })()}
+                    </td>
                     <td className="px-3 py-2.5 text-right tabular-nums text-slate-400">{money(l.floorPerStem)}</td>
                     <td className="px-3 py-2.5 text-right">
                       <input

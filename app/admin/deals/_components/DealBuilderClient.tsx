@@ -47,6 +47,12 @@ export default function DealBuilderClient({
   const [price, setPrice] = useState(0);
   const [priceTouched, setPriceTouched] = useState(false);
 
+  // Per-box-type OVERRIDES (Facu can edit how the box is actually packed): stems per
+  // box (default = box_master capacity) and chargeable kg (default = box_master, from
+  // dims). Keyed by the normalized box label. The freight + box-count recompute live.
+  const normBox = (s: string | null | undefined) => (s ?? '').trim().toLowerCase();
+  const [boxOverrides, setBoxOverrides] = useState<Record<string, { stemsPerBox?: number; chargeableKg?: number }>>({});
+
   // --- Deal meta --------------------------------------------------------------
   const [dealType, setDealType] = useState<'one_off' | 'standing_order'>('standing_order');
   const [cadence, setCadence] = useState('Semanal (martes)');
@@ -68,12 +74,11 @@ export default function DealBuilderClient({
     // Match box labels CASE-INSENSITIVELY (+ trim): box_master stores "QB" but a deal
     // line may carry "qb". Prefer a non-null chargeable_kg / capacity when several rows
     // share a label (e.g. QB Ecoroses + QB Flodecol) so a null sibling never hides a real value.
-    const norm = (s: string | null | undefined) => (s ?? '').trim().toLowerCase();
     const capByBox = new Map<string, number | null>();
     const kgByBox = new Map<string, number | null>();
     const labelByBox = new Map<string, string>();
     for (const b of boxTypes) {
-      const k = norm(b.boxType);
+      const k = normBox(b.boxType);
       if (!k) continue;
       if (b.stemsPerBox != null || !capByBox.has(k)) capByBox.set(k, b.stemsPerBox ?? capByBox.get(k) ?? null);
       if (b.chargeableKg != null || !kgByBox.has(k)) kgByBox.set(k, b.chargeableKg ?? kgByBox.get(k) ?? null);
@@ -83,7 +88,7 @@ export default function DealBuilderClient({
     const origLabel = new Map<string, string>();
     for (const l of lines) {
       if (!l.boxType || l.stems <= 0) continue;
-      const k = norm(l.boxType);
+      const k = normBox(l.boxType);
       usedByBox.set(k, (usedByBox.get(k) ?? 0) + l.stems);
       if (!origLabel.has(k)) origLabel.set(k, l.boxType);
     }
@@ -91,8 +96,9 @@ export default function DealBuilderClient({
     let boxes = 0;
     const pendingBoxTypes: string[] = [];
     for (const [k, used] of usedByBox) {
-      const cap = capByBox.get(k) ?? null;
-      const kg = kgByBox.get(k) ?? null;
+      // Facu's per-box edits win over box_master defaults.
+      const cap = boxOverrides[k]?.stemsPerBox ?? capByBox.get(k) ?? null;
+      const kg = boxOverrides[k]?.chargeableKg ?? kgByBox.get(k) ?? null;
       if (!cap || cap <= 0 || kg == null || kg <= 0) {
         pendingBoxTypes.push(labelByBox.get(k) ?? origLabel.get(k) ?? k);
         continue;
@@ -102,7 +108,29 @@ export default function DealBuilderClient({
       total += n * kg * RATE_PER_KG;
     }
     return { total, boxes, pendingBoxTypes };
-  }, [lines, boxTypes]);
+  }, [lines, boxTypes, boxOverrides]);
+
+  // Delivery (freight) cost PER STEM by box type = (chargeable_kg x rate) / stems-per-box,
+  // override-aware. Feeds the "Delivery/stem" column in the variety table. null when the
+  // box lacks dims/capacity.
+  const deliveryByBox = useMemo(() => {
+    const out: Record<string, number | null> = {};
+    const capByBox = new Map<string, number | null>();
+    const kgByBox = new Map<string, number | null>();
+    for (const b of boxTypes) {
+      const k = normBox(b.boxType);
+      if (!k) continue;
+      if (b.stemsPerBox != null || !capByBox.has(k)) capByBox.set(k, b.stemsPerBox ?? capByBox.get(k) ?? null);
+      if (b.chargeableKg != null || !kgByBox.has(k)) kgByBox.set(k, b.chargeableKg ?? kgByBox.get(k) ?? null);
+    }
+    const keys = new Set<string>([...capByBox.keys(), ...Object.keys(boxOverrides)]);
+    for (const k of keys) {
+      const cap = boxOverrides[k]?.stemsPerBox ?? capByBox.get(k) ?? null;
+      const kg = boxOverrides[k]?.chargeableKg ?? kgByBox.get(k) ?? null;
+      out[k] = cap && cap > 0 && kg != null && kg > 0 ? (kg * RATE_PER_KG) / cap : null;
+    }
+    return out;
+  }, [boxTypes, boxOverrides]);
 
   // Total deal cost now INCLUDES the box freight, so floor + GPM are accurate.
   const totalCost = flowerCost + boxFreight.total;
@@ -350,6 +378,7 @@ export default function DealBuilderClient({
             <VarietyLines
               lines={lines}
               boxTypes={boxTypes}
+              deliveryByBox={deliveryByBox}
               onChangeLine={changeLine}
               onRemoveLine={removeLine}
               onAddExisting={addExistingVariety}
@@ -362,7 +391,22 @@ export default function DealBuilderClient({
               <NewVarietyLineCapture onAddLine={addNewVarietyLine} />
             </div>
 
-            <Packing lines={lines} boxTypes={boxTypes} />
+            <Packing
+              lines={lines}
+              boxTypes={boxTypes}
+              overrides={boxOverrides}
+              onOverride={(boxLabel, patch) => {
+                const k = normBox(boxLabel);
+                setBoxOverrides((prev) => {
+                  const next = { ...prev[k], ...patch };
+                  // Drop keys set back to undefined so defaults from box_master resume.
+                  if (next.stemsPerBox == null) delete next.stemsPerBox;
+                  if (next.chargeableKg == null) delete next.chargeableKg;
+                  return { ...prev, [k]: next };
+                });
+              }}
+              freightRatePerKg={RATE_PER_KG}
+            />
 
             {/* Subir caja nueva: el editor canonico propone la caja a la cola (box_master). */}
             <BoxUpsert onSaved={() => {}} />
