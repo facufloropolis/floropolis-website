@@ -1006,9 +1006,16 @@ export interface FloraCohortRow {
   website: string | null;
   city: string | null;
   state: string | null;
-  // Real lead_master_id resolved from v_sample_review by business_name (case-insensitive).
-  // Null when no match found or on any read error. Used to fetch ClientIntel on the UI.
+  // Real lead_master_id from v_flora_cohort_enriched (NULL until accounts appear in lead_master).
+  // Falls back to v_sample_review name-match. Used to fetch ClientIntel on the UI.
   leadMasterId: number | null;
+  // Engagement counts from v_flora_cohort_enriched (0 today — 6 accounts are new in Zoho).
+  callsCount: number;
+  messagesCount: number;
+  emailsCount: number;
+  lastInteractionDate: string | null;
+  sampleRequestedAt: string | null; // populated for Milwood (2026-03-31) and Dee Wagner (2026-04-07)
+  currentSbStatus: string | null; // their current sample_box_status.sb_status, if any
   // True when this account already has an approved box in BACKUP sample_review_loop
   // (status='aligned' OR facu_decision='yes') — so the card shows "ya aprobada".
   approved: boolean;
@@ -1125,26 +1132,30 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
   const prod = getProdReadClient();
   if (!prod) return [];
   try {
-    // Reads Rose's anon-readable view public.v_flora_cohort (NOT zoho_accounts directly):
-    // zoho_accounts has RLS with 0 policies so only service role reads it; the app runs as
-    // anon. Rose's view exposes ONLY the FLORA cohort (these 13 cols, the qualified rows) to
-    // anon (verified: 6 rows visible as role anon, 2026-06-10). Least-privilege, camino A.
+    // Reads Rose's anon-readable view public.v_flora_cohort_enriched (PROD, anon SELECT granted,
+    // verified 2026-06-10, 6 rows). Superset of v_flora_cohort — adds engagement counts
+    // (calls/messages/emails), last_interaction_date, sample_requested_at, current_sb_status,
+    // and lead_master_id (NULL today — 6 accounts not yet in lead_master).
     const { data, error } = await prod
-      .from('v_flora_cohort')
+      .from('v_flora_cohort_enriched')
       .select(
         'zoho_id, account_name, sb_qualification_flora, sb_qualif_by_jj, reason_won_lost, ' +
           'qualification_sub_score, description, account_type, industry, phone, website, ' +
-          'billing_city, billing_state',
+          'billing_city, billing_state, lead_master_id, ' +
+          'calls_count, messages_count, emails_count, ' +
+          'last_interaction_date, sample_requested_at, current_sb_status',
       )
       .order('sb_qualification_flora', { ascending: false });
     if (error || !Array.isArray(data)) return [];
 
     const rawRows = data as unknown as Array<Record<string, unknown>>;
 
-    // Collect account names to resolve real lead_master_ids from v_sample_review.
-    const accountNames = rawRows
+    // Resolve lead_master_ids: prefer the enriched view's own column (populated when the
+    // account appears in lead_master); fall back to v_sample_review name-match for NULLs.
+    const nullNameAccounts = rawRows
+      .filter((r) => r.lead_master_id == null)
       .map((r) => s(r.account_name) || '(unknown account)');
-    const leadIdMap = await resolveLeadMasterIds(accountNames);
+    const leadIdFallbackMap = await resolveLeadMasterIds(nullNameAccounts);
 
     // Which accounts are ALREADY approved (BACKUP sample_review_loop) — so the card
     // shows "ya aprobada" instead of looking un-acted-on after a reload. Best-effort.
@@ -1173,6 +1184,13 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
           : floraRaw != null && Number.isFinite(Number(floraRaw))
             ? Number(floraRaw)
             : null;
+      const toInt = (v: unknown): number =>
+        Number.isFinite(Number(v)) ? Math.max(0, Math.round(Number(v))) : 0;
+      // Use enriched view's lead_master_id; fall back to name-match for NULLs.
+      const leadMasterId: number | null =
+        r.lead_master_id != null && Number.isFinite(Number(r.lead_master_id))
+          ? Number(r.lead_master_id)
+          : (leadIdFallbackMap.get(accountName.trim().toLowerCase()) ?? null);
       rows.push({
         decideKey: floraDecideKey(accountName),
         zohoId: s(r.zoho_id),
@@ -1191,7 +1209,13 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
         website: s(r.website),
         city: s(r.billing_city),
         state: s(r.billing_state),
-        leadMasterId: leadIdMap.get(accountName.trim().toLowerCase()) ?? null,
+        leadMasterId,
+        callsCount: toInt(r.calls_count),
+        messagesCount: toInt(r.messages_count),
+        emailsCount: toInt(r.emails_count),
+        lastInteractionDate: s(r.last_interaction_date),
+        sampleRequestedAt: s(r.sample_requested_at),
+        currentSbStatus: s(r.current_sb_status),
         approved: approvedNames.has(accountName.trim().toLowerCase()),
       });
     }
@@ -1216,10 +1240,10 @@ export async function probeZohoReadable(): Promise<boolean> {
   const prod = getProdReadClient();
   if (!prod) return false;
   try {
-    // Probe the SAME source the cohort reads (Rose's anon view), so an empty cohort is
+    // Probe the SAME source the cohort reads (Rose's enriched anon view), so an empty cohort is
     // discriminated correctly: 0 here means the view is unreachable/missing, not "no accounts".
     const { count, error } = await prod
-      .from('v_flora_cohort')
+      .from('v_flora_cohort_enriched')
       .select('zoho_id', { count: 'exact', head: true });
     if (error) return false;
     return (count ?? 0) > 0;
