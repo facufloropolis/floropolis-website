@@ -1136,7 +1136,9 @@ async function resolveLeadMasterIds(
 
 /**
  * getCallLearnings — real call-analysis learnings per account from v_je_call_analysis
- * (anon-readable view, joined by business_name — does NOT need the lead_master_id mapping).
+ * (anon-readable view, joined by business_name). INTERIM: ambiguous/placeholder names ('TBD'
+ * etc.) are dropped from the join key set so they don't fan out spurious call attributions
+ * (Pita FAIL). The real fix is joining by lead_master_id once Rose exposes it in the view.
  * For each account: count of calls + the LATEST non-null lead_quality / outcome / objection /
  * next_action + last call date. Degrades to empty Map on any error.
  */
@@ -1145,7 +1147,11 @@ async function getCallLearnings(accountNames: string[]): Promise<Map<string, Cal
   if (accountNames.length === 0) return out;
   const prod = getProdReadClient();
   if (!prod) return out;
-  const wanted = new Set(accountNames.map((n) => n.trim().toLowerCase()));
+  const AMBIGUOUS = new Set(['', 'tbd', 'n/a', 'na', 'unknown', '(sin nombre)']);
+  const wanted = new Set(
+    accountNames.map((n) => n.trim().toLowerCase()).filter((n) => !AMBIGUOUS.has(n)),
+  );
+  if (wanted.size === 0) return out;
   try {
     // Pull the analyzed calls (most recent first) and group by business_name in JS — the
     // view keys by business_name, which matches the FLORA account names case-insensitively.

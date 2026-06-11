@@ -95,14 +95,17 @@ function addDays(d: Date, n: number): Date {
 export type CloseStatus = 'won' | 'lost' | 'pending';
 
 /**
- * classifyOutcome — won/lost/pending from the COMBINED status (account_status for the ~31
- * accounts, lead_status for the rest) + outcome tags.
- *   won  = Loyal / New Client / converted / tag_compro
- *   lost = Lost / Churned / molesta_mala_orden
- *   pending = everything else (incl. lead funnel states: COLD / Bounced / SB - Recibido /
- *             SB - Interested / SB - Qualified ... — these are NOT lost, just not yet closed)
- * `combinedStatus` is account_status ?? lead_status — pass it so the lead funnel states are
- * matched against the same won/lost rules (none of them trip won/lost → they fall to pending).
+ * classifyOutcome — won/lost/pending with an EXPLICIT precedence (Facu 2026-06-11, resolves
+ * Pita FAIL "precedence undefined"). Order: REAL outcome > TAGS > lifecycle STATUS.
+ *   Tier 1 — real outcome: `converted` = an actual order/conversion. Strongest; overrides
+ *            everything (e.g. DESIGN IN BLOOMS = Churned + converted=true → WON, not lost).
+ *   Tier 2 — human-marked tags on the account: tag_compro → won, tag_molesta_mala_orden →
+ *            lost. Tags beat lifecycle status (a "compro" tag wins over a stale Lost status).
+ *   Tier 3 — account/lead lifecycle status: Loyal / New Client → won; Lost / Churned → lost.
+ *   pending — everything else (lead funnel states: COLD / Bounced / SB - Recibido /
+ *             SB - Interested / SB - Qualified ... — NOT lost, just not yet closed).
+ * `combinedStatus` is account_status ?? lead_status — Tier-3 only; the lead funnel states
+ * trip neither won nor lost so they correctly fall to pending.
  */
 function classifyOutcome(
   row: {
@@ -112,23 +115,28 @@ function classifyOutcome(
   },
   combinedStatus: string | null,
 ): CloseStatus {
+  // Tier 1 — REAL outcome (an actual order/conversion). Overrides tags and status.
+  if (toBool(row.converted) === true) return 'won';
+  // Tier 2 — human-marked tags. Beat lifecycle status.
+  if (toBool(row.tag_compro) === true) return 'won';
+  if (toBool(row.tag_molesta_mala_orden) === true) return 'lost';
+  // Tier 3 — account/lead lifecycle status.
   const st = str(combinedStatus)?.toLowerCase() ?? '';
-  if (
-    st.includes('loyal') ||
-    st.includes('new client') ||
-    toBool(row.converted) === true ||
-    toBool(row.tag_compro) === true
-  )
-    return 'won';
-  if (
-    st.includes('lost') ||
-    st.includes('churned') ||
-    toBool(row.tag_molesta_mala_orden) === true
-  )
-    return 'lost';
-  // pending: lead funnel states (COLD / Bounced / SB - Recibido / SB - Interested / ...)
-  // all land here — not yet closed.
+  if (st.includes('loyal') || st.includes('new client')) return 'won';
+  if (st.includes('lost') || st.includes('churned')) return 'lost';
+  // pending: lead funnel states + everything unmatched — not yet closed.
   return 'pending';
+}
+
+/**
+ * isAmbiguousName — placeholder/shared business names that must NOT be used as a call-join key.
+ * INTERIM guard (Pita FAIL): 'TBD' is a shared placeholder that fans out (4 samples × 38 calls
+ * = 152 spurious call attributions). The real fix is joining v_je_call_analysis by
+ * lead_master_id once Rose exposes it; until then we drop these names from the name-join.
+ */
+function isAmbiguousName(name: string): boolean {
+  const n = name.trim().toLowerCase();
+  return n === '' || n === 'tbd' || n === 'n/a' || n === 'na' || n === 'unknown' || n === '(sin nombre)';
 }
 
 // ---------------------------------------------------------------------------
@@ -350,7 +358,9 @@ export async function getSentSamplesTracking(
     const lid = toNum(r.lead_master_id);
     if (lid !== null && !leadIds.includes(lid)) leadIds.push(lid);
     const bn = str(r.business_name);
-    if (bn && !businessNames.includes(bn)) businessNames.push(bn);
+    // Interim: drop ambiguous/placeholder names ('TBD' etc.) from the call-join key set —
+    // they fan out spurious call attributions (Pita FAIL). Real fix = join by lead_master_id.
+    if (bn && !isAmbiguousName(bn) && !businessNames.includes(bn)) businessNames.push(bn);
   }
 
   // ------------------------------------------------------------------
