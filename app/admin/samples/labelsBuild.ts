@@ -1,5 +1,5 @@
 // Sample labels builder — FedEx 26-column import format.
-// v2 | 2026-06-10 | Job_PM (CPO)
+// v3 | 2026-06-11 | Job_PM (CPO) — EC-3: capRef() limits REF to 30 chars at token boundary (Pita B4-C3)
 //
 // Reads BACKUP sample_review_loop approved/aligned boxes + PROD v_flora_cohort
 // addresses + BACKUP box_master_mirror verified FedEx dims.
@@ -217,6 +217,14 @@ function normalizeBoxFamily(boxType: string | null): string | null {
  *  spaces/punctuation collapse to '_'. e.g. "ECO ROSES" -> "ECO_ROSES", "Cool Water" -> "COOL_WATER". */
 function normRef(s: string): string {
   return s.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+/** Limit a REF string to FedEx's 30-char max (Pita EC-3), cutting at the last '-' boundary
+ *  that fits. Never cuts mid-token. If the first token alone exceeds 30, hard-cuts at 30. */
+function capRef(ref: string): string {
+  if (ref.length <= 30) return ref;
+  let cut = ref.lastIndexOf('-', 30);
+  return cut > 0 ? ref.slice(0, cut) : ref.slice(0, 30);
 }
 
 /** Describe the BOX CONTENTS for the REF field (Facu spec 2026-06-11): the description must
@@ -655,7 +663,7 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       // no-spaces (Pita B4-C2). CONTENTS describes what's IN the box (ASSORTED, or the exact
       // varieties when specific) so the vendor packs the right thing.
       const vendorPart = normRef(vendorName || 'VENDOR');
-      const ref = `${effectiveDateRef}-${vendorPart}-${contentsDesc(editedContents)}`;
+      const ref = capRef(`${effectiveDateRef}-${vendorPart}-${contentsDesc(editedContents)}`);
 
       const notes = notesParts.join(' | ');
 
