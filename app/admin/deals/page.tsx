@@ -11,6 +11,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getBoxTypes, searchClients, getMinGpm } from '@/lib/deal/data';
 import DealBuilderClient from './_components/DealBuilderClient';
 import DealsQueue, { type PendingDeal } from './_components/DealsQueue';
+import DealsCreatedLog, { type CreatedDeal } from './_components/DealsCreatedLog';
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 
 async function getPendingDeals(): Promise<PendingDeal[]> {
@@ -34,6 +35,37 @@ async function getPendingDeals(): Promise<PendingDeal[]> {
         totalPrice: d.total_price != null ? Number(d.total_price) : null,
         blendedGpm: d.blended_gpm != null ? Number(d.blended_gpm) : null,
         createdBy: (d.created_by ?? null) as string | null,
+        belowFloor: Boolean(d.below_floor),
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+// MVP 1.2: full ledger of created deals (any status) so Facu sees what the team built.
+async function getCreatedDeals(): Promise<CreatedDeal[]> {
+  try {
+    const svc = getBackupServiceClient();
+    const { data } = await svc
+      .from('deals')
+      .select('id, client_snapshot, deal_type, cadence, total_price, blended_gpm, created_by, below_floor, approval_status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (!Array.isArray(data)) return [];
+    return data.map((d: Record<string, unknown>) => {
+      const snap = (d.client_snapshot ?? {}) as Record<string, unknown>;
+      const name = (snap.businessName ?? snap.name ?? null) as string | null;
+      return {
+        id: Number(d.id),
+        businessName: name,
+        dealType: (d.deal_type ?? null) as string | null,
+        cadence: (d.cadence ?? null) as string | null,
+        totalPrice: d.total_price != null ? Number(d.total_price) : null,
+        blendedGpm: d.blended_gpm != null ? Number(d.blended_gpm) : null,
+        createdBy: (d.created_by ?? null) as string | null,
+        approvalStatus: (d.approval_status ?? null) as string | null,
+        createdAt: (d.created_at ?? null) as string | null,
         belowFloor: Boolean(d.below_floor),
       };
     });
@@ -74,17 +106,18 @@ export default async function DealBuilderPage() {
   }
 
   // --- Server-side initial data -----------------------------------------------
-  const [boxTypes, initialClients, pendingDeals, minGpm] = await Promise.all([
+  const [boxTypes, initialClients, pendingDeals, createdDeals, minGpm] = await Promise.all([
     getBoxTypes(),
     searchClients(''),
     getPendingDeals(),
+    getCreatedDeals(),
     getMinGpm(),
   ]);
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-[12px] font-medium text-amber-800">
-        MVP &mdash; JJ: probalo end-to-end y dejanos feedback (arma un deal, baja el precio, envialo). Aun no conectado a pago/order.
+        MVP 1.2 &mdash; JJ: probalo end-to-end y dejanos feedback (arma un deal, baja el precio, envialo). Aun no conectado a pago/order; output al cliente = doable after.
       </div>
       <div className="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6">
         <SurfaceStatusBanner surfaceKey="deals" />
@@ -94,6 +127,9 @@ export default async function DealBuilderPage() {
           <DealsQueue initial={pendingDeals} />
         </div>
       )}
+      <div className="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6">
+        <DealsCreatedLog deals={createdDeals} />
+      </div>
       <DealBuilderClient initialClients={initialClients.slice(0, 15)} boxTypes={boxTypes} minGpm={minGpm} />
     </div>
   );
