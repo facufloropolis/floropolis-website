@@ -254,6 +254,44 @@ function FloraCard({
           )}
         </div>
 
+        {/* Aprendizajes de llamadas (REAL — del call analysis, no key_quote) */}
+        {row.callLearnings && (
+          <div className="rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                Aprendizajes de llamadas
+              </span>
+              {row.callLearnings.leadQuality && (
+                <span
+                  className={
+                    'text-[10px] font-bold uppercase rounded-full px-2 py-0.5 border ' +
+                    (/(hot|high)/i.test(row.callLearnings.leadQuality)
+                      ? 'border-rose-200 bg-rose-50 text-rose-700'
+                      : /(warm|med)/i.test(row.callLearnings.leadQuality)
+                        ? 'border-amber-200 bg-amber-50 text-amber-700'
+                        : 'border-slate-200 bg-slate-100 text-slate-500')
+                  }
+                >
+                  {row.callLearnings.leadQuality}
+                </span>
+              )}
+              <span className="text-[11px] text-slate-400 tabular-nums">
+                {row.callLearnings.callsCount} llamada{row.callLearnings.callsCount === 1 ? '' : 's'}
+                {row.callLearnings.lastCallDate ? ` · ult. ${row.callLearnings.lastCallDate.slice(0, 10)}` : ''}
+              </span>
+            </div>
+            <div className="text-[12px] text-slate-600 leading-snug">
+              {[
+                row.callLearnings.lastOutcome ? `Resultado: ${row.callLearnings.lastOutcome}` : null,
+                row.callLearnings.objection ? `Objecion: ${row.callLearnings.objection}` : null,
+                row.callLearnings.nextAction ? `Proxima: ${row.callLearnings.nextAction}` : null,
+              ]
+                .filter(Boolean)
+                .join(' · ') || 'sin senal clara todavia'}
+            </div>
+          </div>
+        )}
+
         {/* Mandar + Hipotesis (compact) */}
         <div className="text-[13px] text-slate-700 leading-relaxed">
           <span className="font-medium text-slate-600">Mandar: </span>

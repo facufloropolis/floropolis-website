@@ -1019,6 +1019,18 @@ export interface FloraCohortRow {
   // True when this account already has an approved box in BACKUP sample_review_loop
   // (status='aligned' OR facu_decision='yes') — so the card shows "ya aprobada".
   approved: boolean;
+  // Real learnings from the call analysis (v_je_call_analysis, joined by business_name —
+  // anon-readable, does NOT depend on the lead_master_id mapping). Null when no calls.
+  callLearnings: CallLearnings | null;
+}
+
+export interface CallLearnings {
+  callsCount: number;
+  lastCallDate: string | null;
+  leadQuality: string | null; // hot / warm / cold / dead — the latest non-null
+  lastOutcome: string | null; // quote_requested / callback_scheduled / not_interested / ...
+  objection: string | null; // latest non-null objection
+  nextAction: string | null; // latest non-null next_action
 }
 
 /**
@@ -1123,6 +1135,59 @@ async function resolveLeadMasterIds(
 }
 
 /**
+ * getCallLearnings — real call-analysis learnings per account from v_je_call_analysis
+ * (anon-readable view, joined by business_name — does NOT need the lead_master_id mapping).
+ * For each account: count of calls + the LATEST non-null lead_quality / outcome / objection /
+ * next_action + last call date. Degrades to empty Map on any error.
+ */
+async function getCallLearnings(accountNames: string[]): Promise<Map<string, CallLearnings>> {
+  const out = new Map<string, CallLearnings>();
+  if (accountNames.length === 0) return out;
+  const prod = getProdReadClient();
+  if (!prod) return out;
+  const wanted = new Set(accountNames.map((n) => n.trim().toLowerCase()));
+  try {
+    // Pull the analyzed calls (most recent first) and group by business_name in JS — the
+    // view keys by business_name, which matches the FLORA account names case-insensitively.
+    const { data, error } = await prod
+      .from('v_je_call_analysis')
+      .select('business_name, lead_quality, outcome, objection, next_action, call_date')
+      .not('business_name', 'is', null)
+      .order('call_date', { ascending: false })
+      .limit(8000);
+    if (error || !Array.isArray(data)) return out;
+    for (const r of data as Array<Record<string, unknown>>) {
+      const name = s(r.business_name);
+      if (!name) continue;
+      const key = name.toLowerCase();
+      if (!wanted.has(key)) continue;
+      const prev = out.get(key);
+      if (!prev) {
+        // First (latest) row for this account.
+        out.set(key, {
+          callsCount: 1,
+          lastCallDate: s(r.call_date),
+          leadQuality: s(r.lead_quality),
+          lastOutcome: s(r.outcome),
+          objection: s(r.objection),
+          nextAction: s(r.next_action),
+        });
+      } else {
+        prev.callsCount += 1;
+        // Back-fill the latest non-null signal as we walk older rows.
+        if (!prev.leadQuality) prev.leadQuality = s(r.lead_quality);
+        if (!prev.lastOutcome) prev.lastOutcome = s(r.outcome);
+        if (!prev.objection) prev.objection = s(r.objection);
+        if (!prev.nextAction) prev.nextAction = s(r.next_action);
+      }
+    }
+  } catch {
+    /* degrade: empty map */
+  }
+  return out;
+}
+
+/**
  * getFloraQualifiedCohort — the FLORA-qualified accounts ready to review for a sample box,
  * ranked by FLORA score desc. Reads PROD zoho_accounts directly (read-only). NULL-safe:
  * if the PROD client is unconfigured or the query fails, returns []. The front of the
@@ -1172,6 +1237,9 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
       /* degrade: no approved markers */
     }
 
+    // Real call-analysis learnings per account (anon view, joined by business_name).
+    const callMap = await getCallLearnings(nullNameAccounts);
+
     const rows: FloraCohortRow[] = [];
     for (const r of rawRows) {
       const accountName = s(r.account_name) || '(unknown account)';
@@ -1217,6 +1285,7 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
         sampleRequestedAt: s(r.sample_requested_at),
         currentSbStatus: s(r.current_sb_status),
         approved: approvedNames.has(accountName.trim().toLowerCase()),
+        callLearnings: callMap.get(accountName.trim().toLowerCase()) ?? null,
       });
     }
     return rows;
