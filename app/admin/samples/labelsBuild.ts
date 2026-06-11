@@ -213,9 +213,31 @@ function normalizeBoxFamily(boxType: string | null): string | null {
   return t;
 }
 
-/** Describe the box for the REF field (e.g. "QB" from box_type "QB" or "QUARTER BOX"). */
-function boxDesc(boxType: string): string {
-  return boxType.trim().toUpperCase();
+/** Normalize a token for the REF field — uppercase, NO spaces (FedEx REF rule, Pita B4-C2):
+ *  spaces/punctuation collapse to '_'. e.g. "ECO ROSES" -> "ECO_ROSES", "Cool Water" -> "COOL_WATER". */
+function normRef(s: string): string {
+  return s.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+/** Describe the BOX CONTENTS for the REF field (Facu spec 2026-06-11): the description must
+ *  come from what we prepare for dispatch, so the vendor packs the right thing.
+ *  - No specific contents pinned -> "ASSORTED" (generic sample).
+ *  - Specific varieties requested -> the varieties, normalized + joined by '+', so the vendor
+ *    knows EXACTLY what goes in (critical for real orders). Capped to keep the REF concise. */
+function contentsDesc(contents: Array<{ variety: string; stems: number }>): string {
+  if (contents.length === 0) return 'ASSORTED';
+  const seen = new Set<string>();
+  const parts: string[] = [];
+  for (const c of contents) {
+    const n = normRef(c.variety);
+    if (n && !seen.has(n)) {
+      seen.add(n);
+      parts.push(n);
+    }
+  }
+  if (parts.length === 0) return 'ASSORTED';
+  const capped = parts.slice(0, 3);
+  return capped.join('+') + (parts.length > capped.length ? '+ETC' : '');
 }
 
 // ---------------------------------------------------------------------------
@@ -291,6 +313,36 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
         }
       } catch {
         // PROD read is best-effort; if it fails we still emit rows with ADDRESS MISSING
+      }
+    }
+
+    // 3b) Fetch lead_master.contact_name for the CONTACT field (best-effort; falls back to
+    // business_name). contact_name is sparsely populated (~12.6%); the business_name fallback is
+    // FedEx B2B standard and carries no customs/operational risk (Pita cert 2026-06-11 Block 3 PASS).
+    const contactNameByLead: Record<number, string> = {};
+    const leadIds = Array.from(
+      new Set(
+        loopRows
+          .map((r) => (typeof r.lead_master_id === 'number' ? r.lead_master_id : null))
+          .filter((x): x is number => x !== null),
+      ),
+    );
+    if (leadIds.length > 0) {
+      try {
+        const prod = getProdReadClient();
+        if (prod) {
+          const { data: lmRaw } = await prod
+            .from('lead_master')
+            .select('id, contact_name')
+            .in('id', leadIds);
+          for (const r of (lmRaw ?? []) as Array<Record<string, unknown>>) {
+            const id = typeof r.id === 'number' ? r.id : null;
+            const cn = typeof r.contact_name === 'string' ? r.contact_name.trim() : '';
+            if (id != null && cn) contactNameByLead[id] = cn;
+          }
+        }
+      } catch {
+        // best-effort; CONTACT falls back to business_name
       }
     }
 
@@ -599,15 +651,18 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       const perBoxDateRef = rawPerBoxDate ? formatDispatchDateRef(rawPerBoxDate) : null;
       const effectiveDateRef = perBoxDateRef ?? dispatchDateRef;
 
-      const vendorPart = vendorName || 'VENDOR';
-      const ref = `${effectiveDateRef}-${vendorPart}-${boxDesc(rawBoxType)}`;
+      // REF = DDMMYY-VENDOR-CONTENTS (Facu spec 2026-06-11). VENDOR + CONTENTS normalized to
+      // no-spaces (Pita B4-C2). CONTENTS describes what's IN the box (ASSORTED, or the exact
+      // varieties when specific) so the vendor packs the right thing.
+      const vendorPart = normRef(vendorName || 'VENDOR');
+      const ref = `${effectiveDateRef}-${vendorPart}-${contentsDesc(editedContents)}`;
 
       const notes = notesParts.join(' | ');
 
       const labelRow: SampleLabelRow = {
         REC: rec,
         COMPANY: COMPANY_CONSTANT,
-        CONTACT: '',           // blank — we don't have individual contact name
+        CONTACT: (leadMasterId != null ? contactNameByLead[leadMasterId] : '') || businessName,
         ADR1: street,
         ADR2: '',              // always blank
         CITY: city,
