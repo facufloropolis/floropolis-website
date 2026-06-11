@@ -1,5 +1,5 @@
 // Sample Review admin model — types + DB read/compose helpers for the Sample Review surface.
-// v1 | 2026-06-09 | Job_PM (CPO)
+// v2 | 2026-06-11 | Job_PM (CPO) — readQualification + readTimeline: business_name→lead_master_id join (Pita v3)
 //
 // PURPOSE
 //   Data/logic layer behind the "Sample Review" admin surface. Reads the sample cohort
@@ -377,32 +377,20 @@ async function readQualification(
     ),
   );
 
-  // lead_quality from v_je_call_analysis (best non-null per lead).
+  // lead_quality from v_je_call_analysis — joined by lead_master_id (Pita PASS 2026-06-11 v3).
   if (leadIds.length) {
-    // v_je_call_analysis is keyed by call, not lead — it carries business_name not
-    // lead_master_id reliably. We fetch lead_quality via the calls/analysis path only if
-    // the view exposes a lead key; degrade silently otherwise. We attempt a join through
-    // the calls table's lead_master_id is not possible here, so we read the view's own
-    // lead_quality grouped by business_name as a directional fallback below.
     try {
       const { data } = await prod
         .from('v_je_call_analysis')
-        .select('business_name, lead_quality, call_date')
+        .select('lead_master_id, lead_quality, call_date')
+        .in('lead_master_id', leadIds)
         .order('call_date', { ascending: false });
       if (data) {
-        const byName = new Map<string, string>();
-        for (const r of data as Array<{ business_name: string | null; lead_quality: string | null }>) {
-          const name = s(r.business_name);
+        for (const r of data as Array<{ lead_master_id: number | null; lead_quality: string | null }>) {
+          const lid = typeof r.lead_master_id === 'number' ? r.lead_master_id : null;
           const lq = s(r.lead_quality);
-          if (name && lq && !byName.has(name.toLowerCase())) {
-            byName.set(name.toLowerCase(), lq);
-          }
-        }
-        for (const c of cohort) {
-          const name = s(c.business_name);
-          if (c.lead_master_id != null && name) {
-            const lq = byName.get(name.toLowerCase());
-            if (lq) leadQualityByLead.set(c.lead_master_id, lq);
+          if (lid !== null && lq && !leadQualityByLead.has(lid)) {
+            leadQualityByLead.set(lid, lq);
           }
         }
       }
@@ -494,12 +482,13 @@ async function readTimeline(leadMasterId: number): Promise<SampleCommsItem[]> {
     return [];
   }
 
-  // Enrich call items with analysis from v_je_call_analysis (matched directionally by
-  // call_date proximity to activity_at). Best-effort; failures leave analysis null.
+  // Enrich call items with analysis from v_je_call_analysis — joined by lead_master_id
+  // (Pita PASS 2026-06-11 v3). Proximity-match within 1d aligns call times.
   try {
     const { data } = await prod
       .from('v_je_call_analysis')
-      .select('call_date, direction, duration_seconds, outcome, objection, key_quote, lead_quality, pricing_discussed');
+      .select('lead_master_id, call_date, direction, duration_seconds, outcome, objection, key_quote, lead_quality, pricing_discussed')
+      .eq('lead_master_id', leadMasterId);
     if (data) {
       const analyses = (data as Array<{
         call_date: string | null;

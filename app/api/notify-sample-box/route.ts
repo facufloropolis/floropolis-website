@@ -290,7 +290,9 @@ export async function POST(req: NextRequest) {
     const emailSent = await sendInternalEmail(payload, requestId);
 
     // 3. Append to Google Sheet Tab 2: Sample Boxes (non-blocking)
-    appendSampleBoxToSheet(payload).catch((err) =>
+    appendSampleBoxToSheet(payload).then((ok) => {
+      if (!ok) console.error("[Sheets] appendSampleBoxToSheet returned false — check service-account share on sheet 1p0Ef-czUUExHMQgtfncbu5uvOHQI4_ugNmttxQ1HqCI");
+    }).catch((err) =>
       console.error("[Sheets] Sample box append failed:", err)
     );
 
