@@ -94,26 +94,40 @@ function addDays(d: Date, n: number): Date {
 
 export type CloseStatus = 'won' | 'lost' | 'pending';
 
-function classifyOutcome(row: {
-  account_status: string | null;
-  converted: unknown;
-  tag_compro: unknown;
-  tag_molesta_mala_orden: unknown;
-}): CloseStatus {
-  const acct = str(row.account_status)?.toLowerCase() ?? '';
+/**
+ * classifyOutcome — won/lost/pending from the COMBINED status (account_status for the ~31
+ * accounts, lead_status for the rest) + outcome tags.
+ *   won  = Loyal / New Client / converted / tag_compro
+ *   lost = Lost / Churned / molesta_mala_orden
+ *   pending = everything else (incl. lead funnel states: COLD / Bounced / SB - Recibido /
+ *             SB - Interested / SB - Qualified ... — these are NOT lost, just not yet closed)
+ * `combinedStatus` is account_status ?? lead_status — pass it so the lead funnel states are
+ * matched against the same won/lost rules (none of them trip won/lost → they fall to pending).
+ */
+function classifyOutcome(
+  row: {
+    converted: unknown;
+    tag_compro: unknown;
+    tag_molesta_mala_orden: unknown;
+  },
+  combinedStatus: string | null,
+): CloseStatus {
+  const st = str(combinedStatus)?.toLowerCase() ?? '';
   if (
-    acct.includes('loyal') ||
-    acct.includes('new client') ||
+    st.includes('loyal') ||
+    st.includes('new client') ||
     toBool(row.converted) === true ||
     toBool(row.tag_compro) === true
   )
     return 'won';
   if (
-    acct.includes('lost') ||
-    acct.includes('churned') ||
+    st.includes('lost') ||
+    st.includes('churned') ||
     toBool(row.tag_molesta_mala_orden) === true
   )
     return 'lost';
+  // pending: lead funnel states (COLD / Bounced / SB - Recibido / SB - Interested / ...)
+  // all land here — not yet closed.
   return 'pending';
 }
 
@@ -155,8 +169,12 @@ export interface SampleDeepDive {
 export interface SentSample {
   leadMasterId: number | null;
   businessName: string;
+  // Combined status: account_status (lifecycle, ~31 accounts) ?? lead_status (funnel,
+  // the rest) — e.g. 'Loyal' / 'SB - Interested' / 'SB - Qualified' / 'SB - Ready to Ship'
+  // / 'SB - Recibido (Follow Up)' / 'COLD' / 'Bounced' / 'Interested'. Coverage ~194/195.
+  status: string | null;
   closeStatus: CloseStatus;
-  sinMatch: boolean; // true when v_sample_outcome had no matching row
+  sinMatch: boolean; // true ONLY when no account_status AND no lead_status (almost never)
   heat: string | null; // latest lead_quality from calls
   // Dates
   requestAt: string | null;
@@ -265,6 +283,11 @@ interface CallAnalysisRaw {
   key_quote: string | null;
 }
 
+interface LeadStatusRaw {
+  lead_master_id: number | null;
+  lead_status: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Main reader
 // ---------------------------------------------------------------------------
@@ -333,7 +356,7 @@ export async function getSentSamplesTracking(
   // ------------------------------------------------------------------
   // 2. Fetch all supporting data in parallel (best-effort, degrade)
   // ------------------------------------------------------------------
-  const [outcomeData, statusEventData, emailEventData, callAnalysisData] = await Promise.all([
+  const [outcomeData, statusEventData, emailEventData, callAnalysisData, leadStatusData] = await Promise.all([
     // v_sample_outcome — by lead_master_id
     (async (): Promise<OutcomeRaw[]> => {
       if (leadIds.length === 0) return [];
@@ -405,6 +428,23 @@ export async function getSentSamplesTracking(
         return [];
       }
     })(),
+
+    // v_sample_review — lead_status by lead_master_id. This is the funnel status for the
+    // ~164 samples that are LEADS (not yet accounts): account_status only covers ~31/195,
+    // COALESCE(account_status, lead_status) = 194/195. Anon-readable view. Degrade to [].
+    (async (): Promise<LeadStatusRaw[]> => {
+      if (leadIds.length === 0) return [];
+      try {
+        const { data, error } = await prod
+          .from('v_sample_review')
+          .select('lead_master_id, lead_status')
+          .in('lead_master_id', leadIds);
+        if (error || !Array.isArray(data)) return [];
+        return data as unknown as LeadStatusRaw[];
+      } catch {
+        return [];
+      }
+    })(),
   ]);
 
   // ------------------------------------------------------------------
@@ -445,6 +485,14 @@ export async function getSentSamplesTracking(
     callsByName.get(bn)!.push(c);
   }
 
+  // lead_status by lead_master_id (funnel status for samples that are still leads)
+  const leadStatusByLead = new Map<number, string>();
+  for (const r of leadStatusData) {
+    const lid = toNum(r.lead_master_id);
+    const ls = str(r.lead_status);
+    if (lid !== null && ls && !leadStatusByLead.has(lid)) leadStatusByLead.set(lid, ls);
+  }
+
   // ------------------------------------------------------------------
   // 4. Assemble per-sample rows
   // ------------------------------------------------------------------
@@ -460,11 +508,24 @@ export async function getSentSamplesTracking(
     const emailEvents = lid !== null ? (emailEventsByLead.get(lid) ?? []) : [];
     const callRows = callsByName.get(bnKey) ?? [];
 
+    // ---- Combined status (account lifecycle OR lead funnel) ----
+    // account_status (~31 accounts) ?? lead_status from v_sample_review (the rest). ~194/195.
+    const accountStatus = outcome ? str(outcome.account_status) : null;
+    const leadStatus = lid !== null ? (leadStatusByLead.get(lid) ?? null) : null;
+    const status: string | null = accountStatus ?? leadStatus;
+
     // ---- WON/LOST/PENDING ----
-    const sinMatch = outcome === null;
-    const closeStatus: CloseStatus = outcome
-      ? classifyOutcome(outcome)
-      : 'pending';
+    // sinMatch ONLY when there is neither account_status nor lead_status (almost never).
+    const sinMatch = !status;
+    // classify against the combined status (outcome tags still apply even without a row).
+    const closeStatus: CloseStatus = classifyOutcome(
+      {
+        converted: outcome?.converted,
+        tag_compro: outcome?.tag_compro,
+        tag_molesta_mala_orden: outcome?.tag_molesta_mala_orden,
+      },
+      status,
+    );
 
     // ---- Dates ----
     const requestAt = str(tl.request_at);
@@ -648,6 +709,7 @@ export async function getSentSamplesTracking(
     samples.push({
       leadMasterId: lid,
       businessName,
+      status,
       closeStatus,
       sinMatch,
       heat,

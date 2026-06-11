@@ -163,6 +163,7 @@ function DeepDivePanel({ sample }: { sample: SentSample }) {
       {/* Enrichment card */}
       <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 text-xs text-slate-600 space-y-1.5">
         <div className="font-bold text-slate-700 mb-2">Enriquecimiento</div>
+        <EnrichRow label="Status" value={sample.status ?? 'sin status'} />
         <EnrichRow
           label="Le gusto la caja"
           value={
@@ -325,6 +326,11 @@ function SampleRow({ sample }: { sample: SentSample }) {
             >
               {closeLabel(sample.closeStatus)}
             </span>
+            {sample.status && (
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                {sample.status}
+              </span>
+            )}
             {sample.heat && (
               <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                 heat: {sample.heat}
