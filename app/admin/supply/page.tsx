@@ -769,9 +769,59 @@ export default async function SupplyEnginePage() {
                 Individuales (eje chico, no colapsable)
               </div>
             )}
-            {shown.map((row) => (
-              <VarietyCard key={`${lever}-${row.gapType}-${row.variety}`} row={row} lever={lever} />
-            ))}
+            {lever === 'image' ? (
+              (() => {
+                const prodReady = shown.filter(
+                  (r) => photoByVariety.get(r.variety.trim().toLowerCase())?.state === 'yes',
+                );
+                const pendingPhoto = shown.filter(
+                  (r) => photoByVariety.get(r.variety.trim().toLowerCase())?.state !== 'yes',
+                );
+                return (
+                  <>
+                    {prodReady.length > 0 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                            Foto PROD disponible — accion directa
+                          </span>
+                          <span className="text-[10px] tabular-nums text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                            {prodReady.length} variedad{prodReady.length === 1 ? '' : 'es'}
+                          </span>
+                        </div>
+                        {prodReady.map((row) => (
+                          <VarietyCard
+                            key={`${lever}-${row.gapType}-${row.variety}`}
+                            row={row}
+                            lever={lever}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {pendingPhoto.length > 0 && (
+                      <div className="space-y-3">
+                        {prodReady.length > 0 && (
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 pt-2">
+                            Pendiente (media kit / stock libre)
+                          </div>
+                        )}
+                        {pendingPhoto.map((row) => (
+                          <VarietyCard
+                            key={`${lever}-${row.gapType}-${row.variety}`}
+                            row={row}
+                            lever={lever}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()
+            ) : (
+              shown.map((row) => (
+                <VarietyCard key={`${lever}-${row.gapType}-${row.variety}`} row={row} lever={lever} />
+              ))
+            )}
           </div>
         )}
         {more > 0 && (
