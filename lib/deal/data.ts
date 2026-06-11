@@ -63,8 +63,8 @@ function arrToStr(v: unknown): string | null {
 }
 
 /**
- * searchClients — PROD v_sample_review joined to v_sample_engagement (+ florist_ecosystem
- * for interest_score) by lead_master_id. Filters by q over name/city.
+ * searchClients — PROD v_sample_review (+ florist_ecosystem for interest_score, calls table
+ * for talk duration) by lead_master_id. Filters by q over name/city.
  * source='sample_box' for sample-origin rows. Returns [] if PROD client unavailable.
  */
 export async function searchClients(q: string): Promise<ClientLite[]> {
@@ -95,21 +95,19 @@ export async function searchClients(q: string): Promise<ClientLite[]> {
       .map((r) => num((r as Record<string, unknown>).lead_master_id))
       .filter((x): x is number => x !== null);
 
-    // Engagement (talk seconds + touchpoints) keyed by lead_master_id.
-    const engByLead = new Map<number, { talk: number | null; touch: number | null }>();
+    // Talk duration (connected calls > 10s) keyed by lead_master_id, sourced directly from calls table.
+    const talkByLead = new Map<number, number>();
     if (ids.length) {
-      const { data: eng } = await prod
-        .from('v_sample_engagement')
-        .select('lead_master_id, calls_duration_total_s, touchpoints_total')
-        .in('lead_master_id', ids);
-      if (Array.isArray(eng)) {
-        for (const e of eng as Record<string, unknown>[]) {
-          const id = num(e.lead_master_id);
+      const { data: callsData } = await prod
+        .from('calls')
+        .select('lead_master_id, duration_seconds')
+        .in('lead_master_id', ids)
+        .gt('duration_seconds', 10);
+      if (Array.isArray(callsData)) {
+        for (const c of callsData as Record<string, unknown>[]) {
+          const id = num(c.lead_master_id);
           if (id !== null) {
-            engByLead.set(id, {
-              talk: num(e.calls_duration_total_s),
-              touch: num(e.touchpoints_total),
-            });
+            talkByLead.set(id, (talkByLead.get(id) ?? 0) + (num(c.duration_seconds) ?? 0));
           }
         }
       }
@@ -132,8 +130,7 @@ export async function searchClients(q: string): Promise<ClientLite[]> {
 
     return (data as Record<string, unknown>[]).map((r) => {
       const leadId = num(r.lead_master_id);
-      const eng = leadId !== null ? engByLead.get(leadId) : undefined;
-      const touchpoints = eng?.touch ?? num(r.fe_touchpoints_total) ?? num(r.fe_call_count);
+      const touchpoints = num(r.fe_touchpoints_total) ?? num(r.fe_call_count);
       return {
         id: leadId !== null ? String(leadId) : `sr_${str(r.business_name) ?? 'unknown'}`,
         leadMasterId: leadId,
@@ -145,7 +142,7 @@ export async function searchClients(q: string): Promise<ClientLite[]> {
         heat: str(r.sb_qualification),
         interestScore: leadId !== null ? interestByLead.get(leadId) ?? null : null,
         interactions: touchpoints,
-        talkSeconds: eng?.talk ?? null,
+        talkSeconds: leadId !== null ? (talkByLead.get(leadId) ?? null) : null,
       } satisfies ClientLite;
     });
   } catch {
@@ -198,14 +195,15 @@ export async function getClientIntel(leadMasterId: number): Promise<ClientIntel 
     if (error || !review) return null;
     const r = review as unknown as Record<string, unknown>;
 
-    // Engagement.
-    const { data: engRow } = await prod
-      .from('v_sample_engagement')
-      .select('calls_duration_total_s, touchpoints_total')
+    // Talk duration (connected calls > 10s), sourced directly from calls table.
+    const { data: callsData } = await prod
+      .from('calls')
+      .select('duration_seconds')
       .eq('lead_master_id', leadMasterId)
-      .limit(1)
-      .maybeSingle();
-    const eng = (engRow as Record<string, unknown> | null) ?? null;
+      .gt('duration_seconds', 10);
+    const callsDurationS = Array.isArray(callsData)
+      ? (callsData as Record<string, unknown>[]).reduce((s, c) => s + (num(c.duration_seconds) ?? 0), 0)
+      : null;
 
     // Outcome (converted + revenue).
     const { data: outRow } = await prod
@@ -245,8 +243,7 @@ export async function getClientIntel(leadMasterId: number): Promise<ClientIntel 
     const zip = str(sbs?.ship_zip) ?? str(r.ship_zip);
     const phone = str(r.phone) ?? str(sbs?.ship_phone);
     const objections = str(r.sb_objections_raw) ?? str(r.sb_objection);
-    const touchpoints =
-      num(eng?.touchpoints_total) ?? num(r.fe_touchpoints_total) ?? num(r.fe_call_count);
+    const touchpoints = num(r.fe_touchpoints_total) ?? num(r.fe_call_count);
 
     return {
       id: String(leadMasterId),
@@ -259,7 +256,7 @@ export async function getClientIntel(leadMasterId: number): Promise<ClientIntel 
       heat: str(r.sb_qualification),
       interestScore: num(fe?.interest_score),
       interactions: touchpoints,
-      talkSeconds: num(eng?.calls_duration_total_s),
+      talkSeconds: callsDurationS,
       address: address ?? DASH,
       zip: zip ?? DASH,
       email: strOrDash(r.email),
