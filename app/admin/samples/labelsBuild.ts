@@ -585,8 +585,22 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       // REF = "DDMMYY-VENDOR-BOXDESC"
       // NOTE: date-digit convention (DDMMYY vs DDMMYYYY) to confirm with Facu;
       // his example was 6-digit "270405-ECOROSES".
+      //
+      // Per-box dispatch_date preference:
+      //   If proposed_composition.dispatch_date is present and matches YYYY-MM-DD,
+      //   use it as this box's REF date segment instead of the global date+1.
+      //   This lets the CEO reschedule individual boxes (or the whole batch via
+      //   POST /api/admin/samples/reschedule) and have FedEx labels reflect it.
+      //   The global dispatchDateRef remains the fallback when no per-box date is set.
+      const rawPerBoxDate =
+        comp && typeof comp.dispatch_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(comp.dispatch_date.trim())
+          ? comp.dispatch_date.trim()
+          : null;
+      const perBoxDateRef = rawPerBoxDate ? formatDispatchDateRef(rawPerBoxDate) : null;
+      const effectiveDateRef = perBoxDateRef ?? dispatchDateRef;
+
       const vendorPart = vendorName || 'VENDOR';
-      const ref = `${dispatchDateRef}-${vendorPart}-${boxDesc(rawBoxType)}`;
+      const ref = `${effectiveDateRef}-${vendorPart}-${boxDesc(rawBoxType)}`;
 
       const notes = notesParts.join(' | ');
 

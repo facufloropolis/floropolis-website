@@ -11,6 +11,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { ApprovedBox } from '@/app/api/admin/samples/approved-boxes/route';
+import DispatchDateControl from '@/app/admin/dispatch/DispatchDateControl';
 
 // ---------------------------------------------------------------------------
 // Readiness helpers
@@ -92,6 +93,26 @@ function SampleRow({ box }: { box: ApprovedBox }) {
   const cajaOk = hasCaja(box);
   const contenidoOk = hasContenido(box);
 
+  // Manual vendor confirmation (JJ/Facu): the vendor confirmed they have the contents.
+  const [vendorOk, setVendorOk] = useState(box.vendorConfirmed);
+  const [vbusy, setVbusy] = useState(false);
+  async function toggleVendor() {
+    if (vbusy) return;
+    setVbusy(true);
+    const next = !vendorOk;
+    try {
+      const res = await fetch('/api/admin/samples/approved-boxes', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id: box.id, patch: { vendorConfirmed: next } }),
+      });
+      if (res.ok) setVendorOk(next);
+    } catch {
+      /* keep prior state on error */
+    }
+    setVbusy(false);
+  }
+
   return (
     <div className="border border-slate-200 rounded-xl p-4 bg-white">
       {/* Top row: name + score + readiness badge */}
@@ -122,7 +143,20 @@ function SampleRow({ box }: { box: ApprovedBox }) {
         <Chip label="Direccion" ok={addrOk} />
         <Chip label="Caja" ok={cajaOk} />
         <Chip label="Contenido" ok={contenidoOk} />
-        <Chip label="validar con vendor que tiene el contenido" amber />
+        <button
+          type="button"
+          onClick={toggleVendor}
+          disabled={vbusy}
+          title={vendorOk ? 'Vendor confirmado — click para desmarcar' : 'Marcar que el vendor confirmo el contenido'}
+          className={[
+            'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border transition-colors disabled:opacity-50',
+            vendorOk
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
+              : 'bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100',
+          ].join(' ')}
+        >
+          {vbusy ? '...' : vendorOk ? 'v Vendor confirmo' : 'Marcar: vendor confirmo'}
+        </button>
       </div>
 
       {/* Missing notification */}
@@ -197,6 +231,9 @@ export default function DispatchSamplesPanel() {
 
   return (
     <section className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-6">
+      {/* Dispatch date rescheduler — set / move the batch date before downloading labels */}
+      <DispatchDateControl />
+
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
         <h2 className="text-base font-semibold text-slate-800">
@@ -256,7 +293,7 @@ export default function DispatchSamplesPanel() {
       {/* Vendor note */}
       {status === 'ok' && boxes.length > 0 && (
         <p className="text-[11px] text-slate-400 mt-4 leading-relaxed">
-          El chip "validar con vendor" es siempre pendiente — confirmar manualmente que el vendor tiene el contenido antes del envio.
+          "Marcar: vendor confirmo" es manual (JJ o Facu) — confirma que el vendor tiene el contenido antes del envio. Queda registrado con quien y cuando.
         </p>
       )}
     </section>

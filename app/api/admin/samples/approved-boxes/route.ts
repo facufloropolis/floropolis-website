@@ -106,6 +106,9 @@ export interface ApprovedBox {
   ship: { street: string; city: string; state: string; zip: string } | null;
   notes: string;
   addressSource: 'edited' | 'parsed' | 'missing';
+  // Manual vendor confirmation (JJ/Facu mark that the vendor confirmed they have the
+  // contents we want to send). Stored in proposed_composition.vendor_confirmed.
+  vendorConfirmed: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -231,6 +234,7 @@ export async function GET(): Promise<NextResponse> {
         ship,
         notes,
         addressSource,
+        vendorConfirmed: comp?.vendor_confirmed === true,
       });
     }
 
@@ -251,6 +255,7 @@ interface PatchBody {
     contents?: unknown;
     ship?: unknown;
     notes?: unknown;
+    vendorConfirmed?: unknown;
   };
 }
 
@@ -325,6 +330,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (typeof patch.notes === 'string') {
       merged.notes = patch.notes.slice(0, 2000); // hard cap
+    }
+
+    if (typeof patch.vendorConfirmed === 'boolean') {
+      merged.vendor_confirmed = patch.vendorConfirmed;
+      merged.vendor_confirmed_by = patch.vendorConfirmed ? auth.email : null;
+      merged.vendor_confirmed_at = patch.vendorConfirmed ? new Date().toISOString() : null;
     }
 
     const nowIso = new Date().toISOString();
