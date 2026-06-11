@@ -375,10 +375,17 @@ export function normalizePublishStatus(v: string | null | undefined): PublishSta
   return 'blocked';
 }
 
+// GPM target — single source of truth for the display bands + "GPM ok" checks. Mirrors
+// pricing_constants.gpm_target (the value the pricing formula price = cost/(1-gpm) actually
+// uses). Changed 0.33 -> 0.34 (Facu 2026-06-08 config change). When the CEO changes
+// gpm_target, update this constant too so the bands never show a stale threshold.
+export const GPM_TARGET = 0.34;
+export const GPM_AMBER_FLOOR = 0.25;
+
 export function gpmBandFor(gpm: number | null): GpmBand | null {
   if (gpm == null) return null;
-  if (gpm >= 0.33) return 'green';
-  if (gpm >= 0.25) return 'amber';
+  if (gpm >= GPM_TARGET) return 'green';
+  if (gpm >= GPM_AMBER_FLOOR) return 'amber';
   return 'red';
 }
 

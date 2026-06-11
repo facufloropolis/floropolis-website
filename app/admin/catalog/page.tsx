@@ -81,6 +81,8 @@ import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import {
   buildCatalog,
   gpmBandFor,
+  GPM_TARGET,
+  GPM_AMBER_FLOOR,
   GPM_BAND_CLS,
   VISIBILITY_BADGE_CLS,
   PUBLICATION_STATUS_CLS,
@@ -1190,7 +1192,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </td>
                         <td className="px-4 py-2 text-right">
                           {v.avgGpm != null ? (
-                            <span className={v.avgGpm >= 0.33 ? 'text-emerald-700' : v.avgGpm >= 0.25 ? 'text-amber-700' : 'text-red-600'}>
+                            <span className={v.avgGpm >= GPM_TARGET ? 'text-emerald-700' : v.avgGpm >= GPM_AMBER_FLOOR ? 'text-amber-700' : 'text-red-600'}>
                               {(v.avgGpm * 100).toFixed(1)}%
                             </span>
                           ) : <span className="text-slate-300">—</span>}

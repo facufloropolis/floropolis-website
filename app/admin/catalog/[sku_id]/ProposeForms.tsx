@@ -18,6 +18,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { GPM_TARGET } from '@/lib/admin/catalog-model';
 
 interface ProposalResponse {
   proposal?: { id?: string };
@@ -379,8 +380,8 @@ export function PriceCorrectionForm({
   const minPrice = hasCosts && totalCosts > 0 ? totalCosts / 0.95 : null;
 
   const gpmBelowFloor = gpm != null && gpm < 0.05;
-  const gpmBelowTarget = gpm != null && gpm >= 0.05 && gpm < 0.33;
-  const gpmOk = gpm != null && gpm >= 0.33;
+  const gpmBelowTarget = gpm != null && gpm >= 0.05 && gpm < GPM_TARGET;
+  const gpmOk = gpm != null && gpm >= GPM_TARGET;
   const reasonOk = reason.trim().length >= 20;
   const canSubmit =
     !gpmBelowFloor && hasCosts && reasonOk && Number.isFinite(newPrice) && newPrice > 0;

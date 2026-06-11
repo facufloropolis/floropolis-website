@@ -1626,7 +1626,7 @@ async function execIngestPriceFieldBug(
       rule: {
         action: 'apply_formula_price',
         formula: 'farm_cost / (1 - GPM) + ceil(fedex_chargeable_kg) * fedex_rate * fuel_surcharge / stems_per_box',
-        inputs_source: { farm_cost: 'canonical_cost.facu_approved', box: 'box_master', gpm: 0.33, fedex_rate: 6.50, fuel_surcharge: 1.25 },
+        inputs_source: { farm_cost: 'canonical_cost.facu_approved', box: 'box_master', gpm: 'pricing_constants.gpm_target', fedex_rate: 6.50, fuel_surcharge: 1.25 },
       },
       approved_by: 'facu',
       source_proposal_id: proposal.id,
