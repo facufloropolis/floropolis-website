@@ -1,15 +1,12 @@
-// Sample Review -- Facu's weekly review of the samples JJ proposes to dispatch.
-// v1 | 2026-06-09 | Job_PM (CPO)
+// Sample Review -- DECIDIR: review the FLORA cohort + approve. Nothing else.
+// v2 | 2026-06-11 | Job_PM (CPO)
 //
-// Reads the REAL cohort (PROD sample_box_status WHERE sb_status='SB_READY') plus
-// engagement/comms/qualification (PROD, read-only, directional pending Rose's
-// certified views) via lib/admin/sample-review. Loop state (decision / question
-// to JJ / answer / learning) lives in the BACKUP project. JJ answers at
-// /admin/samples/jj (JJ is already an admin email).
+// TWO-TAB MODEL:
+//   Samples (/admin/samples) = DECIDIR: review the FLORA-qualified + approve.
+//   Dispatch (/admin/dispatch) = el hub por periodo (Planificadas + Enviadas).
 //
-// Auth mirrors /admin/cohort-review (ADMIN_EMAILS or client_profiles.status='admin').
-// Directional v1: hypotheses + composition are Job-computed from real signal only;
-// no invented scores. The dataNote banner is rendered per-row by the deep-dive.
+// REMOVED from this surface: ApprovedBoxesEditor, LabelsForTomorrow, seguimiento mockup.
+// Those live in /admin/dispatch (DispatchHub).
 
 export const dynamic = 'force-dynamic';
 
@@ -25,12 +22,8 @@ import {
   type SampleReviewRow,
 } from '@/lib/admin/sample-review';
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
-import SamplesReviewClient from './_components/SamplesReviewClient';
 import FloraCohortPanel from './_components/FloraCohortPanel';
-import LabelsForTomorrow from './_components/LabelsForTomorrow';
-import ApprovedBoxesEditor from './_components/ApprovedBoxesEditor';
 import RefreshCohort from './_components/RefreshCohort';
-import { getBoxTypes } from '@/lib/deal/data';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -65,9 +58,6 @@ async function requireAdmin() {
 export default async function SamplesReviewPage() {
   await requireAdmin();
 
-  // Box types for the ApprovedBoxesEditor <select> (from BACKUP box_master_mirror).
-  const boxTypes = await getBoxTypes();
-
   // Front of the loop: accounts JJ qualified with a real FLORA score, ready to review.
   const floraCohort = await getFloraQualifiedCohort();
   // An empty cohort is ambiguous: genuinely no qualified accounts vs the PROD read
@@ -94,60 +84,37 @@ export default async function SamplesReviewPage() {
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
             Sample Review
-            <span className="text-slate-400 font-medium"> &middot; lo que JJ propone para dispatch</span>
+            <span className="text-slate-400 font-medium"> &middot; revisar y aprobar</span>
           </h1>
           <p className="text-[13px] text-slate-500 mt-1.5 max-w-2xl leading-relaxed">
-            Por cada calificado: por que es buena apuesta, que caja mandarle + la
-            hipotesis a probar, y la recomendacion de Job. Aproba &rarr; se crea la
-            caja para el dispatch de manana y baja el Excel de labels.
+            Por cada calificado FLORA: por que es buena apuesta, que caja mandarle +
+            hipotesis a probar. Aproba &rarr; pasa a Dispatch para programar el envio.
           </p>
         </div>
         <div className="shrink-0 flex items-center gap-2">
-        <RefreshCohort />
-        <Link
-          href="/admin/samples/jj"
-          className="shrink-0 inline-flex items-center gap-1.5 text-sm font-medium rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors"
-        >
-          Vista JJ
-          {openQuestions > 0 ? (
-            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-sky-100 text-sky-700 text-[11px] font-bold tabular-nums">
-              {openQuestions}
-            </span>
-          ) : null}
-        </Link>
+          <RefreshCohort />
+          <Link
+            href="/admin/samples/jj"
+            className="shrink-0 inline-flex items-center gap-1.5 text-sm font-medium rounded-lg border border-slate-200 px-3 py-1.5 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors"
+          >
+            Vista JJ
+            {openQuestions > 0 ? (
+              <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-sky-100 text-sky-700 text-[11px] font-bold tabular-nums">
+                {openQuestions}
+              </span>
+            ) : null}
+          </Link>
+          <Link
+            href="/admin/dispatch"
+            className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold rounded-lg bg-emerald-600 px-3 py-1.5 text-white hover:bg-emerald-700 transition-colors"
+          >
+            Ir a Dispatch
+          </Link>
         </div>
       </div>
 
-      {/* Front of the loop: review the FLORA-qualified before the boxed/dispatched below. */}
+      {/* Front of the loop: review the FLORA-qualified. Approve here -> moves to Dispatch hub. */}
       <FloraCohortPanel rows={floraCohort} prodBlocked={prodBlocked} />
-
-      {/* Approved boxes: editable layer — JJ/Facu fill address, box type, contents before dispatch. */}
-      {/* MUST sit ABOVE LabelsForTomorrow so labelsBuild can read the edited values. */}
-      <div className="mt-8">
-        <ApprovedBoxesEditor boxTypes={boxTypes} />
-      </div>
-
-      {/* Approve -> labels for tomorrow's send (built from our BACKUP-approved boxes). */}
-      <div className="mt-6">
-        <LabelsForTomorrow />
-      </div>
-
-      {/* SEGUIMIENTO de enviadas: use case DIFERIDO. Mockup, NO validado, fuera de
-          alpha hasta tener las labels de manana andando. Marcado honesto. */}
-      <section className="mt-10">
-        <div className="mb-3 flex items-center gap-2 rounded-lg border border-dashed border-violet-300 bg-violet-50 px-3 py-2">
-          <span className="text-[10px] font-bold uppercase tracking-wide rounded bg-violet-200 text-violet-800 px-1.5 py-0.5">
-            Mockup &mdash; no validado
-          </span>
-          <span className="text-[12px] text-violet-800">
-            Seguimiento de muestras enviadas: en diseno, fuera de alpha hasta cerrar approvals + labels.
-            La data de outcome (entrega, ganamos/perdimos, fotos) todavia no esta cargada.
-          </span>
-        </div>
-        <div className="opacity-70">
-          <SamplesReviewClient rows={rows} />
-        </div>
-      </section>
     </main>
   );
 }

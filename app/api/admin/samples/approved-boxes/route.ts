@@ -1,13 +1,22 @@
 // GET  /api/admin/samples/approved-boxes — list approved-pending boxes with editable fields.
 // POST /api/admin/samples/approved-boxes — patch a box's editable fields into proposed_composition.
-// v1 | 2026-06-10 | Job_PM (CPO)
+// v2 | 2026-06-11 | Job_PM (CPO)
 //
 // SOURCE: BACKUP public.sample_review_loop rows where status='aligned' OR facu_decision='yes'.
 // Editable fields live in proposed_composition (jsonb):
-//   box_type    — string (box family / legacy_box_type code)
-//   contents    — array of { variety: string; stems: number }
-//   ship_address — { street, city, state, zip }
-//   notes       — free-text comment
+//   box_type         — string (box family / legacy_box_type code)
+//   contents         — array of { variety: string; stems: number }
+//   ship_address     — { street, city, state, zip }
+//   notes            — free-text comment
+//   dispatch_date    — 'YYYY-MM-DD' — planned send date (null = tomorrow default)
+//   sent             — boolean — was this box dispatched?
+//   sent_date        — 'YYYY-MM-DD' — date it was actually sent (set when sent=true)
+//
+// GET query params (all optional):
+//   ?from=YYYY-MM-DD&to=YYYY-MM-DD — date range filter (inclusive)
+//   ?phase=planned — only NOT-sent boxes whose effective date is within [from,to]
+//   ?phase=sent    — only sent boxes whose sent_date is within [from,to]
+//   (no params = return all, existing behavior)
 //
 // GET address fallback: if proposed_composition.ship_address is absent, parse
 // PROD v_flora_cohort.description "CONFIRMED ADDRESS:" by zoho_id (anon read via
@@ -18,6 +27,7 @@
 //
 // POST merges the patch into proposed_composition (preserving unrelated keys),
 // sets updated_by + updated_at. Admin-guarded (mirrors create-box auth).
+// POST also accepts patch.sent (boolean): sets sent + sent_date (today when true).
 //
 // NULL-safe: never 500. Returns { boxes: [], error } on any unexpected failure.
 
@@ -109,15 +119,48 @@ export interface ApprovedBox {
   // Manual vendor confirmation (JJ/Facu mark that the vendor confirmed they have the
   // contents we want to send). Stored in proposed_composition.vendor_confirmed.
   vendorConfirmed: boolean;
+  // Dispatch scheduling fields
+  dispatchDate: string | null;  // proposed_composition.dispatch_date ('YYYY-MM-DD'); null = tomorrow default
+  sent: boolean;                // proposed_composition.sent === true
+  sentDate: string | null;      // proposed_composition.sent_date ('YYYY-MM-DD')
+}
+
+// ---------------------------------------------------------------------------
+// Date helpers
+// ---------------------------------------------------------------------------
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function tomorrowIso(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+// Compare YYYY-MM-DD strings: returns true if date is within [from, to] inclusive.
+// All three must be valid 'YYYY-MM-DD' strings.
+function isInRange(date: string, from: string, to: string): boolean {
+  return date >= from && date <= to;
 }
 
 // ---------------------------------------------------------------------------
 // GET
 // ---------------------------------------------------------------------------
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const auth = await requireAdmin();
     if (!auth.ok) return auth.response;
+
+    // Parse optional query params
+    const url = new URL(req.url);
+    const fromParam = url.searchParams.get('from') ?? null;
+    const toParam = url.searchParams.get('to') ?? null;
+    const phaseParam = url.searchParams.get('phase') ?? null; // 'planned' | 'sent' | null
+    const validDate = /^\d{4}-\d{2}-\d{2}$/;
+    const from = fromParam && validDate.test(fromParam) ? fromParam : null;
+    const to = toParam && validDate.test(toParam) ? toParam : null;
+    const phase = phaseParam === 'planned' || phaseParam === 'sent' ? phaseParam : null;
 
     let svc;
     try { svc = getBackupServiceClient(); } catch {
@@ -223,6 +266,13 @@ export async function GET(): Promise<NextResponse> {
 
       const notes = comp && typeof comp.notes === 'string' ? comp.notes : '';
 
+      // Dispatch scheduling fields
+      const dispatchDate = comp && typeof comp.dispatch_date === 'string' && validDate.test(comp.dispatch_date)
+        ? comp.dispatch_date : null;
+      const sent = comp?.sent === true;
+      const sentDate = comp && typeof comp.sent_date === 'string' && validDate.test(comp.sent_date)
+        ? comp.sent_date : null;
+
       boxes.push({
         id: String(row.id),
         businessName: typeof row.business_name === 'string' ? row.business_name.trim() : '',
@@ -235,10 +285,33 @@ export async function GET(): Promise<NextResponse> {
         notes,
         addressSource,
         vendorConfirmed: comp?.vendor_confirmed === true,
+        dispatchDate,
+        sent,
+        sentDate,
       });
     }
 
-    return NextResponse.json({ boxes, error: null });
+    // Apply phase + date-range filter when requested
+    let filtered = boxes;
+    if (phase !== null && from !== null && to !== null) {
+      if (phase === 'planned') {
+        // NOT sent, effective date (dispatch_date or tomorrow default) within [from, to]
+        filtered = boxes.filter((b) => {
+          if (b.sent) return false;
+          const effectiveDate = b.dispatchDate ?? tomorrowIso();
+          return isInRange(effectiveDate, from, to);
+        });
+      } else {
+        // phase === 'sent': sent boxes whose sent_date is within [from, to]
+        filtered = boxes.filter((b) => {
+          if (!b.sent) return false;
+          const sd = b.sentDate ?? todayIso();
+          return isInRange(sd, from, to);
+        });
+      }
+    }
+
+    return NextResponse.json({ boxes: filtered, error: null });
   } catch (err) {
     console.error('[approved-boxes GET] unexpected:', err);
     return NextResponse.json({ boxes: [], error: 'internal_error' });
@@ -256,6 +329,8 @@ interface PatchBody {
     ship?: unknown;
     notes?: unknown;
     vendorConfirmed?: unknown;
+    dispatchDate?: unknown;  // 'YYYY-MM-DD' | null
+    sent?: unknown;          // boolean — marks box as dispatched; sets sent_date to today
   };
 }
 
@@ -336,6 +411,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       merged.vendor_confirmed = patch.vendorConfirmed;
       merged.vendor_confirmed_by = patch.vendorConfirmed ? auth.email : null;
       merged.vendor_confirmed_at = patch.vendorConfirmed ? new Date().toISOString() : null;
+    }
+
+    // dispatch_date: 'YYYY-MM-DD' or null
+    if (patch.dispatchDate !== undefined) {
+      const vd = /^\d{4}-\d{2}-\d{2}$/;
+      merged.dispatch_date = typeof patch.dispatchDate === 'string' && vd.test(patch.dispatchDate)
+        ? patch.dispatchDate : null;
+    }
+
+    // sent: marks the box as dispatched; records sent_date (today) and sent_by
+    if (typeof patch.sent === 'boolean') {
+      merged.sent = patch.sent;
+      if (patch.sent) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        merged.sent_date = todayStr;
+        merged.sent_by = auth.email;
+        merged.sent_at = new Date().toISOString();
+      } else {
+        // Un-marking: clear the sent metadata
+        merged.sent_date = null;
+        merged.sent_by = null;
+        merged.sent_at = null;
+      }
     }
 
     const nowIso = new Date().toISOString();

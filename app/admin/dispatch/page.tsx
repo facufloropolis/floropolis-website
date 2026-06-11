@@ -1,6 +1,5 @@
-// Admin dispatch — daily dispatch manifest, rebuilt to match the approved
-// mockup at /mockups/admin-dispatch (3-panel layout + Rose pipeline stepper).
-// v5 | 2026-06-09 | Job_PM dispatch-mockup-rebuild
+// Admin dispatch — el hub por periodo: Planificadas + Enviadas + manifest PROD.
+// v6 | 2026-06-11 | Job_PM (CPO) two-tab model
 //
 // WHAT CHANGED (vs v4 tab-based surface):
 //   - Restored the mockup's 3-panel layout: Today's Dispatch | Communications |
@@ -34,9 +33,7 @@ import { createBackupServerClient as createUserClient } from '@/lib/supabase/bac
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
-import DispatchSamplesPanel from './DispatchSamplesPanel';
-import ApprovedBoxesEditor from '../samples/_components/ApprovedBoxesEditor';
-import LabelsForTomorrow from '../samples/_components/LabelsForTomorrow';
+import DispatchHub from './DispatchHub';
 import { getBoxTypes } from '@/lib/deal/data';
 import DispatchDateNav from './DispatchDateNav';
 import DispatchPipelineStepper from './DispatchPipelineStepper';
@@ -169,15 +166,10 @@ export default async function AdminDispatchPage({ searchParams }: PageProps) {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
       <SurfaceStatusBanner surfaceKey="dispatch" />
-      <DispatchSamplesPanel />
 
-      {/* Samples preparadas para manana: EDITABLE (direccion/caja/contenido) + descarga
-          del CSV FedEx, en dispatch (no read-only). Reusa los componentes de samples. */}
-      <div className="mb-6">
-        <ApprovedBoxesEditor boxTypes={boxTypes} />
-      </div>
+      {/* Dispatch hub: period selector + Planificadas + Enviadas */}
       <div className="mb-8">
-        <LabelsForTomorrow />
+        <DispatchHub boxTypes={boxTypes} />
       </div>
 
       {/* Header */}
