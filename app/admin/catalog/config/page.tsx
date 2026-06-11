@@ -27,6 +27,7 @@ import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import WiringSection from '@/components/admin/WiringSection';
 import SurfaceStatusBanner from '../../_components/SurfaceStatusBanner';
 import CanonicalCostsPanel from './_components/CanonicalCostsPanel';
+import PriceSnapshotPanel from './_components/PriceSnapshotPanel';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import {
@@ -223,6 +224,7 @@ export default async function AdminCatalogConfigPage({
     qualityThresholdsRes,
     qualityPropsRes,
     importancePropsRes,
+    priceHistoryCountRes,
   ] = await Promise.all([
     backup
       .from('box_master_mirror')
@@ -296,6 +298,9 @@ export default async function AdminCatalogConfigPage({
       .in('type', ['importance_config.weight_update', 'importance_config.variety_update'])
       .eq('status', 'awaiting_facu')
       .order('proposed_at', { ascending: false }),
+    backup
+      .from('price_history')
+      .select('*', { count: 'exact', head: true }),
   ]);
 
   if (boxesRes.error) console.error('[admin/catalog/config] box_master:', boxesRes.error);
@@ -309,9 +314,13 @@ export default async function AdminCatalogConfigPage({
   if (qualityThresholdsRes.error) console.error('[admin/catalog/config] quality_thresholds:', qualityThresholdsRes.error);
   if (qualityPropsRes.error) console.error('[admin/catalog/config] quality proposals:', qualityPropsRes.error);
   if (importancePropsRes.error) console.error('[admin/catalog/config] importance proposals:', importancePropsRes.error);
+  if (priceHistoryCountRes.error) console.error('[admin/catalog/config] price_history count:', priceHistoryCountRes.error);
 
   const boxes = (boxesRes.data ?? []) as BoxMasterRow[];
   const constants = (constantsRes.data ?? []) as PricingConstantRow[];
+  const priceHistoryCount = priceHistoryCountRes.count ?? 0;
+  const gpmConstant = constants.find((c) => c.id === 'gpm_target' && c.market === 'US') ?? null;
+  const currentGpm = gpmConstant?.value_numeric != null ? Number(gpmConstant.value_numeric) : null;
   const ships = (shipsRes.data ?? []) as ShippingConfigRow[];
   const windows = (windowsRes.data ?? []) as TierVisibilityWindowRow[];
   const pricingProps = (pricingPropsRes.data ?? []) as AdminProposalRow[];
@@ -448,6 +457,8 @@ export default async function AdminCatalogConfigPage({
               proposals={pricingProps}
               totalSkus={totalSkus}
               fmtDate={fmtDate}
+              priceHistoryCount={priceHistoryCount}
+              currentGpm={currentGpm}
             />
           </WiringSection>
         )}
@@ -735,12 +746,16 @@ function PricingPanel({
   proposals,
   totalSkus,
   fmtDate,
+  priceHistoryCount,
+  currentGpm,
 }: {
   tab: TabKey;
   constants: PricingConstantRow[];
   proposals: AdminProposalRow[];
   totalSkus: number;
   fmtDate: (iso: string | null) => string;
+  priceHistoryCount: number;
+  currentGpm: number | null;
 }) {
   if (tab === 'proposed') {
     if (proposals.length === 0) {
@@ -800,6 +815,9 @@ function PricingPanel({
   };
   return (
     <>
+      {/* Price snapshot panel (GPM change / loop health) */}
+      <PriceSnapshotPanel priceHistoryCount={priceHistoryCount} currentGpm={currentGpm} />
+
       {/* Source provenance bar */}
       <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
         <span>Source: <code className="font-mono">public.pricing_constants</code></span>

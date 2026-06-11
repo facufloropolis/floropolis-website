@@ -29,7 +29,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import { getProdRealPhotoMap, normVariety } from '@/app/admin/supply/_recData';
+import { getProdAllPhotosMap, normVariety } from '@/app/admin/supply/_recData';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -60,24 +60,43 @@ async function requireAdmin(): Promise<AuthOk | AuthFail> {
 }
 
 // ---------------------------------------------------------------------------
-// (a) PROD photo
+// (a) PROD photo(s)
 // ---------------------------------------------------------------------------
 
 interface ProdPhoto {
   state: 'yes' | 'no' | 'unknown';
-  url: string | null;
+  url: string | null; // first URL for backward compat
 }
 
-async function getProdPhoto(vNorm: string): Promise<ProdPhoto> {
-  let realMap: Map<string, string> | null;
+interface ProdPhotos {
+  state: 'yes' | 'no' | 'unknown';
+  urls: string[]; // all available real http URLs (deduped, max 6)
+}
+
+async function getProdPhotos(vNorm: string): Promise<{ prodPhoto: ProdPhoto; prodPhotos: ProdPhotos }> {
+  let allMap: Map<string, string[]> | null;
   try {
-    realMap = await getProdRealPhotoMap();
+    allMap = await getProdAllPhotosMap();
   } catch {
-    realMap = null;
+    allMap = null;
   }
-  if (realMap === null) return { state: 'unknown', url: null };
-  const url = realMap.get(vNorm) ?? null;
-  return url ? { state: 'yes', url } : { state: 'no', url: null };
+  if (allMap === null) {
+    return {
+      prodPhoto: { state: 'unknown', url: null },
+      prodPhotos: { state: 'unknown', urls: [] },
+    };
+  }
+  const urls = allMap.get(vNorm) ?? [];
+  if (urls.length === 0) {
+    return {
+      prodPhoto: { state: 'no', url: null },
+      prodPhotos: { state: 'no', urls: [] },
+    };
+  }
+  return {
+    prodPhoto: { state: 'yes', url: urls[0] },
+    prodPhotos: { state: 'yes', urls },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -179,7 +198,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'invalid_variety' }, { status: 400 });
   }
 
-  const prodPhoto = await getProdPhoto(vNorm);
+  const { prodPhoto, prodPhotos } = await getProdPhotos(vNorm);
   const free = freeStockCandidates(variety);
   const ai = aiRung();
 
@@ -187,7 +206,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   // exists (one-click apply), else free leads, else AI when wired, else the
   // un-gettable path (queue an ask_vendor / send_sample request).
   const recommendedRung =
-    prodPhoto.state === 'yes'
+    prodPhotos.state === 'yes'
       ? 'prod_photo'
       : free.length > 0
         ? 'free_stock'
@@ -197,7 +216,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json({
     variety,
-    prodPhoto, // (a) REAL url when state==='yes'
+    prodPhoto,   // (a) backward-compat single-photo shape
+    prodPhotos,  // (a) new: ALL real http URLs for the gallery (deduped, max 6)
     freeCandidates: free, // (b) verifiable free-stock SEARCH leads
     ai, // (c) honest AI rung availability flag
     recommendedRung,

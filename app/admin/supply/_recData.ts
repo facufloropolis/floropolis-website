@@ -238,6 +238,58 @@ export async function getProdRealPhotoMap(): Promise<Map<string, string> | null>
   }
 }
 
+// Build a Map from normalized-variety -> ALL real http PROD photo URLs (deduped,
+// max 6). Unlike getProdRealPhotoMap which keeps only the first (freshest) URL,
+// this accumulates all distinct real-http URLs across every row for the variety.
+// Same PROD query and realHttpUrl guard — no placeholder paths, no fabrication.
+// Returns null when PROD is unreachable.
+export async function getProdAllPhotosMap(): Promise<Map<string, string[]> | null> {
+  const prod = getProdReadClient();
+  if (!prod) return null;
+
+  try {
+    const { data, error } = await prod
+      .from('floropolis_inventory')
+      .select('variety, images, scrape_date')
+      .not('variety', 'is', null)
+      .order('scrape_date', { ascending: false, nullsFirst: false })
+      .limit(10000);
+    if (error || !data) return null;
+
+    const map = new Map<string, string[]>();
+    for (const row of data as { variety: string | null; images: unknown }[]) {
+      const key = normVariety(row.variety);
+      if (!key) continue;
+      // Collect ALL real http URLs from this row's images field.
+      const urls: string[] = [];
+      if (Array.isArray(row.images)) {
+        for (const el of row.images) {
+          const u = realHttpUrl(el);
+          if (u) urls.push(u);
+        }
+      } else {
+        const u = realHttpUrl(row.images);
+        if (u) urls.push(u);
+      }
+      if (urls.length === 0) continue;
+      const existing = map.get(key) ?? [];
+      for (const u of urls) {
+        if (!existing.includes(u) && existing.length < 6) {
+          existing.push(u);
+        }
+      }
+      map.set(key, existing);
+    }
+    return map;
+  } catch {
+    return null;
+  }
+}
+
+// Make realHttpUrl accessible to sibling files that need to extract individual
+// URLs from JSONB (e.g. the image-candidates route). It is already used above.
+export { realHttpUrl as extractRealHttpUrl };
+
 /**
  * Discover, for each variety, whether a REAL PROD product photo exists (an http
  * URL — never a local placeholder path). Source: PROD floropolis_inventory

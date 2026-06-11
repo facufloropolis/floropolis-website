@@ -42,9 +42,14 @@ interface AiRung {
   provider: string | null;
   reason: string;
 }
+interface ProdPhotos {
+  state: 'yes' | 'no' | 'unknown';
+  urls: string[];
+}
 interface CandidatesResponse {
   variety: string;
   prodPhoto: ProdPhoto;
+  prodPhotos?: ProdPhotos; // new: all available PROD photos for the gallery
   freeCandidates: FreeCandidate[];
   ai: AiRung;
   recommendedRung: string;
@@ -306,41 +311,92 @@ export default function ImageSolution({ variety, prodPhotoHint, mode = 'gap' }: 
 
           {cand && (
             <>
-              {/* (a) PROD photo — real thumbnail, one-click apply */}
-              {cand.prodPhoto.state === 'yes' && cand.prodPhoto.url ? (
-                <div className="rounded-xl border border-emerald-200 bg-white p-3">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 mb-2">
-                    PROD (foto real en registro)
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={cand.prodPhoto.url}
-                      alt={`${variety} (PROD)`}
-                      className="h-20 w-20 object-cover rounded-lg border border-slate-200"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[10px] text-slate-400 font-mono break-all">
-                        {cand.prodPhoto.url}
+              {/* (a) PROD photos — gallery of all available real thumbnails */}
+              {(() => {
+                // Prefer the new prodPhotos array; fall back to the single-photo shape.
+                const hasGallery =
+                  cand.prodPhotos?.state === 'yes' && (cand.prodPhotos.urls?.length ?? 0) > 0;
+                const hasSingle = !hasGallery && cand.prodPhoto.state === 'yes' && !!cand.prodPhoto.url;
+
+                if (hasGallery && cand.prodPhotos) {
+                  const urls = cand.prodPhotos.urls;
+                  return (
+                    <div className="rounded-xl border border-emerald-200 bg-white p-3">
+                      <div className="flex items-baseline justify-between mb-2">
+                        <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
+                          PROD (fotos reales en registro)
+                        </div>
+                        {urls.length > 1 && (
+                          <div className="text-[10px] text-slate-400">
+                            {urls.length} fotos disponibles &mdash; la mejor primera
+                          </div>
+                        )}
                       </div>
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void apply(cand.prodPhoto.url as string, 'prod_photo')}
-                        className="mt-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2 rounded-xl shadow-sm transition-colors disabled:opacity-50"
-                      >
-                        {busy ? 'Aplicando...' : 'Poner esta'}
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        {urls.map((url, idx) => (
+                          <div key={url} className="flex flex-col items-center gap-1">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={url}
+                              alt={`${variety} PROD foto ${idx + 1}`}
+                              className="h-20 w-20 object-cover rounded-lg border border-slate-200"
+                            />
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => void apply(url, 'prod_photo')}
+                              className="text-[10px] font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1 rounded-lg shadow-sm transition-colors disabled:opacity-50"
+                            >
+                              {busy ? '...' : 'Poner esta'}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                  );
+                }
+
+                if (hasSingle && cand.prodPhoto.url) {
+                  // Backward-compat: server returned only the single-photo shape.
+                  return (
+                    <div className="rounded-xl border border-emerald-200 bg-white p-3">
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 mb-2">
+                        PROD (foto real en registro)
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={cand.prodPhoto.url}
+                          alt={`${variety} (PROD)`}
+                          className="h-20 w-20 object-cover rounded-lg border border-slate-200"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[10px] text-slate-400 font-mono break-all">
+                            {cand.prodPhoto.url}
+                          </div>
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => void apply(cand.prodPhoto.url as string, 'prod_photo')}
+                            className="mt-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2 rounded-xl shadow-sm transition-colors disabled:opacity-50"
+                          >
+                            {busy ? 'Aplicando...' : 'Poner esta'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // No PROD photo available.
+                return (
+                  <div className="rounded-xl border border-slate-100 bg-white px-3 py-2 text-[11px] text-slate-400">
+                    {cand.prodPhoto.state === 'unknown'
+                      ? 'PROD no verificable ahora -> usar stock libre o pedir'
+                      : 'Sin foto PROD real -> elegir de stock libre o pedir'}
                   </div>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-slate-100 bg-white px-3 py-2 text-[11px] text-slate-400">
-                  {cand.prodPhoto.state === 'unknown'
-                    ? 'PROD no verificable ahora -> usar stock libre o pedir'
-                    : 'Sin foto PROD real -> elegir de stock libre o pedir'}
-                </div>
-              )}
+                );
+              })()}
 
               {/* (b) free stock leads — open search, paste chosen url back */}
               {cand.freeCandidates.length > 0 && (
