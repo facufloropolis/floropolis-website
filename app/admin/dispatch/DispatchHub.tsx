@@ -24,6 +24,7 @@ import DispatchPeriod from './DispatchPeriod';
 import ApprovedBoxesEditor from '../samples/_components/ApprovedBoxesEditor';
 import LabelsForTomorrow from '../samples/_components/LabelsForTomorrow';
 import DispatchDateControl from './DispatchDateControl';
+import SentSamplesTracking from './SentSamplesTracking';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -200,49 +201,6 @@ function PlannedBoxRow({
 }
 
 // ---------------------------------------------------------------------------
-// SentBoxRow — sent box card with honest tracking state
-// ---------------------------------------------------------------------------
-
-function SentBoxRow({ box }: { box: ApprovedBox }) {
-  return (
-    <div className="border border-slate-200 rounded-xl p-4 bg-white">
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-semibold text-slate-800 text-sm">{box.businessName || '--'}</span>
-          {box.floraScore !== null && (
-            <span className="text-xs font-medium bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded-full">
-              FLORA {box.floraScore}
-            </span>
-          )}
-        </div>
-        <span className="text-xs font-semibold bg-emerald-600 text-white px-2.5 py-1 rounded-full">
-          Enviada
-        </span>
-      </div>
-
-      <div className="mt-2 flex items-center gap-3 flex-wrap text-xs text-slate-500">
-        {box.sentDate && (
-          <span>
-            Enviada: <span className="font-medium text-slate-700">{fmtDate(box.sentDate)}</span>
-          </span>
-        )}
-        {box.ship && (
-          <span className="text-slate-400">
-            {[box.ship.street, box.ship.city, box.ship.state].filter(Boolean).join(', ')}
-          </span>
-        )}
-      </div>
-
-      <div className="mt-2 flex items-center gap-1.5">
-        <span className="inline-flex items-center text-xs text-slate-400 bg-slate-50 border border-slate-200 rounded-full px-2.5 py-0.5">
-          Tracking: pendiente (Rose)
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // DispatchHub
 // ---------------------------------------------------------------------------
 
@@ -268,7 +226,6 @@ export default function DispatchHub({ boxTypes }: Props) {
   }, []);
 
   const [plannedState, setPlannedState] = useState<FetchState>({ status: 'idle', boxes: [], error: null });
-  const [sentState, setSentState] = useState<FetchState>({ status: 'idle', boxes: [], error: null });
 
   const fetchPlanned = useCallback((f: string, t: string) => {
     if (!f || !t) return;
@@ -283,26 +240,12 @@ export default function DispatchHub({ boxTypes }: Props) {
       });
   }, []);
 
-  const fetchSent = useCallback((f: string, t: string) => {
-    if (!f || !t) return;
-    setSentState((s) => ({ ...s, status: 'loading' }));
-    fetch(`/api/admin/samples/approved-boxes?phase=sent&from=${f}&to=${t}`, { cache: 'no-store' })
-      .then(async (res) => {
-        const json = (await res.json()) as { boxes: ApprovedBox[]; error: string | null };
-        setSentState({ status: 'ok', boxes: json.boxes ?? [], error: json.error ?? null });
-      })
-      .catch((err: unknown) => {
-        setSentState({ status: 'error', boxes: [], error: err instanceof Error ? err.message : String(err) });
-      });
-  }, []);
-
   // Fetch when period changes
   useEffect(() => {
     if (from && to) {
       fetchPlanned(from, to);
-      fetchSent(from, to);
     }
-  }, [from, to, fetchPlanned, fetchSent]);
+  }, [from, to, fetchPlanned]);
 
   function handlePeriodChange(newFrom: string, newTo: string) {
     setFrom(newFrom);
@@ -310,11 +253,9 @@ export default function DispatchHub({ boxTypes }: Props) {
   }
 
   function handleSent(boxId: string) {
-    // Move the box from planned to sent by re-fetching both
-    fetchPlanned(from, to);
-    fetchSent(from, to);
-    // Also remove from local planned state optimistically
+    // Remove from planned state optimistically + re-fetch planned
     setPlannedState((s) => ({ ...s, boxes: s.boxes.filter((b) => b.id !== boxId) }));
+    fetchPlanned(from, to);
   }
 
   return (
@@ -389,45 +330,20 @@ export default function DispatchHub({ boxTypes }: Props) {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* ENVIADAS                                                             */}
+      {/* ENVIADAS — 3-level DISPATCH CHECK STATUS                            */}
       {/* ------------------------------------------------------------------ */}
       <section>
         <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
           <div>
             <h2 className="text-base font-semibold text-slate-800">
-              Enviadas en el periodo
+              Enviadas — seguimiento de muestras
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Cajas marcadas como enviadas con fecha de envio dentro del periodo.
+              Tracking de muestras enviadas: outcome, interacciones y deep-dive por cliente.
             </p>
           </div>
-          {sentState.status === 'ok' && (
-            <span className="text-xs font-bold bg-slate-700 text-white px-3 py-1 rounded-full">
-              {sentState.boxes.length} enviada{sentState.boxes.length === 1 ? '' : 's'}
-            </span>
-          )}
         </div>
-
-        {sentState.status === 'loading' && (
-          <div className="text-sm text-slate-400 py-4 text-center animate-pulse">Cargando enviadas...</div>
-        )}
-        {sentState.status === 'error' && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
-            Error: {sentState.error ?? 'desconocido'}
-          </div>
-        )}
-        {sentState.status === 'ok' && sentState.boxes.length === 0 && (
-          <div className="text-sm text-slate-400 py-6 text-center border border-dashed border-slate-200 rounded-xl">
-            Sin cajas enviadas en este periodo.
-          </div>
-        )}
-        {sentState.status === 'ok' && sentState.boxes.length > 0 && (
-          <div className="flex flex-col gap-3">
-            {sentState.boxes.map((box) => (
-              <SentBoxRow key={box.id} box={box} />
-            ))}
-          </div>
-        )}
+        {from && to && <SentSamplesTracking from={from} to={to} />}
       </section>
     </div>
   );
