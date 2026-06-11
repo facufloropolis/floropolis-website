@@ -128,17 +128,6 @@ function classifyOutcome(
   return 'pending';
 }
 
-/**
- * isAmbiguousName — placeholder/shared business names that must NOT be used as a call-join key.
- * INTERIM guard (Pita FAIL): 'TBD' is a shared placeholder that fans out (4 samples × 38 calls
- * = 152 spurious call attributions). The real fix is joining v_je_call_analysis by
- * lead_master_id once Rose exposes it; until then we drop these names from the name-join.
- */
-function isAmbiguousName(name: string): boolean {
-  const n = name.trim().toLowerCase();
-  return n === '' || n === 'tbd' || n === 'n/a' || n === 'na' || n === 'unknown' || n === '(sin nombre)';
-}
-
 // ---------------------------------------------------------------------------
 // Public types
 // ---------------------------------------------------------------------------
@@ -280,6 +269,7 @@ interface EmailEventRaw {
 }
 
 interface CallAnalysisRaw {
+  lead_master_id: number | null;
   business_name: string | null;
   call_date: string | null;
   direction: string | null;
@@ -353,14 +343,9 @@ export async function getSentSamplesTracking(
 
   // Collect identifiers
   const leadIds: number[] = [];
-  const businessNames: string[] = [];
   for (const r of timelineRows) {
     const lid = toNum(r.lead_master_id);
     if (lid !== null && !leadIds.includes(lid)) leadIds.push(lid);
-    const bn = str(r.business_name);
-    // Interim: drop ambiguous/placeholder names ('TBD' etc.) from the call-join key set —
-    // they fan out spurious call attributions (Pita FAIL). Real fix = join by lead_master_id.
-    if (bn && !isAmbiguousName(bn) && !businessNames.includes(bn)) businessNames.push(bn);
   }
 
   // ------------------------------------------------------------------
@@ -420,17 +405,18 @@ export async function getSentSamplesTracking(
       }
     })(),
 
-    // v_je_call_analysis — keyed by business_name (join by name)
+    // v_je_call_analysis — joined by lead_master_id (Rose exposed it + Pita PASS 2026-06-11,
+    // cert v2). Replaces the interim business_name name-join (fanned out 'TBD' etc.).
     (async (): Promise<CallAnalysisRaw[]> => {
-      if (businessNames.length === 0) return [];
+      if (leadIds.length === 0) return [];
       try {
         const { data, error } = await prod
           .from('v_je_call_analysis')
           .select(
-            'business_name, call_date, direction, duration_seconds, outcome, ' +
+            'lead_master_id, business_name, call_date, direction, duration_seconds, outcome, ' +
               'objection, lead_quality, next_action, key_quote',
           )
-          .in('business_name', businessNames)
+          .in('lead_master_id', leadIds)
           .order('call_date', { ascending: true });
         if (error || !Array.isArray(data)) return [];
         return data as unknown as CallAnalysisRaw[];
@@ -486,13 +472,13 @@ export async function getSentSamplesTracking(
     emailEventsByLead.get(lid)!.push(e);
   }
 
-  // calls by business_name (lowercase)
-  const callsByName = new Map<string, CallAnalysisRaw[]>();
+  // calls by lead_master_id (the certified join key)
+  const callsByLead = new Map<number, CallAnalysisRaw[]>();
   for (const c of callAnalysisData) {
-    const bn = str(c.business_name)?.toLowerCase();
-    if (!bn) continue;
-    if (!callsByName.has(bn)) callsByName.set(bn, []);
-    callsByName.get(bn)!.push(c);
+    const lid = toNum(c.lead_master_id);
+    if (lid === null) continue;
+    if (!callsByLead.has(lid)) callsByLead.set(lid, []);
+    callsByLead.get(lid)!.push(c);
   }
 
   // lead_status by lead_master_id (funnel status for samples that are still leads)
@@ -511,12 +497,11 @@ export async function getSentSamplesTracking(
   for (const tl of timelineRows) {
     const lid = toNum(tl.lead_master_id);
     const businessName = str(tl.business_name) ?? '(sin nombre)';
-    const bnKey = businessName.toLowerCase();
 
     const outcome = lid !== null ? outcomeByLead.get(lid) ?? null : null;
     const statusEvents = lid !== null ? (statusEventsByLead.get(lid) ?? []) : [];
     const emailEvents = lid !== null ? (emailEventsByLead.get(lid) ?? []) : [];
-    const callRows = callsByName.get(bnKey) ?? [];
+    const callRows = lid !== null ? (callsByLead.get(lid) ?? []) : [];
 
     // ---- Combined status (account lifecycle OR lead funnel) ----
     // account_status (~31 accounts) ?? lead_status from v_sample_review (the rest). ~194/195.

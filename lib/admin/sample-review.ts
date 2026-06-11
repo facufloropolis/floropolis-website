@@ -1135,42 +1135,34 @@ async function resolveLeadMasterIds(
 }
 
 /**
- * getCallLearnings — real call-analysis learnings per account from v_je_call_analysis
- * (anon-readable view, joined by business_name). INTERIM: ambiguous/placeholder names ('TBD'
- * etc.) are dropped from the join key set so they don't fan out spurious call attributions
- * (Pita FAIL). The real fix is joining by lead_master_id once Rose exposes it in the view.
- * For each account: count of calls + the LATEST non-null lead_quality / outcome / objection /
- * next_action + last call date. Degrades to empty Map on any error.
+ * getCallLearnings — real call-analysis learnings per lead from v_je_call_analysis, joined by
+ * lead_master_id (Rose exposed it + Pita PASS 2026-06-11 cert v2 — replaces the interim
+ * business_name name-join that fanned out 'TBD' etc.). For each lead: count of calls + the
+ * LATEST non-null lead_quality / outcome / objection / next_action + last call date. Keyed by
+ * lead_master_id. Degrades to empty Map on any error.
  */
-async function getCallLearnings(accountNames: string[]): Promise<Map<string, CallLearnings>> {
-  const out = new Map<string, CallLearnings>();
-  if (accountNames.length === 0) return out;
+async function getCallLearnings(leadIds: number[]): Promise<Map<number, CallLearnings>> {
+  const out = new Map<number, CallLearnings>();
+  if (leadIds.length === 0) return out;
   const prod = getProdReadClient();
   if (!prod) return out;
-  const AMBIGUOUS = new Set(['', 'tbd', 'n/a', 'na', 'unknown', '(sin nombre)']);
-  const wanted = new Set(
-    accountNames.map((n) => n.trim().toLowerCase()).filter((n) => !AMBIGUOUS.has(n)),
-  );
-  if (wanted.size === 0) return out;
   try {
-    // Pull the analyzed calls (most recent first) and group by business_name in JS — the
-    // view keys by business_name, which matches the FLORA account names case-insensitively.
+    // Pull the analyzed calls for these leads (most recent first) and group by lead_master_id.
     const { data, error } = await prod
       .from('v_je_call_analysis')
-      .select('business_name, lead_quality, outcome, objection, next_action, call_date')
-      .not('business_name', 'is', null)
+      .select('lead_master_id, lead_quality, outcome, objection, next_action, call_date')
+      .in('lead_master_id', leadIds)
       .order('call_date', { ascending: false })
       .limit(8000);
     if (error || !Array.isArray(data)) return out;
     for (const r of data as Array<Record<string, unknown>>) {
-      const name = s(r.business_name);
-      if (!name) continue;
-      const key = name.toLowerCase();
-      if (!wanted.has(key)) continue;
-      const prev = out.get(key);
+      const lidRaw = r.lead_master_id;
+      const lid = lidRaw != null && Number.isFinite(Number(lidRaw)) ? Number(lidRaw) : null;
+      if (lid === null) continue;
+      const prev = out.get(lid);
       if (!prev) {
-        // First (latest) row for this account.
-        out.set(key, {
+        // First (latest) row for this lead.
+        out.set(lid, {
           callsCount: 1,
           lastCallDate: s(r.call_date),
           leadQuality: s(r.lead_quality),
@@ -1243,8 +1235,20 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
       /* degrade: no approved markers */
     }
 
-    // Real call-analysis learnings per account (anon view, joined by business_name).
-    const callMap = await getCallLearnings(nullNameAccounts);
+    // Resolve each cohort row's lead_master_id (enriched view, else name-match fallback) so we
+    // can join call learnings by the certified key, not the business name.
+    const lidForRow = (r: Record<string, unknown>): number | null => {
+      const accountName = s(r.account_name) || '(unknown account)';
+      return r.lead_master_id != null && Number.isFinite(Number(r.lead_master_id))
+        ? Number(r.lead_master_id)
+        : (leadIdFallbackMap.get(accountName.trim().toLowerCase()) ?? null);
+    };
+    const cohortLeadIds = Array.from(
+      new Set(rawRows.map(lidForRow).filter((x): x is number => x !== null)),
+    );
+
+    // Real call-analysis learnings per lead (v_je_call_analysis, joined by lead_master_id).
+    const callMap = await getCallLearnings(cohortLeadIds);
 
     const rows: FloraCohortRow[] = [];
     for (const r of rawRows) {
@@ -1291,7 +1295,7 @@ export async function getFloraQualifiedCohort(): Promise<FloraCohortRow[]> {
         sampleRequestedAt: s(r.sample_requested_at),
         currentSbStatus: s(r.current_sb_status),
         approved: approvedNames.has(accountName.trim().toLowerCase()),
-        callLearnings: callMap.get(accountName.trim().toLowerCase()) ?? null,
+        callLearnings: leadMasterId != null ? (callMap.get(leadMasterId) ?? null) : null,
       });
     }
     return rows;
