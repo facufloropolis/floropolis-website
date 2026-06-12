@@ -22,6 +22,11 @@ export interface DedupMember {
   signalScore: number; // commercial weight of THIS lead
 }
 
+export interface DedupSuggestion {
+  decision: 'MERGE_ALL' | 'KEEP_CHAIN' | 'KEEP_SEPARATE';
+  reason: string;
+}
+
 export interface DedupGroup {
   groupKey: string; // shared_email
   reviewReason: string | null;
@@ -30,6 +35,7 @@ export interface DedupGroup {
   members: DedupMember[];
   decided: boolean; // already decided (in BACKUP dedup_decisions)
   decision: string | null;
+  suggestion: DedupSuggestion | null; // pre-analyzed recommendation (Facu confirms/overrides)
 }
 
 // Commercial weight of a lead's worked_signals. A sample sent = real prospect (strongest);
@@ -50,6 +56,44 @@ const str = (v: unknown): string | null => {
   const s = String(v).trim();
   return s.length ? s : null;
 };
+
+function nameTokens(name: string): Set<string> {
+  return new Set(
+    name.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((t) => t.length > 3),
+  );
+}
+
+// Pre-analyze a group → a suggested decision Facu confirms or overrides. Heuristics from the
+// real data patterns: same city = likely DBA/same business; shared brand token across cities =
+// chain; different names + cities = separate. The protocol's intelligence layer.
+function suggestDecision(members: DedupMember[]): DedupSuggestion | null {
+  if (members.length < 2) return null;
+  const cities = new Set(members.map((m) => (m.city ?? '').trim().toLowerCase()).filter(Boolean));
+  // Shared brand token present in EVERY member's name.
+  let common: Set<string> | null = null;
+  for (const m of members) {
+    const t = nameTokens(m.businessName);
+    if (common === null) {
+      common = t;
+    } else {
+      const next = new Set<string>();
+      for (const x of common) if (t.has(x)) next.add(x);
+      common = next;
+    }
+  }
+  const brand = common && common.size > 0 ? Array.from(common)[0] : null;
+
+  if (cities.size === 1) {
+    return { decision: 'MERGE_ALL', reason: 'misma ciudad — probable mismo negocio o DBA' };
+  }
+  if (cities.size > 1) {
+    return brand
+      ? { decision: 'KEEP_CHAIN', reason: `mismo brand "${brand}" en varias ciudades — cadena` }
+      : { decision: 'KEEP_SEPARATE', reason: 'nombres y ciudades distintos — probablemente negocios distintos' };
+  }
+  // No city data: lean on a shared brand if any.
+  return brand ? { decision: 'MERGE_ALL', reason: `mismo brand "${brand}", sin conflicto de ciudad` } : null;
+}
 
 interface QueueRaw {
   lead_master_id: number | null;
@@ -122,6 +166,7 @@ export async function getDedupReviewQueue(): Promise<DedupGroup[]> {
         members: [],
         decided: decidedByKey.has(key),
         decision: decidedByKey.get(key) ?? null,
+        suggestion: null,
       };
       byKey.set(key, g);
     }
@@ -129,9 +174,11 @@ export async function getDedupReviewQueue(): Promise<DedupGroup[]> {
     g.importance += member.signalScore;
   }
 
-  // Sort each group's members by signal (the most-worked lead first = likely survivor).
+  // Sort each group's members by signal (the most-worked lead first = likely survivor) and
+  // compute the suggested decision (undecided groups only).
   for (const g of byKey.values()) {
     g.members.sort((a, b) => b.signalScore - a.signalScore);
+    g.suggestion = g.decided ? null : suggestDecision(g.members);
   }
 
   // Undecided first, then by importance desc.

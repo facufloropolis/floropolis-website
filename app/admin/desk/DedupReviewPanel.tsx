@@ -8,6 +8,12 @@
 import { useState } from 'react';
 import type { DedupGroup } from '@/lib/admin/dedup-review';
 
+const SUGGEST_LABEL: Record<string, string> = {
+  MERGE_ALL: 'mergear todos',
+  KEEP_CHAIN: 'es cadena (mantener)',
+  KEEP_SEPARATE: 'son distintos (mantener)',
+};
+
 const REASON_LABEL: Record<string, string> = {
   shared_email_multi_city: 'mismo email, varias ciudades — ¿cadena o dup?',
   shared_email_multi_phone: 'mismo email, varios teléfonos',
@@ -107,10 +113,18 @@ function GroupCard({ group }: { group: DedupGroup }) {
         </tbody>
       </table>
 
+      {!decided && group.suggestion && (
+        <div className="mt-2 rounded bg-amber-50 px-2 py-1 text-[11px] text-amber-800">
+          <span className="font-semibold">Sugerido: {SUGGEST_LABEL[group.suggestion.decision]}</span> — {group.suggestion.reason}
+        </div>
+      )}
+
       {!decided && (
         <div className="mt-2 flex flex-wrap items-center gap-2">
+          {(() => { const sug = (d: string) => (group.suggestion?.decision === d ? ' ring-2 ring-amber-400' : ''); return (
+          <>
           <button onClick={() => decide('MERGE_ALL', survivor)} disabled={busy}
-            className="rounded bg-rose-600 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-rose-700 disabled:opacity-50">
+            className={`rounded bg-rose-600 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-rose-700 disabled:opacity-50${sug('MERGE_ALL')}`}>
             Mergear todos {survivor != null ? '→ survivor' : ''}
           </button>
           <button onClick={() => decide('SURVIVOR', survivor)} disabled={busy || survivor == null}
@@ -118,13 +132,15 @@ function GroupCard({ group }: { group: DedupGroup }) {
             Mergear en el elegido
           </button>
           <button onClick={() => decide('KEEP_CHAIN', null)} disabled={busy}
-            className="rounded border border-slate-300 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+            className={`rounded border border-slate-300 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50${sug('KEEP_CHAIN')}`}>
             Es cadena (mantener)
           </button>
           <button onClick={() => decide('KEEP_SEPARATE', null)} disabled={busy}
-            className="rounded border border-slate-300 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+            className={`rounded border border-slate-300 px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50${sug('KEEP_SEPARATE')}`}>
             Son distintos (mantener)
           </button>
+          </>
+          ); })()}
           {err && <span className="text-[11px] text-rose-600">{err}</span>}
         </div>
       )}
