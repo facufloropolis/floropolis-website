@@ -28,6 +28,7 @@
 
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getProdReadClient } from '@/lib/supabase/prod-server';
+import { enrichSamplePrep, type DispatchPrepEnrichedSample } from '@/lib/admin/dispatch-prep-enricher';
 
 // ---------------------------------------------------------------------------
 // FedEx 26-column format — exact header order as confirmed from CEO upload sheet.
@@ -440,6 +441,19 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
       return null;
     }
 
+    // 4c) Multi-source address enrichment (dispatch-prep-enricher): resolves street/city/state
+    // from proposed_composition -> v_flora_cohort -> phone-match to lead_master, with provenance,
+    // and flags needsGoogle when only the street is missing. Used as a fallback below so a bare
+    // "ADDRESS MISSING" becomes the actionable "NEEDS GOOGLE (street)" with city/state filled.
+    const enrichedByLead = new Map<number, DispatchPrepEnrichedSample>();
+    try {
+      for (const e of await enrichSamplePrep()) {
+        if (e.leadMasterId != null && !enrichedByLead.has(e.leadMasterId)) enrichedByLead.set(e.leadMasterId, e);
+      }
+    } catch {
+      // best-effort; labels still emit with the inline resolution
+    }
+
     // 5) Assemble rows --------------------------------------------------------
     const rows: SampleLabelRow[] = [];
     const csvLines: string[] = [headerCsv()];
@@ -523,6 +537,24 @@ export async function buildSampleLabels(date: string): Promise<SampleLabelsResul
         }
       } else {
         notesParts.push(zohoId ? 'ADDRESS MISSING' : 'NO ZOHO ID');
+      }
+
+      // Enricher fallback: if the street is still missing, fill city/state from the multi-source
+      // resolution (phone-match) and turn a bare "ADDRESS MISSING" into the actionable
+      // "NEEDS GOOGLE (street)" — never a dead-end note.
+      if (!street && leadMasterId != null) {
+        const enr = enrichedByLead.get(leadMasterId);
+        if (enr) {
+          if (!city && enr.address.city) city = enr.address.city;
+          if (!state && enr.address.state) state = enr.address.state;
+          if (enr.needsGoogle) {
+            const have = [city, state].filter(Boolean).join(', ');
+            const msg = `NEEDS GOOGLE (street)${have ? ` — have ${have}` : ''}`;
+            const idx = notesParts.indexOf('ADDRESS MISSING');
+            if (idx >= 0) notesParts[idx] = msg;
+            else if (!notesParts.includes(msg)) notesParts.push(msg);
+          }
+        }
       }
 
       // Box dims + vendor from box_master_mirror
