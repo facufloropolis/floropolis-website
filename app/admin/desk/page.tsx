@@ -37,7 +37,8 @@ import ProposalDecision from './ProposalDecision';
 import KnowledgeAnswerForm from './KnowledgeAnswerForm';
 import CoordinationPanel from './CoordinationPanel';
 import DedupReviewPanel from './DedupReviewPanel';
-import { getDedupReviewQueue } from '@/lib/admin/dedup-review';
+import UnmatchedCandidatePanel from './UnmatchedCandidatePanel';
+import { getDedupReviewQueue, getUnmatchedCandidates } from '@/lib/admin/dedup-review';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -350,6 +351,7 @@ export default async function FacusDeskPage() {
 
   // Dedup-review queue (doubtful merges Rose couldn't auto-resolve), ranked by importance.
   const dedupGroups = await getDedupReviewQueue();
+  const unmatchedCandidates = await getUnmatchedCandidates();
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
@@ -391,6 +393,13 @@ export default async function FacusDeskPage() {
       {dedupGroups.length > 0 && (
         <div className="mt-6">
           <DedupReviewPanel groups={dedupGroups} />
+        </div>
+      )}
+
+      {/* ================= Unmatched — Zoho records with high-confidence candidate ========= */}
+      {unmatchedCandidates.length > 0 && (
+        <div className="mt-6">
+          <UnmatchedCandidatePanel items={unmatchedCandidates} />
         </div>
       )}
 

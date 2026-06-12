@@ -103,9 +103,14 @@ interface QueueRaw {
   city: string | null;
   state: string | null;
   worked_signals: string | null;
-  shared_email: string | null;
+  group_key: string | null;
+  importance_score: number | null;
   group_size: number | null;
   review_reason: string | null;
+  revenue: number | null;
+  is_buyer: boolean | null;
+  n_samples: number | null;
+  n_calls: number | null;
 }
 
 /** Read the dedup-review queue, grouped + ranked by commercial importance. Undecided groups
@@ -117,9 +122,9 @@ export async function getDedupReviewQueue(): Promise<DedupGroup[]> {
   let rows: QueueRaw[] = [];
   try {
     const { data, error } = await prod
-      .from('v_dedup_review_queue')
+      .from('v_dedup_doubtful_ranked')
       .select(
-        'lead_master_id, business_name, email, phone, city, state, worked_signals, shared_email, group_size, review_reason',
+        'lead_master_id, business_name, email, phone, city, state, worked_signals, group_key, importance_score, group_size, review_reason, revenue, is_buyer, n_samples, n_calls',
       )
       .limit(2000);
     if (error || !Array.isArray(data)) return [];
@@ -141,10 +146,10 @@ export async function getDedupReviewQueue(): Promise<DedupGroup[]> {
     /* no decided markers */
   }
 
-  // Group by shared_email.
+  // Group by group_key.
   const byKey = new Map<string, DedupGroup>();
   for (const r of rows) {
-    const key = str(r.shared_email);
+    const key = str(r.group_key);
     if (!key) continue;
     const member: DedupMember = {
       leadMasterId: typeof r.lead_master_id === 'number' ? r.lead_master_id : null,
@@ -154,7 +159,7 @@ export async function getDedupReviewQueue(): Promise<DedupGroup[]> {
       city: str(r.city),
       state: str(r.state),
       workedSignals: str(r.worked_signals),
-      signalScore: signalScore(str(r.worked_signals)),
+      signalScore: r.importance_score ?? signalScore(str(r.worked_signals)),
     };
     let g = byKey.get(key);
     if (!g) {
@@ -185,5 +190,73 @@ export async function getDedupReviewQueue(): Promise<DedupGroup[]> {
   return Array.from(byKey.values()).sort((a, b) => {
     if (a.decided !== b.decided) return a.decided ? 1 : -1;
     return b.importance - a.importance;
+  });
+}
+
+export interface UnmatchedCandidate {
+  id: number;
+  entityDisplayName: string;
+  entityEmail: string | null;
+  entityPhone: string | null;
+  failReason: string | null;
+  candidateLeadMasterId: number | null;
+  candidateName: string | null;
+  candidateScore: number; // 0-1
+  matchBasis: string | null; // 'email' | 'phone' | 'name_sim'
+  decided: boolean;
+  decision: string | null; // 'LINK' | 'SKIP'
+}
+
+export async function getUnmatchedCandidates(): Promise<UnmatchedCandidate[]> {
+  const prod = getProdReadClient();
+  if (!prod) return [];
+
+  let rows: Array<Record<string, unknown>> = [];
+  try {
+    const { data, error } = await prod
+      .from('v_unmatched_review_with_candidate')
+      .select('id, entity_display_name, entity_email, entity_phone, fail_reason, candidate_lead_master_id, candidate_name, candidate_name_city_score, match_basis')
+      .order('candidate_name_city_score', { ascending: false })
+      .limit(500);
+    if (error || !Array.isArray(data)) return [];
+    rows = data as Array<Record<string, unknown>>;
+  } catch {
+    return [];
+  }
+
+  // Which IDs are already decided (BACKUP dedup_decisions, group_key = 'unmatched_{id}')
+  const decidedById = new Map<string, string>();
+  try {
+    const svc = getBackupServiceClient();
+    const { data } = await svc
+      .from('dedup_decisions')
+      .select('group_key, decision')
+      .like('group_key', 'unmatched_%');
+    for (const r of (data ?? []) as Array<Record<string, unknown>>) {
+      const k = str(r.group_key as unknown);
+      if (k) decidedById.set(k, str(r.decision as unknown) ?? 'decided');
+    }
+  } catch {
+    /* no decided markers */
+  }
+
+  return rows.map((r) => {
+    const id = typeof r.id === 'number' ? r.id : parseInt(String(r.id), 10);
+    const gk = `unmatched_${id}`;
+    return {
+      id,
+      entityDisplayName: str(r.entity_display_name) ?? '(sin nombre)',
+      entityEmail: str(r.entity_email),
+      entityPhone: str(r.entity_phone),
+      failReason: str(r.fail_reason),
+      candidateLeadMasterId: typeof r.candidate_lead_master_id === 'number' ? r.candidate_lead_master_id : null,
+      candidateName: str(r.candidate_name),
+      candidateScore: typeof r.candidate_name_city_score === 'number'
+        ? r.candidate_name_city_score
+        : parseFloat(String(r.candidate_name_city_score ?? '0')),
+      matchBasis: str(r.match_basis),
+      decided: decidedById.has(gk),
+      decision: decidedById.get(gk) ?? null,
+    };
   });
 }
