@@ -36,6 +36,8 @@ import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import ProposalDecision from './ProposalDecision';
 import KnowledgeAnswerForm from './KnowledgeAnswerForm';
 import CoordinationPanel from './CoordinationPanel';
+import DedupReviewPanel from './DedupReviewPanel';
+import { getDedupReviewQueue } from '@/lib/admin/dedup-review';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -346,6 +348,9 @@ export default async function FacusDeskPage() {
 
   const configCount = rankedProposals.filter((p) => rankTier(p.type) === 0).length;
 
+  // Dedup-review queue (doubtful merges Rose couldn't auto-resolve), ranked by importance.
+  const dedupGroups = await getDedupReviewQueue();
+
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       {/* Breadcrumb */}
@@ -381,6 +386,13 @@ export default async function FacusDeskPage() {
 
       {/* ================= Coordinacion (cross-agent + access requests) ========= */}
       <CoordinationPanel />
+
+      {/* ================= Dedup — doubtful merges, ranked by importance ========= */}
+      {dedupGroups.length > 0 && (
+        <div className="mt-6">
+          <DedupReviewPanel groups={dedupGroups} />
+        </div>
+      )}
 
       {/* ================= ZONE 2 — Your decisions ================= */}
       <section className="mb-10">
