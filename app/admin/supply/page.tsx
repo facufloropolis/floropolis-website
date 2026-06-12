@@ -42,6 +42,8 @@ import ContentSolution from './ContentSolution';
 import FulfillmentSolution from './FulfillmentSolution';
 import SupplyConsole, { type LeverTab, type SupplyLever } from './SupplyConsole';
 import LoopLearningPanel from './LoopLearningPanel';
+import ImageReviewPanel from './ImageReviewPanel';
+import { getImageReviewQueue } from '@/lib/admin/image-review';
 import {
   getCompetitorContext,
   getProdPhotoStatus,
@@ -469,6 +471,8 @@ export default async function SupplyEnginePage() {
     fulfillmentRecs.reduce((s, f) => s + f.varieties, 0);
   // learned_delta is still all-zero in Rose's view (verified 2026-06-10) -> the
   // reader-side re-rank is the live learning until Rose adopts the delta.
+  const imageReviewSkus = await getImageReviewQueue();
+
   const reflection = await getLoopReflection({
     batchedRecs,
     batchedVarieties,
@@ -1037,6 +1041,12 @@ export default async function SupplyEnginePage() {
       </nav>
 
       <SurfaceStatusBanner surfaceKey="supply" />
+
+      {imageReviewSkus.length > 0 && (
+        <div className="mb-6">
+          <ImageReviewPanel skus={imageReviewSkus} />
+        </div>
+      )}
 
       <div className="mb-4">
         <Link
