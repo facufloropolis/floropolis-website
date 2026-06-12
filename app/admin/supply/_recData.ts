@@ -440,9 +440,13 @@ const MAX_LEARNED_ADJUSTMENT = 12;
 
 function decisionVote(decision: string | null | undefined): number {
   const d = (decision ?? '').trim().toLowerCase();
-  if (APPROVE_DECISIONS.has(d)) return DERIVED_VOTE_WEIGHT;
+  // 'correct' = Facu confirmed the rec was right → a POSITIVE learning vote, consistent with the
+  // display indicator (POSITIVE_DECISIONS). Without this the loop is wired but DEAD: verified
+  // 2026-06-11 that 100% of feedback was 'correct' (13 rows) → zero learned adjustment → ranking
+  // never moved. Including 'correct' brings the read→learn→re-rank loop alive.
+  if (POSITIVE_DECISIONS.has(d) || APPROVE_DECISIONS.has(d)) return DERIVED_VOTE_WEIGHT;
   if (REJECT_DECISIONS.has(d)) return -DERIVED_VOTE_WEIGHT;
-  return 0; // correct / defer / unknown -> neutral
+  return 0; // defer / unknown -> neutral
 }
 
 export interface LearnedRerank {
