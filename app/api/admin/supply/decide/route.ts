@@ -70,6 +70,10 @@ interface DecideBody {
   rec_type?: unknown;
   decision?: unknown;
   reason?: unknown;
+  // PRIORITIZATION feedback (Facu's early ask): an explicit numeric nudge to the rank when he
+  // steers the PRIORITY (subir +, bajar -, no-es-prioridad --), not just the rec content. When
+  // present it overrides the decision-derived weight_delta. getLearnedRerank reads weight_delta.
+  priority_delta?: unknown;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -114,7 +118,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       rec_type: recType,
       decision,
       reason_tags: reason ? [reason] : [],
-      weight_delta: WEIGHT_DELTA[decision],
+      weight_delta:
+        typeof body.priority_delta === 'number' && Number.isFinite(body.priority_delta)
+          ? Math.max(-20, Math.min(20, body.priority_delta))
+          : WEIGHT_DELTA[decision],
       decided_by: auth.email || 'facu',
     })
     .select('id, target_variety, rec_type, decision, reason_tags, weight_delta, decided_by, decided_at')

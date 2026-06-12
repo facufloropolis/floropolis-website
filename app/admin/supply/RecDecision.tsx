@@ -29,8 +29,17 @@ export default function RecDecision({ variety, recType }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [logged, setLogged] = useState<Decision | null>(null);
+  const [pendingPriority, setPendingPriority] = useState<number | null>(null);
 
-  async function send(decision: Decision, reasonText: string) {
+  // PRIORITIZATION feedback: steer the rank itself, not just the rec content. Opens the reason
+  // box (the WHY is required); submitting sends a 'correct' decision + the numeric priority nudge.
+  function onPriority(delta: number) {
+    setError(null);
+    setPendingPriority(delta);
+    setOpenReasonFor('correct');
+  }
+
+  async function send(decision: Decision, reasonText: string, priorityDelta?: number) {
     setError(null);
     setBusy(true);
     try {
@@ -42,6 +51,7 @@ export default function RecDecision({ variety, recType }: Props) {
           rec_type: recType,
           decision,
           reason: reasonText.trim() || undefined,
+          priority_delta: typeof priorityDelta === 'number' ? priorityDelta : undefined,
         }),
       });
       const json = await res.json().catch(() => ({}));
@@ -53,6 +63,7 @@ export default function RecDecision({ variety, recType }: Props) {
       setLogged(decision); // optimistic stamp
       setOpenReasonFor(null);
       setReason('');
+      setPendingPriority(null);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'decision failed');
@@ -120,6 +131,24 @@ export default function RecDecision({ variety, recType }: Props) {
         )}
       </div>
 
+      {/* PRIORITIZATION feedback — steer the order, not just the content (Facu's ask). */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-[11px] font-medium text-slate-500">Prioridad:</span>
+        <button type="button" disabled={busy} onClick={() => onPriority(8)}
+          className="text-[11px] font-semibold text-emerald-700 bg-white border border-emerald-200 hover:bg-emerald-50 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50">
+          ↑ subir
+        </button>
+        <button type="button" disabled={busy} onClick={() => onPriority(-6)}
+          className="text-[11px] font-semibold text-amber-700 bg-white border border-amber-200 hover:bg-amber-50 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50">
+          ↓ bajar
+        </button>
+        <button type="button" disabled={busy} onClick={() => onPriority(-14)}
+          className="text-[11px] font-semibold text-red-700 bg-white border border-red-200 hover:bg-red-50 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50">
+          ✕ no es prioridad
+        </button>
+        <span className="text-[11px] text-slate-400">— el por qué entrena el orden</span>
+      </div>
+
       {openReasonFor === 'correct' && (
         <div className="space-y-2 rounded-xl border border-violet-200 bg-white p-3">
           <label className="block text-[10px] font-semibold uppercase tracking-wide text-violet-700">
@@ -136,10 +165,10 @@ export default function RecDecision({ variety, recType }: Props) {
             <button
               type="button"
               disabled={busy || reason.trim().length < 3}
-              onClick={() => void send('correct', reason)}
+              onClick={() => void send('correct', reason, pendingPriority ?? undefined)}
               className="text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 px-3.5 py-2 rounded-xl shadow-sm transition-colors disabled:opacity-50"
             >
-              {busy ? 'Submitting...' : 'Submit correction'}
+              {busy ? 'Submitting...' : pendingPriority != null ? 'Guardar prioridad' : 'Submit correction'}
             </button>
             <button
               type="button"
@@ -147,6 +176,7 @@ export default function RecDecision({ variety, recType }: Props) {
               onClick={() => {
                 setOpenReasonFor(null);
                 setReason('');
+                setPendingPriority(null);
                 setError(null);
               }}
               className="text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 px-3.5 py-2 rounded-xl transition-colors disabled:opacity-50"
