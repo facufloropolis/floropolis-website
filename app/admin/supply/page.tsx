@@ -46,6 +46,8 @@ import ImageReviewPanel from './ImageReviewPanel';
 import { getImageReviewQueue } from '@/lib/admin/image-review';
 import ContentReviewPanel from './ContentReviewPanel';
 import { getContentReviewQueue } from '@/lib/admin/content-review';
+import PriceReviewPanel from './PriceReviewPanel';
+import { getPriceReviewData } from '@/lib/admin/price-review';
 import {
   getCompetitorContext,
   getProdPhotoStatus,
@@ -475,6 +477,7 @@ export default async function SupplyEnginePage() {
   // reader-side re-rank is the live learning until Rose adopts the delta.
   const imageReviewSkus = await getImageReviewQueue();
   const contentReviewItems = await getContentReviewQueue();
+  const priceReviewData = await getPriceReviewData();
 
   const reflection = await getLoopReflection({
     batchedRecs,
@@ -1054,6 +1057,12 @@ export default async function SupplyEnginePage() {
       {contentReviewItems.length > 0 && (
         <div className="mb-6">
           <ContentReviewPanel items={contentReviewItems} />
+        </div>
+      )}
+
+      {(priceReviewData.calculable.length > 0 || priceReviewData.missingCost.length > 0) && (
+        <div className="mb-6">
+          <PriceReviewPanel data={priceReviewData} />
         </div>
       )}
 
