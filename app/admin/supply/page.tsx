@@ -44,6 +44,8 @@ import SupplyConsole, { type LeverTab, type SupplyLever } from './SupplyConsole'
 import LoopLearningPanel from './LoopLearningPanel';
 import ImageReviewPanel from './ImageReviewPanel';
 import { getImageReviewQueue } from '@/lib/admin/image-review';
+import ContentReviewPanel from './ContentReviewPanel';
+import { getContentReviewQueue } from '@/lib/admin/content-review';
 import {
   getCompetitorContext,
   getProdPhotoStatus,
@@ -472,6 +474,7 @@ export default async function SupplyEnginePage() {
   // learned_delta is still all-zero in Rose's view (verified 2026-06-10) -> the
   // reader-side re-rank is the live learning until Rose adopts the delta.
   const imageReviewSkus = await getImageReviewQueue();
+  const contentReviewItems = await getContentReviewQueue();
 
   const reflection = await getLoopReflection({
     batchedRecs,
@@ -1045,6 +1048,12 @@ export default async function SupplyEnginePage() {
       {imageReviewSkus.length > 0 && (
         <div className="mb-6">
           <ImageReviewPanel skus={imageReviewSkus} />
+        </div>
+      )}
+
+      {contentReviewItems.length > 0 && (
+        <div className="mb-6">
+          <ContentReviewPanel items={contentReviewItems} />
         </div>
       )}
 
