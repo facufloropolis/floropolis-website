@@ -29,6 +29,8 @@ import SurfaceStatusBanner from '../../_components/SurfaceStatusBanner';
 import CanonicalCostsPanel from './_components/CanonicalCostsPanel';
 import PriceSnapshotPanel from './_components/PriceSnapshotPanel';
 import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
+import ConfigDriftBanner from '../../_components/ConfigDriftBanner';
+import { getConfigDrift } from '@/lib/admin/config-drift';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import {
   BoxFlagCEOForm,
@@ -397,11 +399,18 @@ export default async function AdminCatalogConfigPage({
   const wm = (id: string) =>
     wiringEntry?.sections.find((s) => s.id === id) ?? { level: 'PLAN' as const, note: 'unregistered' };
 
+  // Automatic salvavidas: flag when a code constant (e.g. GPM_TARGET) drifts from the live
+  // config (pricing_constants.gpm_target) — the system catches it, not a human review.
+  const configDrift = await getConfigDrift();
+
   return (
     <>
       <main className="max-w-7xl mx-auto px-4 py-10">
         <MockupLinkBanner mockupHref="/mockups/admin-catalog-config" pageLabel="/admin/catalog/config" />
         <SurfaceStatusBanner surfaceKey="config" />
+        <div className="mb-4">
+          <ConfigDriftBanner rows={configDrift} />
+        </div>
         {/* Header */}
         <div className="mb-8">
           <nav className="text-xs text-slate-500 mb-2" aria-label="Breadcrumb">
