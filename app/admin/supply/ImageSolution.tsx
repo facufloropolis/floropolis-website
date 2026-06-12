@@ -40,6 +40,7 @@ interface FreeCandidate {
 interface AiRung {
   available: boolean;
   provider: string | null;
+  url: string | null;
   reason: string;
 }
 interface ProdPhotos {
@@ -443,17 +444,44 @@ export default function ImageSolution({ variety, prodPhotoHint, mode = 'gap' }: 
                 </div>
               )}
 
-              {/* (c) AI rung — honest availability */}
-              <div className="rounded-xl border border-slate-100 bg-white px-3 py-2">
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  AI
+              {/* (c) AI rung — Pollinations thumbnail or honest unavailable */}
+              {cand.ai.available && cand.ai.url ? (
+                <div className="rounded-xl border border-amber-200 bg-white p-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-amber-700 mb-2">
+                    AI ({cand.ai.provider}) — revisar antes de aplicar
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={cand.ai.url}
+                      alt={`${variety} AI generada`}
+                      className="h-20 w-20 object-cover rounded-lg border border-amber-200"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] text-slate-400 leading-snug mb-2">
+                        Generada por IA — confirmar que representa bien la variedad.
+                      </div>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void apply(cand.ai.url!, 'ai_pollinations')}
+                        className="text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-xl transition-colors disabled:opacity-50"
+                      >
+                        {busy ? '...' : 'Poner esta (AI)'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                  {cand.ai.available
-                    ? `Disponible (${cand.ai.provider})`
-                    : cand.ai.reason}
+              ) : cand.ai.available ? (
+                <div className="rounded-xl border border-slate-100 bg-white px-3 py-2">
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                    AI ({cand.ai.provider})
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                    {cand.ai.reason}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               {/* Ninguna me gusta -> reject + reason, or un-gettable queue */}
               {!showReject ? (

@@ -144,40 +144,47 @@ function freeStockCandidates(variety: string): FreeCandidate[] {
 }
 
 // ---------------------------------------------------------------------------
-// (c) AI rung — honest env probe
+// (c) AI rung — Pollinations.ai (free, no key) + optional premium providers
 // ---------------------------------------------------------------------------
 
 interface AiRung {
   available: boolean;
-  provider: string | null; // which key we found, if any
-  reason: string; // honest: how to unlock when unavailable
+  provider: string | null; // which provider is active
+  url: string | null;      // Pollinations direct image URL (always set as free fallback)
+  reason: string;
 }
 
-// Probe for any configured image-gen API key. None are set today -> we report
-// the rung as available-but-needs-API (honest), never a fake generated url.
-function aiRung(): AiRung {
-  const candidates: { env: string; provider: string }[] = [
+// Free fallback: Pollinations.ai — no key required, deterministic by prompt,
+// returns a real JPEG when fetched. Premium providers override when configured.
+function aiRung(variety: string): AiRung {
+  const premium: { env: string; provider: string }[] = [
     { env: 'OPENAI_API_KEY', provider: 'OpenAI Images' },
     { env: 'REPLICATE_API_TOKEN', provider: 'Replicate' },
     { env: 'STABILITY_API_KEY', provider: 'Stability' },
     { env: 'FAL_KEY', provider: 'fal.ai' },
     { env: 'IMAGE_GEN_API_KEY', provider: 'image-gen' },
   ];
-  for (const c of candidates) {
+  for (const c of premium) {
     const v = process.env[c.env];
     if (typeof v === 'string' && v.trim().length > 0) {
       return {
         available: true,
         provider: c.provider,
-        reason: `AI rung lista (${c.provider} configurado en ${c.env})`,
+        url: null,
+        reason: `AI lista (${c.provider} configurado en ${c.env})`,
       };
     }
   }
-  const envList = candidates.map((c) => c.env).join(' | ');
+  // No premium key — use Pollinations.ai (keyless, commercial-grade quality).
+  const prompt = encodeURIComponent(
+    `professional product photo ${variety} flower botanical white background sharp focus`,
+  );
+  const url = `https://image.pollinations.ai/prompt/${prompt}?width=400&height=400&nologo=true`;
   return {
-    available: false,
-    provider: null,
-    reason: `AI rung disponible: falta image API. Setear una de: ${envList}`,
+    available: true,
+    provider: 'Pollinations.ai',
+    url,
+    reason: 'AI generada (Pollinations.ai) — verificar que representa la variedad antes de aplicar',
   };
 }
 
@@ -200,7 +207,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const { prodPhoto, prodPhotos } = await getProdPhotos(vNorm);
   const free = freeStockCandidates(variety);
-  const ai = aiRung();
+  const ai = aiRung(variety);
 
   // The recommended next rung, framed as WORK (not a flag): prod if real photo
   // exists (one-click apply), else free leads, else AI when wired, else the
