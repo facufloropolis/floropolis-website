@@ -71,6 +71,42 @@ interface ApplyResult {
   gatesCleared?: number;
   closed?: number;
   nowPublishable?: number;
+  warnings?: string[];
+}
+
+// ---- FeedbackPayload signal (shared contract) -----------------------------
+type RejectTag = 'wrong_color' | 'not_tinted' | 'low_quality' | 'check_prod' | 'other';
+type Quality = 'weak' | 'good' | 'excellent';
+
+const REJECT_TAGS: { id: RejectTag; label: string }[] = [
+  { id: 'wrong_color', label: 'color equivocado' },
+  { id: 'not_tinted', label: 'sin tintar' },
+  { id: 'low_quality', label: 'mala calidad' },
+  { id: 'check_prod', label: 'revisar PROD' },
+  { id: 'other', label: 'otro' },
+];
+const QUALITY_OPTS: { id: Quality; label: string }[] = [
+  { id: 'weak', label: 'floja' },
+  { id: 'good', label: 'buena' },
+  { id: 'excellent', label: 'excelente' },
+];
+
+// Serialize the structured signal into reason(text) (no jsonb column on supply_solution_feedback).
+// Stable convention: "tags=wrong_color,low_quality; quality=good; find_better=1 | <freenote>".
+function serializeSignal(p: {
+  rejectTags: RejectTag[];
+  quality: Quality | null;
+  findBetter: boolean;
+  note?: string;
+}): string | null {
+  const parts: string[] = [];
+  if (p.rejectTags.length) parts.push(`tags=${p.rejectTags.join(',')}`);
+  if (p.quality) parts.push(`quality=${p.quality}`);
+  if (p.findBetter) parts.push('find_better=1');
+  const head = parts.join('; ');
+  const note = (p.note ?? '').trim();
+  if (head && note) return `${head} | ${note}`;
+  return head || note || null;
 }
 
 const QUEUE_LABELS: Record<string, string> = {
@@ -106,6 +142,16 @@ export default function ImageSolution({ variety, prodPhotoHint, mode = 'gap' }: 
   const [showReject, setShowReject] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
+  // FeedbackPayload controls (the learning signal that rides with the pick).
+  const [rejectTags, setRejectTags] = useState<RejectTag[]>([]);
+  const [quality, setQuality] = useState<Quality | null>(null);
+  const [findBetter, setFindBetter] = useState(false);
+  const [warnings, setWarnings] = useState<string[]>([]);
+
+  function toggleTag(t: RejectTag) {
+    setRejectTags((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
+  }
+
   async function expand() {
     if (open) {
       setOpen(false);
@@ -133,17 +179,31 @@ export default function ImageSolution({ variety, prodPhotoHint, mode = 'gap' }: 
 
   async function apply(imageUrl: string, source: string | null) {
     setError(null);
+    setWarnings([]);
     setBusy(true);
+    const reason = serializeSignal({ rejectTags, quality, findBetter });
     try {
       const res = await fetch('/api/admin/supply/apply-image', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ variety, imageUrl, source: source ?? undefined, mode }),
+        body: JSON.stringify({
+          variety,
+          imageUrl,
+          source: source ?? undefined,
+          mode,
+          // FeedbackPayload signal -> persisted into supply_solution_feedback.reason (no jsonb col).
+          reason: reason ?? undefined,
+          rejectTags,
+          quality: quality ?? undefined,
+          findBetter,
+        }),
       });
       const json = (await res.json().catch(() => ({}))) as ApplyResult & {
         error?: string;
         detail?: string;
       };
+      // No-swallow: surface any partial-failure warnings the route returned.
+      if (Array.isArray(json.warnings) && json.warnings.length) setWarnings(json.warnings);
       if (!res.ok) {
         throw new Error(json.detail ? `${json.error}: ${json.detail}` : json.error ?? `HTTP ${res.status}`);
       }
@@ -309,9 +369,64 @@ export default function ImageSolution({ variety, prodPhotoHint, mode = 'gap' }: 
           {error && (
             <p className="text-[11px] text-red-600 font-mono break-words">{error}</p>
           )}
+          {warnings.length > 0 && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] text-amber-800">
+              {warnings.map((w, i) => (
+                <div key={i}>aviso: {w}</div>
+              ))}
+            </div>
+          )}
 
           {cand && (
             <>
+              {/* FeedbackPayload controls — the learning signal that rides with the pick.
+                  Tags + quality + find-better are serialized into supply_solution_feedback.reason. */}
+              <div className="rounded-xl border border-slate-100 bg-white p-3 space-y-2">
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                    Motivo (si algo no va)
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {REJECT_TAGS.map((t) => {
+                      const on = rejectTags.includes(t.id);
+                      return (
+                        <button
+                          type="button"
+                          key={t.id}
+                          onClick={() => toggleTag(t.id)}
+                          className={`rounded-full border px-2 py-0.5 text-[11px] transition-colors ${on ? 'border-rose-400 bg-rose-50 text-rose-700' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                        >
+                          {t.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Calidad</span>
+                  {QUALITY_OPTS.map((q) => {
+                    const on = quality === q.id;
+                    return (
+                      <button
+                        type="button"
+                        key={q.id}
+                        onClick={() => setQuality(on ? null : q.id)}
+                        className={`rounded-lg border px-2 py-0.5 text-[11px] transition-colors ${on ? 'border-emerald-400 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                      >
+                        {q.label}
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => setFindBetter((v) => !v)}
+                    className={`ml-1 rounded-lg border px-2 py-0.5 text-[11px] transition-colors ${findBetter ? 'border-indigo-400 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+                  >
+                    {findBetter ? '✓ ' : ''}buscar mejor
+                  </button>
+                </div>
+              </div>
+
               {/* (a) PROD photos — gallery of all available real thumbnails */}
               {(() => {
                 // Prefer the new prodPhotos array; fall back to the single-photo shape.

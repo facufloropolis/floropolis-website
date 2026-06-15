@@ -12,11 +12,13 @@ function Row({ c }: { c: ContentCandidate }) {
   const [done, setDone] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
   const edited = text.trim() !== c.text.trim();
 
   async function decide(decision: 'approve' | 'reject') {
     setBusy(true);
     setErr(null);
+    setWarnings([]);
     try {
       const res = await fetch('/api/admin/supply/content-review', {
         method: 'POST',
@@ -24,8 +26,10 @@ function Row({ c }: { c: ContentCandidate }) {
         body: JSON.stringify({ id: c.id, decision, text: decision === 'approve' ? text : null }),
       });
       const b = (await res.json().catch(() => ({}))) as {
-        ok?: boolean; error?: string; propagated?: boolean; loopClosed?: boolean; publishable?: boolean;
+        ok?: boolean; error?: string; propagated?: boolean; loopClosed?: boolean; publishable?: boolean; warnings?: string[];
       };
+      // No-swallow: surface any partial-failure warnings the route returned.
+      if (Array.isArray(b.warnings) && b.warnings.length) setWarnings(b.warnings);
       if (res.ok && b.ok) {
         if (decision === 'reject') setDone('rechazada');
         else {
@@ -68,6 +72,13 @@ function Row({ c }: { c: ContentCandidate }) {
             </button>
             {err && <span className="text-[11px] text-rose-600">{err}</span>}
           </div>
+          {warnings.length > 0 && (
+            <div className="mt-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] text-amber-800">
+              {warnings.map((w, i) => (
+                <div key={i}>aviso: {w}</div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>

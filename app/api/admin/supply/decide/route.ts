@@ -20,6 +20,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { persistSupplyFeedback } from '@/lib/admin/supply-feedback';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -110,7 +111,39 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       : null;
 
   const svc = getBackupServiceClient();
+  const priorityDelta =
+    typeof body.priority_delta === 'number' && Number.isFinite(body.priority_delta)
+      ? body.priority_delta
+      : undefined;
 
+  // approve/reject -> the SHARED helper (lib/admin/supply-feedback) so all three
+  // supply routes encode + persist identically (recommendation_feedback for the
+  // ranker, and a solution_feedback row — incl. the reject outcome the old paths
+  // dropped). defer/correct are NOT in the helper's FeedbackPayload contract, so
+  // they keep the direct recommendation_feedback insert (the 4-value contract is
+  // untouched — defer/correct never reach the helper).
+  if (decision === 'approve' || decision === 'reject') {
+    const persisted = await persistSupplyFeedback(svc, {
+      payload: { decision, priorityDelta, note: reason ?? undefined },
+      recType,
+      lever: recType,
+      variety,
+      decidedBy: auth.email || 'facu',
+    });
+    if (persisted.warnings.length > 0) {
+      return NextResponse.json({ error: 'insert_failed', warnings: persisted.warnings }, { status: 500 });
+    }
+    return NextResponse.json({
+      ok: true,
+      decision,
+      recommendationId: persisted.recommendationId,
+      solutionId: persisted.solutionId,
+      weightDelta: persisted.weightDelta,
+    });
+  }
+
+  // defer / correct: neutral framing feedback — direct insert, weight_delta=0
+  // unless an explicit priority steer is present.
   const { data: inserted, error } = await svc
     .from('supply_recommendation_feedback')
     .insert({
@@ -119,8 +152,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       decision,
       reason_tags: reason ? [reason] : [],
       weight_delta:
-        typeof body.priority_delta === 'number' && Number.isFinite(body.priority_delta)
-          ? Math.max(-20, Math.min(20, body.priority_delta))
+        priorityDelta != null
+          ? Math.max(-20, Math.min(20, priorityDelta))
           : WEIGHT_DELTA[decision],
       decided_by: auth.email || 'facu',
     })
@@ -128,7 +161,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     .maybeSingle();
 
   if (error) {
-    console.error('[admin/supply/decide] insert:', error);
     return NextResponse.json({ error: 'insert_failed', detail: error.message }, { status: 500 });
   }
 

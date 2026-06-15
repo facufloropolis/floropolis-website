@@ -290,6 +290,138 @@ export async function getProdAllPhotosMap(): Promise<Map<string, string[]> | nul
 // URLs from JSONB (e.g. the image-candidates route). It is already used above.
 export { realHttpUrl as extractRealHttpUrl };
 
+// ---------------------------------------------------------------------------
+// VARIETY ATTRIBUTE PARSING (color / tint) — pure, in-memory, no DB
+// ---------------------------------------------------------------------------
+//
+// The image-candidates route ranks photo OPTIONS for a variety. To do that
+// HONESTLY it must know what the variety NAME says it should look like: its
+// COLOR (red / blue / pink ...) and whether it is TINTED (dyed gypso et al.).
+// These are TEXT annotations of provenance, NOT pixel verification — a free
+// stock SEARCH lead's colorOk reflects QUERY intent, an AI url is unverifiable
+// (always colorOk/tintOk=false), and a PROD url is matched on the variety key.
+//
+// The color synonym sets MIRROR the canonical tinted vocabulary already encoded
+// in lib/product-images.ts:704-711 (blue->light-blue, red->viva-magenta, etc.)
+// so a naive 'blue' substring does NOT false-negative a real PROD 'light blue'
+// / 'viva magenta' variant. Synonym MATCH, never exact equality (per RISKS).
+
+export interface VarietyAttributes {
+  color: string | null; // canonical color token parsed from the name, or null
+  colorSynonyms: string[]; // all spellings that COUNT as this color (for matching)
+  tint: 'tinted' | 'natural' | null; // explicit tint signal in the name, or null
+}
+
+// Canonical color -> the spellings (incl. tinted-variant PROD keys) that mean it.
+// Mirrors lib/product-images.ts tintedColorMap + the *-blue / *-magenta PROD keys
+// so colorOk matches PROD variants spelled differently than the bare color word.
+const COLOR_SYNONYMS: Record<string, string[]> = {
+  red: ['red', 'viva magenta', 'vivamagenta', 'magenta', 'scarlet', 'crimson'],
+  pink: ['pink', 'light pink', 'lightpink', 'hot pink', 'hotpink', 'fuchsia', 'fucsia', 'rose pink'],
+  blue: ['blue', 'light blue', 'lightblue', 'dark blue', 'darkblue', 'navy', 'lagoon'],
+  green: ['green', 'apple green', 'applegreen', 'lime', 'emerald'],
+  white: ['white', 'pure white', 'purewhite', 'ivory', 'cream'],
+  yellow: ['yellow', 'gold', 'golden', 'lemon'],
+  orange: ['orange', 'peach', 'coral', 'apricot'],
+  purple: ['purple', 'lavender', 'lilac', 'violet', 'mauve'],
+  burgundy: ['burgundy', 'burdeaux', 'bordeaux', 'wine', 'maroon'],
+  brown: ['brown', 'mocca', 'mocha', 'chocolate'],
+  black: ['black'],
+};
+
+// Words in a variety name that explicitly assert it is dyed/tinted, vs natural.
+const TINTED_WORDS = ['tinted', 'tint', 'dyed', 'painted', 'sprayed'];
+const NATURAL_WORDS = ['natural', 'untinted', 'plain'];
+
+/**
+ * Parse the COLOR + TINT a variety NAME claims. Pure / in-memory / NULL-safe.
+ * Color is resolved against COLOR_SYNONYMS (synonym match, not exact), so
+ * "gypsophila tinted blue" -> color 'blue' (synonyms incl. 'light blue'), and
+ * "anthurium red large" -> color 'red' (synonyms incl. 'viva magenta'). When no
+ * color word is present, color is null (the caller must NOT claim a color match).
+ */
+export function parseVarietyAttributes(variety: string | null | undefined): VarietyAttributes {
+  const raw = (variety ?? '').toLowerCase();
+  // Normalize separators to single spaces, keep word boundaries for phrase match.
+  const spaced = ` ${raw.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `;
+
+  let tint: VarietyAttributes['tint'] = null;
+  if (NATURAL_WORDS.some((w) => spaced.includes(` ${w} `))) tint = 'natural';
+  if (TINTED_WORDS.some((w) => spaced.includes(` ${w} `))) tint = 'tinted';
+
+  // Resolve color: pick the canonical color whose LONGEST synonym phrase appears
+  // in the name (longest-first so "light blue" wins over bare "blue", "viva
+  // magenta" over "magenta"). null when nothing matches.
+  let color: string | null = null;
+  let colorSynonyms: string[] = [];
+  let bestLen = 0;
+  for (const [canon, syns] of Object.entries(COLOR_SYNONYMS)) {
+    for (const syn of syns) {
+      if (spaced.includes(` ${syn} `) && syn.length > bestLen) {
+        bestLen = syn.length;
+        color = canon;
+        colorSynonyms = syns;
+      }
+    }
+  }
+  return { color, colorSynonyms, tint };
+}
+
+/**
+ * Does a candidate's TEXT provenance (PROD variety key, free-stock query, AI
+ * prompt) match the parsed COLOR? Synonym-aware (not exact equality), so a PROD
+ * key 'gypsophila tinted light blue' matches a parsed color 'blue'. Returns:
+ *   true  -> the candidate text carries a synonym of the wanted color
+ *   false -> wanted a color but the text carries a DIFFERENT known color
+ *   null  -> no color was parsed (nothing to assert) OR text carries no color
+ * The caller treats null as "not a verified color match" (honest, down-ranks).
+ */
+export function colorMatches(
+  attrs: VarietyAttributes,
+  candidateText: string | null | undefined,
+): boolean | null {
+  if (!attrs.color) return null; // no wanted color -> nothing to claim
+  const hay = ` ${(candidateText ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `;
+  if (!hay.trim()) return null;
+  // Positive: any synonym of the WANTED color appears.
+  for (const syn of attrs.colorSynonyms) {
+    if (hay.includes(` ${syn} `)) return true;
+  }
+  // Negative: a DIFFERENT canonical color's synonym appears -> wrong color.
+  for (const [canon, syns] of Object.entries(COLOR_SYNONYMS)) {
+    if (canon === attrs.color) continue;
+    for (const syn of syns) {
+      if (hay.includes(` ${syn} `)) return false;
+    }
+  }
+  return null; // text carries no recognizable color -> unverified, not a match
+}
+
+/**
+ * Does a candidate's TEXT provenance match the parsed TINT signal? Returns:
+ *   true  -> name wants tinted AND text says tinted (or wants natural AND natural)
+ *   false -> name wants tinted but text is plain/natural (or vice-versa)
+ *   null  -> no tint was parsed from the name (nothing to assert)
+ * A plain (untinted) gypso candidate for a "tinted blue" variety -> false.
+ */
+export function tintMatches(
+  attrs: VarietyAttributes,
+  candidateText: string | null | undefined,
+): boolean | null {
+  if (!attrs.tint) return null; // name made no tint claim -> nothing to assert
+  const hay = ` ${(candidateText ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `;
+  const textTinted = TINTED_WORDS.some((w) => hay.includes(` ${w} `));
+  const textNatural = NATURAL_WORDS.some((w) => hay.includes(` ${w} `));
+  if (attrs.tint === 'tinted') {
+    if (textTinted) return true;
+    if (textNatural) return false;
+    return false; // wants tinted, text shows no tint signal -> NOT a tinted match
+  }
+  // wants natural
+  if (textTinted) return false;
+  return true;
+}
+
 /**
  * Discover, for each variety, whether a REAL PROD product photo exists (an http
  * URL — never a local placeholder path). Source: PROD floropolis_inventory
@@ -1112,4 +1244,192 @@ export async function getLeverBuckets(): Promise<Map<SupplyLever, LeverBucketSta
   } catch {
     return out;
   }
+}
+
+// ===========================================================================
+// GROUPED VARIETY CARD — collapse N per-SKU review rows into ONE per-variety card
+// ===========================================================================
+//
+// SHARED CONTRACT (supply-card-v2). The image/content review queues emit one row
+// PER SKU (per size): a variety in 4 lengths => 4 near-identical cards, and
+// ImageReviewPanel renders one card per SKU today (ImageReviewPanel.tsx:121).
+// But the backend ALREADY applies a picked asset to ALL of a variety's gap SKUs
+// (loop-ledger.closeAssetGate takes skuIds[]). So the UI must collapse to ONE
+// decision per VARIETY, with the candidate photos/texts as OPTIONS inside, and a
+// single approve closes the gate for every size at once.
+//
+// This reader builds that shape: ONE GroupedVarietyCard per normalized variety,
+// all sizes' sku_ids in skuIds[], deduped candidate options. variety_synonyms are
+// NOT applied (per memory ref), so we collapse on normVariety (the same key the
+// PROD photo map uses) — two display spellings of one variety still merge.
+
+export interface GroupedCandidate {
+  url: string; // candidate image URL (or, for content, the candidate text)
+  source: string; // prod_propagate | vendor | free_stock | ai_pollinations | auto_generated
+  colorOk?: boolean;
+  tintOk?: boolean;
+  reviewId?: number; // the underlying image_review/content_review row id (for per-option ops)
+}
+
+export interface GroupedVarietyCard {
+  variety: string; // display variety (first spelling seen for the normalized key)
+  category: string | null;
+  levers: string[]; // which review levers contributed ('image' | 'content')
+  skuIds: string[]; // ALL sizes' sku_ids (deduped) — closeAssetGate closes them all at once
+  candidates: GroupedCandidate[]; // photo/text OPTIONS, deduped across the N sku rows
+  importance: number; // top priority_score across the variety's sku rows (0 when unknown)
+  currentQuality: number | null; // not derivable from the review queue alone -> null (honest)
+}
+
+interface VarietyAcc {
+  variety: string;
+  category: string | null;
+  levers: Set<string>;
+  skuIds: Set<string>;
+  candidates: Map<string, GroupedCandidate>; // keyed by url to dedupe across sizes
+  importance: number;
+}
+
+/**
+ * Collapse the pending image + content review queues into ONE card per VARIETY.
+ *
+ * - skuIds[]: every distinct sku_id across all the variety's sizes/levers, so a
+ *   single approve calls closeAssetGate(svc, { skuIds: <all N>, gate }) ONCE.
+ * - candidates[]: deduped by URL across the N sku rows. Because all sizes of a
+ *   variety share the same PROD photos (getProdAllPhotosMap is per normalized
+ *   variety), the same option would otherwise repeat N-fold — we dedupe so each
+ *   option shows once. We also FOLD IN the variety's full PROD photo set so the
+ *   card offers every real recoverable photo, not just the seeded candidate.
+ * - importance: max priority_score seen across the variety's rows (honest 0 when
+ *   the review tables carry no priority).
+ *
+ * REAL data only. NULL-safe. Never throws (empty array on failure). The PROD
+ * fold-in degrades gracefully when PROD is unreachable (getProdAllPhotosMap=null).
+ *
+ * `lever`: 'image' collapses image_review; 'content' collapses content_review.
+ */
+export async function getGroupedVarietyCards(
+  lever: 'image' | 'content',
+): Promise<GroupedVarietyCard[]> {
+  let backup;
+  try {
+    backup = getBackupServiceClient();
+  } catch {
+    return [];
+  }
+
+  const byVariety = new Map<string, VarietyAcc>();
+
+  const ensure = (rawVariety: string | null): VarietyAcc | null => {
+    const key = normVariety(rawVariety);
+    if (!key) return null; // no variety key -> cannot collapse honestly
+    let acc = byVariety.get(key);
+    if (!acc) {
+      acc = {
+        variety: (rawVariety ?? '').trim() || key,
+        category: null,
+        levers: new Set<string>(),
+        skuIds: new Set<string>(),
+        candidates: new Map<string, GroupedCandidate>(),
+        importance: 0,
+      };
+      byVariety.set(key, acc);
+    }
+    return acc;
+  };
+
+  try {
+    if (lever === 'image') {
+      const { data, error } = await backup
+        .from('image_review')
+        .select('id, sku_id, variety, candidate_url, source, tier')
+        .eq('status', 'pending')
+        .order('tier', { ascending: true })
+        .limit(2000);
+      if (error || !Array.isArray(data)) return [];
+      for (const r of data as Array<{
+        id: number;
+        sku_id: string | null;
+        variety: string | null;
+        candidate_url: string | null;
+        source: string | null;
+        tier: number | null;
+      }>) {
+        const acc = ensure(r.variety);
+        if (!acc) continue;
+        acc.levers.add('image');
+        const sku = typeof r.sku_id === 'string' ? r.sku_id.trim() : '';
+        if (sku) acc.skuIds.add(sku);
+        const url = typeof r.candidate_url === 'string' ? r.candidate_url.trim() : '';
+        if (url && !acc.candidates.has(url)) {
+          acc.candidates.set(url, {
+            url,
+            source: (r.source ?? '').trim() || 'unknown',
+            reviewId: r.id,
+          });
+        }
+      }
+
+      // FOLD IN the full PROD photo set per variety (deduped) so the card offers
+      // every REAL recoverable photo as an option, not only the seeded candidate.
+      // Degrades to no-op when PROD is unreachable (map === null).
+      const prodPhotos = await getProdAllPhotosMap();
+      if (prodPhotos) {
+        for (const [key, acc] of byVariety.entries()) {
+          const urls = prodPhotos.get(key);
+          if (!urls) continue;
+          for (const url of urls) {
+            if (!acc.candidates.has(url)) {
+              acc.candidates.set(url, { url, source: 'prod_propagate' });
+            }
+          }
+        }
+      }
+    } else {
+      const { data, error } = await backup
+        .from('content_review')
+        .select('id, sku_id, variety, candidate_text')
+        .eq('status', 'pending')
+        .order('variety', { ascending: true })
+        .limit(2000);
+      if (error || !Array.isArray(data)) return [];
+      for (const r of data as Array<{
+        id: number;
+        sku_id: string | null;
+        variety: string | null;
+        candidate_text: string | null;
+      }>) {
+        const acc = ensure(r.variety);
+        if (!acc) continue;
+        acc.levers.add('content');
+        const sku = typeof r.sku_id === 'string' ? r.sku_id.trim() : '';
+        if (sku) acc.skuIds.add(sku);
+        const text = typeof r.candidate_text === 'string' ? r.candidate_text.trim() : '';
+        if (text && !acc.candidates.has(text)) {
+          acc.candidates.set(text, { url: text, source: 'auto_generated', reviewId: r.id });
+        }
+      }
+    }
+  } catch {
+    return [];
+  }
+
+  const cards: GroupedVarietyCard[] = [];
+  for (const acc of byVariety.values()) {
+    cards.push({
+      variety: acc.variety,
+      category: acc.category,
+      levers: Array.from(acc.levers),
+      skuIds: Array.from(acc.skuIds),
+      candidates: Array.from(acc.candidates.values()),
+      importance: acc.importance,
+      currentQuality: null,
+    });
+  }
+  // Most candidate options first (richest decisions on top), then by name.
+  cards.sort(
+    (a, b) =>
+      b.candidates.length - a.candidates.length || a.variety.localeCompare(b.variety),
+  );
+  return cards;
 }

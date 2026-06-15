@@ -1128,6 +1128,11 @@ export default async function SupplyEnginePage() {
 
       <SurfaceStatusBanner surfaceKey="supply" />
 
+      {/* SOURCING-SUBAGENT review queue (public.image_review): pre-sourced candidate photos
+          awaiting Facu approval. v2 collapses these to ONE card per VARIETY (candidates as
+          options inside) — distinct from the engine's `image` lever cards below (ImageSolution,
+          which reads v_supply_recommendations live). Both may touch a variety but are different
+          workflows (approve pre-sourced candidates vs. work the live lever). */}
       {imageReviewSkus.length > 0 && (
         <div className="mb-6">
           <ImageReviewPanel skus={imageReviewSkus} />

@@ -29,7 +29,14 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import { getProdAllPhotosMap, normVariety } from '@/app/admin/supply/_recData';
+import {
+  getProdAllPhotosMap,
+  normVariety,
+  parseVarietyAttributes,
+  colorMatches,
+  tintMatches,
+  type VarietyAttributes,
+} from '@/app/admin/supply/_recData';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -189,6 +196,60 @@ function aiRung(variety: string): AiRung {
 }
 
 // ---------------------------------------------------------------------------
+// UNIFIED CANDIDATES (SHARED CONTRACT) — {url, source, colorOk?, tintOk?}
+// ---------------------------------------------------------------------------
+//
+// The card-v2 surface consumes ONE ranked candidates[] of photo OPTIONS instead
+// of three separate buckets. Each candidate carries colorOk / tintOk annotations
+// computed against the variety's PARSED attributes (color + tint from the NAME).
+// These are TEXT-provenance annotations, NOT pixel verification:
+//   - PROD url  -> matched on the variety KEY (the url itself has no color text,
+//                  so its colorOk/tintOk inherit the variety-key match: a PROD
+//                  photo returned for the tinted-blue key IS the tinted-blue
+//                  photo). source 'prod'.
+//   - free lead -> colorOk/tintOk reflect the QUERY INTENT (we asked for the
+//                  right color/tint), honestly a lead not a verified pixel.
+//                  source 'free'.
+//   - AI url    -> unverifiable: colorOk/tintOk = false always (generated, may
+//                  not match), ranked last. source 'ai'.
+//
+// Ranking (down-rank, never silently drop): PROD-match > PROD > matching-free >
+// AI. A non-matching PROD/free candidate stays in the list but sinks below
+// matching ones, so the response is honest about what does/doesn't match.
+
+type CandidateSource = 'prod' | 'free' | 'ai';
+
+interface UnifiedCandidate {
+  url: string;
+  source: CandidateSource;
+  colorOk?: boolean;
+  tintOk?: boolean;
+  // internal-only context (kept in payload for the card; not part of the
+  // minimal {url, source, colorOk?, tintOk?} contract but additive/back-compat)
+  provider?: string;
+  kind?: 'photo' | 'search_lead' | 'generated';
+  note?: string;
+}
+
+// A candidate's rank: matching beats non-matching within each rung; rungs in
+// PROD > free > AI order. colorOk/tintOk === false (a KNOWN mismatch) sinks it
+// below unverified (undefined/null) within its rung; a verified match floats up.
+function candidateRankScore(c: UnifiedCandidate, attrs: VarietyAttributes): number {
+  const rung = c.source === 'prod' ? 300 : c.source === 'free' ? 200 : 100;
+  // match contribution: a verified true is best, an explicit false is worst,
+  // unverified (undefined) is neutral. Only counts if the attr was parsed.
+  const score = (ok: boolean | undefined, wanted: boolean): number => {
+    if (!wanted) return 0; // attribute not parsed -> no signal either way
+    if (ok === true) return 10;
+    if (ok === false) return -10;
+    return 0; // unverified
+  };
+  const colorScore = score(c.colorOk, attrs.color != null);
+  const tintScore = score(c.tintOk, attrs.tint != null);
+  return rung + colorScore + tintScore;
+}
+
+// ---------------------------------------------------------------------------
 // GET
 // ---------------------------------------------------------------------------
 
@@ -205,9 +266,75 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'invalid_variety' }, { status: 400 });
   }
 
+  // Parse what the variety NAME claims it should look like (color + tint) so we
+  // can annotate every candidate honestly. e.g. 'gypsophila tinted blue' ->
+  // {color:'blue', tint:'tinted'}; 'anthurium red large' -> {color:'red'}.
+  const attrs = parseVarietyAttributes(variety);
+
   const { prodPhoto, prodPhotos } = await getProdPhotos(vNorm);
   const free = freeStockCandidates(variety);
   const ai = aiRung(variety);
+
+  // ---- Build the unified, ranked candidates[] (SHARED CONTRACT) -----------
+  // PROD urls: matched on the variety KEY. The url string itself has no color
+  // text, so its annotations inherit the variety NAME's claim — a PROD photo
+  // returned for the tinted-blue key IS the tinted-blue photo (key match). We
+  // annotate via the variety name so the contract shape carries colorOk/tintOk.
+  const candidates: UnifiedCandidate[] = [];
+
+  for (const url of prodPhotos.urls) {
+    candidates.push({
+      url,
+      source: 'prod',
+      // PROD match is on the full normalized variety key (incl. tint/color
+      // words), so a returned PROD url for this variety carries its color/tint.
+      colorOk: attrs.color ? colorMatches(attrs, variety) ?? undefined : undefined,
+      tintOk: attrs.tint ? tintMatches(attrs, variety) ?? undefined : undefined,
+      provider: 'PROD floropolis_inventory',
+      kind: 'photo',
+      note: 'Foto real en PROD para esta variedad (url CloudFront).',
+    });
+  }
+
+  // Free leads: colorOk/tintOk reflect the QUERY intent (we searched for the
+  // right color/tint terms), NOT a verified pixel — honest "lead, not match".
+  // The query string embeds the variety, so it carries the same color/tint text.
+  for (const f of free) {
+    candidates.push({
+      url: f.searchUrl,
+      source: 'free',
+      colorOk: attrs.color ? colorMatches(attrs, variety) ?? undefined : undefined,
+      tintOk: attrs.tint ? tintMatches(attrs, variety) ?? undefined : undefined,
+      provider: f.provider,
+      kind: 'search_lead',
+      note: `${f.note} (intent de busqueda, no pixel verificado)`,
+    });
+  }
+
+  // AI rung: unverifiable. A generated image may NOT match the color/tint, so
+  // colorOk/tintOk are explicitly false whenever the variety asserted one, and
+  // it is ranked LAST. Only added when a real url exists (Pollinations keyless).
+  if (ai.available && ai.url) {
+    candidates.push({
+      url: ai.url,
+      source: 'ai',
+      colorOk: attrs.color ? false : undefined, // generated -> unverified color
+      tintOk: attrs.tint ? false : undefined,   // generated -> unverified tint
+      provider: ai.provider ?? 'AI',
+      kind: 'generated',
+      note: 'Imagen generada (no verificada) — ranked debajo de PROD/free matches.',
+    });
+  }
+
+  // Rank: PROD-match > PROD > matching-free > AI; non-matching sinks, never
+  // dropped. Stable-ish (rank desc) so honest order is preserved for the card.
+  candidates.sort((a, b) => candidateRankScore(b, attrs) - candidateRankScore(a, attrs));
+
+  // The top option must NEVER be a fabricated url: PROD urls pass realHttpUrl in
+  // getProdAllPhotosMap, free urls are verifiable provider SEARCH leads, AI is
+  // ranked last + flagged unverified. If the only candidates are AI (no PROD,
+  // no real attribute match), the honest state is reflected by recommendedRung
+  // and the candidates' colorOk:false flags — not a silent "match".
 
   // The recommended next rung, framed as WORK (not a flag): prod if real photo
   // exists (one-click apply), else free leads, else AI when wired, else the
@@ -223,10 +350,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json({
     variety,
+    attributes: attrs, // parsed color + tint (honest provenance of the matching)
+    candidates,  // SHARED CONTRACT: unified ranked {url, source, colorOk?, tintOk?}[]
     prodPhoto,   // (a) backward-compat single-photo shape
-    prodPhotos,  // (a) new: ALL real http URLs for the gallery (deduped, max 6)
-    freeCandidates: free, // (b) verifiable free-stock SEARCH leads
-    ai, // (c) honest AI rung availability flag
+    prodPhotos,  // (a) backward-compat: ALL real http URLs for the gallery (deduped, max 6)
+    freeCandidates: free, // (b) backward-compat: verifiable free-stock SEARCH leads
+    ai, // (c) backward-compat: honest AI rung availability flag
     recommendedRung,
     // For the un-gettable case the UI posts to apply-image with no imageUrl to
     // enqueue an ask (ask_vendor | ask_next_client | send_sample).
