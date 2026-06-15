@@ -27,6 +27,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { recordLoopLedger } from '@/lib/admin/loop-ledger';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -175,7 +176,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await svc.from('supply_solution_feedback').insert({
       lever: 'content',
       target_variety: targetLabel,
-      outcome: 'apply',
+      outcome: 'pick', // DB CHECK allows only {'pick','reject'}
       chosen_value: note.slice(0, 200),
       reason: 'no_content_gap_sku',
       metric_before: 0,
@@ -205,6 +206,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // 3) CLEAR the content gate -> publishable when no blocking gate remains.
   let gatesCleared = 0;
   const gateErrors: string[] = [];
+  const clearedIds: string[] = [];
   for (const id of gapSkuIds) {
     const cls = classBySku.get(id);
     if (!cls || !hasGate(cls.failing_gates, CONTENT_GATE)) continue;
@@ -226,6 +228,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       gateErrors.push(id);
     } else {
       gatesCleared += 1;
+      clearedIds.push(id);
     }
   }
 
@@ -258,10 +261,34 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if ((st?.status ?? '') === 'publishable') nowPublishable += 1;
   }
 
+  // 3b) Record the loop ledger per cleared SKU so the apply-content close advances
+  //     the streak. owner_agent = executing agent (Job_PM); the DB CHECK rejects
+  //     'Facu'. The inline close above already cleared the gate — no re-clear here
+  //     (no double blocking_gate_count decrement). NOTE: most content-gap SKUs also
+  //     carry missing_image, so 'publishable'/'left view' may be false for them
+  //     while the content gate is verified — the ledger records the gate close.
+  for (const id of clearedIds) {
+    const st = statusAfter.get(id);
+    const ledger = await recordLoopLedger(svc, {
+      skuId: id,
+      gateId: CONTENT_GATE,
+      domain: 'content',
+      ownerAgent: 'Job_PM',
+      targetState: 'verified',
+      routedVia: 'apply_content',
+      evidence: {
+        fix: { source: 'apply_content', category, boxType, text: note.slice(0, 200), decided_by: decidedBy },
+        before: { gate: CONTENT_GATE, status: 'blocked' },
+        after: { gate_cleared: true, publishable: (st?.status ?? '') === 'publishable' },
+      },
+    });
+    if (!ledger.ok) console.error('[apply-content] loop ledger:', id, ledger.error);
+  }
+
   const { error: fbErr } = await svc.from('supply_solution_feedback').insert({
     lever: 'content',
     target_variety: targetLabel,
-    outcome: 'apply',
+    outcome: 'pick', // DB CHECK allows only {'pick','reject'}
     chosen_value: note.slice(0, 200),
     metric_before: gapSkuIds.length,
     metric_after: gapSkuIds.length - closed,

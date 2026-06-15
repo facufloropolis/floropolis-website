@@ -35,9 +35,18 @@ function SkuCard({ sku }: { sku: ImageReviewSku }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: candidateId, decision, feedback: reason || null }),
       });
-      const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string; propagated?: boolean };
-      if (res.ok && b.ok) setDone(decision === 'approve' ? 'approved' : 'rejected');
-      else setErr(b.error ?? `http_${res.status}`);
+      const b = (await res.json().catch(() => ({}))) as {
+        ok?: boolean; error?: string; propagated?: boolean; loopClosed?: boolean; publishable?: boolean;
+      };
+      if (res.ok && b.ok) {
+        if (decision === 'reject') setDone('rechazada');
+        // Honest label: only say "desbloqueado" when the GATE cleared (loop closed),
+        // "publicable" when no blocker remains; "imagen cargada" if only the asset landed.
+        else if (b.publishable) setDone('desbloqueado · publicable');
+        else if (b.loopClosed) setDone('desbloqueado');
+        else if (b.propagated) setDone('imagen cargada');
+        else setDone('aprobada');
+      } else setErr(b.error ?? `http_${res.status}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'error');
     } finally {

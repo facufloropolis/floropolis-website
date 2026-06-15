@@ -23,9 +23,19 @@ function Row({ c }: { c: ContentCandidate }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: c.id, decision, text: decision === 'approve' ? text : null }),
       });
-      const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-      if (res.ok && b.ok) setDone(decision === 'approve' ? (edited ? 'editada + aplicada' : 'aplicada') : 'rechazada');
-      else setErr(b.error ?? `http_${res.status}`);
+      const b = (await res.json().catch(() => ({}))) as {
+        ok?: boolean; error?: string; propagated?: boolean; loopClosed?: boolean; publishable?: boolean;
+      };
+      if (res.ok && b.ok) {
+        if (decision === 'reject') setDone('rechazada');
+        else {
+          // Honest: "desbloqueado" only when the gate cleared (loop closed).
+          const base = edited ? 'editada' : 'aplicada';
+          if (b.publishable) setDone(`${base} · publicable`);
+          else if (b.loopClosed) setDone(`${base} · desbloqueado`);
+          else setDone(base);
+        }
+      } else setErr(b.error ?? `http_${res.status}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'error');
     } finally {

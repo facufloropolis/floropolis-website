@@ -49,6 +49,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { normVariety } from '@/app/admin/supply/_recData';
+import { recordLoopLedger } from '@/lib/admin/loop-ledger';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -314,6 +315,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // 4) CLEAR the missing_image gate -> publishable when no blocking gate remains.
   let gatesCleared = 0;
   const gateErrors: string[] = [];
+  const clearedIds: string[] = [];
   for (const id of gapSkuIds) {
     const cls = classBySku.get(id);
     if (!cls || !hasMissingImage(cls.failing_gates)) continue;
@@ -335,6 +337,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       gateErrors.push(id);
     } else {
       gatesCleared += 1;
+      clearedIds.push(id);
     }
   }
 
@@ -371,6 +374,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // The metric the card shows MOVED: 0 -> 1 image_count for the gap SKUs.
   const imageCountAfter = imagesWritten > 0 || gatesCleared > 0 ? 1 : 0;
   const loopClosed = closed > 0;
+
+  // 5b) Record the loop ledger per cleared SKU (improvement_loop_state -> verified)
+  //     so the apply-image close advances the streak — NOT just product_chrome.
+  //     owner_agent = executing agent (Job_PM); the DB CHECK rejects 'Facu'. The
+  //     inline close above already cleared the gate; we do NOT re-clear here (no
+  //     double blocking_gate_count decrement).
+  for (const id of clearedIds) {
+    const st = statusAfter.get(id);
+    const ledger = await recordLoopLedger(svc, {
+      skuId: id,
+      gateId: 'missing_image',
+      domain: 'images',
+      ownerAgent: 'Job_PM',
+      targetState: 'verified',
+      routedVia: 'apply_image',
+      evidence: {
+        fix: { source: 'apply_image', variety, url, decided_by: decidedBy },
+        before: { image_count: 0, gate: 'missing_image', status: 'blocked' },
+        after: { image_count: 1, gate_cleared: true, publishable: (st?.status ?? '') === 'publishable' },
+      },
+    });
+    if (!ledger.ok) console.error('[apply-image] loop ledger:', id, ledger.error);
+  }
 
   // 6) LEARNING: record the pick + the metric move.
   const { error: fbErr } = await svc.from('supply_solution_feedback').insert({

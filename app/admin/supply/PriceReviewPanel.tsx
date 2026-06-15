@@ -23,9 +23,14 @@ function CalcRow({ c }: { c: PriceCandidate }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: c.id, decision, price: decision === 'correct' ? Number(price) : undefined }),
       });
-      const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-      if (res.ok && b.ok) setDone(decision === 'reject' ? 'rechazado' : decision === 'correct' ? 'corregido' : 'aprobado');
-      else setErr(b.error ?? `http_${res.status}`);
+      const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string; routed?: boolean };
+      if (res.ok && b.ok) {
+        if (decision === 'reject') setDone('rechazado');
+        // HONEST: Job does not own the canonical price (Rose-owned). Approve/correct
+        // routes to the governed price path; it is NOT published/verified from here.
+        else if (b.routed) setDone(decision === 'correct' ? 'corregido · ruteado' : 'aprobado · ruteado');
+        else setDone(decision === 'correct' ? 'corregido' : 'aprobado');
+      } else setErr(b.error ?? `http_${res.status}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'error');
     } finally {
@@ -69,7 +74,10 @@ export default function PriceReviewPanel({ data }: { data: PriceReviewData }) {
         <h2 className="text-[15px] font-semibold text-slate-800">Precios — sugeridos para aprobar</h2>
         <span className="text-[12px] text-slate-500">{data.calculable.length} listos · fórmula fija (cost/(1-GPM)+delivery)</span>
       </div>
-      <p className="mb-3 text-[12px] text-slate-500">Precio derivado del costo real, no inventado. Aprobás, Corregís el número, o Rechazás.</p>
+      <p className="mb-3 text-[12px] text-slate-500">
+        Precio derivado del costo real, no inventado. Aprobás, Corregís el número, o Rechazás. Tu decisión se rutea al
+        camino de precio gobernado (el costo canónico es de Rose) — no se publica desde acá.
+      </p>
 
       <div className="space-y-1.5">
         {data.calculable.map((c) => <CalcRow key={c.id} c={c} />)}
