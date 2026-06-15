@@ -77,6 +77,7 @@ import {
   type ContentBatchRec,
   type ContentInference,
 } from './_scaleReaders';
+import StructuralBlockersPanel from './StructuralBlockersPanel';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -91,6 +92,76 @@ export const metadata = {
 };
 
 const LEVER_CAP = 15; // top N varieties shown per per-SKU lever before "+N more"
+
+// ---------------------------------------------------------------------------
+// Structural blockers (52 SKUs invisible to v_supply_recommendations)
+// ---------------------------------------------------------------------------
+
+interface MagicFlowersBlocker {
+  skuCount: number;
+  currentStemsPerBox: number;
+  boxKey: string;
+}
+
+interface FlodecolBlocker {
+  skuCount: number;
+  noImageCount: number;
+  skuIds: string[];
+}
+
+interface StructuralBlockers {
+  magicFlowers: MagicFlowersBlocker | null;
+  flodecol: FlodecolBlocker | null;
+}
+
+async function getStructuralBlockers(backup: ReturnType<typeof getBackupServiceClient>): Promise<StructuralBlockers> {
+  const [mfCountRes, mfBoxRes, flodecolCountRes, flodecolNoImgRes] = await Promise.all([
+    backup
+      .from('v_catalog_admin')
+      .select('*', { count: 'exact', head: true })
+      .eq('vendor', 'Magic Flowers')
+      .eq('fail_missing_box_dims', true),
+    backup
+      .from('box_master_mirror')
+      .select('stems_per_box, legacy_box_type')
+      .eq('vendor_canonical_name', 'Magic Flowers')
+      .eq('legacy_box_type', '1/8-MF')
+      .limit(1)
+      .maybeSingle(),
+    backup
+      .from('v_catalog_admin')
+      .select('*', { count: 'exact', head: true })
+      .eq('vendor', 'Flodecol')
+      .eq('capacity_unit_mismatch', true),
+    backup
+      .from('v_catalog_admin')
+      .select('*', { count: 'exact', head: true })
+      .eq('vendor', 'Flodecol')
+      .eq('capacity_unit_mismatch', true)
+      .eq('pending_image_gate', false),
+  ]);
+
+  const mfCount = mfCountRes.count ?? 0;
+  const mfBox = mfBoxRes.data;
+  const magicFlowers: MagicFlowersBlocker | null =
+    mfCount > 0 && mfBox
+      ? {
+          skuCount: mfCount,
+          currentStemsPerBox:
+            typeof mfBox.stems_per_box === 'number' ? mfBox.stems_per_box : 1,
+          boxKey: typeof mfBox.legacy_box_type === 'string' ? mfBox.legacy_box_type : '1/8-MF',
+        }
+      : null;
+
+  const flodecolCount = flodecolCountRes.count ?? 0;
+  const flodecolNoImg = flodecolNoImgRes.count ?? 0;
+  const flodecol: FlodecolBlocker | null =
+    flodecolCount > 0
+      ? { skuCount: flodecolCount, noImageCount: flodecolNoImg, skuIds: [] }
+      : null;
+
+  return { magicFlowers, flodecol };
+}
 
 // ---------------------------------------------------------------------------
 // Types (per-SKU levers: image / price / quality)
@@ -378,7 +449,8 @@ export default async function SupplyEnginePage() {
   // + the lever bucket stats (all 5, with masked backlog) for the filter tabs.
   // + the four IMPROVEMENT LOOP readers (learning re-rank, loop-closure,
   //   per-axis decision counts) so the engine ranks BETTER proposal-by-proposal.
-  const [buckets, fulfillmentRecs, contentRecs, rerank, closure, decisionsByAxis] =
+  // + structural blockers (52 SKUs invisible to v_supply_recommendations).
+  const [buckets, fulfillmentRecs, contentRecs, rerank, closure, decisionsByAxis, structuralBlockers] =
     await Promise.all([
       getLeverBuckets(),
       getFulfillmentBatchRecs(),
@@ -386,6 +458,7 @@ export default async function SupplyEnginePage() {
       getLearnedRerank(), // LOOP 1
       getLoopClosure(), // LOOP 2
       getDecisionsByAxis(vendorByVariety), // LOOP 3 (same-decision-repeated trigger)
+      getStructuralBlockers(backup),
     ]);
 
   // LOOP 1 + LOOP 2: apply the learned re-rank + closure boost to every per-
@@ -844,7 +917,10 @@ export default async function SupplyEnginePage() {
   }
 
   function FulfillmentSection() {
-    if (fulfillmentRecs.length === 0) {
+    const hasBlockers =
+      structuralBlockers.magicFlowers !== null || structuralBlockers.flodecol !== null;
+
+    if (fulfillmentRecs.length === 0 && !hasBlockers) {
       return (
         <div className="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-8 text-center">
           <div className="text-sm font-semibold text-emerald-800">
@@ -856,6 +932,10 @@ export default async function SupplyEnginePage() {
     }
     return (
       <div className="space-y-4">
+        <StructuralBlockersPanel
+          magicFlowers={structuralBlockers.magicFlowers}
+          flodecol={structuralBlockers.flodecol}
+        />
         {fulfillmentRecs.map((b: FulfillmentBatchRec) => (
           <article
             key={`${b.vendor}-${b.boxType}`}
