@@ -1,8 +1,14 @@
 // Pure cart totals computation.
+// v3 | 2026-06-15 | Job_PM — buy_path_identity_and_price_coherence: sku_id
+//      identity is now the catalog_published uuid (string), not the legacy int.
+//      Snapshots come from the published static catalog (lib/checkout/
+//      catalog-source.ts), NOT floropolis_inventory_mirror — so the price here
+//      equals the price the storefront showed (shown == charged).
 // v2 | 2026-05-19 | Job_PM [V8 SHADOW] — T2 tax + Phase D discount integration
 // v1 | 2026-05-17 | Job_PM W3-S9 [V8 SHADOW]
 // Pure function — no IO, no side effects. Easy to unit-test, easy to reason about.
-// Reads SKU snapshots from a Map (caller fetches from floropolis_inventory_mirror).
+// Reads SKU snapshots from a Map keyed by uuid (caller builds it from the
+// published static catalog via getPublishedSkuMap()).
 //
 // Money is stored as numeric(12,2) in DB; here we work in plain JS numbers but ALL
 // arithmetic is rounded to 2dp at line + total boundaries (no float drift). The
@@ -17,12 +23,17 @@
 // Shipping still punted to 0 (D7). Discount + tax both real as of v2.
 
 export interface CartItem {
-  sku_id: number;
+  /** Catalog_published SKU uuid — the cart identity. */
+  sku_id: string;
   quantity: number;
 }
 
 export interface SkuMirrorSnapshot {
-  id: number;
+  /** Catalog_published SKU uuid — resolution key. */
+  id: string;
+  /** Legacy FNV-hashed int id, kept only for the order_lines.sku_id bigint
+   *  NOT NULL column (never used as identity). */
+  legacy_id: number;
   name: string;
   variety: string | null;
   length: string | null;
@@ -34,7 +45,10 @@ export interface SkuMirrorSnapshot {
 }
 
 export interface CartLine {
-  sku_id: number;
+  /** Catalog_published SKU uuid. */
+  sku_id: string;
+  /** Legacy int id for the order_lines.sku_id bigint column. */
+  legacy_id: number;
   sku_name_snapshot: string;
   sku_variety_snapshot: string | null;
   sku_length_snapshot: string | null;
@@ -75,11 +89,11 @@ export interface TotalsOptions {
 
 export class TotalsError extends Error {
   code: 'sku_missing' | 'quantity_invalid' | 'amount_negative' | 'empty_cart';
-  sku_id?: number;
+  sku_id?: string;
   constructor(
     code: TotalsError['code'],
     message: string,
-    sku_id?: number,
+    sku_id?: string,
   ) {
     super(message);
     this.code = code;
@@ -119,7 +133,7 @@ function r2(n: number): number {
  */
 export function computeTotals(
   items: CartItem[],
-  mirror: Map<number, SkuMirrorSnapshot>,
+  mirror: Map<string, SkuMirrorSnapshot>,
   options: TotalsOptions = {},
 ): CartTotals {
   if (!items || items.length === 0) {
@@ -161,6 +175,7 @@ export function computeTotals(
 
     return {
       sku_id: it.sku_id,
+      legacy_id: snap.legacy_id,
       sku_name_snapshot: snap.name,
       sku_variety_snapshot: snap.variety,
       sku_length_snapshot: snap.length,
@@ -225,11 +240,15 @@ export function computeTotals(
 // dev deps. If you add jest/vitest later, port these.
 // ============================================================================
 if (require.main === module) {
-  const mirror = new Map<number, SkuMirrorSnapshot>([
+  // Identity is the uuid string now (v3). legacy_id is the bigint-column value.
+  const SKU_A = '11111111-1111-1111-1111-111111111111';
+  const SKU_B = '22222222-2222-2222-2222-222222222222';
+  const mirror = new Map<string, SkuMirrorSnapshot>([
     [
-      6676,
+      SKU_A,
       {
-        id: 6676,
+        id: SKU_A,
+        legacy_id: 6676,
         name: 'Rose Freedom 50cm',
         variety: 'Freedom',
         length: '50cm',
@@ -241,9 +260,10 @@ if (require.main === module) {
       },
     ],
     [
-      6677,
+      SKU_B,
       {
-        id: 6677,
+        id: SKU_B,
+        legacy_id: 6677,
         name: 'Hydrangea Jumbo',
         variety: 'Mophead',
         length: '60cm',
@@ -258,8 +278,8 @@ if (require.main === module) {
 
   const totals = computeTotals(
     [
-      { sku_id: 6676, quantity: 100 },
-      { sku_id: 6677, quantity: 5 },
+      { sku_id: SKU_A, quantity: 100 },
+      { sku_id: SKU_B, quantity: 5 },
     ],
     mirror,
   );
@@ -272,7 +292,7 @@ if (require.main === module) {
   // T2: B2C with FL state -> 6% tax
   const rates = new Map<string, number>([['FL', 0.06], ['NY', 0.04]]);
   const flTotals = computeTotals(
-    [{ sku_id: 6676, quantity: 10 }], // 10 * 12.5 = 125
+    [{ sku_id: SKU_A, quantity: 10 }], // 10 * 12.5 = 125
     mirror,
     { shipping_state: 'FL', taxRates: rates },
   );
@@ -282,7 +302,7 @@ if (require.main === module) {
 
   // T2: EIN switches to B2B -> tax = 0
   const b2bTotals = computeTotals(
-    [{ sku_id: 6676, quantity: 10 }],
+    [{ sku_id: SKU_A, quantity: 10 }],
     mirror,
     { shipping_state: 'FL', taxRates: rates, ein: '12-3456789' },
   );
@@ -292,7 +312,7 @@ if (require.main === module) {
 
   // Phase D: discount applies before tax
   const discTotals = computeTotals(
-    [{ sku_id: 6676, quantity: 10 }],
+    [{ sku_id: SKU_A, quantity: 10 }],
     mirror,
     { shipping_state: 'FL', taxRates: rates, discount_amount: 25 },
   );
@@ -308,7 +328,7 @@ if (require.main === module) {
   console.assert(formatEIN('123456789') === '12-3456789', 'EIN format');
 
   try {
-    computeTotals([{ sku_id: 9999, quantity: 1 }], mirror);
+    computeTotals([{ sku_id: "99999999-9999-9999-9999-999999999999", quantity: 1 }], mirror);
     console.assert(false, 'should have thrown sku_missing');
   } catch (e) {
     console.assert(
@@ -318,7 +338,7 @@ if (require.main === module) {
   }
 
   try {
-    computeTotals([{ sku_id: 6676, quantity: 0 }], mirror);
+    computeTotals([{ sku_id: SKU_A, quantity: 0 }], mirror);
     console.assert(false, 'should have thrown quantity_invalid');
   } catch (e) {
     console.assert(

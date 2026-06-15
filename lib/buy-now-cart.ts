@@ -8,14 +8,20 @@
 //
 // localStorage key matches what app/checkout/page.tsx already reads:
 //   key:   "floropolis-cart"
-//   value: { items: [{sku_id: number, quantity: number}], delivery_date?: "YYYY-MM-DD" }
+//   value: { items: [{sku_id: string, quantity: number}], delivery_date?: "YYYY-MM-DD" }
+//
+// sku_id is the real catalog_published SKU uuid (Product.sku_id), NOT the legacy
+// FNV-hashed Product.id. Carrying the uuid end-to-end is what lets checkout
+// resolve the cart against the same published catalog the storefront displayed
+// (see lib/checkout/catalog-source.ts). Legacy numeric entries (pre-fix carts)
+// are tolerated + discarded on read so a stale cart can't crash the page.
 //
 // All functions are SSR-safe (no-op when window is undefined). Writes dispatch
 // both a CustomEvent (same-tab) and the native "storage" event handles
 // cross-tab updates for free — listeners only need to subscribe to one.
 
 export interface BuyNowCartItem {
-  sku_id: number;
+  sku_id: string;
   quantity: number;
 }
 
@@ -34,15 +40,20 @@ function readCart(): BuyNowCart {
     if (!raw) return { items: [] };
     const parsed = JSON.parse(raw) as Partial<BuyNowCart>;
     if (!parsed || !Array.isArray(parsed.items)) return { items: [] };
-    const items: BuyNowCartItem[] = parsed.items
+    const items: BuyNowCartItem[] = (parsed.items as Array<{ sku_id?: unknown; quantity?: unknown }>)
+      .map((x) => ({
+        // Identity is the uuid string. Legacy numeric ids (pre-fix carts) are
+        // coerced to string here but won't resolve in the published catalog ->
+        // they surface as sku_missing rather than throwing. Discard empties.
+        sku_id: x != null && x.sku_id != null ? String(x.sku_id).trim() : "",
+        quantity: Number(x?.quantity),
+      }))
       .filter(
         (x): x is BuyNowCartItem =>
-          x != null &&
-          Number.isFinite(Number((x as BuyNowCartItem).sku_id)) &&
-          Number.isInteger(Number((x as BuyNowCartItem).quantity)) &&
-          Number((x as BuyNowCartItem).quantity) > 0,
-      )
-      .map((x) => ({ sku_id: Number(x.sku_id), quantity: Number(x.quantity) }));
+          x.sku_id.length > 0 &&
+          Number.isInteger(x.quantity) &&
+          x.quantity > 0,
+      );
     return { items, delivery_date: parsed.delivery_date };
   } catch {
     return { items: [] };
@@ -64,7 +75,7 @@ function writeCart(cart: BuyNowCart): void {
  * Add a SKU to the cart. If the SKU is already present, sum the quantities so
  * a customer clicking "Buy now" twice ends up with the expected count.
  */
-export function addToBuyNowCart(skuId: number, quantity: number = 1): void {
+export function addToBuyNowCart(skuId: string, quantity: number = 1): void {
   if (typeof window === "undefined") return;
   const qty = Math.max(1, Math.floor(quantity));
   const cart = readCart();
@@ -83,7 +94,7 @@ export function getBuyNowCart(): BuyNowCart {
 }
 
 /** Remove a single SKU from the cart. No-op if it isn't present. */
-export function removeFromBuyNowCart(skuId: number): void {
+export function removeFromBuyNowCart(skuId: string): void {
   if (typeof window === "undefined") return;
   const cart = readCart();
   const next = cart.items.filter((i) => i.sku_id !== skuId);

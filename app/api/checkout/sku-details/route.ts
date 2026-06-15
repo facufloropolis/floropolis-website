@@ -1,21 +1,23 @@
-// GET /api/checkout/sku-details?ids=1,2,3 — hydrate cart from inventory mirror
+// GET /api/checkout/sku-details?ids=<uuid>,<uuid> — hydrate cart from the
+// published static catalog (catalog_published).
+// v3 | 2026-06-15 | Job_PM — buy_path_identity_and_price_coherence: resolve cart
+//      items by catalog_published uuid against the SAME static catalog the
+//      storefront displays (lib/checkout/catalog-source.ts), NOT
+//      floropolis_inventory_mirror. This makes shown == charged by construction
+//      and makes the 16-gate publish authority the buyability gate for free.
 // v2 | 2026-05-17 | Job_PM W4-S11 [V8 SHADOW]
 //
 // Why: localStorage cart only stores {sku_id, quantity}. The /checkout page
-// needs the live name/variety/length/unit/price/vendor/images for each line
-// before the user submits — so they can see what they're paying for. We read
-// from supabase-backup's floropolis_inventory_mirror via the service role.
+// needs the name/variety/length/unit/price/vendor/images for each line before
+// the user submits — so they can see what they're paying for. sku_id is the
+// real catalog_published SKU uuid; we resolve it against the published catalog.
 //
 // Auth: NOT required. The cart is anonymous until the user authenticates at
 // submit time inside /api/checkout/session. SKU listings are public anyway.
 //
-// Missing SKUs: return them in `missing_ids` rather than 404-ing the whole
-// request, so the page can render what it has and flag the gone items.
-//
-// v2 (2026-05-17): graceful mock fallback when BACKUP_SUPABASE_URL/KEY missing
-// OR the mirror fetch fails. This lets /checkout?demo=1 render in preview/dev
-// environments without seeded env. Response includes `x-data-source: mock`
-// header so DevTools can confirm whether real or fallback data is served.
+// Missing/unpublished SKUs: returned in `missing_ids` rather than 404-ing the
+// whole request, so the page can render what it has and flag the gone items. A
+// uuid absent from the published catalog (unpublished / gate-failed) lands here.
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -23,12 +25,15 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 
-import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import { getPublishedSkuMap } from '@/lib/checkout/catalog-source';
 
 const MAX_IDS_PER_REQUEST = 200;
+// Loose uuid shape check — keeps obvious garbage out of the lookup. Resolution
+// against the published catalog is the real gate.
+const UUID_RE = /^[0-9a-fA-F-]{8,64}$/;
 
 interface SkuDetail {
-  id: number;
+  id: string;
   name: string;
   variety: string | null;
   length: string | null;
@@ -44,109 +49,63 @@ interface SkuDetail {
   units_per_box: number | null;
 }
 
-function mockItemForId(id: number): SkuDetail {
-  const price = Number((2.25 + (id % 10) * 0.10).toFixed(2));
-  return {
-    id,
-    name: `Demo Bouquet ${id}`,
-    variety: 'Demo Variety',
-    length: '50cm',
-    unit: 'Stem',
-    price,
-    vendor: 'Demo',
-    is_on_deal: false,
-    deal_price: null,
-    images: null,
-    stems_per_bunch: 10,
-    units_per_box: 40,
-  };
-}
-
-function mockResponse(ids: number[]): NextResponse {
-  const items = ids.map(mockItemForId);
-  return NextResponse.json(
-    { items, missing_ids: [] satisfies number[] },
-    { status: 200, headers: { 'x-data-source': 'mock' } },
-  );
-}
-
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const raw = req.nextUrl.searchParams.get('ids') ?? '';
   if (!raw.trim()) {
     return NextResponse.json(
-      { items: [], missing_ids: [] satisfies number[] },
+      { items: [] as SkuDetail[], missing_ids: [] as string[] },
       { status: 200 },
     );
   }
 
-  // Parse + sanitize. Reject anything non-numeric to avoid SQL injection via
-  // the .in() builder (it already escapes, but explicit > implicit).
+  // Parse + sanitize. Keep only uuid-shaped tokens.
   const ids = Array.from(
     new Set(
       raw
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean)
-        .map((s) => Number(s))
-        .filter((n) => Number.isInteger(n) && n > 0),
+        .filter((s) => UUID_RE.test(s)),
     ),
   ).slice(0, MAX_IDS_PER_REQUEST);
 
   if (ids.length === 0) {
-    return NextResponse.json(
-      { error: 'no_valid_ids' },
-      { status: 400 },
-    );
-  }
-
-  // Pre-flight: if env is missing, skip the supabase call entirely and serve
-  // mock data so /checkout?demo=1 renders cleanly in dev/preview.
-  if (!process.env.BACKUP_SUPABASE_URL || !process.env.BACKUP_SUPABASE_SERVICE_KEY) {
-    return mockResponse(ids);
+    return NextResponse.json({ error: 'no_valid_ids' }, { status: 400 });
   }
 
   try {
-    const backup = getBackupServiceClient();
-    const { data, error } = await backup
-      .from('floropolis_inventory_mirror')
-      .select(
-        'id,name,variety,length,unit,price,vendor,is_on_deal,deal_price,images,stems_per_bunch,units_per_box',
-      )
-      .in('id', ids);
-
-    if (error) {
-      Sentry.captureException(error, {
-        tags: { route: 'checkout/sku-details', step: 'mirror_fetch' },
+    // Resolve against the published static catalog — the same module the
+    // storefront renders from, so price here == price shown.
+    const catalog = getPublishedSkuMap();
+    const items: SkuDetail[] = [];
+    const missing_ids: string[] = [];
+    for (const id of ids) {
+      const sku = catalog.get(id);
+      if (!sku) {
+        missing_ids.push(id);
+        continue;
+      }
+      items.push({
+        id: sku.sku_uuid,
+        name: sku.name,
+        variety: sku.variety,
+        length: sku.length,
+        unit: sku.unit,
+        price: sku.price,
+        vendor: sku.vendor,
+        is_on_deal: sku.is_on_deal,
+        deal_price: sku.deal_price,
+        images: sku.images,
+        stems_per_bunch: sku.stems_per_bunch,
+        units_per_box: sku.units_per_box,
       });
-      // Graceful fallback: serve mock data instead of 500ing the cart.
-      return mockResponse(ids);
     }
-
-    const items: SkuDetail[] = (data ?? []).map((row) => ({
-      id: Number(row.id),
-      name: row.name,
-      variety: row.variety,
-      length: row.length,
-      unit: row.unit,
-      price: Number(row.price),
-      vendor: row.vendor,
-      is_on_deal: !!row.is_on_deal,
-      deal_price: row.deal_price != null ? Number(row.deal_price) : null,
-      images: row.images ?? null,
-      stems_per_bunch: row.stems_per_bunch != null ? Number(row.stems_per_bunch) : null,
-      units_per_box: row.units_per_box != null ? Number(row.units_per_box) : null,
-    }));
-
-    const foundIds = new Set(items.map((i) => i.id));
-    const missing_ids = ids.filter((id) => !foundIds.has(id));
 
     return NextResponse.json({ items, missing_ids });
   } catch (err) {
     Sentry.captureException(err, {
       tags: { route: 'checkout/sku-details', step: 'handler' },
     });
-    // Graceful fallback on unexpected throw (e.g. env validation error from
-    // getBackupServiceClient if env shape changes upstream).
-    return mockResponse(ids);
+    return NextResponse.json({ error: 'catalog_unavailable' }, { status: 500 });
   }
 }

@@ -55,7 +55,9 @@ import { normalizeEIN, formatEIN } from "@/lib/checkout/totals";
 // ============================================================================
 
 interface LocalCartItem {
-  sku_id: number;
+  // Catalog_published SKU uuid (Product.sku_id) — the cart identity, matching
+  // lib/buy-now-cart.ts. Must share the same localStorage key + shape.
+  sku_id: string;
   quantity: number;
 }
 
@@ -65,7 +67,8 @@ interface LocalCart {
 }
 
 interface SkuDetail {
-  id: number;
+  // uuid identity returned by /api/checkout/sku-details (the resolution key).
+  id: string;
   name: string;
   variety: string | null;
   length: string | null;
@@ -111,7 +114,7 @@ interface SessionResponse {
     scope_value: string;
     discount_pct: number;
     applied_amount: number;
-    matched_line_sku_id: number | null;
+    matched_line_sku_id: string | null;
   }>;
   tax_total?: number;
   tax_treatment?: "B2B" | "B2C";
@@ -208,7 +211,8 @@ function readLocalCart(): LocalCart | null {
 
   // Demo mode: ?demo=1 in URL = synthesize a 2-item cart so Facu (or anyone
   // reviewing the design) can see the full checkout without seeding localStorage.
-  // Picks 2 real SKU IDs from the current mirror (FullStar Anemone variants).
+  // Uses 2 real catalog_published SKU uuids so they resolve through the same
+  // published-catalog gate the live buy path uses (identity is the uuid now).
   try {
     const params = new URLSearchParams(window.location.search);
     if (params.get("demo") === "1") {
@@ -216,8 +220,8 @@ function readLocalCart(): LocalCart | null {
         .toISOString().slice(0, 10);
       return {
         items: [
-          { sku_id: 6676, quantity: 100 },
-          { sku_id: 6677, quantity: 50 },
+          { sku_id: "8ee0a8c5-65e6-41f7-b8c7-6d063625fc38", quantity: 100 },
+          { sku_id: "e7773933-2d70-4325-879f-e45fe576bbb1", quantity: 50 },
         ],
         delivery_date: fortnight,
       };
@@ -231,15 +235,20 @@ function readLocalCart(): LocalCart | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<LocalCart>;
     if (!parsed.items || !Array.isArray(parsed.items)) return null;
-    const items: LocalCartItem[] = parsed.items
+    // Identity is the uuid string (shared shape + key with lib/buy-now-cart.ts).
+    // Legacy numeric entries are coerced to string and simply won't resolve in
+    // the published catalog (surface as missing), never crash the parse.
+    const items: LocalCartItem[] = (parsed.items as Array<{ sku_id?: unknown; quantity?: unknown }>)
+      .map((x) => ({
+        sku_id: x != null && x.sku_id != null ? String(x.sku_id).trim() : "",
+        quantity: Number(x?.quantity),
+      }))
       .filter(
         (x): x is LocalCartItem =>
-          x != null &&
-          Number.isFinite(Number(x.sku_id)) &&
-          Number.isInteger(Number(x.quantity)) &&
-          Number(x.quantity) > 0,
-      )
-      .map((x) => ({ sku_id: Number(x.sku_id), quantity: Number(x.quantity) }));
+          x.sku_id.length > 0 &&
+          Number.isInteger(x.quantity) &&
+          x.quantity > 0,
+      );
     if (items.length === 0) return null;
     return { items, delivery_date: parsed.delivery_date };
   } catch {
@@ -580,8 +589,8 @@ function CheckoutContent() {
   const { user, loading: authLoading, signOut } = useAuthBackup();
   const [cart, setCart] = useState<LocalCart | null>(null);
   const [cartLoaded, setCartLoaded] = useState(false);
-  const [skuMap, setSkuMap] = useState<Map<number, SkuDetail>>(new Map());
-  const [missingIds, setMissingIds] = useState<number[]>([]);
+  const [skuMap, setSkuMap] = useState<Map<string, SkuDetail>>(new Map());
+  const [missingIds, setMissingIds] = useState<string[]>([]);
   const [skuLoading, setSkuLoading] = useState(false);
   const [skuError, setSkuError] = useState<string>("");
 
@@ -697,9 +706,9 @@ function CheckoutContent() {
         return res.json();
       })
       .then(
-        (json: { items: SkuDetail[]; missing_ids: number[] }) => {
+        (json: { items: SkuDetail[]; missing_ids: string[] }) => {
           if (cancelled) return;
-          const m = new Map<number, SkuDetail>();
+          const m = new Map<string, SkuDetail>();
           for (const it of json.items) m.set(it.id, it);
           setSkuMap(m);
           setMissingIds(json.missing_ids ?? []);

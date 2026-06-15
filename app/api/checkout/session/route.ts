@@ -56,6 +56,7 @@ import {
   computeDiscountApplications,
   type DiscountRule,
 } from '@/lib/checkout/discounts';
+import { getPublishedSkuMap } from '@/lib/checkout/catalog-source';
 
 // ============================================================================
 // Constants (Phase-4 security layers, design §5)
@@ -337,39 +338,35 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     Sentry.captureException(err, { tags: { route: 'checkout/session', step: 'rate_limit' } });
   }
 
-  // ---- 5. SKU validity vs mirror (Layer 5) ----
+  // ---- 5. SKU validity vs published catalog (Layer 5) ----
+  // Identity is the catalog_published uuid. Resolve against the SAME static
+  // catalog the storefront displayed (lib/checkout/catalog-source.ts) so the
+  // price we charge == the price shown, and only published (16-gate) SKUs are
+  // buyable. A uuid not in the published map stays absent from `mirror` ->
+  // computeTotals throws TotalsError('sku_missing') -> 400, no extra code.
   const skuIds = Array.from(new Set(body.items.map((i) => i.sku_id)));
-  const { data: mirrorRows, error: mirrorErr } = await backup
-    .from('floropolis_inventory_mirror')
-    .select('id,name,variety,length,unit,vendor,price,is_on_deal,deal_price,category')
-    .in('id', skuIds);
-  if (mirrorErr) {
-    Sentry.captureException(mirrorErr, {
-      tags: { route: 'checkout/session', step: 'mirror_fetch' },
-    });
-    return NextResponse.json(
-      { error: 'mirror_unavailable' },
-      { status: 500 },
-    );
-  }
-  const mirror = new Map<number, SkuMirrorSnapshot>();
+  const published = getPublishedSkuMap();
+  const mirror = new Map<string, SkuMirrorSnapshot>();
   // Phase D: keep per-sku vendor + category for discount-rule matching.
-  const discountMeta = new Map<number, { vendor: string | null; category: string | null }>();
-  for (const row of mirrorRows ?? []) {
-    mirror.set(Number(row.id), {
-      id: Number(row.id),
-      name: row.name,
-      variety: row.variety,
-      length: row.length,
-      unit: row.unit,
-      vendor: row.vendor,
-      price: Number(row.price),
-      is_on_deal: !!row.is_on_deal,
-      deal_price: row.deal_price != null ? Number(row.deal_price) : null,
+  const discountMeta = new Map<string, { vendor: string | null; category: string | null }>();
+  for (const uuid of skuIds) {
+    const sku = published.get(uuid);
+    if (!sku) continue; // unresolved -> surfaces as sku_missing in computeTotals
+    mirror.set(uuid, {
+      id: uuid,
+      legacy_id: sku.legacy_id,
+      name: sku.name,
+      variety: sku.variety,
+      length: sku.length,
+      unit: sku.unit,
+      vendor: sku.vendor,
+      price: sku.price,
+      is_on_deal: sku.is_on_deal,
+      deal_price: sku.deal_price,
     });
-    discountMeta.set(Number(row.id), {
-      vendor: row.vendor ?? null,
-      category: (row as { category?: string | null }).category ?? null,
+    discountMeta.set(uuid, {
+      vendor: sku.vendor ?? null,
+      category: sku.category ?? null,
     });
   }
 
@@ -590,9 +587,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const orderId: number = orderRow.id;
 
   // ---- 12. INSERT order_lines ----
+  // Identity is the catalog_published uuid (l.sku_id). It is written to the
+  // existing order_lines.sku_uuid (uuid) column. order_lines.sku_id is a legacy
+  // bigint NOT NULL column, so it receives the legacy FNV int id (l.legacy_id)
+  // to satisfy the constraint without a schema change. The uuid is the durable
+  // identity going forward.
   const lineRows = totals.lines.map((l) => ({
     order_id: orderId,
-    sku_id: l.sku_id,
+    sku_id: l.legacy_id,
+    sku_uuid: l.sku_id,
     sku_name_snapshot: l.sku_name_snapshot,
     sku_variety_snapshot: l.sku_variety_snapshot,
     sku_length_snapshot: l.sku_length_snapshot,
@@ -608,7 +611,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const { data: insertedLines, error: linesErr } = await backup
     .from('order_lines')
     .insert(lineRows)
-    .select('id, sku_id');
+    .select('id, sku_uuid');
   if (linesErr) {
     Sentry.captureException(linesErr, {
       tags: { route: 'checkout/session', step: 'insert_order_lines' },
@@ -621,13 +624,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   // ---- 12b. INSERT discount_applications (Phase D) ----------------------
-  // One row per matched application. Map back from sku_id -> order_lines.id
-  // using the just-inserted rows. Best-effort: a failure here is logged but
-  // does not block checkout (the discount is already in the order totals).
+  // One row per matched application. Map back from sku uuid -> order_lines.id
+  // using the just-inserted rows (keyed by sku_uuid, the cart identity).
+  // Best-effort: a failure here is logged but does not block checkout (the
+  // discount is already in the order totals).
   if (discountResult.applications.length > 0 && insertedLines) {
-    const lineIdBySku: Record<number, number> = {};
-    for (const row of insertedLines as Array<{ id: number; sku_id: number }>) {
-      lineIdBySku[Number(row.sku_id)] = Number(row.id);
+    const lineIdBySku: Record<string, number> = {};
+    for (const row of insertedLines as Array<{ id: number; sku_uuid: string | null }>) {
+      if (row.sku_uuid != null) lineIdBySku[String(row.sku_uuid)] = Number(row.id);
     }
     const applicationRows = discountResult.applications.map((a) => ({
       rule_id: a.rule_id,

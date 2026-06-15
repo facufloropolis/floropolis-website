@@ -38,8 +38,9 @@ export interface DiscountApplication {
   applied_amount: number;
   order_line_id: number | null; // null when order-level (client-scoped)
   /** Line ref the application was matched against (for caller to map to
-   *  order_lines.id after INSERT). null when order-level. */
-  matched_line_sku_id: number | null;
+   *  order_lines.id after INSERT). The cart-identity uuid string. null when
+   *  order-level. */
+  matched_line_sku_id: string | null;
 }
 
 export interface DiscountResult {
@@ -76,7 +77,7 @@ function withinValidRange(rule: DiscountRule, todayIso: string): boolean {
 export function computeDiscountApplications(
   lines: CartLine[],
   rules: DiscountRule[],
-  meta: Map<number, MirrorLineMeta>,
+  meta: Map<string, MirrorLineMeta>,
   userId: string,
   todayIso: string = new Date().toISOString().slice(0, 10),
 ): DiscountResult {

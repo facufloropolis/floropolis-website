@@ -132,8 +132,10 @@ interface VarietyGroup {
   repUnitsPerBox: number;
   repBoxType: string;
   repStemLength: string | null;
-  // PROPOSAL-BRANCH (2026-05-17): SKU id for direct "Buy now" → /checkout cart
-  repSkuId: number;
+  // PROPOSAL-BRANCH (2026-05-17): SKU uuid (catalog_published identity) for
+  // direct "Buy now" → /checkout cart. The uuid (not the legacy hashed id) is
+  // what checkout resolves against the published catalog.
+  repSkuId: string;
 }
 
 // Returns true if a product is available to show based on tier + arrival_date rules.
@@ -222,7 +224,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       repUnitsPerBox: rep.units_per_box || 0,
       repBoxType: rep.box_type || "Standard",
       repStemLength: rep.length ?? null,
-      repSkuId: rep.id,
+      repSkuId: rep.sku_id,
     });
   }
   return result;

@@ -878,7 +878,7 @@ export default function ProductDetailPage({
                       date into the /checkout localStorage cart, then the
                       button morphs to "Go to checkout" on the same press. */}
                   <BuyNowButton
-                    skuId={currentVariant.id}
+                    skuId={currentVariant.sku_id}
                     defaultQuantity={boxQty}
                     variant="primary"
                     label="Buy now"

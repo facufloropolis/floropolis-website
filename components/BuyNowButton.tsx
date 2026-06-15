@@ -29,15 +29,16 @@ import { addToBuyNowCart } from "@/lib/buy-now-cart";
 export type BuyNowVariant = "primary" | "secondary" | "inline";
 
 interface Props {
-  skuId: number;
+  /** Catalog_published SKU uuid (Product.sku_id) — the cart identity. */
+  skuId: string;
   defaultQuantity?: number;
   variant?: BuyNowVariant;
   label?: string;
   /**
    * Optional callback fired after the cart is updated (e.g. for analytics).
-   * Receives the SKU and quantity that was added.
+   * Receives the SKU uuid and quantity that was added.
    */
-  onAdded?: (skuId: number, quantity: number) => void;
+  onAdded?: (skuId: string, quantity: number) => void;
   /** Disable the button entirely (e.g. price pending). */
   disabled?: boolean;
 }
