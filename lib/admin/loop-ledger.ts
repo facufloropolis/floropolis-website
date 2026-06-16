@@ -35,7 +35,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type AssetGate = 'missing_image' | 'missing_contents_description';
-export type LoopDomain = 'images' | 'content' | 'price' | 'catalog';
+export type LoopDomain = 'images' | 'content' | 'price' | 'catalog' | 'benchmark_coverage';
 export type LoopTargetState = 'landed' | 'verified';
 
 // Map a failing-gate token to the lever the view derives from it. Used to check
@@ -327,6 +327,108 @@ export async function recordLoopLedger(
       gate_id: args.gateId,
       opened_at: nowIso,
       ...base,
+    })
+    .select('id')
+    .maybeSingle();
+  if (insErr) return { ok: false, error: insErr.message };
+  return { ok: true, id: (ins as { id: string } | null)?.id };
+}
+
+export interface RecordCoverageGapArgs {
+  // The gate token for the coverage gap (e.g. 'cost_benchmark_missing'). Used as
+  // gate_id; combined with domain it forms the de-dupe key.
+  gateId: string;
+  // 'benchmark_coverage' for a missing competitor/peer reference. The DB has NO
+  // domain CHECK (verified 2026-06-16: only owner_agent + state CHECKs exist), so
+  // an arbitrary domain text is accepted.
+  domain: LoopDomain;
+  // Who fills the gap. Defaults to Rose_BI (owns the reference data). Coerced to
+  // the allowed set so the owner_agent CHECK can never reject the insert.
+  ownerAgent?: OwnerAgent;
+  // Optional real SKU uuid. When the gap has no specific SKU (a variety-level
+  // coverage hole), leave undefined -> sku_id NULL (the FK to dim_sku is nullable;
+  // ON DELETE CASCADE only matters when set).
+  skuId?: string | null;
+  routedVia?: string;
+  // Provenance + priority. evidence is NOT NULL jsonb; we always pass an object.
+  evidence: Record<string, unknown>;
+}
+
+/**
+ * Record a PRIORITIZED coverage gap (a missing benchmark/peer reference) into the
+ * improvement_loop_state spine WITHOUT requiring a SKU uuid. Sibling of
+ * recordLoopLedger — it does NOT fork the table; it shares the same row contract,
+ * only relaxing the uuid requirement (sku_id NULL allowed) and de-duping on
+ * (gate_id, domain) instead of (sku_id, gate_id).
+ *
+ * WHY a separate de-dupe path: the partial-unique index
+ * uq_catalog_repair_state_sku_gate_open is on (sku_id, gate_id) WHERE state<>'verified'.
+ * With sku_id NULL, Postgres treats every row as DISTINCT (NULL != NULL), so a blind
+ * insert would pile up duplicate coverage rows. We therefore lookup an existing OPEN
+ * row matching (gate_id, domain, sku_id IS NULL) and refresh it in place; otherwise
+ * insert one. Re-running is idempotent.
+ *
+ * ALWAYS state='open' (a gap is unresolved until the data lands). owner_agent
+ * defaults to Rose_BI. Never blocks the caller — missing data is honest, not fatal.
+ */
+export async function recordCoverageGap(
+  svc: SupabaseClient,
+  args: RecordCoverageGapArgs,
+): Promise<RecordLoopLedgerResult> {
+  if (typeof args.gateId !== 'string' || args.gateId.length === 0) {
+    return { ok: false, error: 'invalid_gate_id' };
+  }
+  // Only a real uuid reaches sku_id; anything else -> NULL (no malformed write,
+  // the FK to dim_sku stays satisfied).
+  const skuId =
+    typeof args.skuId === 'string' && UUID_RE.test(args.skuId.trim())
+      ? args.skuId.trim()
+      : null;
+
+  const ownerAgent: OwnerAgent =
+    args.ownerAgent && (ALLOWED_OWNER_AGENTS as readonly string[]).includes(args.ownerAgent)
+      ? args.ownerAgent
+      : 'Rose_BI';
+  const nowIso = new Date().toISOString();
+
+  // De-dupe on (gate_id, domain) for the no-SKU case; (sku_id, gate_id, domain)
+  // when a SKU is present.
+  let lookup = svc
+    .from('improvement_loop_state')
+    .select('id')
+    .eq('gate_id', args.gateId)
+    .eq('domain', args.domain)
+    .neq('state', 'verified');
+  lookup = skuId === null ? lookup.is('sku_id', null) : lookup.eq('sku_id', skuId);
+  const { data: existing } = await lookup.maybeSingle();
+
+  if (existing && (existing as { id: string }).id) {
+    const id = (existing as { id: string }).id;
+    const { error: updErr } = await svc
+      .from('improvement_loop_state')
+      .update({
+        state: 'open',
+        owner_agent: ownerAgent,
+        domain: args.domain,
+        routed_via: args.routedVia ?? null,
+        evidence: args.evidence,
+      })
+      .eq('id', id);
+    if (updErr) return { ok: false, error: updErr.message };
+    return { ok: true, id };
+  }
+
+  const { data: ins, error: insErr } = await svc
+    .from('improvement_loop_state')
+    .insert({
+      sku_id: skuId,
+      gate_id: args.gateId,
+      state: 'open',
+      owner_agent: ownerAgent,
+      domain: args.domain,
+      routed_via: args.routedVia ?? null,
+      evidence: args.evidence,
+      opened_at: nowIso,
     })
     .select('id')
     .maybeSingle();

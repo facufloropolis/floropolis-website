@@ -1433,3 +1433,214 @@ export async function getGroupedVarietyCards(
   );
   return cards;
 }
+
+// ===========================================================================
+// COVERAGE LOOP — "que datos de competidor faltan y cuanto importan"
+// ===========================================================================
+//
+// Job's cost lens compares each variety against competitor benchmark
+// (market_variety_crosswalk.benchmark_pps) + peer cost. When that reference is
+// ABSENT or WEAK, the proposal does NOT block ("sin referencia" is honest), it
+// records a PRIORITIZED coverage-gap on the improvement_loop_state spine
+// (domain='benchmark_coverage') so Rose/Talin can fill the data. This reader
+// computes the live thin-coverage universe (READ-ONLY) so the panel + the
+// recorder agree on which varieties + lens are missing and how much they matter.
+//
+// THIN = absent (no crosswalk row for the variety) OR weak (low confidence /
+// few competitor rows / null benchmark_pps). Verified 2026-06-16: of 216 engine
+// varieties, 111 are ABSENT from market_variety_crosswalk and 11 are WEAK
+// (confidence < 0.5 OR n_rows < 10 OR benchmark_pps NULL). Importance comes from
+// supply_importance_signal.weight (0 floor + provenance tag when absent).
+//
+// REAL data only (v_supply_recommendations + market_variety_crosswalk +
+// supply_importance_signal), NULL-safe, never throws, honest empties. The
+// recorder (lib/admin/coverage-gap.recordCoverageGap) WRITES; this only READS.
+
+// Thresholds for a WEAK (present-but-thin) competitor reference. A row failing
+// ANY of these is thin enough that the cost verdict cannot lean on it honestly.
+const COVERAGE_MIN_CONFIDENCE = 0.5; // below -> weak
+const COVERAGE_MIN_ROWS = 10; // fewer competitor rows -> weak
+
+export interface CoverageGapCandidate {
+  variety: string; // normalized (lower, single-spaced) variety key
+  missingLens: ('competitor' | 'peer')[]; // which reference lens is thin/absent
+  reason: 'absent' | 'weak'; // competitor lens: no row vs present-but-thin
+  importance: number; // supply_importance_signal.weight (0 floor)
+  importanceProvenance: string | null; // provenance tag (honest 'sin referencia')
+  crosswalkRows: number; // n_rows behind the (weak) competitor reference, 0 if absent
+  benchmarkPps: number | null; // present-but-weak pps, else null
+  confidence: number | null; // crosswalk confidence, null if absent
+  priority: number; // importance x frequency-1 (frequency starts at 1 here)
+}
+
+export interface CoverageGapScan {
+  candidates: CoverageGapCandidate[]; // descending by importance (then variety)
+  engineVarieties: number; // distinct varieties seen in the engine
+  absent: number; // varieties with NO crosswalk row
+  weak: number; // varieties present but thin
+  covered: number; // varieties with a strong competitor reference
+  warnings: string[]; // DB errors surfaced (never swallowed)
+}
+
+/**
+ * Scan the live engine for varieties whose competitor reference is thin/absent.
+ * Read-only: joins v_supply_recommendations varieties against
+ * market_variety_crosswalk (competitor lens) + supply_importance_signal (weight).
+ * Returns prioritized candidates the recorder turns into coverage-gap rows.
+ * Never throws; DB errors land in warnings[]. The PEER lens is reported as thin
+ * ONLY when the competitor lens is also thin (no independent peer table is read
+ * here — peer cost lives in canonical_cost, consumed by the cost analyzer in a
+ * separate area; this scan does not build that, per RISKS scope-leakage).
+ */
+export async function scanCoverageGaps(): Promise<CoverageGapScan> {
+  const out: CoverageGapScan = {
+    candidates: [],
+    engineVarieties: 0,
+    absent: 0,
+    weak: 0,
+    covered: 0,
+    warnings: [],
+  };
+  let backup;
+  try {
+    backup = getBackupServiceClient();
+  } catch (e) {
+    out.warnings.push(`coverage scan: backup client ${(e as Error).message}`);
+    return out;
+  }
+
+  const norm = (v: string | null | undefined) => (v ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+  // 1) Distinct engine varieties (the universe that needs a price reference).
+  const { data: recRows, error: recErr } = await backup
+    .from('v_supply_recommendations')
+    .select('variety')
+    .limit(5000);
+  if (recErr) {
+    out.warnings.push(`coverage scan: v_supply_recommendations ${recErr.message}`);
+    return out;
+  }
+  const engineSet = new Set<string>();
+  for (const r of (recRows ?? []) as { variety: string | null }[]) {
+    const v = norm(r.variety);
+    if (v) engineSet.add(v);
+  }
+  out.engineVarieties = engineSet.size;
+
+  // 2) Competitor crosswalk coverage, keyed by normalized our_variety_l. Keep the
+  //    STRONGEST row per variety (highest confidence) as the lens reference.
+  const { data: xwRows, error: xwErr } = await backup
+    .from('market_variety_crosswalk')
+    .select('our_variety_l, n_rows, confidence, benchmark_pps')
+    .limit(5000);
+  if (xwErr) {
+    out.warnings.push(`coverage scan: market_variety_crosswalk ${xwErr.message}`);
+    return out;
+  }
+  interface XwAgg {
+    nRows: number;
+    confidence: number | null;
+    benchmarkPps: number | null;
+  }
+  const xwByVariety = new Map<string, XwAgg>();
+  for (const r of (xwRows ?? []) as {
+    our_variety_l: string | null;
+    n_rows: number | string | null;
+    confidence: number | string | null;
+    benchmark_pps: number | string | null;
+  }[]) {
+    const v = norm(r.our_variety_l);
+    if (!v) continue;
+    const conf =
+      r.confidence == null || !Number.isFinite(Number(r.confidence)) ? null : Number(r.confidence);
+    const nRows = Number.isFinite(Number(r.n_rows)) ? Number(r.n_rows) : 0;
+    const pps =
+      r.benchmark_pps == null || !Number.isFinite(Number(r.benchmark_pps))
+        ? null
+        : Number(r.benchmark_pps);
+    const cur = xwByVariety.get(v);
+    // Strongest (highest confidence, then most rows) row wins as the reference.
+    if (!cur || (conf ?? 0) > (cur.confidence ?? 0) || ((conf ?? 0) === (cur.confidence ?? 0) && nRows > cur.nRows)) {
+      xwByVariety.set(v, { nRows, confidence: conf, benchmarkPps: pps });
+    }
+  }
+
+  // 3) Importance weight per variety (0 floor + provenance tag when absent).
+  const { data: sigRows, error: sigErr } = await backup
+    .from('supply_importance_signal')
+    .select('variety_l, weight, provenance');
+  if (sigErr) {
+    // Importance is enrichment, not a hard dependency — degrade to weight 0 and
+    // keep scanning (honest 'sin referencia' floor), but surface the error.
+    out.warnings.push(`coverage scan: supply_importance_signal ${sigErr.message}`);
+  }
+  const importanceByVariety = new Map<string, { weight: number; provenance: string | null }>();
+  for (const r of (sigRows ?? []) as {
+    variety_l: string | null;
+    weight: number | string | null;
+    provenance: string | null;
+  }[]) {
+    const v = norm(r.variety_l);
+    if (!v) continue;
+    const w = Number.isFinite(Number(r.weight)) ? Math.max(0, Number(r.weight)) : 0;
+    importanceByVariety.set(v, { weight: w, provenance: (r.provenance ?? null) || null });
+  }
+
+  // 4) Classify every engine variety: covered (strong) vs weak vs absent.
+  for (const v of engineSet) {
+    const xw = xwByVariety.get(v);
+    const imp = importanceByVariety.get(v);
+    const importance = imp?.weight ?? 0;
+    const importanceProvenance = imp?.provenance ?? null;
+
+    let reason: 'absent' | 'weak' | null = null;
+    let crosswalkRows = 0;
+    let benchmarkPps: number | null = null;
+    let confidence: number | null = null;
+
+    if (!xw) {
+      reason = 'absent';
+    } else {
+      crosswalkRows = xw.nRows;
+      benchmarkPps = xw.benchmarkPps;
+      confidence = xw.confidence;
+      const weak =
+        xw.benchmarkPps == null ||
+        (xw.confidence != null && xw.confidence < COVERAGE_MIN_CONFIDENCE) ||
+        xw.nRows < COVERAGE_MIN_ROWS;
+      if (weak) reason = 'weak';
+    }
+
+    if (reason === null) {
+      out.covered += 1;
+      continue;
+    }
+    if (reason === 'absent') out.absent += 1;
+    else out.weak += 1;
+
+    // When the competitor lens is thin AND no importance weight exists, the peer
+    // lens is the only remaining reference signal -> flag it thin too so Rose can
+    // fill either. (Peer cost lives in canonical_cost; not read here, per scope.)
+    const missingLens: ('competitor' | 'peer')[] = ['competitor'];
+    if (importance === 0) missingLens.push('peer');
+
+    out.candidates.push({
+      variety: v,
+      missingLens,
+      reason,
+      importance,
+      importanceProvenance,
+      crosswalkRows,
+      benchmarkPps,
+      confidence,
+      // priority at scan time = importance (frequency is 1 until the gap recurs;
+      // the recorded row's frequency then drives importance x frequency).
+      priority: importance > 0 ? importance : 1,
+    });
+  }
+
+  out.candidates.sort(
+    (a, b) => b.priority - a.priority || a.variety.localeCompare(b.variety),
+  );
+  return out;
+}

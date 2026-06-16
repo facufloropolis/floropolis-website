@@ -267,6 +267,9 @@ export default function RowsList({
                   </div>
                 )}
 
+                {/* Verification gate (inventory proposals): 3-lens cost verdict + sense/units */}
+                <VerificationPanel payload={p.payload_raw} />
+
                 {/* Decision context: symptom / root cause / fix / dependencies */}
                 <DecisionContextCard payload={p.payload_raw} />
 
@@ -468,6 +471,8 @@ function BucketedList({
                       </div>
                     )}
 
+                    <VerificationPanel payload={p.payload_raw} />
+
                     <DecisionContextCard payload={p.payload_raw} />
 
                     <div className="border-t border-slate-100 pt-3 mb-3">
@@ -526,6 +531,104 @@ function BucketedList({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// VerificationPanel — renders the cost-verify gate result (payload.verification)
+// for inventory proposals (catalog.add_variety / update_identity / quarantine).
+// Shows the 3-lens COST verdict WITH numbers, plus the SENSE + UNITS lenses. The
+// competitor benchmark_pps shown here is CONFIDENTIAL and only ever rendered inside
+// this admin-gated queue. Invisible when payload has no verification block.
+function VerificationPanel({ payload }: { payload: Record<string, unknown> | null }) {
+  if (!payload) return null;
+  const v = payload.verification as Record<string, unknown> | undefined;
+  if (!v || typeof v !== 'object') return null;
+
+  const sense = v.sense as Record<string, unknown> | undefined;
+  const units = v.units as Record<string, unknown> | undefined;
+  const cost = v.cost as Record<string, unknown> | undefined;
+  const verdict = typeof cost?.verdict === 'string' ? (cost.verdict as string) : 'sin_referencia';
+  const reasons = Array.isArray(cost?.reasons) ? (cost!.reasons as unknown[]).filter((r): r is string => typeof r === 'string') : [];
+
+  const verdictCls =
+    verdict === 'decente'
+      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+      : verdict === 'caro'
+        ? 'bg-amber-100 text-amber-800 border-amber-300'
+        : verdict === 'sospechoso'
+          ? 'bg-red-100 text-red-800 border-red-300'
+          : 'bg-slate-100 text-slate-700 border-slate-300';
+
+  const peer = cost?.peer as { n?: number; median?: number; min?: number; max?: number } | null | undefined;
+  const varietyPeers = cost?.variety_peers as { n?: number; median?: number; min?: number; max?: number } | null | undefined;
+  const bench = cost?.benchmark as { competitor?: string; benchmark_pps?: number; n_rows?: number; confidence?: number } | null | undefined;
+  const proposed = typeof cost?.proposed_cost === 'number' ? (cost.proposed_cost as number) : null;
+
+  return (
+    <div className="mb-3 rounded-lg border border-indigo-200 bg-indigo-50 p-3 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] text-indigo-700 uppercase tracking-wide font-semibold">
+          Verificacion (pre-Facu)
+        </span>
+        <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${verdictCls}`}>
+          costo: {verdict}
+        </span>
+      </div>
+
+      {/* COST — 3 lenses with numbers */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <LensTile
+          label="Pares (cat x caja)"
+          body={peer && peer.median != null ? `med $${peer.median} (${peer.min}-${peer.max}, n=${peer.n})` : 'sin referencia'}
+        />
+        <LensTile
+          label="Variedad otros vendors"
+          body={varietyPeers && varietyPeers.median != null ? `med $${varietyPeers.median} (${varietyPeers.min}-${varietyPeers.max}, n=${varietyPeers.n})` : 'sin referencia'}
+        />
+        <LensTile
+          label="Competidor (PPS)"
+          body={bench && bench.benchmark_pps != null ? `${bench.competitor}: $${bench.benchmark_pps} (n=${bench.n_rows ?? '?'})` : 'sin referencia'}
+        />
+      </div>
+      {proposed != null && (
+        <div className="text-[11px] text-slate-700">
+          Costo propuesto: <span className="font-mono font-semibold">${proposed}</span>
+        </div>
+      )}
+      {reasons.length > 0 && (
+        <ul className="text-[11px] text-slate-600 list-disc pl-4 space-y-0.5">
+          {reasons.map((r, i) => (
+            <li key={i}>{r}</li>
+          ))}
+        </ul>
+      )}
+
+      {/* SENSE + UNITS one-liners */}
+      <div className="flex flex-wrap gap-2 pt-1 border-t border-indigo-100">
+        {sense && typeof sense.note === 'string' && (
+          <span className="text-[10px] text-slate-600">
+            <span className="font-semibold uppercase tracking-wide text-indigo-700">Sense:</span> {sense.note as string}
+          </span>
+        )}
+        {units && typeof units.note === 'string' && (
+          <span className="text-[10px] text-slate-600">
+            <span className="font-semibold uppercase tracking-wide text-indigo-700">Units:</span> {units.note as string}
+            {units.capacity_unit_mismatch === true && (
+              <span className="ml-1 text-red-700 font-semibold">[mismatch]</span>
+            )}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LensTile({ label, body }: { label: string; body: string }) {
+  return (
+    <div className="rounded-md bg-white border border-indigo-100 px-2.5 py-1.5">
+      <div className="text-[9px] text-slate-500 uppercase tracking-wide">{label}</div>
+      <div className="text-[11px] text-slate-800 font-mono mt-0.5 break-words">{body}</div>
     </div>
   );
 }

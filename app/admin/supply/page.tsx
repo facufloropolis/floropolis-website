@@ -60,6 +60,7 @@ import {
   groupByScaleAxis,
   learnedAdjustment,
   closureBoost,
+  scanCoverageGaps,
   SUPPLY_LEVERS,
   leverBucket,
   type CompetitorContext,
@@ -69,6 +70,12 @@ import {
   type GroupableRow,
   type GroupedRec,
 } from './_recData';
+import CoverageGapPanel from './CoverageGapPanel';
+import {
+  recordCoverageGap,
+  listCoverageGaps,
+  type CoverageGapRow,
+} from '@/lib/admin/coverage-gap';
 import {
   getFulfillmentBatchRecs,
   getContentBatchRecs,
@@ -557,6 +564,41 @@ export default async function SupplyEnginePage() {
     batchedVarieties,
     learnedDeltaDead: true,
   });
+
+  // COVERAGE LOOP -------------------------------------------------------------
+  // Scan the live engine for varieties whose competitor / peer reference is
+  // thin/absent (the cost lens cannot lean on it honestly), RECORD each as a
+  // prioritized coverage-gap on the improvement_loop_state spine
+  // (domain='benchmark_coverage', sku_id NULL, owner_agent Job_PM), then list the
+  // open/routed gaps ranked by importance x frequency. recordCoverageGap is
+  // idempotent per variety (explicit gate_id + sku_id-IS-NULL lookup, since the
+  // partial unique index does NOT dedup NULL sku_id) — re-running increments
+  // evidence.frequency instead of duplicate-inserting. We route to Rose so the
+  // gap moves open -> routed (Rose/Talin fill the benchmark data; the
+  // re_scored/verified close is a SEPARATE detector, known follow-up). DB errors
+  // are surfaced via warnings[], never swallowed. NO dim_sku / admin_proposals.
+  const coverageWarnings: string[] = [];
+  const coverageScan = await scanCoverageGaps();
+  // Bound the write fan-out to the top gaps by priority (the long tail still
+  // appears in the scan tiles; we record the actionable head each pass).
+  const COVERAGE_RECORD_CAP = 60;
+  for (const c of coverageScan.candidates.slice(0, COVERAGE_RECORD_CAP)) {
+    const res = await recordCoverageGap(backup, {
+      variety: c.variety,
+      missingLens: c.missingLens,
+      importance: c.importance,
+      importanceProvenance: c.importanceProvenance,
+      crosswalkRows: c.crosswalkRows,
+      benchmarkPps: c.benchmarkPps,
+      routedVia: 'Rose_BI', // route the fill to Rose (benchmark data) -> state routed
+    });
+    if (!res.ok && res.error) {
+      coverageWarnings.push(`record ${c.variety}: ${res.error}`);
+    }
+  }
+  const coverageList = await listCoverageGaps(backup);
+  const coverageGaps: CoverageGapRow[] = coverageList.gaps;
+  const coverageReadWarnings = [...coverageWarnings, ...coverageList.warnings];
 
   // Lever tabs (all five, always) with live counts + masked backlog -----------
   const tabs: LeverTab[] = SUPPLY_LEVERS.map((lever) => {
@@ -1195,6 +1237,16 @@ export default async function SupplyEnginePage() {
       {/* LOOP & LEARNING: the visible improvement curve across the four loops. */}
       <div className="mt-10">
         <LoopLearningPanel reflection={reflection} />
+      </div>
+
+      {/* COVERAGE LOOP: which competitor/peer benchmark data is missing + how
+          much it matters (importance x frequency), routed to Rose/Talin to fill. */}
+      <div className="mt-10">
+        <CoverageGapPanel
+          gaps={coverageGaps}
+          scan={coverageScan}
+          warnings={coverageReadWarnings}
+        />
       </div>
 
       <p className="text-[11px] leading-relaxed text-slate-400 mt-12 pt-6 border-t border-slate-200">

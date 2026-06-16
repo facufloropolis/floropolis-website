@@ -34,6 +34,9 @@ export function classifyProposalBucket(proposalType: string): ProposalBucket {
     case 'sku_mapping.confirm':
     case 'refund.create':
     case 'visibility_override.create':
+    case 'catalog.add_variety':         // Flow B inventory propose — verified pre-Facu (cost/units/sense)
+    case 'catalog.update_identity':     // Flow B identity correction — verified pre-Facu
+    case 'catalog.quarantine':          // Flow B quarantine — verified pre-Facu
       return 'actionable_now';
 
     // -----------------------------------------------------------------------

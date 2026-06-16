@@ -15,7 +15,12 @@
 //   type = isUpdate ? 'catalog.update_variety' : 'catalog.add_variety',
 //   target_table = 'catalog', target_id = null,
 //   payload = { variety, farmCost, source, country, grade, disposition, tier, promoExpiresAt },
-//   warnings = [], status = 'pending', proposed_by = session email }.
+//   warnings = [], status = 'awaiting_facu', proposed_by = session email }.
+//
+// LIVE BUG FIX (2026-06-16, Job_PM): this route previously wrote status='pending',
+// which VIOLATES admin_proposals_status_check (allowed: awaiting_facu | approved |
+// rejected | framing_rejected | withdrawn). Every add/update from the Deal Builder
+// and /admin/catalog edit therefore errored at INSERT. Corrected to 'awaiting_facu'.
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -127,14 +132,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const { data: inserted, error } = await svc
     .from('admin_proposals')
     .insert({
+      // DEPRECATED ROUTE: superseded by /api/admin/inventory/propose (flow B gate).
+      // No UI calls this anymore. Kept temporarily; proposed_by is uuid -> must be null/uuid, never email.
       type: isUpdate ? 'catalog.update_variety' : 'catalog.add_variety',
-      target_table: 'catalog',
+      target_table: 'dim_sku',
       target_id: null,
       payload,
       warnings: [],
-      status: 'pending',
-      proposed_by: auth.email || 'facu',
-      notes: null,
+      status: 'awaiting_facu',
+      proposed_by: null,
+      source_rationale: auth.email,
+      notes: 'via deprecated variety-upsert; use /inventory/propose',
     })
     .select('id')
     .maybeSingle();

@@ -1,8 +1,18 @@
 // Reusable variety editor. Embeddable from Deal Builder and /admin/catalog edit.
-// v1 | 2026-06-09 | Job_PM (CPO)
+// v2 | 2026-06-16 | Job_PM (CPO)
 //
-// Does NOT write canonical catalog data. POSTs to /api/admin/variety-upsert,
-// which writes a PROPOSAL to public.admin_proposals (BACKUP) -> approval queue.
+// Does NOT write canonical catalog data. Three actions (Flow B: admin proposes,
+// Rose applies):
+//   add_variety     -> propose a new product
+//   update_identity -> correct an existing SKU's identity
+//   quarantine      -> pull an existing SKU
+// All three POST to /api/admin/inventory/propose, which runs the cost-verify gate
+// (SENSE / UNITS / COST 3-lens) and writes a PROPOSAL to admin_proposals (verdict in
+// payload.verification) -> approval queue. ZERO writes to dim_sku / mirrors.
+//
+// BACKWARD-COMPAT: the Deal Builder mounts <VarietyUpsert onSaved={...} /> in
+// add-only mode. The default action is 'add_variety', so the Deal Builder keeps
+// compiling + working unchanged (it just gets the verification gate for free).
 // Self-contained: own loading/error/success state. Drop it anywhere.
 
 'use client';
@@ -10,6 +20,7 @@
 import { useState } from 'react';
 
 type Disposition = 'one_off' | 'tier' | 'temp_promo';
+type Action = 'add_variety' | 'update_identity' | 'quarantine';
 
 interface ExistingVariety {
   variety: string;
@@ -17,18 +28,24 @@ interface ExistingVariety {
   source?: string;
   country?: string;
   grade?: string;
+  skuId?: string; // dim_sku.sku_id — required to correct/quarantine an existing SKU
 }
 
 interface Props {
   existing?: ExistingVariety | null;
   onSaved?: (proposalId: string) => void;
   compact?: boolean;
+  // When true, expose the identity-correction + quarantine actions (needs `existing`
+  // with a skuId). Deal Builder leaves this off -> add-only, unchanged behavior.
+  allowIdentityActions?: boolean;
 }
 
-export default function VarietyUpsert({ existing = null, onSaved, compact = false }: Props) {
-  const isUpdate = !!existing;
-
+export default function VarietyUpsert({ existing = null, onSaved, compact = false, allowIdentityActions = false }: Props) {
+  const [action, setAction] = useState<Action>('add_variety');
   const [variety, setVariety] = useState(existing?.variety ?? '');
+  const [category, setCategory] = useState('');
+  const [boxType, setBoxType] = useState('');
+  const [pack, setPack] = useState('');
   const [farmCost, setFarmCost] = useState(existing?.farmCost != null ? String(existing.farmCost) : '');
   const [source, setSource] = useState(existing?.source ?? '');
   const [country, setCountry] = useState(existing?.country ?? '');
@@ -36,14 +53,20 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
   const [disposition, setDisposition] = useState<Disposition>('one_off');
   const [tier, setTier] = useState<'T2' | 'T3'>('T2');
   const [promoExpiresAt, setPromoExpiresAt] = useState('');
+  const [reason, setReason] = useState('');
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [verdict, setVerdict] = useState<string | null>(null);
 
   async function submit() {
-    if (variety.trim().length === 0) {
+    if (action === 'add_variety' && variety.trim().length === 0) {
       setError('El nombre de la variedad es obligatorio.');
+      return;
+    }
+    if (action !== 'add_variety' && !existing?.skuId) {
+      setError('Para corregir o cuarentenar se necesita un SKU existente.');
       return;
     }
     if (disposition === 'temp_promo' && promoExpiresAt.trim().length === 0) {
@@ -53,19 +76,21 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/variety-upsert', {
+      const res = await fetch('/api/admin/inventory/propose', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          variety: variety.trim(),
+          action,
+          variety: variety.trim() || null,
+          category: category.trim() || null,
+          boxType: boxType.trim() || null,
+          pack: pack.trim() === '' ? null : Number(pack),
           farmCost: farmCost.trim() === '' ? null : Number(farmCost),
           source: source.trim() || null,
           country: country.trim() || null,
           grade: grade.trim() || null,
-          disposition,
-          tier: disposition === 'tier' ? tier : undefined,
-          promoExpiresAt: disposition === 'temp_promo' ? promoExpiresAt : undefined,
-          isUpdate,
+          targetSkuId: existing?.skuId ?? null,
+          reason: reason.trim() || null,
         }),
       });
       const json = await res.json().catch(() => ({}));
@@ -73,6 +98,7 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
         throw new Error(json.detail ? `${json.error}: ${json.detail}` : (json.error ?? `HTTP ${res.status}`));
       }
       setSavedId(json.proposalId);
+      setVerdict(typeof json.verdict === 'string' ? json.verdict : null);
       onSaved?.(json.proposalId);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo guardar.');
@@ -90,12 +116,46 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
     <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-slate-800">
-          {isUpdate ? 'Editar variedad' : 'Agregar variedad'}
+          {action === 'add_variety' ? 'Agregar variedad' : action === 'update_identity' ? 'Corregir identidad' : 'Cuarentenar SKU'}
         </h3>
         <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-          Editor reusable &middot; mismo edit de /admin/catalog
+          Verifica antes de Facu &middot; no escribe dim_sku
         </span>
       </div>
+
+      {allowIdentityActions && (
+        <div>
+          <label className={labelCls}>Accion</label>
+          <div className="flex flex-wrap gap-2">
+            {(['add_variety', 'update_identity', 'quarantine'] as Action[]).map((a) => {
+              const labels: Record<Action, string> = {
+                add_variety: 'Agregar',
+                update_identity: 'Corregir identidad',
+                quarantine: 'Cuarentenar',
+              };
+              const disabled = a !== 'add_variety' && !existing?.skuId;
+              const active = action === a;
+              return (
+                <button
+                  key={a}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => setAction(a)}
+                  className={
+                    'text-sm font-medium px-3 py-1.5 rounded-lg border ' +
+                    (active
+                      ? 'bg-emerald-600 text-white border-emerald-600'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50') +
+                    (disabled ? ' opacity-40 cursor-not-allowed' : '')
+                  }
+                >
+                  {labels[a]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${gap}`}>
         <div className="sm:col-span-2">
@@ -150,7 +210,51 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
             className={inputCls}
           />
         </div>
+        <div>
+          <label className={labelCls}>Categoria</label>
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="ej. Bouquet"
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Tipo de caja</label>
+          <input
+            type="text"
+            value={boxType}
+            onChange={(e) => setBoxType(e.target.value)}
+            placeholder="ej. QB / HB / EB"
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Tallos en la caja</label>
+          <input
+            type="number"
+            min="0"
+            value={pack}
+            onChange={(e) => setPack(e.target.value)}
+            placeholder="ej. 125"
+            className={inputCls}
+          />
+        </div>
       </div>
+
+      {action !== 'add_variety' && (
+        <div>
+          <label className={labelCls}>{action === 'quarantine' ? 'Motivo de cuarentena' : 'Motivo de la correccion'}</label>
+          <input
+            type="text"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder={action === 'quarantine' ? 'ej. calidad inconsistente' : 'ej. variedad mal normalizada'}
+            className={inputCls}
+          />
+        </div>
+      )}
 
       <div>
         <label className={labelCls}>Disposicion</label>
@@ -206,9 +310,25 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
       {error && <p className="text-[11px] text-red-600 font-mono whitespace-normal">{error}</p>}
 
       {savedId ? (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] font-medium text-emerald-800 flex items-center gap-1.5">
-          <span aria-hidden>&#10003;</span> Propuesta enviada a la cola de aprobacion
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] font-medium text-emerald-800 flex flex-wrap items-center gap-1.5">
+          <span aria-hidden>&#10003;</span> Propuesta verificada y enviada a la cola de aprobacion
           <span className="font-mono font-normal text-emerald-700"> ({savedId})</span>
+          {verdict && (
+            <span
+              className={
+                'ml-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border ' +
+                (verdict === 'decente'
+                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  : verdict === 'caro'
+                    ? 'bg-amber-100 text-amber-800 border-amber-300'
+                    : verdict === 'sospechoso'
+                      ? 'bg-red-100 text-red-800 border-red-300'
+                      : 'bg-slate-100 text-slate-700 border-slate-300')
+              }
+            >
+              costo: {verdict}
+            </span>
+          )}
         </div>
       ) : (
         <div className="flex items-center gap-2">
@@ -218,9 +338,15 @@ export default function VarietyUpsert({ existing = null, onSaved, compact = fals
             onClick={submit}
             className="text-sm font-semibold px-3.5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
           >
-            {busy ? 'Enviando...' : isUpdate ? 'Proponer cambio' : 'Proponer variedad'}
+            {busy
+              ? 'Verificando...'
+              : action === 'add_variety'
+                ? 'Verificar y proponer variedad'
+                : action === 'update_identity'
+                  ? 'Verificar y proponer correccion'
+                  : 'Proponer cuarentena'}
           </button>
-          <span className="text-[10px] text-slate-400">No escribe data canonica &mdash; va a la cola de aprobacion.</span>
+          <span className="text-[10px] text-slate-400">No escribe data canonica &mdash; verifica costo/unidad y va a la cola.</span>
         </div>
       )}
     </div>
