@@ -104,7 +104,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       reason_code: body.reason_code,
       reason_text: body.reason_text.trim().slice(0, 4000),
       flagged_by: auth.email,
-      status: 'pending',
+      status: 'open',
     })
     .select('*')
     .maybeSingle();

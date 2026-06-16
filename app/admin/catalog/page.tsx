@@ -82,7 +82,7 @@ import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
 import {
   buildCatalog,
   gpmBandFor,
-  GPM_TARGET,
+  DEFAULT_GPM_TARGET,
   GPM_AMBER_FLOOR,
   GPM_BAND_CLS,
   VISIBILITY_BADGE_CLS,
@@ -94,7 +94,6 @@ import {
   type MarginStatus,
   type MirrorRow,
   type PricingConstantRow,
-  type PublicationStatus,
   type QualityThresholdRow,
   type QualityWeightRow,
 } from '@/lib/admin/catalog-model';
@@ -442,6 +441,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
   } catch (err) {
     console.error('[admin/catalog] pricing_constants threw:', err);
   }
+  // Live GPM target (single source of truth) from the fetched pricing_constants;
+  // DEFAULT_GPM_TARGET only when the row is missing. Drives the band coloring below.
+  const gpmTargetRow = pricingConstants.find((c) => c.id === 'gpm_target');
+  const gpmTargetN = gpmTargetRow != null ? Number(gpmTargetRow.value_numeric) : NaN;
+  const liveGpmTarget = Number.isFinite(gpmTargetN) ? gpmTargetN : DEFAULT_GPM_TARGET;
 
   // Fetch tier visibility windows (accepted=true only — source of truth for Avail cell) -----
   // Key: `${tier}|${origin_country}` → { min, max }. tier values: 'T2'|'T3'|'live' (K2K).
@@ -794,61 +798,9 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
               </p>
             </div>
           </div>
-          {/* Change 1: Publication status distribution bar */}
-          {(() => {
-            const order: PublicationStatus[] = ['perfect', 'publishable', 'blocked'];
-            const cls: Record<PublicationStatus, string> = {
-              perfect:     'text-emerald-700',
-              publishable: 'text-amber-600',
-              blocked:     'text-red-700',
-            };
-            const labels: Record<PublicationStatus, string> = {
-              perfect:     'perfect',
-              publishable: 'publishable',
-              blocked:     'blocked',
-            };
-            const counts: Record<PublicationStatus, number> = { perfect: 0, publishable: 0, blocked: 0 };
-            if (spineLoaded) {
-              // Rebase on the full spine (937). 'perfect' is a quality-score
-              // concept the model only computes over published rows; keep it,
-              // and derive 'publishable' = (spine publishable − perfect) so the
-              // three states sum to the full universe and 'blocked' = real 248.
-              const perfectN = universeRows.filter((r) => r.publication_status === 'perfect').length;
-              counts.perfect = perfectN;
-              counts.blocked = classUniverse.blocked;
-              counts.publishable = Math.max(0, classUniverse.publishable - perfectN);
-            } else {
-              for (const r of universeRows) counts[r.publication_status]++;
-            }
-            const parts = order
-              .filter((s) => counts[s] > 0)
-              .map((s) =>
-                s === 'blocked' ? (
-                  <Link
-                    key={s}
-                    href="/admin/catalog/blocked"
-                    className={`font-medium underline decoration-dotted underline-offset-2 hover:decoration-solid ${cls[s]}`}
-                    title="See what is NOT publishable, grouped by failing gate"
-                  >
-                    {counts[s]} {labels[s]} →
-                  </Link>
-                ) : (
-                  <span key={s} className={`font-medium ${cls[s]}`}>
-                    {counts[s]} {labels[s]}
-                  </span>
-                ),
-              );
-            return parts.length > 0 ? (
-              <div className="mt-2 text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                {parts.map((el, i) => (
-                  <span key={i} className="inline-flex items-center gap-x-2">
-                    {el}
-                    {i < parts.length - 1 && <span className="text-slate-300">·</span>}
-                  </span>
-                ))}
-              </div>
-            ) : null;
-          })()}
+          {/* Publication-status distribution funnel removed — the single
+              canonical perfect/publishable/blocked summary is CatalogPulseStrip
+              (above). This inline IIFE restated the same triad. */}
         </WiringSection>
 
         {/* Morning Summary Header — UC-D-100..103 (BRD v0.3) */}
@@ -1198,7 +1150,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                         </td>
                         <td className="px-4 py-2 text-right">
                           {v.avgGpm != null ? (
-                            <span className={v.avgGpm >= GPM_TARGET ? 'text-emerald-700' : v.avgGpm >= GPM_AMBER_FLOOR ? 'text-amber-700' : 'text-red-600'}>
+                            <span className={v.avgGpm >= liveGpmTarget ? 'text-emerald-700' : v.avgGpm >= GPM_AMBER_FLOOR ? 'text-amber-700' : 'text-red-600'}>
                               {(v.avgGpm * 100).toFixed(1)}%
                             </span>
                           ) : <span className="text-slate-300">—</span>}
@@ -1659,7 +1611,7 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
                             band-colored. Falls back to the model-derived gpm. */}
                       {(() => {
                         const gpmShown = r.gpm_actual ?? r.gpm;
-                        const band = r.gpm_actual != null ? gpmBandFor(r.gpm_actual) : r.gpm_band;
+                        const band = r.gpm_actual != null ? gpmBandFor(r.gpm_actual, liveGpmTarget) : r.gpm_band;
                         return (
                           <td className="px-3 py-2.5 text-right">
                             {gpmShown != null && band ? (

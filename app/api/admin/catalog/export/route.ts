@@ -15,6 +15,16 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
+import {
+  ACTIVE_PRICING_MARKET,
+  requireNumericPricingConstant,
+  type PricingConstantValueRow,
+} from '@/lib/pricing-constants';
+
+// GPM amber floor — aligned with catalog-model GPM_AMBER_FLOOR (single threshold source).
+const GPM_AMBER_FLOOR = 0.25;
+// Fallback when pricing_constants.gpm_target is missing for the market (export must not 500).
+const DEFAULT_GPM_TARGET = 0.34;
 
 const ADMIN_EMAILS = ['facu@floropolis.com', 'jjpj@crescoinversiones.com'];
 
@@ -121,6 +131,25 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
   const rows = (data ?? []) as unknown as MirrorRow[];
 
+  // -- GPM thresholds (single source: pricing_constants.gpm_target) --
+  // green = gpm >= gpmTarget; amber = gpmTarget > gpm >= amberFloor; red = gpm < amberFloor.
+  // Derived from the live config so the CSV filter matches the page; falls back to the
+  // documented default if the row is missing (export must not 500 the download).
+  let gpmTarget = DEFAULT_GPM_TARGET;
+  try {
+    const { data: pcRows } = await service
+      .from('pricing_constants')
+      .select('id, value_numeric')
+      .eq('market', ACTIVE_PRICING_MARKET);
+    gpmTarget = requireNumericPricingConstant(
+      (pcRows ?? []).map((r) => ({ ...r, market: ACTIVE_PRICING_MARKET })) as PricingConstantValueRow[],
+      'gpm_target',
+    );
+  } catch {
+    gpmTarget = DEFAULT_GPM_TARGET;
+  }
+  const gpmAmberFloor = GPM_AMBER_FLOOR;
+
   // -- post-filter for derived fields --
   const filtered = rows.filter((r) => {
     const farm = asNum(r.farm_cost);
@@ -129,10 +158,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       farm != null && price != null && price > 0 ? (price - farm) / price : null;
     if (gpmFilter !== 'all') {
       if (gpmFilter === 'no_gpm' && gpm != null) return false;
-      if (gpmFilter === 'green' && (gpm == null || gpm < 0.33)) return false;
-      if (gpmFilter === 'yellow' && (gpm == null || gpm < 0.28 || gpm >= 0.33))
+      if (gpmFilter === 'green' && (gpm == null || gpm < gpmTarget)) return false;
+      if (gpmFilter === 'yellow' && (gpm == null || gpm < gpmAmberFloor || gpm >= gpmTarget))
         return false;
-      if (gpmFilter === 'red' && (gpm == null || gpm >= 0.28)) return false;
+      if (gpmFilter === 'red' && (gpm == null || gpm >= gpmAmberFloor)) return false;
     }
     if (flagsFilter === 'no_cost' && farm != null) return false;
     if (flagsFilter === 'no_box_dims' && r.box_type && r.box_type !== '') return false;

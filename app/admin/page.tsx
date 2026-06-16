@@ -6,8 +6,7 @@
 // provided by app/admin/layout.tsx so this page only renders the main column.
 //
 // Access: same as W2. Middleware + ADMIN_EMAILS allowlist + client_profiles
-// status='admin' fallback. Counter queries themselves live in
-// app/admin/_components/AdminKPITiles.tsx (moved verbatim per W3 spec).
+// status='admin' fallback.
 
 export const dynamic = 'force-dynamic';
 

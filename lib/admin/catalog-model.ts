@@ -375,17 +375,27 @@ export function normalizePublishStatus(v: string | null | undefined): PublishSta
   return 'blocked';
 }
 
-// GPM target — single source of truth for the display bands + "GPM ok" checks. Mirrors
-// pricing_constants.gpm_target (the value the pricing formula price = cost/(1-gpm) actually
-// uses). Changed 0.33 -> 0.34 (Facu 2026-06-08 config change). When the CEO changes
-// gpm_target, update this constant too so the bands never show a stale threshold.
-export const GPM_TARGET = 0.34;
+// GPM target — EXPECTED/DEFAULT fallback only. The canonical RUNTIME value comes from
+// pricing_constants.gpm_target (market=ACTIVE_PRICING_MARKET) via
+// requireNumericPricingConstant; bands are computed from that live value (see gpmBandFor
+// callers, which pass the fetched target). This constant survives ONLY as:
+//   (1) the config-drift baseline — config-drift.ts compares this CODE constant against the
+//       live pricing_constants value to flag divergence (the "salvavidas"); and
+//   (2) the fallback used when the DB row is missing.
+// Do NOT treat it as the source of truth for the displayed bands.
+export const DEFAULT_GPM_TARGET = 0.34;
+// Back-compat alias: config-drift.ts imports GPM_TARGET as its expected baseline.
+export const GPM_TARGET = DEFAULT_GPM_TARGET;
 export const GPM_AMBER_FLOOR = 0.25;
 
-export function gpmBandFor(gpm: number | null): GpmBand | null {
+export function gpmBandFor(
+  gpm: number | null,
+  gpmTarget: number = DEFAULT_GPM_TARGET,
+  amberFloor: number = GPM_AMBER_FLOOR,
+): GpmBand | null {
   if (gpm == null) return null;
-  if (gpm >= GPM_TARGET) return 'green';
-  if (gpm >= GPM_AMBER_FLOOR) return 'amber';
+  if (gpm >= gpmTarget) return 'green';
+  if (gpm >= amberFloor) return 'amber';
   return 'red';
 }
 
@@ -446,6 +456,9 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
   }
   const fedexRate = pricingMap.get('fedex_rate_per_kg') ?? null;
   const fuelMult = pricingMap.get('fuel_surcharge_mult') ?? null;
+  // Live GPM target from pricing_constants (single source of truth); DEFAULT only as fallback
+  // when the row is missing from the fetched constants.
+  const gpmTarget = pricingMap.get('gpm_target') ?? DEFAULT_GPM_TARGET;
 
   const perfectThresholdRow = thresholds.find((t) => t.threshold_id === 'perfect_min_score');
   // Default to 100 if missing/malformed (Facu spec: weights table is the model;
@@ -546,7 +559,7 @@ export function buildCatalog(inputs: BuildCatalogInputs): BuildCatalogOutput {
       priceN != null && priceN > 0 && costN != null
         ? (priceN - costN - (shipping_per_stem ?? 0)) / priceN
         : null;
-    const gpm_band = gpmBandFor(gpm);
+    const gpm_band = gpmBandFor(gpm, gpmTarget);
 
     // Margin $ per stem — the dollar equivalent of GPM without the ratio.
     // null when price or cost is missing (not the same as zero margin).

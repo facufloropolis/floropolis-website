@@ -148,6 +148,8 @@ export default async function AdminCatalogMappingPage({
     rejected: 0,
   };
   for (const [s, n] of countResults) counts[s] = n;
+  const totalMappings =
+    counts.awaiting_review + counts.low_confidence + counts.mapped + counts.rejected;
 
   // Fetch mappings for the active tab -----------------------------------
   const { data: rowsRaw, error: rowsErr } = await backup
@@ -195,6 +197,15 @@ export default async function AdminCatalogMappingPage({
             apply immediately. Data source: supabase-backup sku_mappings.
           </p>
         </div>
+
+        {totalMappings === 0 && (
+          <div className="mb-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <span className="font-semibold text-slate-700">Sin data todavia.</span>{' '}
+            La cola de mapping esta vacia (0 filas en sku_mappings). Disponible
+            cuando el pipeline de ingestion (SKU Mapper) escriba batches de vendor.
+            Las tabs y la tabla siguen activas para cuando lleguen.
+          </div>
+        )}
 
         {/* Header counters */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">

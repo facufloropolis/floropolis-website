@@ -9,11 +9,9 @@
 //     (hardcoded cost/0.67+$0.50, 5% tolerance, "all within tolerance" on
 //     empty data). Reads v_catalog_admin.margin_status (real computed column).
 //
-// Renders 4 widgets above the supply-intelligence panel on /admin/catalog:
+// Renders 3 widgets above the supply-intelligence panel on /admin/catalog:
 //   UC-D-100  Counts by tier (T2 / T3 / other) from the classification spine.
 //             K2K live shown as a separate "not connected (S6)" annotation.
-//   UC-D-101  Live going down DoD flag (depends on mirror_snapshot_daily;
-//             gracefully renders "pending Rose snapshot pipeline" if missing).
 //   UC-D-102  Price integrity: unpriced + below_floor counts from
 //             v_catalog_admin.margin_status. Green ONLY when both are zero AND
 //             priced count > 0 (never green on empty data).
@@ -71,15 +69,6 @@ interface TopSellerRow {
 }
 
 // ---------------------------------------------------------------------------
-// Date helper — YYYY-MM-DD relative to UTC today.
-// ---------------------------------------------------------------------------
-function addDaysISO(base: Date, days: number): string {
-  const d = new Date(base);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
-// ---------------------------------------------------------------------------
 // Tier bucket (from the classification spine, NOT mirror windows).
 // ---------------------------------------------------------------------------
 type TierBucket = 't2' | 't3' | 'other';
@@ -116,36 +105,6 @@ async function fetchPriceIntegrity(
       if (row.price != null) priced += 1;
     }
     return { unpriced, belowFloor, priced };
-  } catch {
-    return null;
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Snapshot probe — checks information_schema.tables for the snapshot writer.
-// Returns yesterday's k2k_live count if available, else null (placeholder
-// rendered in widget B). NO error if absent — that's the v0.3 graceful path.
-// ---------------------------------------------------------------------------
-async function probeYesterdayLive(
-  backup: SupabaseClient,
-  yesterdayISO: string,
-): Promise<number | null> {
-  try {
-    const { data, error } = await backup
-      .from('mirror_snapshot_daily')
-      .select('sku_id', { count: 'exact', head: false })
-      .eq('snapshot_date', yesterdayISO)
-      .eq('source', 'live')
-      .limit(1);
-    if (error) return null;
-    const { count, error: cErr } = await backup
-      .from('mirror_snapshot_daily')
-      .select('sku_id', { count: 'exact', head: true })
-      .eq('snapshot_date', yesterdayISO)
-      .eq('source', 'live');
-    if (cErr) return null;
-    void data;
-    return count ?? null;
   } catch {
     return null;
   }
@@ -223,9 +182,6 @@ export default async function MorningSummaryHeader({
   mirror: MirrorPick[];
   classifications: ClassificationPick[];
 }) {
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-
   // ── UC-D-100: Counts by tier ────────────────────────────────────────────
   // UNIVERSE = the classification/publishability spine (one row per classified
   // SKU). Tier bucket comes from classifications.tier (the COMMITMENT), NOT a
@@ -275,20 +231,6 @@ export default async function MorningSummaryHeader({
       pubPct: s.total > 0 ? Math.round((s.publishable / s.total) * 100) : 0,
     }));
 
-  // ── UC-D-101: Live going down DoD ──────────────────────────────────────
-  // Until S6 ships a real live-signal pipeline, use the classified universe as
-  // the DoD baseline. K2K `live` is a badge, not a membership predicate.
-  const yesterdayLive = await probeYesterdayLive(backup, addDaysISO(today, -1));
-  const todayLive = totalAll;
-  let dodBadge: 'pending' | 'down' | 'flat' = 'pending';
-  let dodDelta = 0;
-  let dodPct = 0;
-  if (yesterdayLive != null) {
-    dodDelta = todayLive - yesterdayLive;
-    dodPct = yesterdayLive > 0 ? (dodDelta / yesterdayLive) * 100 : 0;
-    dodBadge = (dodDelta < 0 || dodPct < -5) ? 'down' : 'flat';
-  }
-
   // ── UC-D-102: Price integrity ──────────────────────────────────────────
   // Reads v_catalog_admin.margin_status (real computed column). Green ONLY
   // when unpriced == 0 AND below_floor == 0 AND priced > 0 — never green on
@@ -327,7 +269,7 @@ export default async function MorningSummaryHeader({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 lg:divide-x divide-slate-100">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
         {/* ── Widget A: UC-D-100 Counts by tier ── */}
         <div className="p-4">
           <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">
@@ -410,39 +352,6 @@ export default async function MorningSummaryHeader({
               </div>
             </div>
           )}
-        </div>
-
-        {/* ── Widget B: UC-D-101 Live DoD ── */}
-        <div className="p-4">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-2">
-            Live K2K · day over day
-          </div>
-          <div className="text-2xl font-bold text-slate-900 leading-none">
-            {todayLive.toLocaleString()}
-            <span className="text-[11px] font-medium text-slate-500 ml-1.5">SKUs live</span>
-          </div>
-          <div className="mt-3">
-            {dodBadge === 'pending' && (
-              <span className="inline-flex items-center text-[11px] px-2 py-1 rounded bg-slate-50 text-slate-500 border border-slate-200">
-                DoD: pending Rose snapshot pipeline
-              </span>
-            )}
-            {dodBadge === 'down' && (
-              <span className="inline-flex items-center text-[11px] px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 font-semibold">
-                ↓ {Math.abs(dodDelta)} SKUs vs yesterday ({dodPct.toFixed(1)}%)
-              </span>
-            )}
-            {dodBadge === 'flat' && (
-              <span className="inline-flex items-center text-[11px] px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                {dodDelta >= 0 ? '+' : ''}
-                {dodDelta} vs yesterday
-              </span>
-            )}
-          </div>
-          <p className="text-[10px] text-slate-400 mt-3 leading-snug">
-            Source: <code className="font-mono">mirror_snapshot_daily</code> (Rose-owned writer; missing today → placeholder).
-            Threshold: ↓ &lt; 0 OR &lt; −5%.
-          </p>
         </div>
 
         {/* ── Widget C: UC-D-102 Price integrity ── */}

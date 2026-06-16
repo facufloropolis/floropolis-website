@@ -448,6 +448,17 @@ export default async function AdminCatalogDiscountsPage() {
           </div>
         </div>
 
+        {active.length + pending.length === 0 && (
+          <div className="mb-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <span className="font-semibold text-slate-700">Sin reglas todavia.</span>{' '}
+            0 reglas activas y 0 propuestas pendientes (discount_rules vacio). El
+            formulario de la derecha ya esta vivo: crea una propuesta y aparece
+            abajo para aprobacion. Nota: el executor de pause/expire (status_change)
+            aun no esta cableado &mdash; las propuestas se registran pero la
+            activacion final es manual.
+          </div>
+        )}
+
         {/* Two-column layout: pending+active on the left, form on the right. */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left col: pending + active rules ------------------------------ */}

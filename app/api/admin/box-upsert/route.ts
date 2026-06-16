@@ -17,7 +17,13 @@
 //   target_table = 'box_master_mirror', target_id = null,
 //   payload = { boxType, dims:{lengthCm,widthCm,heightCm}, capacity, capacityUnit,
 //               country, realKg, availableToOthers, estimate },
-//   warnings = [], status = 'pending', proposed_by = session email }.
+//   warnings = [], status = 'awaiting_facu', proposed_by = null }.
+//
+// LIVE BUG FIX (2026-06-16, Job_PM): previously wrote status='pending' (VIOLATES
+// admin_proposals_status_check: awaiting_facu|approved|rejected|framing_rejected|withdrawn)
+// and proposed_by = session email (admin_proposals.proposed_by is a uuid column → type error).
+// Both broke the Deal Builder box-add INSERT. Corrected to status='awaiting_facu' and
+// proposed_by=null, with the actor email carried in source_rationale (mirrors variety-upsert).
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -141,8 +147,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       target_id: null,
       payload,
       warnings: [],
-      status: 'pending',
-      proposed_by: auth.email || 'facu',
+      status: 'awaiting_facu',
+      proposed_by: null,
+      source_rationale: auth.email,
       notes: null,
     })
     .select('id')
