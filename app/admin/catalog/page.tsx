@@ -75,6 +75,7 @@ import MockupLinkBanner from '@/components/admin/MockupLinkBanner';
 import SurfaceStatusBanner from '../_components/SurfaceStatusBanner';
 import MorningSummaryHeader from './_components/MorningSummaryHeader';
 import CatalogPulseStrip from './_components/CatalogPulseStrip';
+import ProposeInventoryButton from './_components/ProposeInventoryButton';
 import BlockingChips from './_components/BlockingChips';
 import { getWiringForPage } from '@/lib/admin/wiring';
 import { ACTIVE_PRICING_MARKET } from '@/lib/pricing-constants';
@@ -694,6 +695,11 @@ export default async function AdminCatalogPage({ searchParams }: PageProps) {
 
         {/* Facu's Desk — Zone 1: the pulse (10s trust band, above everything) */}
         <CatalogPulseStrip backup={backup} />
+
+        {/* Flow B: standalone propose entry — runs the cost-verify gate, writes a proposal (awaiting Facu), never dim_sku */}
+        <div className="my-4">
+          <ProposeInventoryButton label="+ Proponer variedad nueva" />
+        </div>
 
         {/* Header + state toggle */}
         <WiringSection level={wm('summary-tiles').level} note={wm('summary-tiles').note} id="summary-tiles">

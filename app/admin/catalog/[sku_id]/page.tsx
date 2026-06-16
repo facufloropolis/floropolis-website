@@ -56,6 +56,7 @@ import {
   VerifyCostButton,
 } from './Editor';
 import { FlagToggleClient as FlagToggle } from './Editor.flag';
+import ProposeInventoryButton from '../_components/ProposeInventoryButton';
 import {
   DiscountSkuForm,
   HideSkuForm,
@@ -559,6 +560,18 @@ export default async function AdminCatalogDetailPage({ params }: PageProps) {
                   </span>
                 </>
               )}
+              {/* Flow B: correct identity / quarantine THIS sku -> proposal (awaiting Facu), never dim_sku */}
+              <div className="mt-1">
+                <ProposeInventoryButton
+                  existing={{
+                    variety: mirror?.variety ?? '',
+                    farmCost: mirror?.farm_cost != null ? Number(mirror.farm_cost) : undefined,
+                    skuId: mirror?.sku_id,
+                  }}
+                  allowIdentityActions
+                  label="Proponer corrección / cuarentena"
+                />
+              </div>
             </div>
           </div>
         </div>
