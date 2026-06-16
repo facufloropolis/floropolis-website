@@ -220,6 +220,39 @@ export async function POST(
     }
   }
 
+  // 3a. Flow B types are applied by Rose's dim_sku_apply_executor.py (Python), NOT the TS
+  //     executor — they have no TS handler (would hit unknown_proposal_type -> 500). For these
+  //     we ONLY record the approval + flip status='approved'; Rose's executor (Pita-certified)
+  //     picks up status='approved' AND applied_at IS NULL and writes dim_sku.
+  const ROSE_APPLIED_TYPES = new Set([
+    'catalog.add_variety',
+    'catalog.update_identity',
+    'catalog.quarantine',
+  ]);
+  if (ROSE_APPLIED_TYPES.has(proposal.type)) {
+    await service.from('admin_approvals').insert({
+      proposal_id: proposal.id,
+      decision: 'approve',
+      decided_by: auth.userId,
+      reason,
+      facu_rationale: facuRationale,
+      urgency_tier: urgencyTier,
+    });
+    const { error: rErr } = await service
+      .from('admin_proposals')
+      .update({ status: 'approved' })
+      .eq('id', proposal.id);
+    if (rErr) {
+      return NextResponse.json({ error: 'approve_failed', detail: rErr.message }, { status: 500 });
+    }
+    return NextResponse.json({
+      ok: true,
+      status: 'approved',
+      applied_by: 'rose_executor_async',
+      note: 'Aprobado. Queda en cola para el dim_sku apply executor de Rose (escribe dim_sku en su próxima corrida).',
+    });
+  }
+
   // 3. Execute
   const result = await executeProposal(proposal, service);
   if (!result.ok) {
