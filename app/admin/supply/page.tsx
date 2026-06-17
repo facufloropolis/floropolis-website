@@ -85,6 +85,8 @@ import {
   type ContentInference,
 } from './_scaleReaders';
 import StructuralBlockersPanel from './StructuralBlockersPanel';
+import CorrectionsSection from './CorrectionsSection';
+import { getCorrectionFlags } from '@/lib/admin/corrections-flags';
 
 const ADMIN_EMAILS = [
   'facu@floropolis.com',
@@ -238,6 +240,7 @@ const LEVER_TAB_LABEL: Record<SupplyLever, string> = {
   fulfillment: 'Dims / Fulfillment',
   price: 'Precio',
   quality: 'Calidad',
+  correcciones: 'Correcciones',
 };
 
 // ---------------------------------------------------------------------------
@@ -559,6 +562,12 @@ export default async function SupplyEnginePage() {
   const contentReviewItems = await getContentReviewQueue();
   const priceReviewData = await getPriceReviewData();
 
+  // CORRECCIONES lever: prioritized data-quality corrections that block a clean
+  // publish (v1: no-category SKUs with a sibling-suggested category; designed to
+  // union meta/public.verifier_flags once Pita ships it). Read-only; the inline fix
+  // is Flow B (admin_proposals via /api/admin/inventory/propose), never dim_sku.
+  const corrections = await getCorrectionFlags(backup);
+
   const reflection = await getLoopReflection({
     batchedRecs,
     batchedVarieties,
@@ -618,9 +627,20 @@ export default async function SupplyEnginePage() {
     };
   });
 
-  // Pick the initial active lever: highest direct count.
+  // Pick the initial active lever: highest direct count among the ENGINE levers
+  // (computed BEFORE appending corrections, so the default landing stays an engine
+  // lever and is not hijacked by the corrections count).
   const initial: SupplyLever =
     tabs.reduce((best, t) => (t.direct > best.direct ? t : best), tabs[0]).lever;
+
+  // CORRECCIONES tab: NOT an engine bucket — its count is the live no-category SKU
+  // count (read in getCorrectionFlags), masked=0 (no cascade masking applies).
+  tabs.push({
+    lever: 'correcciones',
+    label: LEVER_TAB_LABEL.correcciones,
+    direct: corrections.liveNoCategoryCount,
+    masked: 0,
+  });
 
   const learnLabel = (gapType: string): string => {
     const learn: LearningStat | null = learningByRecType.get(gapType) ?? null;
@@ -1154,9 +1174,22 @@ export default async function SupplyEnginePage() {
     fulfillment: <FulfillmentSection />,
     price: <PerVarietySection lever="price" />,
     quality: <PerVarietySection lever="quality" />,
+    correcciones: (
+      <CorrectionsSection
+        flags={corrections.flags}
+        liveNoCategoryCount={corrections.liveNoCategoryCount}
+        verifierFlagsPresent={corrections.verifierFlagsPresent}
+        warnings={corrections.warnings}
+      />
+    ),
   };
 
-  const totalDirect = tabs.reduce((s, t) => s + t.direct, 0);
+  // "SKU con gap directo" = engine-lever gaps only; corrections are a separate
+  // data-quality class (counted on its own tab), so exclude it from this total.
+  const totalDirect = tabs.reduce(
+    (s, t) => (t.lever === 'correcciones' ? s : s + t.direct),
+    0,
+  );
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">

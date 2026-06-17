@@ -1116,7 +1116,11 @@ export async function getLoopReflection(opts: {
 // surfaced even when masked behind a higher-priority lever. The five canonical
 // buckets are stable filter keys for the UI; raw gap_type sub-labels are kept.
 
-export type SupplyLever = 'image' | 'content' | 'fulfillment' | 'price' | 'quality';
+// 'correcciones' is NOT an engine bucket (no v_supply_recommendations gap_type maps
+// to it); it is a data-quality lever fed by lib/admin/corrections-flags.ts. It is in
+// the union so the shared SupplyLever type covers every tab, but it is intentionally
+// absent from SUPPLY_LEVERS (the engine-bucket list) and the bucket readers below.
+export type SupplyLever = 'image' | 'content' | 'fulfillment' | 'price' | 'quality' | 'correcciones';
 
 export const SUPPLY_LEVERS: SupplyLever[] = [
   'image',
@@ -1172,6 +1176,7 @@ const LEVER_GATE_TOKENS: Record<SupplyLever, string[]> = {
   fulfillment: ['missing_units_or_bunch', 'missing_box_dims', 'missing_unit', 'missing_vendor_name'],
   price: [], // margin_status-driven, no failing_gates token to mask-detect
   quality: [], // gap_count-on-published driven, no single token
+  correcciones: [], // not engine-derived (fed by corrections-flags.ts), never mask-detected here
 };
 
 function gatesHasAny(failingGates: unknown, tokens: string[]): boolean {

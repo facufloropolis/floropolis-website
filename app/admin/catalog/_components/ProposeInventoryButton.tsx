@@ -25,12 +25,20 @@ interface Props {
   existing?: Existing | null;
   allowIdentityActions?: boolean;
   label?: string;
+  // Pre-fill VarietyUpsert's category for a one-click correction (sibling-suggested
+  // category on a no-category SKU). Default undefined -> existing callers unchanged.
+  defaultCategory?: string;
+  // Land VarietyUpsert directly on a given action (e.g. 'update_identity' for the
+  // corrections lever). Default undefined -> add-only behavior preserved.
+  defaultAction?: 'add_variety' | 'update_identity' | 'quarantine';
 }
 
 export default function ProposeInventoryButton({
   existing = null,
   allowIdentityActions = false,
   label = '+ Proponer variedad',
+  defaultCategory,
+  defaultAction,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -50,6 +58,8 @@ export default function ProposeInventoryButton({
           <VarietyUpsert
             existing={existing}
             allowIdentityActions={allowIdentityActions}
+            defaultCategory={defaultCategory}
+            defaultAction={defaultAction}
             onSaved={(id) => setSavedId(id)}
           />
           {savedId && (

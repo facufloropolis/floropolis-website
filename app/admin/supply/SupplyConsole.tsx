@@ -18,7 +18,7 @@
 
 import { useState, type ReactNode } from 'react';
 
-export type SupplyLever = 'image' | 'content' | 'fulfillment' | 'price' | 'quality';
+export type SupplyLever = 'image' | 'content' | 'fulfillment' | 'price' | 'quality' | 'correcciones';
 
 export interface LeverTab {
   lever: SupplyLever;

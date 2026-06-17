@@ -38,12 +38,19 @@ interface Props {
   // When true, expose the identity-correction + quarantine actions (needs `existing`
   // with a skuId). Deal Builder leaves this off -> add-only, unchanged behavior.
   allowIdentityActions?: boolean;
+  // Optional pre-fill for the category field (one-click correction: a no-category
+  // SKU's sibling-suggested category). Default undefined -> existing callers
+  // (catalog grid, SKU detail, Deal Builder) keep an empty category, unchanged.
+  defaultCategory?: string;
+  // Optional default action so a caller can land directly on 'update_identity'
+  // (the corrections lever). Default 'add_variety' -> existing callers unchanged.
+  defaultAction?: Action;
 }
 
-export default function VarietyUpsert({ existing = null, onSaved, compact = false, allowIdentityActions = false }: Props) {
-  const [action, setAction] = useState<Action>('add_variety');
+export default function VarietyUpsert({ existing = null, onSaved, compact = false, allowIdentityActions = false, defaultCategory, defaultAction }: Props) {
+  const [action, setAction] = useState<Action>(defaultAction ?? 'add_variety');
   const [variety, setVariety] = useState(existing?.variety ?? '');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(defaultCategory ?? '');
   const [boxType, setBoxType] = useState('');
   const [pack, setPack] = useState('');
   const [farmCost, setFarmCost] = useState(existing?.farmCost != null ? String(existing.farmCost) : '');
