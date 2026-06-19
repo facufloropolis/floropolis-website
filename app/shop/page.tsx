@@ -157,9 +157,9 @@ function isAvailable(p: Product): boolean {
   return daysUntil >= 5; // T1, T2
 }
 
-function buildVarietyGroups(): VarietyGroup[] {
+function buildVarietyGroups(products: Product[]): VarietyGroup[] {
   const groups = new Map<string, Product[]>();
-  for (const p of catalogProducts) {
+  for (const p of products) {
     if (!isAvailable(p)) continue;
     if (p.price <= 0) {
       console.warn(`[PRICE ISSUE] Product "${p.name}" (ID: ${p.id}, slug: ${p.slug}) has price=${p.price}. Needs data fix.`);
@@ -263,8 +263,16 @@ function ShopPageContent() {
   // Delivery tier filter chips — "fast" = T1/T2 (~4 days), "preorder" = T3 (~14 days)
   const [showFast, setShowFast] = useState(true);
   const [showPreorder, setShowPreorder] = useState(true);
+  const [liveProducts, setLiveProducts] = useState<Product[]>(catalogProducts);
 
-  const varietyGroups = useMemo(() => buildVarietyGroups(), []);
+  useEffect(() => {
+    fetch('/api/catalog/storefront')
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d?.products?.length) setLiveProducts(d.products); })
+      .catch(() => {/* use static fallback silently */});
+  }, []);
+
+  const varietyGroups = useMemo(() => buildVarietyGroups(liveProducts), [liveProducts]);
 
   // Popular products — top bestsellers for hero section
   const popularProducts = useMemo(() => {

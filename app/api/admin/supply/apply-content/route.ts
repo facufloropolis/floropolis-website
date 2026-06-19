@@ -25,6 +25,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { recordLoopLedger } from '@/lib/admin/loop-ledger';
@@ -295,6 +296,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     decided_by: decidedBy,
   });
   if (fbErr) console.error('[apply-content] solution_feedback apply:', fbErr);
+
+  if (gatesCleared > 0) revalidateTag('storefront-catalog');
 
   return NextResponse.json({
     applied: true,
