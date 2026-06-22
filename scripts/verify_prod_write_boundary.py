@@ -6,7 +6,8 @@ Fail-fast guard for PROD write boundaries.
 
 Rules:
 1) Scan files importing '@/lib/supabase/prod-server'.
-2) Forbid direct PROD mutations (.insert/.update/.upsert/.delete) in those files.
+2) Forbid direct PROD mutations (.insert/.update/.upsert/.delete) in those files,
+   EXCEPT routes declared in ALLOWED_WRITE_ROUTES with their specific allowed tokens.
 3) Restrict prod.rpc calls to allowlist:
    - read-only: sales_cleanup_list
    - write: sales_cleanup_resolve (only in its route file, with explicit lock checks)
@@ -27,6 +28,19 @@ ALLOW_RPC = {
     "sales_cleanup_resolve",
 }
 RESOLVE_ROUTE = Path("app/api/admin/sales-cleanup/[id]/resolve/route.ts")
+
+# Routes that may write to specific PROD infrastructure tables (agent routing only,
+# never business data). Each entry: (relative_path, allowed_tokens, required_marker).
+# The marker must appear in the file to confirm the write is intentional.
+ALLOWED_WRITE_ROUTES: list[tuple[Path, set[str], str]] = [
+    (
+        Path("app/api/admin/samples/create-box/route.ts"),
+        # .insert( = PROD meta.agent_inbox routing (to Atlas_Actuator)
+        # .update( = BACKUP sample_review_loop (getBackupServiceClient — not a PROD write)
+        {".insert(", ".update("},
+        "meta.agent_inbox",  # must appear to confirm the PROD insert is inbox routing
+    ),
+]
 
 IMPORT_TOKEN = "from '@/lib/supabase/prod-server'"
 MUTATION_TOKENS = (".insert(", ".update(", ".upsert(", ".delete(")
@@ -55,8 +69,20 @@ def main() -> int:
     for p, txt in files:
         rel = p.relative_to(ROOT)
 
+        # Check if this file is an explicitly allowed write route
+        allowed_tokens: set[str] = set()
+        for route_path, tokens, marker in ALLOWED_WRITE_ROUTES:
+            if rel == route_path:
+                if marker not in txt:
+                    violations.append(
+                        f"Allowed write route {rel} missing required marker '{marker}'"
+                    )
+                else:
+                    allowed_tokens = tokens
+                break
+
         for tok in MUTATION_TOKENS:
-            if tok in txt:
+            if tok in txt and tok not in allowed_tokens:
                 violations.append(
                     f"FORBIDDEN PROD mutation token {tok} in {rel}"
                 )

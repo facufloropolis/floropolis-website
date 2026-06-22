@@ -37,7 +37,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createBackupServerClient as createUserClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
-import { getProdReadClient } from '@/lib/supabase/prod-server';
+import { fetchFloraCohortAddresses } from '@/lib/supabase/prod-flora-reads';
 
 // ---------------------------------------------------------------------------
 // Admin auth (mirrors create-box)
@@ -191,20 +191,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     // PROD v_flora_cohort for fallback addresses (anon read, best-effort)
     const cohortByZohoId: Record<string, string | null> = {};
     if (zohoIds.length > 0) {
-      try {
-        const prod = getProdReadClient();
-        if (prod) {
-          const { data: cohortRaw } = await prod
-            .from('v_flora_cohort')
-            .select('zoho_id, description')
-            .in('zoho_id', zohoIds);
-          for (const r of (cohortRaw ?? []) as Array<Record<string, unknown>>) {
-            const zid = typeof r.zoho_id === 'string' ? r.zoho_id.trim() : null;
-            if (zid) cohortByZohoId[zid] = typeof r.description === 'string' ? r.description : null;
-          }
-        }
-      } catch {
-        // best-effort; missing address will be marked 'missing'
+      const cohortRows = await fetchFloraCohortAddresses(zohoIds);
+      for (const r of cohortRows) {
+        if (r.zoho_id) cohortByZohoId[r.zoho_id] = r.description;
       }
     }
 

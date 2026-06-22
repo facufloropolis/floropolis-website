@@ -50,7 +50,8 @@ const fetchCatalog = unstable_cache(
       .order('tier')
       .order('web_category')
       .order('variety')
-      .order('size_cm');
+      .order('size_cm')
+      .limit(2000);
 
     if (error) throw error;
 
