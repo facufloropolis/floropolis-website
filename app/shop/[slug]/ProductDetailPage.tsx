@@ -26,6 +26,11 @@ import {
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
 import { getCareInstructions } from "@/lib/care-instructions";
+import {
+  getPurchasability,
+  PURCHASABILITY_LABEL,
+  type Purchasability,
+} from "@/lib/catalog-availability";
 
 type Props = {
   product: Product;
@@ -299,16 +304,27 @@ export default function ProductDetailPage({
     () => getDeliveryDates(earliestDelivery, 12),
     [earliestDelivery],
   );
-  // State — pre-populate with cheapest + earliest
-  const cheapestVariant = useMemo(
-    () =>
-      [...variants].sort((a, b) => {
-        const pa = a.deal_price ?? a.price;
-        const pb = b.deal_price ?? b.price;
-        return pa - pb;
-      })[0] || product,
-    [variants, product],
-  );
+  // PERMANENT CATALOG (2026-10-01): every variant stays visible; each one
+  // carries its own purchasability (lib/catalog-availability.ts). "Buy now"
+  // is rendered ONLY for 'buy_now' variants; the others go to the quote flow.
+  const variantState = useMemo(() => {
+    const m = new Map<string, Purchasability>();
+    for (const v of variants) m.set(v.slug, getPurchasability(v));
+    return m;
+  }, [variants]);
+  const stateOf = (v: Product): Purchasability =>
+    variantState.get(v.slug) ?? getPurchasability(v);
+
+  // State — pre-populate with the cheapest BUYABLE variant; if none is buyable
+  // today, fall back to the cheapest variant overall.
+  const cheapestVariant = useMemo(() => {
+    const byPrice = [...variants].sort((a, b) => {
+      const pa = a.deal_price ?? a.price;
+      const pb = b.deal_price ?? b.price;
+      return pa - pb;
+    });
+    return byPrice.find((v) => variantState.get(v.slug) === "buy_now") || byPrice[0] || product;
+  }, [variants, variantState, product]);
 
   const [selectedLength, setSelectedLength] = useState<string>(
     cheapestVariant.length || uniqueLengths[0] || "",
@@ -384,6 +400,9 @@ export default function ProductDetailPage({
   const effectivePrice = hasDeal && dealPrice != null ? dealPrice : basePrice;
   const compareAtPrice = currentVariant.compare_at_price ?? null;
   const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
+  // Direct purchase gate for the selected variant. Same rule as the server.
+  const currentPurchasability = stateOf(currentVariant);
+  const canBuyNow = currentPurchasability === "buy_now";
 
   // For Box products (combo boxes), stems_per_bunch × units_per_box is meaningless.
   // When unit === "Stem", units_per_box IS the stem count — do not multiply by stems_per_bunch.
@@ -617,9 +636,9 @@ export default function ProductDetailPage({
               ) : (
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
-                    Price pending
+                    {PURCHASABILITY_LABEL.request_pricing}
                   </span>
-                  <span className="text-xs text-slate-400">Contact us for pricing</span>
+                  <span className="text-xs text-slate-400">We confirm pricing on request</span>
                 </div>
               )}
               {/* EXP-032: "Shipping included" signal near price — feedback item 4 */}
@@ -661,6 +680,8 @@ export default function ProductDetailPage({
                           : null;
                       const vTotal = vPrice > 0 && vStems ? vPrice * vStems : null;
                       const isSelected = v.length === selectedLength && v.box_type === selectedBoxType;
+                      // Every variant is listed; non-buyable ones are labelled, never hidden.
+                      const vState = stateOf(v);
                       const dimLabel = [
                         v.length,
                         BOX_TYPE_LABELS[v.box_type ?? ""] || v.box_type,
@@ -709,6 +730,11 @@ export default function ProductDetailPage({
                               }`}
                             >
                               ≈ ${vTotal.toFixed(0)} box total
+                            </p>
+                          )}
+                          {vState !== "buy_now" && (
+                            <p className="text-[11px] mt-1 font-semibold text-slate-500">
+                              {PURCHASABILITY_LABEL[vState]}
                             </p>
                           )}
                         </button>
@@ -790,8 +816,9 @@ export default function ProductDetailPage({
               />
             </div>
 
-            {/* EXP-079: Order urgency — dynamic cutoff (8pm EST) + next delivery date */}
-            {isPriceAvailable && bestTier !== "T3" && (
+            {/* EXP-079: Order urgency — dynamic cutoff (8pm EST) + next delivery date.
+                Only promised when the selected variant is buyable now. */}
+            {canBuyNow && bestTier !== "T3" && (
               <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                 {orderWindow && (
                   <span className="flex items-center gap-1 font-medium text-slate-700">
@@ -871,12 +898,14 @@ export default function ProductDetailPage({
                   </button>
                 </div>
               )}
-              {isPriceAvailable ? (
+              {canBuyNow ? (
                 <>
                   {/* PROPOSAL-BRANCH ONLY (Facu 2026-05-17): "Buy now" is the
                       primary CTA in the mockup. Wires SKU + selected delivery
                       date into the /checkout localStorage cart, then the
-                      button morphs to "Go to checkout" on the same press. */}
+                      button morphs to "Go to checkout" on the same press.
+                      PERMANENT CATALOG: rendered ONLY when the selected variant
+                      is 'buy_now'; other states never show this button. */}
                   <BuyNowButton
                     skuId={currentVariant.sku_id}
                     defaultQuantity={boxQty}
@@ -919,24 +948,43 @@ export default function ProductDetailPage({
                   </button>
                 </>
               ) : (
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-all"
+                /* ask_availability / request_pricing: primary action adds the
+                   product to the quote request; WhatsApp stays secondary below.
+                   No Buy now button in these states. */
+                <button
+                  ref={addToQuoteRef}
+                  type="button"
+                  onClick={handleAddToQuote}
+                  className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg transition-all ${
+                    justAdded
+                      ? "bg-emerald-700 text-white"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700"
+                  }`}
                 >
-                  Request Pricing on WhatsApp
-                </a>
+                  {justAdded ? (
+                    <>
+                      <Check className="w-5 h-5" />
+                      Added! Add Another?
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5" />
+                      {PURCHASABILITY_LABEL[currentPurchasability]}
+                    </>
+                  )}
+                </button>
               )}
               {/* Process hint — reduces "what happens next?" confusion */}
               <p className="text-center text-xs text-slate-500">
-                No payment now — we confirm pricing &amp; delivery within 1 hour.
+                {canBuyNow
+                  ? "No payment now — we confirm pricing & delivery within 1 hour."
+                  : "No payment now — we confirm availability, pricing & delivery within 1 hour."}
               </p>
 
 
-              {/* EXP-062: WhatsApp quick path on PDP — skip the form for users who prefer instant chat */}
-              {isPriceAvailable && (
-                <a
+              {/* EXP-062: WhatsApp quick path on PDP — skip the form for users who prefer instant chat.
+                  Always shown: it is the secondary action for every purchasability state. */}
+              <a
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -948,7 +996,6 @@ export default function ProductDetailPage({
                   </svg>
                   Prefer WhatsApp? Chat directly
                 </a>
-              )}
               <Link
                 href={`/sample-box?product=${encodeURIComponent(`${product.variety} ${product.color}`)}&category=${encodeURIComponent(product.category)}`}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all text-sm"
@@ -1169,7 +1216,9 @@ export default function ProductDetailPage({
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                  {bestTier === "T1" || bestTier === "T2"
+                  {!canBuyNow
+                    ? "Availability on request — we confirm within 1 hour"
+                    : bestTier === "T1" || bestTier === "T2"
                     ? "In stock — ships within 5 days of order"
                     : "Pre-order — ships within 14 days of order"
                   }

@@ -58,6 +58,11 @@ export interface CatalogSku {
   images: unknown | null;
   stems_per_bunch: number | null;
   units_per_box: number | null;
+  /** PERMANENT CATALOG (2026-10-01): availability snapshot so the checkout
+   *  API can apply the SAME purchasability rule as the storefront
+   *  (lib/catalog-availability.ts). Read-only, straight off the static file. */
+  tier: string | null;
+  available_from: string | null;
 }
 
 let _cache: Map<string, CatalogSku> | null = null;
@@ -88,6 +93,8 @@ export function getPublishedSkuMap(): Map<string, CatalogSku> {
       images: p.images ?? null,
       stems_per_bunch: p.stems_per_bunch != null ? Number(p.stems_per_bunch) : null,
       units_per_box: p.units_per_box != null ? Number(p.units_per_box) : null,
+      tier: p.tier ?? null,
+      available_from: p.available_from ?? null,
     });
   }
   _cache = map;

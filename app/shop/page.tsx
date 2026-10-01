@@ -17,6 +17,11 @@ import { getProductImage } from "@/lib/product-images";
 import { getEarliestDeliveryDate, formatDeliveryDate, toISODate } from "@/lib/delivery-dates";
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
 import { addToBuyNowCart, setBuyNowDeliveryDate } from "@/lib/buy-now-cart";
+import {
+  groupPurchasability,
+  PURCHASABILITY_LABEL,
+  type Purchasability,
+} from "@/lib/catalog-availability";
 
 type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
 
@@ -136,31 +141,19 @@ interface VarietyGroup {
   // direct "Buy now" → /checkout cart. The uuid (not the legacy hashed id) is
   // what checkout resolves against the published catalog.
   repSkuId: string;
-}
-
-// Returns true if a product is available to show based on tier + arrival_date rules.
-// T1/T2: arrival_date must be >= today+5 calendar days. No date or too soon = HIDE.
-// T3: arrival_date must be >= today+14 AND price > 0. No date or too soon = HIDE.
-function isAvailable(p: Product): boolean {
-  if (!p.available_from) return false; // all tiers: no date = hide
-  if (!p.price || p.price <= 0) return false; // all tiers: no valid price = hide
-  // Compare calendar days cleanly: pin BOTH dates to UTC noon so the comparison
-  // is stable all day regardless of user timezone or server time.
-  // Bug fixed: using Date.now() (moving target) + T12:00:00 (local time) caused
-  // near-boundary products to flicker on/off during the day (~7h window). Fix:
-  // anchor today to the local calendar date, compare at UTC noon.
-  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local date
-  const todayMs = new Date(todayStr + "T12:00:00Z").getTime();
-  const arrivalMs = new Date(p.available_from + "T12:00:00Z").getTime();
-  const daysUntil = Math.round((arrivalMs - todayMs) / 86400000);
-  if (p.tier === "T3") return daysUntil >= 14;
-  return daysUntil >= 5; // T1, T2
+  // PERMANENT CATALOG (2026-10-01): visibility never depends on date, stock or
+  // availability — every published product is shown. This is the best
+  // purchasability across the group's variants (lib/catalog-availability.ts):
+  //   buy_now          → "Buy now" allowed (valid price + lead time met)
+  //   ask_availability → visible, quotable, no direct purchase
+  //   request_pricing  → no valid price on any variant
+  purchasability: Purchasability;
 }
 
 function buildVarietyGroups(products: Product[]): VarietyGroup[] {
   const groups = new Map<string, Product[]>();
   for (const p of products) {
-    if (!isAvailable(p)) continue;
+    // No availability filter here on purpose: hiding is not allowed.
     if (p.price <= 0) {
       console.warn(`[PRICE ISSUE] Product "${p.name}" (ID: ${p.id}, slug: ${p.slug}) has price=${p.price}. Needs data fix.`);
     }
@@ -225,6 +218,7 @@ function buildVarietyGroups(products: Product[]): VarietyGroup[] {
       repBoxType: rep.box_type || "Standard",
       repStemLength: rep.length ?? null,
       repSkuId: rep.sku_id,
+      purchasability: groupPurchasability(variants),
     });
   }
   return result;
@@ -263,21 +257,20 @@ function ShopPageContent() {
   // Delivery tier filter chips — "fast" = T1/T2 (~4 days), "preorder" = T3 (~14 days)
   const [showFast, setShowFast] = useState(true);
   const [showPreorder, setShowPreorder] = useState(true);
-  const [liveProducts, setLiveProducts] = useState<Product[]>(catalogProducts);
 
-  useEffect(() => {
-    fetch('/api/catalog/storefront')
-      .then((r) => r.ok ? r.json() : null)
-      .then((d) => { if (d?.products?.length) setLiveProducts(d.products); })
-      .catch(() => {/* use static fallback silently */});
-  }, []);
+  // PERMANENT CATALOG phase 1 (2026-10-01): the static catalog
+  // (lib/data/floropolis_products.ts, 860 SKUs) is the SINGLE source for the
+  // grid. The live /api/catalog/storefront feed is intentionally not used here:
+  // it reads catalog_published, which already filters by availability window
+  // and would hide products. Products published after the last static
+  // regeneration stay pending until the static file is regenerated.
+  const varietyGroups = useMemo(() => buildVarietyGroups(catalogProducts), []);
 
-  const varietyGroups = useMemo(() => buildVarietyGroups(liveProducts), [liveProducts]);
-
-  // Popular products — top bestsellers for hero section
+  // Popular products — top bestsellers for hero section (needs a price; does
+  // not depend on availability)
   const popularProducts = useMemo(() => {
     return varietyGroups
-      .filter((g) => g.bestseller && g.minPrice > 0)
+      .filter((g) => g.bestseller && g.purchasability !== "request_pricing")
       .sort((a, b) => {
         if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
         if (a.tier !== b.tier) {
@@ -1094,6 +1087,8 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
     : group.minPrice;
 
   const earliestDate = getEarliestDeliveryDate(group.tier);
+  const canBuyNow = group.purchasability === "buy_now";
+  const noPrice = group.purchasability === "request_pricing";
 
   const handleDirectAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -1159,9 +1154,9 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
           </h3>
           <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
           <div className="mt-2 flex items-baseline gap-1.5">
-            {group.hasPriceIssue && group.minPrice === 0 ? (
+            {noPrice ? (
               <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
-                Price pending
+                {PURCHASABILITY_LABEL.request_pricing}
               </span>
             ) : (
               <>
@@ -1182,20 +1177,30 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             )}
           </div>
           {/* EXP-027: Shipping-included signal */}
-          {!group.hasPriceIssue && group.minPrice > 0 && (
+          {!noPrice && group.minPrice > 0 && (
             <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
           )}
-          {/* EXP-033: Delivery date */}
+          {/* EXP-033: Delivery date — only promised when the group is buyable now.
+              Otherwise the card stays visible with an "Ask availability" status. */}
           <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
-            {group.tier === "PLATINUM" || group.tier === "T2" ? (
-              <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                In Stock
-              </span>
+            {canBuyNow ? (
+              <>
+                {group.tier === "PLATINUM" || group.tier === "T2" ? (
+                  <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                    In Stock
+                  </span>
+                ) : (
+                  <span className="text-slate-600 font-semibold">Pre-Order</span>
+                )}
+                <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
+              </>
             ) : (
-              <span className="text-slate-600 font-semibold">Pre-Order</span>
+              <span className="inline-flex items-center gap-0.5 text-slate-600 font-semibold">
+                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                {PURCHASABILITY_LABEL.ask_availability}
+              </span>
             )}
-            <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
             {group.variantCount > 1 && (
               <span className="text-slate-400">· {group.variantCount} options</span>
             )}
@@ -1206,18 +1211,28 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
               Select Size →
             </span>
           )}
-          {/* Single-variant but no price: navigate to PDP */}
-          {group.variantCount === 1 && (group.hasPriceIssue || group.minPrice === 0) && (
-            <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
-              View Details →
-            </span>
-          )}
         </div>
       </Link>
-      {/* EXP-070 + PROPOSAL (2026-05-17): Single-variant card actions.
-          "Buy now" is the primary CTA (writes SKU into /checkout cart);
-          "Get a quote" is the secondary, preserving the legacy review flow. */}
-      {group.variantCount === 1 && !group.hasPriceIssue && group.minPrice > 0 && (
+      {/* Single-variant card actions, by purchasability:
+            buy_now          → "Buy now" (writes SKU into /checkout cart) + "Get a quote"
+            ask_availability → "Ask availability" (adds to quote request); no Buy now button
+            request_pricing  → "Request pricing" (adds to quote request); no Buy now button */}
+      {group.variantCount === 1 && !canBuyNow && (
+        <div className="mx-3 mb-3">
+          <button
+            type="button"
+            onClick={handleDirectAdd}
+            className={`w-full py-2 rounded-lg font-semibold text-xs transition-all text-center ${
+              cardAdded
+                ? "bg-emerald-700 text-white"
+                : "bg-emerald-600 text-white hover:bg-emerald-700"
+            }`}
+          >
+            {cardAdded ? "Added to quote ✓" : PURCHASABILITY_LABEL[group.purchasability]}
+          </button>
+        </div>
+      )}
+      {group.variantCount === 1 && canBuyNow && (
         <div className="mx-3 mb-3 flex flex-col gap-1.5">
           <button
             type="button"

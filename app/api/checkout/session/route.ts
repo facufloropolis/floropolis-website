@@ -57,6 +57,7 @@ import {
   type DiscountRule,
 } from '@/lib/checkout/discounts';
 import { getPublishedSkuMap } from '@/lib/checkout/catalog-source';
+import { getPurchasability, isPurchasableOn } from '@/lib/catalog-availability';
 
 // ============================================================================
 // Constants (Phase-4 security layers, design §5)
@@ -368,6 +369,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       vendor: sku.vendor ?? null,
       category: sku.category ?? null,
     });
+  }
+
+  // ---- 5b. Purchasability gate (PERMANENT CATALOG, 2026-10-01) ----------
+  // Every published SKU is VISIBLE in the storefront, but a direct purchase is
+  // only allowed when the SAME rule the UI uses says 'buy_now' as of today
+  // (valid price + available_from within the tier's lead time). The requested
+  // delivery date can never re-activate an expired record: isPurchasableOn()
+  // checks today's state first, then that the delivery date is on/after
+  // available_from. Unresolved uuids are left to computeTotals (sku_missing).
+  for (const uuid of skuIds) {
+    const sku = published.get(uuid);
+    if (!sku) continue;
+    if (getPurchasability(sku) === 'request_pricing') {
+      return NextResponse.json(
+        {
+          error: 'price_invalid',
+          message: `${sku.name} has no valid price. Request pricing instead of buying directly.`,
+          sku_id: uuid,
+        },
+        { status: 400 },
+      );
+    }
+    if (!isPurchasableOn(sku, body.requested_delivery_date)) {
+      return NextResponse.json(
+        {
+          error: 'sku_unavailable',
+          message: `${sku.name} is not available for direct purchase right now. Ask availability to request it.`,
+          sku_id: uuid,
+        },
+        { status: 400 },
+      );
+    }
   }
 
   // ---- 6a. Tax rates (T2) — fetch us_state_sales_tax for the shipping state ----
