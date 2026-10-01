@@ -22,12 +22,21 @@ import * as Sentry from '@sentry/nextjs';
 import { createBackupServerClient } from '@/lib/supabase/backup-server-session';
 import { getBackupServiceClient } from '@/lib/supabase/backup-server';
 import { getStripe, assertStripeEnv } from '@/lib/stripe/client';
+import { DIRECT_CHECKOUT_ENABLED } from '@/lib/catalog-availability';
 
 interface ConfirmBody {
   order_id: number;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  // ---- 0. Central kill-switch (PERMANENT CATALOG, 2026-10-01) -------------
+  // Same switch as /api/checkout/session (lib/catalog-availability.ts). While
+  // direct checkout is disabled this route answers 503 BEFORE Stripe env,
+  // auth, Supabase, body parsing or any write. Nothing below runs.
+  if (!DIRECT_CHECKOUT_ENABLED) {
+    return NextResponse.json({ error: 'checkout_disabled' }, { status: 503 });
+  }
+
   assertStripeEnv();
 
   // ---- 1. Auth ----

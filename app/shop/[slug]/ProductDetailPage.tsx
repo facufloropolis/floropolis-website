@@ -27,8 +27,11 @@ import {
 import { getCategoryPageUrl } from "@/lib/shop-search";
 import { getCareInstructions } from "@/lib/care-instructions";
 import {
+  DIRECT_CHECKOUT_ENABLED,
   getPurchasability,
   PURCHASABILITY_LABEL,
+  QUOTE_ACTION_LABEL,
+  QUOTE_ADDED_LABEL,
   type Purchasability,
 } from "@/lib/catalog-availability";
 
@@ -401,8 +404,10 @@ export default function ProductDetailPage({
   const compareAtPrice = currentVariant.compare_at_price ?? null;
   const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
   // Direct purchase gate for the selected variant. Same rule as the server.
+  // While DIRECT_CHECKOUT_ENABLED is false this is never true: BuyNowButton is
+  // not rendered and the primary action is "Add to quote".
   const currentPurchasability = stateOf(currentVariant);
-  const canBuyNow = currentPurchasability === "buy_now";
+  const canBuyNow = DIRECT_CHECKOUT_ENABLED && currentPurchasability === "buy_now";
 
   // For Box products (combo boxes), stems_per_bunch × units_per_box is meaningless.
   // When unit === "Stem", units_per_box IS the stem count — do not multiply by stems_per_bunch.
@@ -942,37 +947,44 @@ export default function ProductDetailPage({
                     ) : (
                       <>
                         <ShoppingCart className="w-5 h-5" />
-                        Get a quote
+                        {QUOTE_ACTION_LABEL}
                       </>
                     )}
                   </button>
                 </>
               ) : (
-                /* ask_availability / request_pricing: primary action adds the
-                   product to the quote request; WhatsApp stays secondary below.
-                   No Buy now button in these states. */
-                <button
-                  ref={addToQuoteRef}
-                  type="button"
-                  onClick={handleAddToQuote}
-                  className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg transition-all ${
-                    justAdded
-                      ? "bg-emerald-700 text-white"
-                      : "bg-emerald-600 text-white hover:bg-emerald-700"
-                  }`}
-                >
-                  {justAdded ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      Added! Add Another?
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5" />
-                      {PURCHASABILITY_LABEL[currentPurchasability]}
-                    </>
-                  )}
-                </button>
+                /* ask_availability / request_pricing: the STATE is shown as an
+                   informational line; the ACTION is always "Add to quote" and
+                   adds the selected variant to the quote request in place.
+                   WhatsApp stays secondary below. No Buy now button here. */
+                <>
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 flex-shrink-0" />
+                    {PURCHASABILITY_LABEL[currentPurchasability]}
+                  </p>
+                  <button
+                    ref={addToQuoteRef}
+                    type="button"
+                    onClick={handleAddToQuote}
+                    className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg transition-all ${
+                      justAdded
+                        ? "bg-emerald-700 text-white"
+                        : "bg-emerald-600 text-white hover:bg-emerald-700"
+                    }`}
+                  >
+                    {justAdded ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        {QUOTE_ADDED_LABEL}
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5" />
+                        {QUOTE_ACTION_LABEL}
+                      </>
+                    )}
+                  </button>
+                </>
               )}
               {/* Process hint — reduces "what happens next?" confusion */}
               <p className="text-center text-xs text-slate-500">
@@ -1309,7 +1321,7 @@ export default function ProductDetailPage({
               }`}
             >
               <ShoppingCart className="w-4 h-4" />
-              {justAdded ? "Added!" : "Add to Quote"}
+              {justAdded ? QUOTE_ADDED_LABEL : QUOTE_ACTION_LABEL}
             </button>
           </div>
         </div>

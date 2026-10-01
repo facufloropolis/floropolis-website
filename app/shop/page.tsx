@@ -18,8 +18,11 @@ import { getEarliestDeliveryDate, formatDeliveryDate, toISODate } from "@/lib/de
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
 import { addToBuyNowCart, setBuyNowDeliveryDate } from "@/lib/buy-now-cart";
 import {
+  DIRECT_CHECKOUT_ENABLED,
   groupPurchasability,
   PURCHASABILITY_LABEL,
+  QUOTE_ACTION_LABEL,
+  QUOTE_ADDED_LABEL,
   type Purchasability,
 } from "@/lib/catalog-availability";
 
@@ -1087,7 +1090,10 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
     : group.minPrice;
 
   const earliestDate = getEarliestDeliveryDate(group.tier);
-  const canBuyNow = group.purchasability === "buy_now";
+  // Direct purchase only when the central switch is on AND the group is
+  // 'buy_now'. While DIRECT_CHECKOUT_ENABLED is false this is never true, so
+  // no card ever renders a Buy now action.
+  const canBuyNow = DIRECT_CHECKOUT_ENABLED && group.purchasability === "buy_now";
   const noPrice = group.purchasability === "request_pricing";
 
   const handleDirectAdd = (e: React.MouseEvent) => {
@@ -1213,10 +1219,12 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
           )}
         </div>
       </Link>
-      {/* Single-variant card actions, by purchasability:
-            buy_now          → "Buy now" (writes SKU into /checkout cart) + "Get a quote"
-            ask_availability → "Ask availability" (adds to quote request); no Buy now button
-            request_pricing  → "Request pricing" (adds to quote request); no Buy now button */}
+      {/* Single-variant card actions. STATE ("Ask availability" / "Request
+          pricing") is shown as text above; the ACTION is always "Add to quote":
+            buy_now (switch on only) → "Buy now" (writes SKU into /checkout cart) + "Add to quote"
+            ask_availability / request_pricing → "Add to quote" (adds the product
+              to the quote request in place, then "Added to quote ✓"); no Buy now button.
+          Multi-variant cards keep "Select Size →" and the user adds from the PDP. */}
       {group.variantCount === 1 && !canBuyNow && (
         <div className="mx-3 mb-3">
           <button
@@ -1228,7 +1236,7 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
                 : "bg-emerald-600 text-white hover:bg-emerald-700"
             }`}
           >
-            {cardAdded ? "Added to quote ✓" : PURCHASABILITY_LABEL[group.purchasability]}
+            {cardAdded ? QUOTE_ADDED_LABEL : QUOTE_ACTION_LABEL}
           </button>
         </div>
       )}
@@ -1268,7 +1276,7 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             onClick={handleDirectAdd}
             className="w-full py-1.5 rounded-lg font-semibold text-[11px] border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition-all text-center"
           >
-            Get a quote
+            {QUOTE_ACTION_LABEL}
           </button>
         </div>
       )}

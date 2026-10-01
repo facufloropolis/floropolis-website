@@ -11,6 +11,7 @@ import { useState, useEffect, useRef } from 'react'
 import HeaderSearch from '@/components/HeaderSearch'
 import { getItemCount } from '@/lib/quote-cart'
 import { buyNowCartCount, BUY_NOW_CART_EVENT } from '@/lib/buy-now-cart'
+import { DIRECT_CHECKOUT_ENABLED } from '@/lib/catalog-availability'
 import { useAuth } from '@/lib/auth-context'
 import { useAuthBackup } from '@/lib/auth-context-backup'
 
@@ -37,8 +38,12 @@ export default function Navigation() {
     return () => window.removeEventListener('quote-cart-updated', updateCount);
   }, []);
 
-  // Buy-now cart listener — same-tab CustomEvent + cross-tab "storage" event
+  // Buy-now cart listener — same-tab CustomEvent + cross-tab "storage" event.
+  // PERMANENT CATALOG (2026-10-01): direct checkout is centrally disabled
+  // (DIRECT_CHECKOUT_ENABLED); while off, no listener is registered and the
+  // Cart link/badge below are not rendered. Quote is unaffected.
   useEffect(() => {
+    if (!DIRECT_CHECKOUT_ENABLED) return;
     const updateBuyNow = () => setBuyNowCount(buyNowCartCount());
     updateBuyNow();
     window.addEventListener(BUY_NOW_CART_EVENT, updateBuyNow);
@@ -190,16 +195,19 @@ export default function Navigation() {
                 </span>
               )}
             </Link>
-            {/* PROPOSAL (2026-05-17): direct checkout cart — separate from /quote */}
-            <Link href="/checkout" className="relative flex items-center gap-1 text-slate-700 hover:text-emerald-600 transition-colors p-2" aria-label="Checkout cart">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="text-sm font-medium hidden sm:inline">Cart</span>
-              {buyNowCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  {buyNowCount}
-                </span>
-              )}
-            </Link>
+            {/* PROPOSAL (2026-05-17): direct checkout cart — separate from /quote.
+                Hidden entirely while DIRECT_CHECKOUT_ENABLED is false. */}
+            {DIRECT_CHECKOUT_ENABLED && (
+              <Link href="/checkout" className="relative flex items-center gap-1 text-slate-700 hover:text-emerald-600 transition-colors p-2" aria-label="Checkout cart">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="text-sm font-medium hidden sm:inline">Cart</span>
+                {buyNowCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {buyNowCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <Link href="/sample-box" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg whitespace-nowrap text-sm">
               Free Sample Box
             </Link>
@@ -269,15 +277,18 @@ export default function Navigation() {
                 </span>
               )}
             </Link>
-            {/* PROPOSAL (2026-05-17): mobile checkout cart icon */}
-            <Link href="/checkout" className="relative flex items-center text-slate-700 hover:text-emerald-600 transition-colors p-2.5" aria-label="Checkout cart">
-              <ShoppingCart className="h-5 w-5" />
-              {buyNowCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  {buyNowCount}
-                </span>
-              )}
-            </Link>
+            {/* PROPOSAL (2026-05-17): mobile checkout cart icon.
+                Hidden entirely while DIRECT_CHECKOUT_ENABLED is false. */}
+            {DIRECT_CHECKOUT_ENABLED && (
+              <Link href="/checkout" className="relative flex items-center text-slate-700 hover:text-emerald-600 transition-colors p-2.5" aria-label="Checkout cart">
+                <ShoppingCart className="h-5 w-5" />
+                {buyNowCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {buyNowCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-slate-700 hover:text-emerald-600 transition-colors p-2.5"

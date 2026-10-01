@@ -23,15 +23,45 @@
 
 export type Purchasability = "buy_now" | "ask_availability" | "request_pricing";
 
+/**
+ * CENTRAL KILL-SWITCH for direct purchase (Buy now → /checkout → Stripe).
+ * v2 | 2026-10-01 | Job_PM — direct checkout and Stripe are NOT enabled yet.
+ *
+ * While `false`:
+ *   - getPurchasability() never returns 'buy_now': a SKU with a valid price is
+ *     'ask_availability'; without a valid price it stays 'request_pricing'.
+ *   - isPurchasableOn() is therefore always false (server gate).
+ *   - Cards and the product page never render BuyNowButton.
+ *   - Navigation hides the direct Cart link + badge (Quote stays).
+ *   - /checkout redirects to /quote (app/checkout/layout.tsx).
+ *   - POST /api/checkout/session answers 503 `checkout_disabled` before auth,
+ *     Supabase, Stripe or any write.
+ * Flip to `true` to re-enable the whole direct-purchase path at once. The
+ * implementation stays in place; only this switch gates it.
+ */
+export const DIRECT_CHECKOUT_ENABLED: boolean = false;
+
 /** Minimum calendar days between today and available_from, per tier. */
 export const MIN_LEAD_DAYS: Readonly<Record<string, number>> = { T3: 14 };
 export const DEFAULT_MIN_LEAD_DAYS = 5;
 
+/** STATE texts — informational only; never used as a button label. */
 export const PURCHASABILITY_LABEL: Readonly<Record<Purchasability, string>> = {
   buy_now: "Buy now",
   ask_availability: "Ask availability",
   request_pricing: "Request pricing",
 };
+
+/** ACTION texts — the quote CTA. Any visible product/variant can be added to a
+ *  quote request, whatever its state. */
+export const QUOTE_ACTION_LABEL = "Add to quote";
+export const QUOTE_ADDED_LABEL = "Added to quote ✓";
+
+/** Optional override of the kill-switch, for unit tests of the underlying
+ *  date/price rule. Production code never passes it. */
+export interface PurchasabilityOptions {
+  directCheckoutEnabled?: boolean;
+}
 
 /** The subset of Product / CatalogSku fields this rule needs. */
 export interface AvailabilityInput {
@@ -90,12 +120,18 @@ export function hasValidPrice(p: AvailabilityInput): boolean {
 /**
  * Purchasability as of `todayISO` (defaults to the local calendar date).
  * Pass `todayISO` explicitly in tests for deterministic results.
+ *
+ * While DIRECT_CHECKOUT_ENABLED is false, a valid price yields
+ * 'ask_availability' (never 'buy_now'); no valid price stays 'request_pricing'.
  */
 export function getPurchasability(
   p: AvailabilityInput,
   todayISO: string = localTodayISO(),
+  opts?: PurchasabilityOptions,
 ): Purchasability {
   if (!hasValidPrice(p)) return "request_pricing";
+  const directCheckoutEnabled = opts?.directCheckoutEnabled ?? DIRECT_CHECKOUT_ENABLED;
+  if (!directCheckoutEnabled) return "ask_availability";
   if (!p.available_from) return "ask_availability";
   const days = daysBetween(todayISO, p.available_from);
   if (Number.isNaN(days)) return "ask_availability";
@@ -105,15 +141,17 @@ export function getPurchasability(
 /**
  * Server-side gate for a direct purchase with a requested delivery date.
  *   1. The SKU must be 'buy_now' as of today (the delivery date cannot
- *      re-activate an expired, missing or too-soon record).
+ *      re-activate an expired, missing or too-soon record). While the
+ *      kill-switch is off this is never true.
  *   2. The requested delivery date must be on/after available_from.
  */
 export function isPurchasableOn(
   p: AvailabilityInput,
   requestedDeliveryISO: string,
   todayISO: string = localTodayISO(),
+  opts?: PurchasabilityOptions,
 ): boolean {
-  if (getPurchasability(p, todayISO) !== "buy_now") return false;
+  if (getPurchasability(p, todayISO, opts) !== "buy_now") return false;
   const offset = daysBetween(p.available_from as string, requestedDeliveryISO);
   if (Number.isNaN(offset)) return false;
   return offset >= 0;
@@ -127,10 +165,11 @@ export function isPurchasableOn(
 export function groupPurchasability(
   variants: readonly AvailabilityInput[],
   todayISO: string = localTodayISO(),
+  opts?: PurchasabilityOptions,
 ): Purchasability {
   let best: Purchasability = "request_pricing";
   for (const v of variants) {
-    const s = getPurchasability(v, todayISO);
+    const s = getPurchasability(v, todayISO, opts);
     if (s === "buy_now") return "buy_now";
     if (s === "ask_availability") best = "ask_availability";
   }

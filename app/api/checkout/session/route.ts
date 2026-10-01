@@ -57,7 +57,11 @@ import {
   type DiscountRule,
 } from '@/lib/checkout/discounts';
 import { getPublishedSkuMap } from '@/lib/checkout/catalog-source';
-import { getPurchasability, isPurchasableOn } from '@/lib/catalog-availability';
+import {
+  DIRECT_CHECKOUT_ENABLED,
+  getPurchasability,
+  isPurchasableOn,
+} from '@/lib/catalog-availability';
 
 // ============================================================================
 // Constants (Phase-4 security layers, design §5)
@@ -202,6 +206,20 @@ async function sendTelegramAlert(text: string): Promise<void> {
 // Handler
 // ============================================================================
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  // ---- 0. Central kill-switch (PERMANENT CATALOG, 2026-10-01) -------------
+  // Direct checkout and Stripe are not enabled yet. While
+  // DIRECT_CHECKOUT_ENABLED is false this route answers 503 BEFORE touching
+  // Stripe env, auth, Supabase or any write. Nothing below runs.
+  if (!DIRECT_CHECKOUT_ENABLED) {
+    return NextResponse.json(
+      {
+        error: 'checkout_disabled',
+        message: 'Direct checkout is not enabled yet. Please request a quote instead.',
+      },
+      { status: 503 },
+    );
+  }
+
   assertStripeEnv();
   const startedAt = Date.now();
 
