@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -12,10 +11,19 @@ import QuoteBar from "@/components/QuoteBar";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
-import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
-import { getProductImage } from "@/lib/product-images";
+import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { getProductImageCandidates } from "@/lib/product-image-candidates";
+import ProductImageWithFallback from "@/components/ProductImageWithFallback";
 import { getEarliestDeliveryDate, formatDeliveryDate, toISODate } from "@/lib/delivery-dates";
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
+import {
+  DIRECT_CHECKOUT_ENABLED,
+  groupPurchasability,
+  PURCHASABILITY_LABEL,
+  QUOTE_ACTION_LABEL,
+  QUOTE_ADDED_LABEL,
+  type Purchasability,
+} from "@/lib/catalog-availability";
 
 type SortOption = "recommended" | "price-asc" | "price-desc" | "name";
 
@@ -46,20 +54,6 @@ function getColorGroup(rawColor: string): string {
     if (colors.includes(rawColor)) return group;
   }
   return "Other";
-}
-
-function resolveImage(pathList: string[], variety?: string, color?: string, category?: string): string {
-  const path = pathList[0];
-  if (path) {
-    if (path.startsWith("http") || path.startsWith("/")) return path;
-    const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
-    return `${base}/${path}`;
-  }
-  // Fall back to our image mapper
-  if (variety && category) {
-    return getProductImage(variety, color || "", category);
-  }
-  return "/Floropolis-logo-only.png";
 }
 
 // Categories ordered by TAM / market importance
@@ -115,7 +109,12 @@ interface VarietyGroup {
   minPrice: number;
   maxPrice: number;
   originalMinPrice: number; // price before any deal
-  image: string;
+  // PHOTO RECOVERY (2026-10-01): ordered image candidates for the card — the
+  // representative's own photos, then the other variants of the SAME variety
+  // and colour, then the exact mapping entry (lib/product-image-candidates.ts).
+  // Rendered by ProductImageWithFallback, which shows the brand placeholder
+  // only when every candidate fails. Never a "similar" flower.
+  imageCandidates: string[];
   has_photo: boolean;
   tier: string; // best (lowest = most available) tier in group
   bestseller: boolean;
@@ -131,31 +130,20 @@ interface VarietyGroup {
   repUnitsPerBox: number;
   repBoxType: string;
   repStemLength: string | null;
-}
-
-// Returns true if a product is available to show based on tier + arrival_date rules.
-// T1/T2: arrival_date must be >= today+5 calendar days. No date or too soon = HIDE.
-// T3: arrival_date must be >= today+14 AND price > 0. No date or too soon = HIDE.
-function isAvailable(p: Product): boolean {
-  if (!p.available_from) return false; // all tiers: no date = hide
-  if (!p.price || p.price <= 0) return false; // all tiers: no valid price = hide
-  // Compare calendar days cleanly: pin BOTH dates to UTC noon so the comparison
-  // is stable all day regardless of user timezone or server time.
-  // Bug fixed: using Date.now() (moving target) + T12:00:00 (local time) caused
-  // near-boundary products to flicker on/off during the day (~7h window). Fix:
-  // anchor today to the local calendar date, compare at UTC noon.
-  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local date
-  const todayMs = new Date(todayStr + "T12:00:00Z").getTime();
-  const arrivalMs = new Date(p.available_from + "T12:00:00Z").getTime();
-  const daysUntil = Math.round((arrivalMs - todayMs) / 86400000);
-  if (p.tier === "T3") return daysUntil >= 14;
-  return daysUntil >= 5; // T1, T2
+  // PERMANENT CATALOG (2026-10-01): visibility never depends on date, stock or
+  // availability — every published product is shown. This is the best
+  // purchasability across the group's variants (lib/catalog-availability.ts):
+  //   buy_now          → direct purchase allowed (valid price + lead time met;
+  //                      never reached while DIRECT_CHECKOUT_ENABLED is false)
+  //   ask_availability → visible, quotable, no direct purchase
+  //   request_pricing  → no valid price on any variant
+  purchasability: Purchasability;
 }
 
 function buildVarietyGroups(): VarietyGroup[] {
   const groups = new Map<string, Product[]>();
   for (const p of catalogProducts) {
-    if (!isAvailable(p)) continue;
+    // No availability filter here on purpose: hiding is not allowed.
     if (p.price <= 0) {
       console.warn(`[PRICE ISSUE] Product "${p.name}" (ID: ${p.id}, slug: ${p.slug}) has price=${p.price}. Needs data fix.`);
     }
@@ -204,7 +192,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       minPrice: validPrices.length > 0 ? Math.min(...validPrices) : 0,
       maxPrice: validPrices.length > 0 ? Math.max(...validPrices) : 0,
       originalMinPrice: validOriginalPrices.length > 0 ? Math.min(...validOriginalPrices) : 0,
-      image: resolveImage(rep.images || [], rep.variety, rep.color, rep.category),
+      imageCandidates: getProductImageCandidates(rep, variants),
       has_photo: rep.has_photo,
       tier: bestTier,
       bestseller: variants.some((v) => v.is_best_seller),
@@ -219,6 +207,7 @@ function buildVarietyGroups(): VarietyGroup[] {
       repUnitsPerBox: rep.units_per_box || 0,
       repBoxType: rep.box_type || "Standard",
       repStemLength: rep.length ?? null,
+      purchasability: groupPurchasability(variants),
     });
   }
   return result;
@@ -258,12 +247,17 @@ function ShopPageContent() {
   const [showFast, setShowFast] = useState(true);
   const [showPreorder, setShowPreorder] = useState(true);
 
+  // PERMANENT CATALOG phase 1 (2026-10-01): the committed static catalog
+  // (lib/data/floropolis_products.ts) is the SINGLE source for the grid and
+  // every product in it is shown. Products published after the last static
+  // regeneration stay pending until the static file is regenerated.
   const varietyGroups = useMemo(() => buildVarietyGroups(), []);
 
-  // Popular products — top bestsellers for hero section
+  // Popular products — top bestsellers for hero section (needs a price; does
+  // not depend on availability)
   const popularProducts = useMemo(() => {
     return varietyGroups
-      .filter((g) => g.bestseller && g.minPrice > 0)
+      .filter((g) => g.bestseller && g.purchasability !== "request_pricing")
       .sort((a, b) => {
         if (a.has_photo !== b.has_photo) return a.has_photo ? -1 : 1;
         if (a.tier !== b.tier) {
@@ -707,7 +701,6 @@ function ShopPageContent() {
             </div>
             <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
               {popularProducts.map((group) => {
-                const imgSrc = group.image || "/Floropolis-logo-only.png";
                 const displayPrice = group.is_on_deal && group.dealPrice != null
                   ? group.dealPrice
                   : group.minPrice;
@@ -724,12 +717,14 @@ function ShopPageContent() {
                     })}
                   >
                     <div className="aspect-square relative bg-slate-50 overflow-hidden">
-                      <Image
-                        src={imgSrc}
+                      <ProductImageWithFallback
+                        candidates={group.imageCandidates}
                         alt={group.name}
                         fill
                         className="object-contain group-hover/pop:scale-105 transition-transform"
                         sizes="192px"
+                        iconClassName="w-10"
+                        labelClassName="text-[10px]"
                       />
                       {group.bestseller && (
                         <span className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
@@ -1070,7 +1065,6 @@ export default function ShopPage() {
 
 // EXP-070: Direct add-to-quote for single-variant cards (skip PDP trip)
 function VarietyCard({ group }: { group: VarietyGroup }) {
-  const imgSrc = group.image || "/Floropolis-logo-only.png";
   const [cardAdded, setCardAdded] = useState(false);
 
   const hasPriceRange = group.minPrice !== group.maxPrice;
@@ -1079,6 +1073,11 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
     : group.minPrice;
 
   const earliestDate = getEarliestDeliveryDate(group.tier);
+  // Direct purchase only when the central switch is on AND the group is
+  // 'buy_now'. While DIRECT_CHECKOUT_ENABLED is false this is never true, so
+  // no card ever renders a Buy now action.
+  const canBuyNow = DIRECT_CHECKOUT_ENABLED && group.purchasability === "buy_now";
+  const noPrice = group.purchasability === "request_pricing";
 
   const handleDirectAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -1120,12 +1119,14 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
         })}
       >
         <div className="block aspect-square relative bg-slate-50 overflow-hidden">
-          <Image
-            src={imgSrc}
+          <ProductImageWithFallback
+            candidates={group.imageCandidates}
             alt={group.name}
             fill
             className="object-contain group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            iconClassName="w-14"
+            labelClassName="text-xs"
           />
           {group.bestseller && (
             <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
@@ -1144,9 +1145,9 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
           </h3>
           <p className="text-xs font-medium text-emerald-700 mt-0.5">{group.category}</p>
           <div className="mt-2 flex items-baseline gap-1.5">
-            {group.hasPriceIssue && group.minPrice === 0 ? (
+            {noPrice ? (
               <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
-                Price pending
+                {PURCHASABILITY_LABEL.request_pricing}
               </span>
             ) : (
               <>
@@ -1167,20 +1168,30 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
             )}
           </div>
           {/* EXP-027: Shipping-included signal */}
-          {!group.hasPriceIssue && group.minPrice > 0 && (
+          {!noPrice && group.minPrice > 0 && (
             <p className="text-[10px] text-emerald-600 mt-0.5">✓ Shipping included</p>
           )}
-          {/* EXP-033: Delivery date */}
+          {/* EXP-033: Delivery date — only promised when the group is buyable now.
+              Otherwise the card stays visible with an "Ask availability" status. */}
           <p className="text-xs text-slate-600 mt-1 flex items-center gap-1">
-            {group.tier === "PLATINUM" || group.tier === "T2" ? (
-              <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                In Stock
-              </span>
+            {canBuyNow ? (
+              <>
+                {group.tier === "PLATINUM" || group.tier === "T2" ? (
+                  <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                    In Stock
+                  </span>
+                ) : (
+                  <span className="text-slate-600 font-semibold">Pre-Order</span>
+                )}
+                <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
+              </>
             ) : (
-              <span className="text-slate-600 font-semibold">Pre-Order</span>
+              <span className="inline-flex items-center gap-0.5 text-slate-600 font-semibold">
+                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                {PURCHASABILITY_LABEL.ask_availability}
+              </span>
             )}
-            <span className="text-slate-500">· Ready {formatDeliveryDate(earliestDate)}</span>
             {group.variantCount > 1 && (
               <span className="text-slate-400">· {group.variantCount} options</span>
             )}
@@ -1191,27 +1202,28 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
               Select Size →
             </span>
           )}
-          {/* Single-variant but no price: navigate to PDP */}
-          {group.variantCount === 1 && (group.hasPriceIssue || group.minPrice === 0) && (
-            <span className="mt-auto pt-3 block w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold group-hover:bg-emerald-700 transition-all text-center text-xs">
-              View Details →
-            </span>
-          )}
         </div>
       </Link>
-      {/* EXP-070: Single-variant with price → direct Add to Quote (no PDP trip) */}
-      {group.variantCount === 1 && !group.hasPriceIssue && group.minPrice > 0 && (
-        <button
-          type="button"
-          onClick={handleDirectAdd}
-          className={`mx-3 mb-3 w-[calc(100%-1.5rem)] py-2 rounded-lg font-semibold text-xs transition-all text-center ${
-            cardAdded
-              ? "bg-emerald-700 text-white"
-              : "bg-emerald-600 text-white hover:bg-emerald-700"
-          }`}
-        >
-          {cardAdded ? "✓ Added!" : "Add to Quote →"}
-        </button>
+      {/* Single-variant card action (EXP-070, kept): STATE ("Ask availability" /
+          "Request pricing") is shown as text above; the ACTION is always
+          "Add to quote" — it adds the product to the quote request in place,
+          then reads "Added to quote ✓". There is no direct purchase ("Buy now")
+          on this branch, whatever the purchasability state.
+          Multi-variant cards keep "Select Size →" and the user adds from the PDP. */}
+      {group.variantCount === 1 && (
+        <div className="mx-3 mb-3">
+          <button
+            type="button"
+            onClick={handleDirectAdd}
+            className={`w-full py-2 rounded-lg font-semibold text-xs transition-all text-center ${
+              cardAdded
+                ? "bg-emerald-700 text-white"
+                : "bg-emerald-600 text-white hover:bg-emerald-700"
+            }`}
+          >
+            {cardAdded ? QUOTE_ADDED_LABEL : QUOTE_ACTION_LABEL}
+          </button>
+        </div>
       )}
     </div>
   );

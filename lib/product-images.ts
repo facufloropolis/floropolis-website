@@ -192,8 +192,10 @@ const IMAGE_MAP: Record<string, string> = {
   "ranunculus-white": "/images/shop/ranunculus/white.png",
   "ranunculus-yellow": "/images/shop/ranunculus/yellow.png",
   "ranunculus-assorted": "/images/shop/ranunculus/hot-pink.png",    // Assorted → hot-pink fallback
-  "ranunculus-light-pink": "/images/shop/ranunculus/pink.png",      // Light Pink → pink (for Bon Bon)
-  "bon-bon-light-pink": "/images/shop/ranunculus/pink.png",
+  "ranunculus-light-pink": "/images/shop/ranunculus/pink.png",      // Light Pink → pink
+  // "bon-bon-light-pink" removed 2026-10-01 (Juan Javier): in the catalogue
+  // "Bon Bon / Light Pink" is a Scabiosa with its own photos; the Ranunculus
+  // image was a wrong match and must never be shown for it.
 
   // ── Greens (21) ──
   "anglonema-tip-green": "/images/shop/greens/anglonema-tip-green.png",
@@ -548,6 +550,20 @@ const IMAGE_MAP: Record<string, string> = {
   "white-o-hara-white-70-cm": "/images/shop/roses/white-o'hara-cream-white.png",
   "white-o-hara-white-80-cm": "/images/shop/roses/white-o'hara-cream-white.png",
 
+  // ── Exact variety+colour aliases confirmed by Juan Javier (2026-10-01) ──
+  // Catalogue records whose only photos sit on hosts the image optimizer does
+  // not allow (ecoroses.com.ec / upload.wikimedia.org). Each key is the exact
+  // `<variety>-<color>` of the catalogue row and points at an existing file in
+  // /public that shows the SAME variety and colour (confirmed by eye). Read by
+  // getExactProductImage(); never by the fuzzy fallbacks.
+  // NOT confirmed (photo looks pink/magenta): "moody blues! / lavender" → stays
+  // on the "Picture coming soon" placeholder on purpose.
+  "brighton-yellow": "/images/shop/roses/brighton-bright-yellow.png",
+  "white-o'hara-white": "/images/shop/roses/white-o'hara-cream-white.png",
+  "white-ohara-white": "/images/shop/roses/white-o'hara-cream-white.png", // same variety, spelled without the apostrophe in 2 rows
+  "anthurium-assorted-large-mixed": "/images/shop/tropicals/mf-anthurium-large-mix.jpg",
+  "heliconia-mix-box-red": "/images/shop/combos/mf-combo-heliconia-mix-box.jpg",
+  "gypsophila-cosmic-white": "/images/shop/other/gypsophilia-cosmic.png",
 };
 
 // ━━━ CATEGORY FALLBACKS ━━━
@@ -780,6 +796,22 @@ function getCandidateKeys(variety: string, color: string): string[] {
   if (v.includes("ginger-mix")) keys.push("combo-ginger-mix-box");
 
   return keys;
+}
+
+/**
+ * EXACT lookup only: the curated key `<variety>-<color>` of IMAGE_MAP.
+ * v1 | 2026-10-01 | Job_PM (jj/permanent-catalog, photo recovery)
+ *
+ * Unlike getProductImage(), this never falls back to variety-only, fuzzy or
+ * category matches — those can return a *similar* flower, which is not an
+ * acceptable substitute for a product photo. Returns null when there is no
+ * exact variety+color entry.
+ */
+export function getExactProductImage(variety: string, color: string): string | null {
+  const v = normalize(variety);
+  const c = normalize(color);
+  if (!v || !c) return null;
+  return IMAGE_MAP[`${v}-${c}`] ?? null;
 }
 
 /**
