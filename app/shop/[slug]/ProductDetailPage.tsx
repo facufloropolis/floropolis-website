@@ -2,15 +2,16 @@
 
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ShoppingCart, Check, Package } from "lucide-react";
 import AssortedMixBuilder from "@/components/AssortedMixBuilder";
 import type { Product } from "@/lib/data/products";
-import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
-import { getProductImage } from "@/lib/product-images";
+import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { getOwnProductImages, getProductImageCandidates } from "@/lib/product-image-candidates";
+import { getVariants } from "@/lib/data/product-helpers";
+import ProductImageWithFallback from "@/components/ProductImageWithFallback";
 import { addItem, getItemCount, type QuoteItem } from "@/lib/quote-cart";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
@@ -24,6 +25,14 @@ import {
 } from "@/lib/delivery-dates";
 import { getCategoryPageUrl } from "@/lib/shop-search";
 import { getCareInstructions } from "@/lib/care-instructions";
+import {
+  DIRECT_CHECKOUT_ENABLED,
+  getPurchasability,
+  PURCHASABILITY_LABEL,
+  QUOTE_ACTION_LABEL,
+  QUOTE_ADDED_LABEL,
+  type Purchasability,
+} from "@/lib/catalog-availability";
 
 type Props = {
   product: Product;
@@ -32,13 +41,6 @@ type Props = {
   bundles: Product[];
   categorySlug: string;
 };
-
-function resolveImage(path: string): string {
-  if (!path) return "";
-  if (path.startsWith("http") || path.startsWith("/")) return path;
-  const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
-  return `${base}/${path}`;
-}
 
 function DeliveryDateChips({
   dates,
@@ -174,9 +176,9 @@ function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDat
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {bundles.map((b) => {
-        const bImg = (Array.isArray(b.images) && b.images.length > 0)
-          ? resolveImage(b.images[0])
-          : getProductImage(b.variety, b.color, b.category);
+        // PHOTO RECOVERY (2026-10-01): own photos → same variety+colour variants
+        // → exact mapping; brand placeholder when all fail. Never a similar flower.
+        const bCandidates = getProductImageCandidates(b, getVariants(b.variety, b.color));
         const bPrice = b.deal_price ?? b.price;
         const bUnit = b.unit === "Bunch" ? "bunch" : "stem";
         const isAdded = addedSlug === b.slug;
@@ -188,13 +190,14 @@ function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDat
             className="group flex items-center gap-4 bg-emerald-50/50 rounded-xl border border-emerald-100 p-3 hover:shadow-md transition-all text-left"
           >
             <div className="relative w-16 h-16 rounded-lg bg-white overflow-hidden flex-shrink-0">
-              <Image
-                src={bImg}
+              <ProductImageWithFallback
+                candidates={bCandidates}
                 alt={b.name}
                 fill
                 className="object-contain"
                 sizes="64px"
-                unoptimized
+                iconClassName="w-6"
+                labelClassName="text-[8px]"
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -229,29 +232,32 @@ export default function ProductDetailPage({
   bundles,
   categorySlug,
 }: Props) {
-  // Collect all images from all variants, with fallback to image mapper
-  const images = useMemo(() => {
-    const paths = new Set<string>();
-    const all = [product, ...variants];
-    for (const v of all) {
-      if (Array.isArray(v.images)) {
-        for (const img of v.images) {
-          if (img) paths.add(img);
-        }
-      }
-    }
-    const resolved = Array.from(paths).map(resolveImage).filter(Boolean);
-    // If no images from DB, use our image mapper
-    if (resolved.length === 0) {
-      const mapped = getProductImage(product.variety, product.color, product.category);
-      if (mapped && mapped !== "/Floropolis-logo-only.png") {
-        resolved.push(mapped);
-      }
-    }
-    return resolved;
-  }, [product, variants]);
+  // PHOTO RECOVERY (2026-10-01): the visible gallery holds ONLY the product's
+  // own photos (its images and those of its same-variety+colour variants,
+  // lib/product-image-candidates.ts). The exact mapping entry never becomes a
+  // thumbnail; it only sits at the end of the main image's fallback chain, for
+  // when every own photo fails to load. The fuzzy mapper is not used here: a
+  // "similar" flower is not an acceptable product photo. When nothing loads,
+  // ProductImageWithFallback shows the brand placeholder.
+  const images = useMemo(
+    () => getOwnProductImages(product, variants),
+    [product, variants],
+  );
+  // Fallback-only sources (the exact mapping entry, when there is one and it is
+  // not already an own photo).
+  const fallbackOnlyImages = useMemo(
+    () => getProductImageCandidates(product, variants).filter((src) => !images.includes(src)),
+    [product, variants, images],
+  );
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  // Main image: the selected gallery entry first, then the other own photos,
+  // then the fallback-only sources.
+  const mainImageCandidates = useMemo(() => {
+    const selected = images[selectedImageIndex] ?? images[0];
+    const rest = images.filter((s) => s !== selected);
+    return [...(selected ? [selected] : []), ...rest, ...fallbackOnlyImages];
+  }, [images, selectedImageIndex, fallbackOnlyImages]);
 
   // --- TOGGLES ---
 
@@ -297,16 +303,27 @@ export default function ProductDetailPage({
     () => getDeliveryDates(earliestDelivery, 12),
     [earliestDelivery],
   );
-  // State — pre-populate with cheapest + earliest
-  const cheapestVariant = useMemo(
-    () =>
-      [...variants].sort((a, b) => {
-        const pa = a.deal_price ?? a.price;
-        const pb = b.deal_price ?? b.price;
-        return pa - pb;
-      })[0] || product,
-    [variants, product],
-  );
+  // PERMANENT CATALOG (2026-10-01): every variant stays visible; each one
+  // carries its own purchasability (lib/catalog-availability.ts), shown as a
+  // state label. Every variant goes to the quote flow on this branch.
+  const variantState = useMemo(() => {
+    const m = new Map<string, Purchasability>();
+    for (const v of variants) m.set(v.slug, getPurchasability(v));
+    return m;
+  }, [variants]);
+  const stateOf = (v: Product): Purchasability =>
+    variantState.get(v.slug) ?? getPurchasability(v);
+
+  // State — pre-populate with the cheapest BUYABLE variant; if none is buyable
+  // today, fall back to the cheapest variant overall.
+  const cheapestVariant = useMemo(() => {
+    const byPrice = [...variants].sort((a, b) => {
+      const pa = a.deal_price ?? a.price;
+      const pb = b.deal_price ?? b.price;
+      return pa - pb;
+    });
+    return byPrice.find((v) => variantState.get(v.slug) === "buy_now") || byPrice[0] || product;
+  }, [variants, variantState, product]);
 
   const [selectedLength, setSelectedLength] = useState<string>(
     cheapestVariant.length || uniqueLengths[0] || "",
@@ -382,6 +399,12 @@ export default function ProductDetailPage({
   const effectivePrice = hasDeal && dealPrice != null ? dealPrice : basePrice;
   const compareAtPrice = currentVariant.compare_at_price ?? null;
   const isPriceAvailable = effectivePrice != null && effectivePrice > 0;
+  // Purchasability of the selected variant (lib/catalog-availability.ts).
+  // While DIRECT_CHECKOUT_ENABLED is false `canBuyNow` is never true: no
+  // delivery promise is shown and the primary action is "Add to quote". This
+  // branch has no direct-purchase surface at all (no Buy now, no checkout).
+  const currentPurchasability = stateOf(currentVariant);
+  const canBuyNow = DIRECT_CHECKOUT_ENABLED && currentPurchasability === "buy_now";
 
   // For Box products (combo boxes), stems_per_bunch × units_per_box is meaningless.
   // When unit === "Stem", units_per_box IS the stem count — do not multiply by stems_per_bunch.
@@ -507,55 +530,51 @@ export default function ProductDetailPage({
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
           {/* Image column */}
           <div className="space-y-3">
-            {images.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 aspect-square text-slate-400">
-                <span className="text-sm font-medium text-slate-500">
-                  {product.category}
-                </span>
-              </div>
-            ) : (
-              <>
-                <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
-                  <Image
-                    src={images[selectedImageIndex] ?? images[0]}
-                    alt={displayName}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-contain"
-                    priority
-                  />
-                  {hasDeal &&
-                    (product.deal_label || currentVariant.deal_label) && (
-                      <span className="absolute top-3 left-3 text-white text-xs font-semibold px-3 py-1 rounded-full shadow bg-emerald-600">
-                        {currentVariant.deal_label ?? product.deal_label}
-                      </span>
-                    )}
-                </div>
-                {images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {images.map((src, idx) => (
-                      <button
-                        key={src + idx}
-                        type="button"
-                        onClick={() => setSelectedImageIndex(idx)}
-                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border ${
-                          idx === selectedImageIndex
-                            ? "border-emerald-600"
-                            : "border-slate-200 hover:border-slate-300"
-                        }`}
-                      >
-                        <Image
-                          src={src}
-                          alt=""
-                          fill
-                          className="object-contain"
-                          sizes="64px"
-                        />
-                      </button>
-                    ))}
-                  </div>
+            {/* Always rendered: with no loadable photo the component shows the
+                brand placeholder inside the same box (no layout shift). */}
+            <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+              <ProductImageWithFallback
+                candidates={mainImageCandidates}
+                alt={displayName}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain"
+                priority
+                iconClassName="w-1/3 max-w-[120px]"
+                labelClassName="text-sm"
+              />
+              {hasDeal &&
+                (product.deal_label || currentVariant.deal_label) && (
+                  <span className="absolute top-3 left-3 text-white text-xs font-semibold px-3 py-1 rounded-full shadow bg-emerald-600">
+                    {currentVariant.deal_label ?? product.deal_label}
+                  </span>
                 )}
-              </>
+            </div>
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {images.map((src, idx) => (
+                  <button
+                    key={src + idx}
+                    type="button"
+                    onClick={() => setSelectedImageIndex(idx)}
+                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border ${
+                      idx === selectedImageIndex
+                        ? "border-emerald-600"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <ProductImageWithFallback
+                      candidates={[src]}
+                      alt={`${displayName} — photo ${idx + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="64px"
+                      iconClassName="w-6"
+                      labelClassName="text-[8px]"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
@@ -615,9 +634,9 @@ export default function ProductDetailPage({
               ) : (
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
-                    Price pending
+                    {PURCHASABILITY_LABEL.request_pricing}
                   </span>
-                  <span className="text-xs text-slate-400">Contact us for pricing</span>
+                  <span className="text-xs text-slate-400">We confirm pricing on request</span>
                 </div>
               )}
               {/* EXP-032: "Shipping included" signal near price — feedback item 4 */}
@@ -659,6 +678,8 @@ export default function ProductDetailPage({
                           : null;
                       const vTotal = vPrice > 0 && vStems ? vPrice * vStems : null;
                       const isSelected = v.length === selectedLength && v.box_type === selectedBoxType;
+                      // Every variant is listed; non-buyable ones are labelled, never hidden.
+                      const vState = stateOf(v);
                       const dimLabel = [
                         v.length,
                         BOX_TYPE_LABELS[v.box_type ?? ""] || v.box_type,
@@ -707,6 +728,11 @@ export default function ProductDetailPage({
                               }`}
                             >
                               ≈ ${vTotal.toFixed(0)} box total
+                            </p>
+                          )}
+                          {vState !== "buy_now" && (
+                            <p className="text-[11px] mt-1 font-semibold text-slate-500">
+                              {PURCHASABILITY_LABEL[vState]}
                             </p>
                           )}
                         </button>
@@ -788,8 +814,9 @@ export default function ProductDetailPage({
               />
             </div>
 
-            {/* EXP-079: Order urgency — dynamic cutoff (8pm EST) + next delivery date */}
-            {isPriceAvailable && bestTier !== "T3" && (
+            {/* EXP-079: Order urgency — dynamic cutoff (8pm EST) + next delivery date.
+                Only promised when the selected variant is buyable now. */}
+            {canBuyNow && bestTier !== "T3" && (
               <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                 {orderWindow && (
                   <span className="flex items-center gap-1 font-medium text-slate-700">
@@ -869,48 +896,51 @@ export default function ProductDetailPage({
                   </button>
                 </div>
               )}
-              {isPriceAvailable ? (
-                <button
-                  ref={addToQuoteRef}
-                  type="button"
-                  onClick={handleAddToQuote}
-                  className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all ${
-                    justAdded
-                      ? "bg-emerald-700 text-white ring-2 ring-emerald-300"
-                      : "bg-emerald-600 text-white hover:bg-emerald-700"
-                  }`}
-                >
-                  {justAdded ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      Added! Add Another?
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5" />
-                      Add to Quote
-                    </>
-                  )}
-                </button>
-              ) : (
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-all"
-                >
-                  Request Pricing on WhatsApp
-                </a>
+              {/* PERMANENT CATALOG (2026-10-01): the STATE ("Ask availability" /
+                  "Request pricing") is shown as an informational line; the ACTION
+                  is always "Add to quote" and adds the selected variant to the
+                  quote request in place. WhatsApp stays secondary below. There is
+                  no direct purchase ("Buy now") on this branch, whatever the
+                  purchasability state. */}
+              {!canBuyNow && (
+                <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 flex-shrink-0" />
+                  {PURCHASABILITY_LABEL[currentPurchasability]}
+                </p>
               )}
+              <button
+                ref={addToQuoteRef}
+                type="button"
+                onClick={handleAddToQuote}
+                className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg transition-all ${
+                  justAdded
+                    ? "bg-emerald-700 text-white"
+                    : "bg-emerald-600 text-white hover:bg-emerald-700"
+                }`}
+              >
+                {justAdded ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    {QUOTE_ADDED_LABEL}
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-5 h-5" />
+                    {QUOTE_ACTION_LABEL}
+                  </>
+                )}
+              </button>
               {/* Process hint — reduces "what happens next?" confusion */}
               <p className="text-center text-xs text-slate-500">
-                No payment now — we confirm pricing &amp; delivery within 1 hour.
+                {canBuyNow
+                  ? "No payment now — we confirm pricing & delivery within 1 hour."
+                  : "No payment now — we confirm availability, pricing & delivery within 1 hour."}
               </p>
 
 
-              {/* EXP-062: WhatsApp quick path on PDP — skip the form for users who prefer instant chat */}
-              {isPriceAvailable && (
-                <a
+              {/* EXP-062: WhatsApp quick path on PDP — skip the form for users who prefer instant chat.
+                  Always shown: it is the secondary action for every purchasability state. */}
+              <a
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -922,7 +952,6 @@ export default function ProductDetailPage({
                   </svg>
                   Prefer WhatsApp? Chat directly
                 </a>
-              )}
               <Link
                 href={`/sample-box?product=${encodeURIComponent(`${product.variety} ${product.color}`)}&category=${encodeURIComponent(product.category)}`}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all text-sm"
@@ -996,10 +1025,8 @@ export default function ProductDetailPage({
             {relatedSorted.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {relatedSorted.map((p) => {
-                  const dbImg = Array.isArray(p.images) && p.images.length > 0
-                    ? resolveImage(p.images[0])
-                    : null;
-                  const img = dbImg || getProductImage(p.variety, p.color, p.category);
+                  // PHOTO RECOVERY (2026-10-01): same candidate rule as the grid.
+                  const relCandidates = getProductImageCandidates(p, getVariants(p.variety, p.color));
                   const hasDealRel = !!p.is_on_deal && p.deal_price != null;
                   const unitRel = p.unit === "Bunch" ? "bunch" : "stem";
                   const baseRel = p.price;
@@ -1012,12 +1039,14 @@ export default function ProductDetailPage({
                       className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all flex flex-col"
                     >
                       <div className="aspect-square relative bg-slate-50">
-                        <Image
-                          src={img}
+                        <ProductImageWithFallback
+                          candidates={relCandidates}
                           alt={p.name}
                           fill
                           className="object-contain group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                          iconClassName="w-12"
+                          labelClassName="text-[11px]"
                         />
                         {hasDealRel && p.deal_label && (
                           <span className="absolute top-2 left-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 shadow">
@@ -1143,7 +1172,9 @@ export default function ProductDetailPage({
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                  {bestTier === "T1" || bestTier === "T2"
+                  {!canBuyNow
+                    ? "Availability on request — we confirm within 1 hour"
+                    : bestTier === "T1" || bestTier === "T2"
                     ? "In stock — ships within 5 days of order"
                     : "Pre-order — ships within 14 days of order"
                   }
@@ -1234,7 +1265,7 @@ export default function ProductDetailPage({
               }`}
             >
               <ShoppingCart className="w-4 h-4" />
-              {justAdded ? "Added!" : "Add to Quote"}
+              {justAdded ? QUOTE_ADDED_LABEL : QUOTE_ACTION_LABEL}
             </button>
           </div>
         </div>
