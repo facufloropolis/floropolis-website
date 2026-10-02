@@ -2,15 +2,16 @@
 
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TopBanner from "@/components/TopBanner";
 import { ShoppingCart, Check, Package } from "lucide-react";
 import AssortedMixBuilder from "@/components/AssortedMixBuilder";
 import type { Product } from "@/lib/data/products";
-import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
-import { getProductImage } from "@/lib/product-images";
+import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { getProductImageCandidates } from "@/lib/product-image-candidates";
+import { getVariants } from "@/lib/data/product-helpers";
+import ProductImageWithFallback from "@/components/ProductImageWithFallback";
 import { addItem, getItemCount, type QuoteItem } from "@/lib/quote-cart";
 import { setBuyNowDeliveryDate } from "@/lib/buy-now-cart";
 import BuyNowButton from "@/components/BuyNowButton";
@@ -42,13 +43,6 @@ type Props = {
   bundles: Product[];
   categorySlug: string;
 };
-
-function resolveImage(path: string): string {
-  if (!path) return "";
-  if (path.startsWith("http") || path.startsWith("/")) return path;
-  const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
-  return `${base}/${path}`;
-}
 
 function DeliveryDateChips({
   dates,
@@ -184,9 +178,9 @@ function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDat
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {bundles.map((b) => {
-        const bImg = (Array.isArray(b.images) && b.images.length > 0)
-          ? resolveImage(b.images[0])
-          : getProductImage(b.variety, b.color, b.category);
+        // PHOTO RECOVERY (2026-10-01): own photos → same variety+colour variants
+        // → exact mapping; brand placeholder when all fail. Never a similar flower.
+        const bCandidates = getProductImageCandidates(b, getVariants(b.variety, b.color));
         const bPrice = b.deal_price ?? b.price;
         const bUnit = b.unit === "Bunch" ? "bunch" : "stem";
         const isAdded = addedSlug === b.slug;
@@ -198,13 +192,14 @@ function BundleGrid({ bundles, deliveryDate }: { bundles: Product[]; deliveryDat
             className="group flex items-center gap-4 bg-emerald-50/50 rounded-xl border border-emerald-100 p-3 hover:shadow-md transition-all text-left"
           >
             <div className="relative w-16 h-16 rounded-lg bg-white overflow-hidden flex-shrink-0">
-              <Image
-                src={bImg}
+              <ProductImageWithFallback
+                candidates={bCandidates}
                 alt={b.name}
                 fill
                 className="object-contain"
                 sizes="64px"
-                unoptimized
+                iconClassName="w-6"
+                labelClassName="text-[8px]"
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -239,29 +234,22 @@ export default function ProductDetailPage({
   bundles,
   categorySlug,
 }: Props) {
-  // Collect all images from all variants, with fallback to image mapper
-  const images = useMemo(() => {
-    const paths = new Set<string>();
-    const all = [product, ...variants];
-    for (const v of all) {
-      if (Array.isArray(v.images)) {
-        for (const img of v.images) {
-          if (img) paths.add(img);
-        }
-      }
-    }
-    const resolved = Array.from(paths).map(resolveImage).filter(Boolean);
-    // If no images from DB, use our image mapper
-    if (resolved.length === 0) {
-      const mapped = getProductImage(product.variety, product.color, product.category);
-      if (mapped && mapped !== "/Floropolis-logo-only.png") {
-        resolved.push(mapped);
-      }
-    }
-    return resolved;
-  }, [product, variants]);
+  // PHOTO RECOVERY (2026-10-01): gallery = ordered candidates of the product
+  // and its same-variety+colour variants, plus the exact mapping entry
+  // (lib/product-image-candidates.ts). The fuzzy mapper is no longer used
+  // here: a "similar" flower is not an acceptable product photo. When nothing
+  // loads, ProductImageWithFallback shows the brand placeholder.
+  const images = useMemo(
+    () => getProductImageCandidates(product, variants),
+    [product, variants],
+  );
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  // Main image: try the selected gallery entry first, then the rest in order.
+  const mainImageCandidates = useMemo(() => {
+    const selected = images[selectedImageIndex] ?? images[0];
+    return selected ? [selected, ...images.filter((s) => s !== selected)] : [];
+  }, [images, selectedImageIndex]);
 
   // --- TOGGLES ---
 
@@ -533,55 +521,51 @@ export default function ProductDetailPage({
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
           {/* Image column */}
           <div className="space-y-3">
-            {images.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 aspect-square text-slate-400">
-                <span className="text-sm font-medium text-slate-500">
-                  {product.category}
-                </span>
-              </div>
-            ) : (
-              <>
-                <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
-                  <Image
-                    src={images[selectedImageIndex] ?? images[0]}
-                    alt={displayName}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-contain"
-                    priority
-                  />
-                  {hasDeal &&
-                    (product.deal_label || currentVariant.deal_label) && (
-                      <span className="absolute top-3 left-3 text-white text-xs font-semibold px-3 py-1 rounded-full shadow bg-emerald-600">
-                        {currentVariant.deal_label ?? product.deal_label}
-                      </span>
-                    )}
-                </div>
-                {images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {images.map((src, idx) => (
-                      <button
-                        key={src + idx}
-                        type="button"
-                        onClick={() => setSelectedImageIndex(idx)}
-                        className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border ${
-                          idx === selectedImageIndex
-                            ? "border-emerald-600"
-                            : "border-slate-200 hover:border-slate-300"
-                        }`}
-                      >
-                        <Image
-                          src={src}
-                          alt=""
-                          fill
-                          className="object-contain"
-                          sizes="64px"
-                        />
-                      </button>
-                    ))}
-                  </div>
+            {/* Always rendered: with no loadable photo the component shows the
+                brand placeholder inside the same box (no layout shift). */}
+            <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+              <ProductImageWithFallback
+                candidates={mainImageCandidates}
+                alt={displayName}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain"
+                priority
+                iconClassName="w-1/3 max-w-[120px]"
+                labelClassName="text-sm"
+              />
+              {hasDeal &&
+                (product.deal_label || currentVariant.deal_label) && (
+                  <span className="absolute top-3 left-3 text-white text-xs font-semibold px-3 py-1 rounded-full shadow bg-emerald-600">
+                    {currentVariant.deal_label ?? product.deal_label}
+                  </span>
                 )}
-              </>
+            </div>
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {images.map((src, idx) => (
+                  <button
+                    key={src + idx}
+                    type="button"
+                    onClick={() => setSelectedImageIndex(idx)}
+                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border ${
+                      idx === selectedImageIndex
+                        ? "border-emerald-600"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <ProductImageWithFallback
+                      candidates={[src]}
+                      alt={`${displayName} — photo ${idx + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="64px"
+                      iconClassName="w-6"
+                      labelClassName="text-[8px]"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
@@ -1081,10 +1065,8 @@ export default function ProductDetailPage({
             {relatedSorted.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {relatedSorted.map((p) => {
-                  const dbImg = Array.isArray(p.images) && p.images.length > 0
-                    ? resolveImage(p.images[0])
-                    : null;
-                  const img = dbImg || getProductImage(p.variety, p.color, p.category);
+                  // PHOTO RECOVERY (2026-10-01): same candidate rule as the grid.
+                  const relCandidates = getProductImageCandidates(p, getVariants(p.variety, p.color));
                   const hasDealRel = !!p.is_on_deal && p.deal_price != null;
                   const unitRel = p.unit === "Bunch" ? "bunch" : "stem";
                   const baseRel = p.price;
@@ -1097,12 +1079,14 @@ export default function ProductDetailPage({
                       className="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all flex flex-col"
                     >
                       <div className="aspect-square relative bg-slate-50">
-                        <Image
-                          src={img}
+                        <ProductImageWithFallback
+                          candidates={relCandidates}
                           alt={p.name}
                           fill
                           className="object-contain group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                          iconClassName="w-12"
+                          labelClassName="text-[11px]"
                         />
                         {hasDealRel && p.deal_label && (
                           <span className="absolute top-2 left-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold px-2 py-0.5 shadow">

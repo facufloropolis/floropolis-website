@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -12,8 +11,9 @@ import QuoteBar from "@/components/QuoteBar";
 import { products as catalogProducts, type Product } from "@/lib/data/products";
 import { getGroupedProducts } from "@/lib/data/product-helpers";
 import { pushEvent, CTA_EVENTS } from "@/lib/gtm";
-import { PRODUCT_IMAGES_BASE_URL, WHATSAPP_NUMBER } from "@/lib/catalog-constants";
-import { getProductImage } from "@/lib/product-images";
+import { WHATSAPP_NUMBER } from "@/lib/catalog-constants";
+import { getProductImageCandidates } from "@/lib/product-image-candidates";
+import ProductImageWithFallback from "@/components/ProductImageWithFallback";
 import { getEarliestDeliveryDate, formatDeliveryDate, toISODate } from "@/lib/delivery-dates";
 import { addItem, type QuoteItem } from "@/lib/quote-cart";
 import { addToBuyNowCart, setBuyNowDeliveryDate } from "@/lib/buy-now-cart";
@@ -55,20 +55,6 @@ function getColorGroup(rawColor: string): string {
     if (colors.includes(rawColor)) return group;
   }
   return "Other";
-}
-
-function resolveImage(pathList: string[], variety?: string, color?: string, category?: string): string {
-  const path = pathList[0];
-  if (path) {
-    if (path.startsWith("http") || path.startsWith("/")) return path;
-    const base = PRODUCT_IMAGES_BASE_URL.replace(/\/$/, "");
-    return `${base}/${path}`;
-  }
-  // Fall back to our image mapper
-  if (variety && category) {
-    return getProductImage(variety, color || "", category);
-  }
-  return "/Floropolis-logo-only.png";
 }
 
 // Categories ordered by TAM / market importance
@@ -124,7 +110,12 @@ interface VarietyGroup {
   minPrice: number;
   maxPrice: number;
   originalMinPrice: number; // price before any deal
-  image: string;
+  // PHOTO RECOVERY (2026-10-01): ordered image candidates for the card — the
+  // representative's own photos, then the other variants of the SAME variety
+  // and colour, then the exact mapping entry (lib/product-image-candidates.ts).
+  // Rendered by ProductImageWithFallback, which shows the brand placeholder
+  // only when every candidate fails. Never a "similar" flower.
+  imageCandidates: string[];
   has_photo: boolean;
   tier: string; // best (lowest = most available) tier in group
   bestseller: boolean;
@@ -205,7 +196,7 @@ function buildVarietyGroups(products: Product[]): VarietyGroup[] {
       minPrice: validPrices.length > 0 ? Math.min(...validPrices) : 0,
       maxPrice: validPrices.length > 0 ? Math.max(...validPrices) : 0,
       originalMinPrice: validOriginalPrices.length > 0 ? Math.min(...validOriginalPrices) : 0,
-      image: resolveImage(rep.images || [], rep.variety, rep.color, rep.category),
+      imageCandidates: getProductImageCandidates(rep, variants),
       has_photo: rep.has_photo,
       tier: bestTier,
       bestseller: variants.some((v) => v.is_best_seller),
@@ -717,7 +708,6 @@ function ShopPageContent() {
             </div>
             <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
               {popularProducts.map((group) => {
-                const imgSrc = group.image || "/Floropolis-logo-only.png";
                 const displayPrice = group.is_on_deal && group.dealPrice != null
                   ? group.dealPrice
                   : group.minPrice;
@@ -734,12 +724,14 @@ function ShopPageContent() {
                     })}
                   >
                     <div className="aspect-square relative bg-slate-50 overflow-hidden">
-                      <Image
-                        src={imgSrc}
+                      <ProductImageWithFallback
+                        candidates={group.imageCandidates}
                         alt={group.name}
                         fill
                         className="object-contain group-hover/pop:scale-105 transition-transform"
                         sizes="192px"
+                        iconClassName="w-10"
+                        labelClassName="text-[10px]"
                       />
                       {group.bestseller && (
                         <span className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
@@ -1080,7 +1072,6 @@ export default function ShopPage() {
 
 // EXP-070: Direct add-to-quote for single-variant cards (skip PDP trip)
 function VarietyCard({ group }: { group: VarietyGroup }) {
-  const imgSrc = group.image || "/Floropolis-logo-only.png";
   const [cardAdded, setCardAdded] = useState(false);
   const router = useRouter();
 
@@ -1136,12 +1127,14 @@ function VarietyCard({ group }: { group: VarietyGroup }) {
         })}
       >
         <div className="block aspect-square relative bg-slate-50 overflow-hidden">
-          <Image
-            src={imgSrc}
+          <ProductImageWithFallback
+            candidates={group.imageCandidates}
             alt={group.name}
             fill
             className="object-contain group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            iconClassName="w-14"
+            labelClassName="text-xs"
           />
           {group.bestseller && (
             <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
